@@ -9,6 +9,7 @@ module.exports = {
     "airbnb",
     "airbnb/hooks",
     "airbnb-typescript",
+    "plugin:storybook/recommended"
   ],
   parserOptions: {
     project: "./frontend/react-ts/tsconfig.json",
