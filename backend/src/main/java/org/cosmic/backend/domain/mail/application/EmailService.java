@@ -12,7 +12,6 @@ public class EmailService {
 
     public void sendVerificationEmail(String to, String content){
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("test.sender@hotmail.com");
         message.setSubject("Message from Java Mail Sender");
         message.setText(content);
         message.setTo(to);
