@@ -15,10 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.test.context.support.WithMockUser;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -43,7 +40,7 @@ public class EmailControllerTest {
         ResponseEntity<Void> response = testRestTemplate.postForEntity("/mail/verify", emailRequest, Void.class);
 
         // Assert
-        Assertions.assertEquals(200, response.getStatusCodeValue());
+        Assertions.assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
 
         MimeMessage receivedMessage = greenMail.getReceivedMessages()[0];
 
