@@ -8,8 +8,6 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.cosmic.backend.configs.SecurityTestConfig;
 import org.cosmic.backend.domain.mail.dto.EmailAddress;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -37,11 +35,7 @@ public class EmailControllerTest {
 
     @Test
     @WithMockUser(username="admin",roles={"USER","ADMIN"})
-    public void mailTest() throws JSONException, MessagingException {
-        JSONObject emailJsonObject = new JSONObject();
-        emailJsonObject.put("email", "tester@spring.com");
-        emailJsonObject.put("content", "123456");
-
+    public void mailTest() throws MessagingException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<EmailAddress> emailRequest = new HttpEntity<>(EmailAddress.builder().email("tester@spring.com").build(), headers);
@@ -57,7 +51,7 @@ public class EmailControllerTest {
         Assertions.assertEquals("tester@spring.com", receivedMessage.getAllRecipients()[0].toString());
         Assertions.assertEquals("test.sender@hotmail.com", receivedMessage.getFrom()[0].toString());
         Assertions.assertEquals("Message from Java Mail Sender", receivedMessage.getSubject());
-        Assertions.assertEquals("Hello this is a simple email message", GreenMailUtil.getBody(receivedMessage));
+        Assertions.assertEquals("123456", GreenMailUtil.getBody(receivedMessage));
 
     }
 }
