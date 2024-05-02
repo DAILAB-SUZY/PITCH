@@ -29,7 +29,7 @@ function App() {
           {" "}
           test123{" "}
         </Title>
-        <Button size="small" label="Log out" />
+        <Button primary size="small" label="Log out" />
       </Container>
     </div>
   );
