@@ -1,7 +1,12 @@
 import styled from "styled-components";
 import { Button } from "./stories/Button";
 
-const Title = styled.div`
+type titleType = {
+  fontSize: string;
+  margin: string;
+};
+
+const Title = styled.div<{ fontSize: string; margin: string }>`
   font-size: ${(props) => props.fontSize};
   margin: ${(props) => props.margin};
 `;
@@ -19,11 +24,10 @@ function App() {
   return (
     <div>
       <Container>
-        hello world
         <div>hi</div>
         <Title fontSize="45px" margin="0px">
           {" "}
-          test{" "}
+          test123{" "}
         </Title>
         <Button size="small" label="Log out" />
       </Container>
