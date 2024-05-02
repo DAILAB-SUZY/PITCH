@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
@@ -18,11 +19,12 @@ public class Email {
 
     @Id
     private String email;
-    @Column(nullable = false, columnDefinition = "boolean default false")
-    private Boolean Verified;
+    @Builder.Default
+    @Column
+    private Boolean verified=false;
     @Column(nullable = false)
     private String verificationCode;
-    @CreationTimestamp
+    @Builder.Default
     @Column(nullable=false)
-    private Instant expirationTime;
+    private Instant createTime=Instant.now();
 }

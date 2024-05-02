@@ -26,9 +26,9 @@ public class User {
     @Column(nullable=false,length=255)
     private String password;
     @Column(length=255)
-    private String ProfilePicture;
-    @CreationTimestamp
+    private String profilePicture;
+    @Builder.Default
     @Column(nullable=false)
-    private Instant signupDate;
+    private Instant signupDate=Instant.now();
 
 }
