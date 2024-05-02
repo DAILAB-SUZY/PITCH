@@ -1,4 +1,4 @@
-package org.cosmic.backend.configs;
+package org.cosmic.backend.globals.configs;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
