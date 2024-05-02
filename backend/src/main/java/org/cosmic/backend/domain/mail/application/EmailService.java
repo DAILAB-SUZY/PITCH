@@ -1,7 +1,7 @@
 package org.cosmic.backend.domain.mail.application;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.mail.SimpleMailMessage;
+import org.cosmic.backend.domain.mail.utils.MailContentGenerator;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
@@ -9,13 +9,13 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class EmailService {
     private final JavaMailSender mailSender;
+    private final MailContentGenerator mailContentGenerator = new MailContentGenerator();
 
     public void sendVerificationEmail(String to, String content){
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setSubject("Message from Java Mail Sender");
-        message.setText(content);
-        message.setTo(to);
+        mailSender.send(mailContentGenerator.verificationMessage(to, content));
+    }
 
-        mailSender.send(message);
+    public void sendVerificationEmail(String to){
+        mailSender.send(mailContentGenerator.verificationMessage(to));
     }
 }
