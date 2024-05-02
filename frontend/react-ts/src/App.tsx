@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { Button } from "./stories/Button";
+import InputBox from "./stories/InputBox";
 
 type titleType = {
   fontSize: string;
@@ -31,6 +32,7 @@ function App() {
         </Title>
         <Button primary size="small" label="Log out" />
       </Container>
+      <InputBox text="E-mail"></InputBox>
     </div>
   );
 }
