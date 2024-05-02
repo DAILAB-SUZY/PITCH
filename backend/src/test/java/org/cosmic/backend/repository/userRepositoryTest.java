@@ -82,4 +82,28 @@ public class userRepositoryTest extends RepositoryBaseTest {
         }
       }
 
+    @Test
+    @DisplayName("전체 유저 목록 조회")
+    public void findUserListTest() {
+        //given
+        User user2=new User();
+        user2.setEmail("kimjunho1231@naver.com");
+        user2.setUsername("junho");
+        user2.setPassword("123");
+        usersRepository.save(user);
+        usersRepository.save(user2);
+
+        //when
+        List<User> findList= usersRepository.findAll();
+
+        //then
+        for(User user:findList){
+            assertThat(user.getId()).isNotNull();
+            assertThat(user.getEmail()).isNotNull();
+            assertThat(user.getUsername()).isNotNull();
+            assertThat(user.getPassword()).isNotNull();
+            assertThat(user.getProfilePicture()).isNotNull();
+            assertThat(user.getSignupDate()).isNotNull();
+        }
+    }
 }
