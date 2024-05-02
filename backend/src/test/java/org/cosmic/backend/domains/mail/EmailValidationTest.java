@@ -2,8 +2,11 @@ package org.cosmic.backend.domains.mail;
 
 import com.icegreen.greenmail.mail.MailAddress;
 import org.cosmic.backend.domain.user.domain.Email;
+import org.cosmic.backend.domain.user.domain.User;
+import org.cosmic.backend.domain.user.repository.UsersRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -19,6 +22,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class EmailValidationTest extends EmailBaseTest {
 
+    @Autowired
+    private UsersRepository usersRepository;
+
     @BeforeEach
     public void setUp(){
         final String[] emails = {"test1@example.com", "test2@example.com", "test3@example.com"};
@@ -26,7 +32,13 @@ class EmailValidationTest extends EmailBaseTest {
             Email obj = new Email();
             obj.setEmail(email);
             obj.setVerificationCode("123456");
-            emailRepository.save(obj);
+            User user = User.builder()
+                    .email(email)
+                    .password("123456")
+                    .username("testman")
+                    .profilePicture(null)
+                    .build();
+            usersRepository.save(user);
         }
     }
 
