@@ -58,4 +58,27 @@ class EmailValidationTest extends EmailBaseTest {
             fail(e.getMessage());
         }
     }
+
+    @Test
+    public void verifyEmailBeforeInterval(){
+        MailAddress mailAddress = new MailAddress("twotimes@example.com");
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        try {
+            this.mockMvc.perform(post("/mail/verify")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(mailAddress)))
+                    .andDo(print())
+                    .andExpect(status().isOk());
+
+            this.mockMvc.perform(post("/mail/verify")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(mailAddress)))
+                    .andDo(print())
+                    .andExpect(status().isBadRequest())
+                    .andExpect(content().string(containsString("Not even 30 seconds passed")));
+        } catch (Exception e){
+            fail(e.getMessage());
+        }
+    }
 }
