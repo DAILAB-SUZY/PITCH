@@ -20,13 +20,14 @@ public class User {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
     @Column(nullable=false,length=255)
-    private String email;
+    private String email;//fk
     @Column(nullable=false,length=255)
     private String username;
     @Column(nullable=false,length=255)
     private String password;
+    @Builder.Default
     @Column(length=255)
-    private String profilePicture;
+    private String profilePicture="base";
     @Builder.Default
     @Column(nullable=false)
     private Instant signupDate=Instant.now();
