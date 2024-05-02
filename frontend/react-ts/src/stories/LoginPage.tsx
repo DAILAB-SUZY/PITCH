@@ -1,8 +1,6 @@
 import styled from "styled-components";
-import { Button } from "./stories/Button";
-import Btn from "./stories/btn";
-import { Routes, Route, BrowserRouter } from "react-router-dom";
-import LoginPage from "./stories/LoginPage";
+import { Button } from "./Button";
+import Btn from "./btn";
 
 type titleType = {
   fontSize: string;
@@ -21,14 +19,21 @@ const Container = styled.div`
   justify-content: center;
 `;
 
-function App() {
+function LoginPage() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="" element={<LoginPage />} />
-      </Routes>
-    </BrowserRouter>
+    <div>
+      <Container>
+        <div>hi</div>
+        <Title fontSize="45px" margin="0px">
+          {" "}
+          test123{" "}
+        </Title>
+        <Button primary size="small" label="Log out" />
+        <Btn></Btn>
+      </Container>
+      <Btn></Btn>
+    </div>
   );
 }
 
-export default App;
+export default LoginPage;
