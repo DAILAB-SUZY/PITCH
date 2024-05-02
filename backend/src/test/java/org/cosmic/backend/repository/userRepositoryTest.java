@@ -54,5 +54,32 @@ public class userRepositoryTest extends RepositoryBaseTest {
         Assertions.assertThat(usersRepository.count()).isEqualTo(1);//한개를 저장했으니 한개만 있어야함.
     }
 
-    //
+    @Test
+    @DisplayName("다수유저저장")
+    public void saveUsersTest() {
+        // given
+        ArrayList<User> userList = new ArrayList<User>();
+
+        for(int i=0;i<100;i++)
+        {
+            user=new User();
+            user.setEmail("kimjunho1231@naver.com");
+            user.setUsername("junho");
+            user.setPassword("123");
+            userList.add(user);
+        }
+        usersRepository.saveAll(userList);
+        // when
+        List<User> savedUsers=usersRepository.findAll();
+        // then
+        for(User user:savedUsers){
+            assertThat(user.getId()).isNotNull();
+            assertThat(user.getEmail()).isNotNull();
+            assertThat(user.getUsername()).isNotNull();
+            assertThat(user.getPassword()).isNotNull();
+            assertThat(user.getProfilePicture()).isNotNull();
+            assertThat(user.getId()).isGreaterThan(0);
+        }
+      }
+
 }
