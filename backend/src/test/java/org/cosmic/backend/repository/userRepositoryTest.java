@@ -125,4 +125,23 @@ public class userRepositoryTest extends RepositoryBaseTest {
         // then
         Assertions.assertThat(searchuser.getId()).isGreaterThan(0);
     }
+
+    @Test
+    @DisplayName("유저 로그인 확인")
+    public void findUserLoginTest(){
+
+        usersRepository.save(user);
+        User user2=new User();
+        user2.setEmail("kimjunho1231@google.co.kr");
+        user2.setUsername("hi");
+        user2.setPassword("123");
+        usersRepository.save(user2);
+
+        User searchuser=usersRepository.findByEmail("kimjunho1231@google.co.kr").get();//아이디로 확인 후
+        if(searchuser.getPassword().equals("1234")){//입력받은 비번이랑 일치하다면
+
+            Assertions.assertThat(searchuser.getId()).isGreaterThan(0);
+            Assertions.assertThat(searchuser.getUsername().equals("junho"));
+        }
+    }
 }
