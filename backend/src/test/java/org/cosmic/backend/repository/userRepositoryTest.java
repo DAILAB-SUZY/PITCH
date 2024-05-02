@@ -106,4 +106,23 @@ public class userRepositoryTest extends RepositoryBaseTest {
             assertThat(user.getSignupDate()).isNotNull();
         }
     }
+
+    @Test
+    @DisplayName("유저 이메일로 조회")
+    public void findUserByEmailTest(){
+
+        // given
+        usersRepository.save(user);
+        User user2=new User();
+        user2.setEmail("kimjunho1231@google.co.kr");
+        user2.setUsername("hi");
+        user2.setPassword("123");
+        usersRepository.save(user2);
+
+        // when
+        User searchuser=usersRepository.findByEmail("kimjunho1231@google.co.kr").get();
+
+        // then
+        Assertions.assertThat(searchuser.getId()).isGreaterThan(0);
+    }
 }
