@@ -5,13 +5,10 @@ import org.cosmic.backend.domain.user.domain.Email;
 import org.cosmic.backend.domain.user.repository.EmailRepository;
 import org.cosmic.backend.testcontainer.RepositoryBaseTest;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.testcontainers.junit.jupiter.Testcontainers;
-
-import java.time.Instant;
 
 @DataJpaTest
 @Testcontainers
@@ -21,6 +18,7 @@ public class emailRepositoryTest extends RepositoryBaseTest {
     private EmailRepository emailRepository;
 
     @Test
+    @DisplayName("이메일 코드 생성")
     void saveEmail() {
         // given
         Email email = new Email();
@@ -39,4 +37,5 @@ public class emailRepositoryTest extends RepositoryBaseTest {
         Assertions.assertThat(savedEmail.getCreateTime()).isNotNull();//무조건 생성 시간이 존재해야함
         Assertions.assertThat(emailRepository.count()).isEqualTo(1);//한개를 저장했으니 한개만 있어야함.
     }
+
 }
