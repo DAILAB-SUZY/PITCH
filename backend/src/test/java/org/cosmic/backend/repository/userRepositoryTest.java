@@ -41,6 +41,7 @@ public class userRepositoryTest extends RepositoryBaseTest {
     @AfterEach
     public void clean(){
         usersRepository.deleteAll();
+        emailRepository.deleteAll();
     }
 
     @Test
