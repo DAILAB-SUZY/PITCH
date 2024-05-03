@@ -1,19 +1,19 @@
 package org.cosmic.backend.repository;
-
 import org.assertj.core.api.Assertions;
+import org.cosmic.backend.domain.user.domain.Email;
 import org.cosmic.backend.domain.user.domain.User;
+import org.cosmic.backend.domain.user.repository.EmailRepository;
 import org.cosmic.backend.domain.user.repository.UsersRepository;
 import org.cosmic.backend.testcontainer.RepositoryBaseTest;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.testcontainers.junit.jupiter.Testcontainers;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 @DataJpaTest
@@ -23,13 +23,24 @@ public class userRepositoryTest extends RepositoryBaseTest {
     @Autowired
     private UsersRepository usersRepository;
     private User user;
+    private Email email;
+    @Autowired
+    private EmailRepository emailRepository;
 
     @BeforeEach
     public void setUp(){
+        email=new Email();
+        email.setEmail("kimjunho1231@naver.com");
+        email.setVerificationCode("123456");
+        emailRepository.save(email);
         user=new User();
-        user.setEmail("kimjunho1231@naver.com");
+        user.setEmail(email);
         user.setUsername("junho");
-        user.setPassword("123");
+        user.setPassword("1234");
+    }
+    @AfterEach
+    public void clean(){
+        usersRepository.deleteAll();
     }
 
     @Test
@@ -63,7 +74,7 @@ public class userRepositoryTest extends RepositoryBaseTest {
         for(int i=0;i<100;i++)
         {
             user=new User();
-            user.setEmail("kimjunho1231@naver.com");
+            //user.setEmail("kimjunho1231@naver.com");
             user.setUsername("junho");
             user.setPassword("123");
             userList.add(user);
@@ -86,8 +97,13 @@ public class userRepositoryTest extends RepositoryBaseTest {
     @DisplayName("전체 유저 목록 조회")
     public void findUserListTest() {
         //given
+        Email email1=new Email();
+        email1.setEmail("kimjunho1231@google.co.kr");
+        email1.setVerificationCode("123456");
+        emailRepository.save(email1);
+
         User user2=new User();
-        user2.setEmail("kimjunho1231@naver.com");
+        user2.setEmail(email1);
         user2.setUsername("junho");
         user2.setPassword("123");
         usersRepository.save(user);
@@ -112,15 +128,20 @@ public class userRepositoryTest extends RepositoryBaseTest {
     public void findUserByEmailTest(){
 
         // given
-        usersRepository.save(user);
+        Email email1=new Email();
+        email1.setEmail("kimjunho1231@google.co.kr");
+        email1.setVerificationCode("123456");
+        emailRepository.save(email1);
+
         User user2=new User();
-        user2.setEmail("kimjunho1231@google.co.kr");
-        user2.setUsername("hi");
+        user2.setEmail(email1);
+        user2.setUsername("junho");
         user2.setPassword("123");
+        usersRepository.save(user);
         usersRepository.save(user2);
 
         // when
-        User searchuser=usersRepository.findByEmail("kimjunho1231@google.co.kr").get();
+        User searchuser=usersRepository.findByEmail_Email("kimjunho1231@naver.com").get();
 
         // then
         Assertions.assertThat(searchuser.getId()).isGreaterThan(0);
@@ -130,16 +151,21 @@ public class userRepositoryTest extends RepositoryBaseTest {
     @DisplayName("유저 로그인 확인")
     public void findUserLoginTest(){
 
-        usersRepository.save(user);
+        Email email1=new Email();
+        email1.setEmail("kimjunho1231@google.co.kr");
+        email1.setVerificationCode("123456");
+        emailRepository.save(email1);
+
         User user2=new User();
-        user2.setEmail("kimjunho1231@google.co.kr");
-        user2.setUsername("hi");
+        user2.setEmail(email1);
+        user2.setUsername("junho");
         user2.setPassword("123");
+        usersRepository.save(user);
         usersRepository.save(user2);
 
-        User searchuser=usersRepository.findByEmail("kimjunho1231@google.co.kr").get();//아이디로 확인 후
+        User searchuser=usersRepository.findByEmail_Email("kimjunho1231@naver.com").get();//아이디로 확인 후
         if(searchuser.getPassword().equals("1234")){//입력받은 비번이랑 일치하다면
-
+            System.out.println("ok");
             Assertions.assertThat(searchuser.getId()).isGreaterThan(0);
             Assertions.assertThat(searchuser.getUsername().equals("junho"));
         }
