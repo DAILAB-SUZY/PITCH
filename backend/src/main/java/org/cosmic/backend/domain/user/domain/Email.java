@@ -18,6 +18,7 @@ import java.time.Instant;
 public class Email {
 
     @Id
+    @Column(name="email")
     private String email;
     @Builder.Default
     @Column
