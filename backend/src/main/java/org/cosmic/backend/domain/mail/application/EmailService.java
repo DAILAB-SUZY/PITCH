@@ -21,25 +21,37 @@ public class EmailService {
     private final EmailRepository emailRepository;
     private final UsersRepository usersRepository;
 
+    private final int WAIT_TIME = 30;
+
+    private void emailExistCheck(String to){
+        if(usersRepository.findByEmail(to).isPresent()){
+            throw new ExistEmailException();
+        }
+    }
+
+    private void durationValidCheck(Instant start, Instant end){
+        if(Math.abs(Duration.between(start, end).toSeconds()) < WAIT_TIME){
+            throw new IntervalNotEnoughException();
+        }
+    }
+
     public void sendVerificationEmail(String to, String content) {
         emailRepository.findById(to).ifPresentOrElse(
                 email -> {
-                    if(usersRepository.findByEmail(to).isPresent()){
-                        throw new ExistEmailException();
-                    }
-                    if(Math.abs(Duration.between(email.getCreateTime(), Instant.now()).toSeconds()) < 30){
-                        throw new IntervalNotEnoughException();
-                    }
+                    emailExistCheck(email.getEmail());
+                    durationValidCheck(email.getCreateTime(), Instant.now());
                 },
-                () -> {
-                    emailRepository.save(Email.builder().email(to).verificationCode(content).build());
-                }
+                () -> emailRepository.save(Email.builder().email(to).verificationCode(content).build())
         );
-        Email email = emailRepository.findById(to).orElseThrow(RuntimeException::new);
-        email.setVerificationCode(content);
-        email.setCreateTime(Instant.now());
-        email.setVerified(false);
-        emailRepository.save(email);
+        emailRepository.findById(to).ifPresentOrElse(
+                email -> {
+                    email.setVerificationCode(content);
+                    email.setCreateTime(Instant.now());
+                    email.setVerified(false);
+                    emailRepository.save(email);
+                },
+                () -> {throw new RuntimeException();}
+        );
         mailSender.send(mailContentGenerator.verificationMessage(to, content));
     }
 
