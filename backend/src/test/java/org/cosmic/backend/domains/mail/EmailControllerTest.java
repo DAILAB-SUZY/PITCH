@@ -1,27 +1,17 @@
 package org.cosmic.backend.domains.mail;
 
-import com.icegreen.greenmail.configuration.GreenMailConfiguration;
-import com.icegreen.greenmail.junit5.GreenMailExtension;
 import com.icegreen.greenmail.util.GreenMailUtil;
-import com.icegreen.greenmail.util.ServerSetupTest;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.cosmic.backend.domain.mail.dto.EmailAddress;
-import org.cosmic.backend.domains.DisableCSRFTestBase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.security.test.context.support.WithMockUser;
 
-public class EmailControllerTest extends DisableCSRFTestBase {
-
-    @RegisterExtension
-    static GreenMailExtension greenMail = new GreenMailExtension(ServerSetupTest.SMTP)
-            .withConfiguration(GreenMailConfiguration.aConfig().withUser("user", "admin"))
-            .withPerMethodLifecycle(false);
+public class EmailControllerTest extends EmailBaseTest {
 
     @Autowired
     private TestRestTemplate testRestTemplate;
