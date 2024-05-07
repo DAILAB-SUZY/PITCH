@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { colors } from "../styles/color";
+import { colors } from "../../styles/color";
 
 const Btnstyle = styled.div`
   width: 100px;
