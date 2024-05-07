@@ -1,5 +1,6 @@
 package org.cosmic.backend.domain.mail.application;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.cosmic.backend.domain.mail.exceptions.ExistEmailException;
 import org.cosmic.backend.domain.mail.exceptions.IntervalNotEnoughException;
@@ -36,7 +37,7 @@ public class EmailService {
         }
     }
 
-    public void sendVerificationEmail(String to, String content) {
+    public void sendVerificationEmail(@jakarta.validation.constraints.Email @NotNull String to, @NotNull String content) {
         emailRepository.findById(to).ifPresentOrElse(
                 email -> {
                     emailExistCheck(email.getEmail());
@@ -59,5 +60,13 @@ public class EmailService {
 
     public void sendVerificationEmail(String to){
         mailSender.send(mailContentGenerator.verificationMessage(to));
+    }
+
+    public ResponseEntity<Boolean> verifyCode(String email, String code) {
+        Email user = emailRepository.findById(email).orElseThrow(RuntimeException::new);
+        if(!code.equals(user.getVerificationCode())){
+            throw new RuntimeException("Verification code is incorrect");
+        }
+        return ResponseEntity.ok(true);
     }
 }
