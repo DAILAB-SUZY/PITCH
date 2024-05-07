@@ -1,8 +1,8 @@
 import styled from "styled-components";
-import { Button } from "./stories/Button";
-import Btn from "./stories/btn";
-import { Routes, Route, BrowserRouter } from "react-router-dom";
+import { Routes, Route, BrowserRouter, useNavigate } from "react-router-dom";
 import LoginPage from "./stories/LoginPage";
+import StartPage from "./stories/StartPage";
+import SignupPage from "./stories/SignupPage";
 
 type titleType = {
   fontSize: string;
@@ -25,7 +25,9 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="" element={<LoginPage />} />
+        <Route path="" element={<StartPage />} />
+        <Route path="/Login" element={<LoginPage />} />
+        <Route path="/Signup" element={<SignupPage />} />
       </Routes>
     </BrowserRouter>
   );

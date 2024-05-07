@@ -18,7 +18,7 @@ const Container = styled.div`
   align-items: center;
   height: 100vh;
   width: 100vw;
-  background-color: ${colors.BG_lightpink};
+  background-color: ${colors.BG_grey};
   color: ${colors.Font_black};
 `;
 
@@ -42,13 +42,13 @@ const WrappingContainer = styled.div<{
   width: 70vw;
 `;
 
-function LoginPage() {
+function SignupPage() {
   const navigate = useNavigate();
   const GoToStartPage = () => {
     navigate("/");
   };
-  const GoToSignupPage = () => {
-    navigate("/Signup");
+  const GoToLoginPage = () => {
+    navigate("/Login");
   };
 
   return (
@@ -61,20 +61,28 @@ function LoginPage() {
           onClick={GoToStartPage}
         ></img>
         <Title fontSize="30px" margin="10px">
-          {" "}
-          로그인{" "}
+          회원가입
+        </Title>
+        <Title fontSize="20px" margin="10px">
+          이름
+        </Title>
+        <InputBox placeholder="이름"></InputBox>
+        <Title fontSize="20px" margin="10px">
+          E-mail
         </Title>
         <InputBox placeholder="E-mail"></InputBox>
+        <InputBox placeholder="인증번호"></InputBox>
+        <Title fontSize="20px" margin="10px">
+          Password
+        </Title>
         <InputBox placeholder="Password"></InputBox>
+        <InputBox placeholder="Password 확인"></InputBox>
         <LeftAlignContainer>
-          <Btn text="로그인"></Btn>
+          <Btn text="가입"></Btn>
         </LeftAlignContainer>
       </WrappingContainer>
-      <Title fontSize="15px" margin="10px" onClick={GoToSignupPage}>
-        회원가입
-      </Title>
     </Container>
   );
 }
 
-export default LoginPage;
+export default SignupPage;
