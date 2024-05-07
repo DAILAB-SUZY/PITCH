@@ -1,8 +1,8 @@
 import styled from "styled-components";
 import { Routes, Route, BrowserRouter, useNavigate } from "react-router-dom";
-import LoginPage from "./stories/LoginPage";
-import StartPage from "./stories/StartPage";
-import SignupPage from "./stories/SignupPage";
+import LoginPage from "./stories/pages/LoginPage";
+import StartPage from "./stories/pages/StartPage";
+import SignupPage from "./stories/pages/SignupPage";
 
 type titleType = {
   fontSize: string;

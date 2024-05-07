@@ -1,9 +1,9 @@
 import styled from "styled-components";
-import Btn from "./btn";
-import { colors } from "../styles/color";
-import logo from "../img/logo_withText.png";
+import Btn from "../inputs/btn";
+import { colors } from "../../styles/color";
+import logo from "../../img/logo_withText.png";
 import { useNavigate } from "react-router-dom";
-import InputBox from "./InputBox";
+import InputBox from "../inputs/InputBox";
 
 const Title = styled.div<{ fontSize: string; margin: string }>`
   font-size: ${(props) => props.fontSize};
@@ -18,7 +18,7 @@ const Container = styled.div`
   align-items: center;
   height: 100vh;
   width: 100vw;
-  background-color: ${colors.BG_grey};
+  background-color: ${colors.BG_lightpink};
   color: ${colors.Font_black};
 `;
 
@@ -42,13 +42,13 @@ const WrappingContainer = styled.div<{
   width: 70vw;
 `;
 
-function SignupPage() {
+function LoginPage() {
   const navigate = useNavigate();
   const GoToStartPage = () => {
     navigate("/");
   };
-  const GoToLoginPage = () => {
-    navigate("/Login");
+  const GoToSignupPage = () => {
+    navigate("/Signup");
   };
 
   return (
@@ -61,28 +61,20 @@ function SignupPage() {
           onClick={GoToStartPage}
         ></img>
         <Title fontSize="30px" margin="10px">
-          회원가입
-        </Title>
-        <Title fontSize="20px" margin="10px">
-          이름
-        </Title>
-        <InputBox placeholder="이름"></InputBox>
-        <Title fontSize="20px" margin="10px">
-          E-mail
+          {" "}
+          로그인{" "}
         </Title>
         <InputBox placeholder="E-mail"></InputBox>
-        <InputBox placeholder="인증번호"></InputBox>
-        <Title fontSize="20px" margin="10px">
-          Password
-        </Title>
         <InputBox placeholder="Password"></InputBox>
-        <InputBox placeholder="Password 확인"></InputBox>
         <LeftAlignContainer>
-          <Btn text="가입"></Btn>
+          <Btn text="로그인"></Btn>
         </LeftAlignContainer>
       </WrappingContainer>
+      <Title fontSize="15px" margin="10px" onClick={GoToSignupPage}>
+        회원가입
+      </Title>
     </Container>
   );
 }
 
-export default SignupPage;
+export default LoginPage;

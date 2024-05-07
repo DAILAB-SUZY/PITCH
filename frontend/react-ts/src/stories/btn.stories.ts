@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
-import Btn from "./btn";
+import Btn from "./inputs/btn";
 
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories#default-export
 const meta = {
