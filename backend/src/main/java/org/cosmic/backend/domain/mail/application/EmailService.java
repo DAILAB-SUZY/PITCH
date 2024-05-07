@@ -7,6 +7,7 @@ import org.cosmic.backend.domain.mail.utils.MailContentGenerator;
 import org.cosmic.backend.domain.user.domain.Email;
 import org.cosmic.backend.domain.user.repository.EmailRepository;
 import org.cosmic.backend.domain.user.repository.UsersRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +25,7 @@ public class EmailService {
     private final int WAIT_TIME = 30;
 
     private void emailExistCheck(String to){
-        if(usersRepository.findByEmail(to).isPresent()){
+        if(usersRepository.findByEmail_Email(to).isPresent()){
             throw new ExistEmailException();
         }
     }
@@ -40,8 +41,9 @@ public class EmailService {
                 email -> {
                     emailExistCheck(email.getEmail());
                     durationValidCheck(email.getCreateTime(), Instant.now());
+                    //plus 부분에 사용자 시간대로 수정해야 함.
                 },
-                () -> emailRepository.save(Email.builder().email(to).verificationCode(content).build())
+                () -> emailRepository.saveAndFlush(Email.builder().email(to).verificationCode(content).build())
         );
         emailRepository.findById(to).ifPresentOrElse(
                 email -> {

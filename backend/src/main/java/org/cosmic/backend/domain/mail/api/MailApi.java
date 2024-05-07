@@ -16,7 +16,7 @@ public class MailApi {
 
     private final EmailService emailService;
 
-    @PostMapping("/verify")
+    @PostMapping("/request")
     public void sendVerificationEmail(@Valid @RequestBody EmailAddress address) {
         emailService.sendVerificationEmail(address.email(), "123456");
     }
