@@ -1,6 +1,6 @@
 import styled from "styled-components";
-import logo from "../img/logo_withText.png";
-import { colors } from "../styles/color";
+import logo from "../../img/logo_withText.png";
+import { colors } from "../../styles/color";
 import { useNavigate } from "react-router-dom";
 
 const ImgContainer = styled.div`

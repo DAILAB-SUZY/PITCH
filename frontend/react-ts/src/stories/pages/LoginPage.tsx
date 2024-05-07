@@ -1,9 +1,9 @@
 import styled from "styled-components";
-import Btn from "./btn";
-import { colors } from "../styles/color";
-import logo from "../img/logo_withText.png";
+import Btn from "../btn";
+import { colors } from "../../styles/color";
+import logo from "../../img/logo_withText.png";
 import { useNavigate } from "react-router-dom";
-import InputBox from "./InputBox";
+import InputBox from "../InputBox";
 
 const Title = styled.div<{ fontSize: string; margin: string }>`
   font-size: ${(props) => props.fontSize};

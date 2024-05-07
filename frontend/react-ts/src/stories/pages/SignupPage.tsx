@@ -1,9 +1,9 @@
 import styled from "styled-components";
-import Btn from "./btn";
-import { colors } from "../styles/color";
-import logo from "../img/logo_withText.png";
+import Btn from "../btn";
+import { colors } from "../../styles/color";
+import logo from "../../img/logo_withText.png";
 import { useNavigate } from "react-router-dom";
-import InputBox from "./InputBox";
+import InputBox from "../InputBox";
 
 const Title = styled.div<{ fontSize: string; margin: string }>`
   font-size: ${(props) => props.fontSize};
@@ -71,7 +71,9 @@ function SignupPage() {
           E-mail
         </Title>
         <InputBox placeholder="E-mail"></InputBox>
-        <InputBox placeholder="인증번호"></InputBox>
+        <Btn text="인증번호 발송"></Btn>
+        <InputBox placeholder="인증번호 입력"></InputBox>
+        <Btn text="인증번호 확인"></Btn>
         <Title fontSize="20px" margin="10px">
           Password
         </Title>
