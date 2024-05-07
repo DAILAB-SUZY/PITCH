@@ -17,6 +17,7 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  background-color: #ff668d;
 `;
 
 function LoginPage() {
