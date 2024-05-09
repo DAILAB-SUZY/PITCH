@@ -11,7 +11,7 @@ const Btnstyle = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 20px;
+  font-size: 15px;
   transition-duration: 0.3s;
   cursor: pointer;
 

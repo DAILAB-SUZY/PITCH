@@ -31,6 +31,14 @@ const LeftAlignContainer = styled.div`
   margin: 10px;
 `;
 
+const RightAlignContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+`;
+
 const WrappingContainer = styled.div<{
   flex_direction: string;
   justify_content: string;
@@ -63,20 +71,30 @@ function SignupPage() {
         <Title fontSize="30px" margin="10px">
           회원가입
         </Title>
-        <Title fontSize="20px" margin="10px">
-          이름
-        </Title>
+        <RightAlignContainer>
+          <Title fontSize="20px" margin="10px">
+            이름
+          </Title>
+        </RightAlignContainer>
         <InputBox placeholder="이름"></InputBox>
-        <Title fontSize="20px" margin="10px">
-          E-mail
-        </Title>
+        <RightAlignContainer>
+          <Title fontSize="20px" margin="10px">
+            E-mail
+          </Title>
+        </RightAlignContainer>
         <InputBox placeholder="E-mail"></InputBox>
-        <Btn text="인증번호 발송"></Btn>
+        <LeftAlignContainer>
+          <Btn text="인증번호 발송"></Btn>
+        </LeftAlignContainer>
         <InputBox placeholder="인증번호 입력"></InputBox>
-        <Btn text="인증번호 확인"></Btn>
-        <Title fontSize="20px" margin="10px">
-          Password
-        </Title>
+        <LeftAlignContainer>
+          <Btn text="인증번호 확인"></Btn>
+        </LeftAlignContainer>
+        <RightAlignContainer>
+          <Title fontSize="20px" margin="10px">
+            Password
+          </Title>
+        </RightAlignContainer>
         <InputBox placeholder="Password"></InputBox>
         <InputBox placeholder="Password 확인"></InputBox>
         <LeftAlignContainer>
