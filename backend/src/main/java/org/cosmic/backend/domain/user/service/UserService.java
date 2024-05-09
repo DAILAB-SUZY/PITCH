@@ -25,7 +25,7 @@ public class UserService {
         this.emailRepository = emailRepository;
     }
 
-    public void registerUser(JoinRequest request) throws Exception {
+    public void registerUser(JoinRequest request){
 
         //데이터 검증
         if (request.getEmail() == null || request.getPassword() == null || request.getCheckPassword() == null || request.getName() == null) {
