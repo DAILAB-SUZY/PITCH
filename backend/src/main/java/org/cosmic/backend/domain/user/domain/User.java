@@ -18,7 +18,7 @@ public class User {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
     @OneToOne
-    @JoinColumn(name="email")
+    @JoinColumn(name="emails")
     private Email email;//fk
     @Column(nullable=false,length=255)
     private String username;

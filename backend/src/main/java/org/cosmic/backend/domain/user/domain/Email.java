@@ -15,6 +15,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @Entity
 @Builder
+@Table(name="emails")
 public class Email {
 
     @Id
