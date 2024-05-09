@@ -1,16 +1,18 @@
 package org.cosmic.backend.globals.handlers;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.cosmic.backend.domain.mail.exceptions.ExistEmailException;
 import org.cosmic.backend.domain.mail.exceptions.IntervalNotEnoughException;
-import org.cosmic.backend.domain.user.exceptions.NotExistEmailException;
-import org.cosmic.backend.domain.user.exceptions.NotMatchConditionException;
-import org.cosmic.backend.domain.user.exceptions.NotMatchPasswordException;
-import org.cosmic.backend.domain.user.exceptions.NullException;
+import org.cosmic.backend.domain.user.exceptions.*;
 import org.cosmic.backend.globals.dto.ErrorResponse;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -49,6 +51,23 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NullException.class)
     public ResponseEntity<ErrorResponse> handlerNullException(NullException e) {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+    //null데이터가 있을 때
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<?> notValid(MethodArgumentNotValidException e, HttpServletRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
+                e.getAllErrors().stream()
+                        .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                        .collect(Collectors.joining())
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+    //데이터가 들어오지 않았을 때
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handlerHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "request body is empty");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 }
