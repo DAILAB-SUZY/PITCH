@@ -27,8 +27,9 @@ const LeftAlignContainer = styled.div`
   flex-direction: row;
   justify-content: flex-end;
   align-items: center;
-  width: 100%;
+  width: 270px;
   margin: 10px;
+  padding: 0;
 `;
 
 const RightAlignContainer = styled.div`
@@ -48,6 +49,10 @@ const WrappingContainer = styled.div<{
   justify-content: ${(props) => props.justify_content};
   align-items: center;
   width: 70vw;
+`;
+
+const StackConatiner = styled.div`
+  position: relative;
 `;
 
 function SignupPage() {
@@ -78,18 +83,28 @@ function SignupPage() {
         </RightAlignContainer>
         <InputBox placeholder="이름"></InputBox>
         <RightAlignContainer>
-          <Title fontSize="20px" margin="10px">
+          <Title fontSize="20px" m argin="10px">
             E-mail
           </Title>
         </RightAlignContainer>
-        <InputBox placeholder="E-mail"></InputBox>
-        <LeftAlignContainer>
-          <Btn text="인증번호 발송"></Btn>
-        </LeftAlignContainer>
-        <InputBox placeholder="인증번호 입력"></InputBox>
-        <LeftAlignContainer>
-          <Btn text="인증번호 확인"></Btn>
-        </LeftAlignContainer>
+        <StackConatiner>
+          <InputBox placeholder="E-mail"></InputBox>
+          <Btn
+            width="100px"
+            height="33px"
+            fontsize="15px"
+            text="인증번호 발송"
+          ></Btn>
+        </StackConatiner>
+        <StackConatiner>
+          <InputBox placeholder="인증번호 입력"></InputBox>
+          <Btn
+            width="100px"
+            height="33px"
+            fontsize="15px"
+            text="인증번호 확인"
+          ></Btn>
+        </StackConatiner>
         <RightAlignContainer>
           <Title fontSize="20px" margin="10px">
             Password
@@ -97,9 +112,10 @@ function SignupPage() {
         </RightAlignContainer>
         <InputBox placeholder="Password"></InputBox>
         <InputBox placeholder="Password 확인"></InputBox>
-        <LeftAlignContainer>
-          <Btn text="가입"></Btn>
-        </LeftAlignContainer>
+        <StackConatiner>
+          <LeftAlignContainer></LeftAlignContainer>
+          <Btn width="100px" height="33px" fontsize="15px" text="가입"></Btn>
+        </StackConatiner>
       </WrappingContainer>
     </Container>
   );
