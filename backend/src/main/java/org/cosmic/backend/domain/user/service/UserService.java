@@ -1,17 +1,15 @@
 package org.cosmic.backend.domain.user.service;
-import jakarta.validation.constraints.Null;
-import org.cosmic.backend.domain.mail.exceptions.ExistEmailException;
 import org.cosmic.backend.domain.user.domain.Email;
 import org.cosmic.backend.domain.user.domain.User;
 import org.cosmic.backend.domain.user.dto.JoinRequest;
 import org.cosmic.backend.domain.user.exceptions.NotExistEmailException;
 import org.cosmic.backend.domain.user.exceptions.NotMatchConditionException;
 import org.cosmic.backend.domain.user.exceptions.NotMatchPasswordException;
-import org.cosmic.backend.domain.user.exceptions.NullException;
 import org.cosmic.backend.domain.user.repository.EmailRepository;
 import org.cosmic.backend.domain.user.repository.UsersRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import java.util.Optional;
 
 @Service
@@ -26,12 +24,6 @@ public class UserService {
     }
 
     public void registerUser(JoinRequest request){
-
-        //데이터 검증
-        if (request.getEmail() == null || request.getPassword() == null || request.getCheckPassword() == null || request.getName() == null) {
-            throw new NullException();
-        }
-
         if (!request.getPassword().equals(request.getCheckPassword())) {
             throw new NotMatchPasswordException();
         }
