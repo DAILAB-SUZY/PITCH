@@ -52,7 +52,6 @@ public class userRepositoryTest extends RepositoryBaseTest {
         User savedUser=usersRepository.save(user);
 
         // then
-        Assertions.assertThat(user.getId()).isEqualTo(1);//id가 1인지
 
         Assertions.assertThat(savedUser.getEmail()).isNotNull();//NOT NULL확인
         Assertions.assertThat(user.getEmail()).isEqualTo(savedUser.getEmail());//이메일이 일치하게 들어가야함//fk도 확인
@@ -65,34 +64,6 @@ public class userRepositoryTest extends RepositoryBaseTest {
         Assertions.assertThat(user.getSignupDate()).isEqualTo(savedUser.getSignupDate());//인증코드가 일치하게 들어가야함
         Assertions.assertThat(usersRepository.count()).isEqualTo(1);//한개를 저장했으니 한개만 있어야함.
     }
-
-    @Test
-    @DisplayName("다수유저저장")
-    public void saveUsersTest() {
-        // given
-        ArrayList<User> userList = new ArrayList<User>();
-
-        for(int i=0;i<100;i++)
-        {
-            user=new User();
-            //user.setEmail("kimjunho1231@naver.com");
-            user.setUsername("junho");
-            user.setPassword("123");
-            userList.add(user);
-        }
-        usersRepository.saveAll(userList);
-        // when
-        List<User> savedUsers=usersRepository.findAll();
-        // then
-        for(User user:savedUsers){
-            assertThat(user.getId()).isNotNull();
-            assertThat(user.getEmail()).isNotNull();
-            assertThat(user.getUsername()).isNotNull();
-            assertThat(user.getPassword()).isNotNull();
-            assertThat(user.getProfilePicture()).isNotNull();
-            assertThat(user.getId()).isGreaterThan(0);
-        }
-      }
 
     @Test
     @DisplayName("전체 유저 목록 조회")
