@@ -1,6 +1,11 @@
 import styled from "styled-components";
 import { colors } from "../../styles/color";
 
+interface BtnProps {
+  text: string;
+  onClick?: () => void;
+}
+
 const Btnstyle = styled.div`
   width: 100px;
   height: 40px;
@@ -22,8 +27,8 @@ const Btnstyle = styled.div`
   }
 `;
 
-const Btn = (type: { text: string }) => {
-  return <Btnstyle> {type.text} </Btnstyle>;
+const Btn = ({ text, onClick }: BtnProps) => {
+  return <Btnstyle onClick={onClick}> {text} </Btnstyle>;
 };
 
 export default Btn;
