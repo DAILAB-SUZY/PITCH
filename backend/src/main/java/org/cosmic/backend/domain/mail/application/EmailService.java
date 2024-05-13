@@ -1,11 +1,13 @@
 package org.cosmic.backend.domain.mail.application;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.cosmic.backend.domain.mail.dto.EmailAddress;
 import org.cosmic.backend.domain.mail.exceptions.ExistEmailException;
 import org.cosmic.backend.domain.mail.exceptions.IntervalNotEnoughException;
 import org.cosmic.backend.domain.mail.utils.MailContentGenerator;
 import org.cosmic.backend.domain.user.domain.Email;
+import org.cosmic.backend.domain.user.exceptions.NotExistEmailException;
+import org.cosmic.backend.domain.user.exceptions.NotMatchPasswordException;
 import org.cosmic.backend.domain.user.repository.EmailRepository;
 import org.cosmic.backend.domain.user.repository.UsersRepository;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +39,7 @@ public class EmailService {
         }
     }
 
-    public void sendVerificationEmail(@jakarta.validation.constraints.Email @NotNull String to, @NotNull String content) {
+    public void sendVerificationEmail(String to, String content) {
         emailRepository.findById(to).ifPresentOrElse(
                 email -> {
                     emailExistCheck(email.getEmail());
@@ -62,11 +64,14 @@ public class EmailService {
         mailSender.send(mailContentGenerator.verificationMessage(to));
     }
 
-    public ResponseEntity<Boolean> verifyCode(String email, String code) {
-        Email user = emailRepository.findById(email).orElseThrow(RuntimeException::new);
+    public ResponseEntity<?> verifyCode(String email, String code) {
+        Email user = emailRepository.findById(email).orElseThrow(NotExistEmailException::new);
+
         if(!code.equals(user.getVerificationCode())){
-            throw new RuntimeException("Verification code is incorrect");
+            throw new NotMatchPasswordException();
         }
-        return ResponseEntity.ok(true);
+        user.setVerified(true);
+        emailRepository.save(user);
+        return ResponseEntity.ok(EmailAddress.builder().email(email).build());
     }
 }
