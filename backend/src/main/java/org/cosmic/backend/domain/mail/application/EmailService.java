@@ -64,7 +64,7 @@ public class EmailService {
         mailSender.send(mailContentGenerator.verificationMessage(to));
     }
 
-    public ResponseEntity<?> verifyCode(String email, String code) {
+    public ResponseEntity<EmailAddress> verifyCode(String email, String code) {
         Email user = emailRepository.findById(email).orElseThrow(NotExistEmailException::new);
 
         if(!code.equals(user.getVerificationCode())){
