@@ -6,6 +6,6 @@ public class NotExistEmailException extends RuntimeException  {
     }
 
     public NotExistEmailException(){
-        this("Not exist email");
+        this("Not found email");
     }
 }
