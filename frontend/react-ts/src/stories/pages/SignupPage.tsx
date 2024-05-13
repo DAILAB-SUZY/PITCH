@@ -64,6 +64,28 @@ function SignupPage() {
     navigate("/Login");
   };
 
+  // const [itemid, setItemid] = useState('');
+  // const onChange = (event) => {
+  //   setItemid(event.target.value);
+  // }
+
+  let url = "http://192.168.0.146:8080/mail/request";
+  const emailcheck = () => {
+    const fetchDatas = async () => {
+      console.log(123);
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: "jd06017@naver.com" }),
+      });
+      const data = await response.json();
+      console.log(data);
+    };
+    fetchDatas();
+  };
+
   return (
     <Container>
       <WrappingContainer flex_direction="column" justify_content="center">
@@ -82,6 +104,7 @@ function SignupPage() {
           </Title>
         </RightAlignContainer>
         <InputBox placeholder="이름"></InputBox>
+<<<<<<< HEAD
         <RightAlignContainer>
           <Title fontSize="20px" m argin="10px">
             E-mail
@@ -110,6 +133,18 @@ function SignupPage() {
             Password
           </Title>
         </RightAlignContainer>
+=======
+        <Title fontSize="20px" margin="10px">
+          E-mail
+        </Title>
+        <InputBox placeholder="E-mail"></InputBox>
+        <Btn text="인증번호 발송"></Btn>
+        <InputBox placeholder="인증번호 입력"></InputBox>
+        <Btn text="인증번호 확인" onClick={emailcheck}></Btn>
+        <Title fontSize="20px" margin="10px">
+          Password
+        </Title>
+>>>>>>> 15714dfa5e75922538bc7ab9f7d01d1b63343234
         <InputBox placeholder="Password"></InputBox>
         <InputBox placeholder="Password 확인"></InputBox>
         <StackConatiner>

@@ -27,8 +27,9 @@ const LeftAlignContainer = styled.div`
   flex-direction: row;
   justify-content: flex-end;
   align-items: center;
-  width: 100%;
+  width: 280px;
   margin: 10px;
+  height: 10px;
 `;
 
 const WrappingContainer = styled.div<{
@@ -40,6 +41,10 @@ const WrappingContainer = styled.div<{
   justify-content: ${(props) => props.justify_content};
   align-items: center;
   width: 70vw;
+`;
+
+const StackConatiner = styled.div`
+  position: relative;
 `;
 
 function LoginPage() {
@@ -66,9 +71,11 @@ function LoginPage() {
         </Title>
         <InputBox placeholder="E-mail"></InputBox>
         <InputBox placeholder="Password"></InputBox>
-        <LeftAlignContainer>
-          <Btn text="로그인"></Btn>
-        </LeftAlignContainer>
+        <StackConatiner>
+          <LeftAlignContainer></LeftAlignContainer>
+          <Btn width="100px" height="40px" fontsize="20px" text="로그인"></Btn>
+        </StackConatiner>
+        <LeftAlignContainer></LeftAlignContainer>
       </WrappingContainer>
       <Title fontSize="15px" margin="10px" onClick={GoToSignupPage}>
         회원가입
