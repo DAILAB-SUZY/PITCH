@@ -9,6 +9,11 @@ const Container = styled.div`
   width: 270px;
 `;
 
+interface InputProps {
+  placeholder: string;
+  onChange?: (e: any) => any;
+}
+
 const Input = styled.input`
   font-size: 18px;
   color: #222222;
@@ -41,10 +46,10 @@ const Line = styled.span`
   transition: 0.5s;
 `;
 
-const InputBox = (type: { placeholder: string }) => {
+const InputBox = ({ placeholder, onChange }: InputProps) => {
   return (
     <Container>
-      <Input placeholder={type.placeholder}></Input>
+      <Input placeholder={placeholder} onChange={onChange}></Input>
       <Line></Line>
     </Container>
   );
