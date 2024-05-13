@@ -31,7 +31,7 @@ public class MailApi {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = EmailAddress.class))
                     }),
-            @ApiResponse(responseCode = "400",
+            @ApiResponse(responseCode = "401",
                     description = "Email is already exist or interval is too short",
                     content = {
                             @Content(mediaType = "application/json",
@@ -52,7 +52,7 @@ public class MailApi {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = EmailAddress.class))
                     }),
-            @ApiResponse(responseCode = "400",
+            @ApiResponse(responseCode = "401",
                     description = "Email is not exist or random code is not matched",
                     content = {
                             @Content(mediaType = "application/json",
