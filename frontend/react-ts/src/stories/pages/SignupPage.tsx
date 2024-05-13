@@ -4,13 +4,11 @@ import { colors } from "../../styles/color";
 import logo from "../../img/logo_withText.png";
 import { useNavigate } from "react-router-dom";
 import InputBox from "../inputs/InputBox";
-
 const Title = styled.div<{ fontSize: string; margin: string }>`
   font-size: ${(props) => props.fontSize};
   margin: ${(props) => props.margin};
   font-family: "Bd";
 `;
-
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -21,7 +19,6 @@ const Container = styled.div`
   background-color: ${colors.BG_grey};
   color: ${colors.Font_black};
 `;
-
 const LeftAlignContainer = styled.div`
   display: flex;
   flex-direction: row;
@@ -31,7 +28,6 @@ const LeftAlignContainer = styled.div`
   margin: 10px;
   padding: 0;
 `;
-
 const RightAlignContainer = styled.div`
   display: flex;
   flex-direction: row;
@@ -39,7 +35,6 @@ const RightAlignContainer = styled.div`
   align-items: center;
   width: 100%;
 `;
-
 const WrappingContainer = styled.div<{
   flex_direction: string;
   justify_content: string;
@@ -50,11 +45,9 @@ const WrappingContainer = styled.div<{
   align-items: center;
   width: 70vw;
 `;
-
 const StackConatiner = styled.div`
   position: relative;
 `;
-
 function SignupPage() {
   const navigate = useNavigate();
   const GoToStartPage = () => {
@@ -63,12 +56,10 @@ function SignupPage() {
   const GoToLoginPage = () => {
     navigate("/Login");
   };
-
   // const [itemid, setItemid] = useState('');
   // const onChange = (event) => {
   //   setItemid(event.target.value);
   // }
-
   let url = "http://192.168.0.146:8080/mail/request";
   const emailcheck = () => {
     const fetchDatas = async () => {
@@ -85,7 +76,6 @@ function SignupPage() {
     };
     fetchDatas();
   };
-
   return (
     <Container>
       <WrappingContainer flex_direction="column" justify_content="center">
@@ -104,7 +94,6 @@ function SignupPage() {
           </Title>
         </RightAlignContainer>
         <InputBox placeholder="이름"></InputBox>
-<<<<<<< HEAD
         <RightAlignContainer>
           <Title fontSize="20px" m argin="10px">
             E-mail
@@ -122,6 +111,7 @@ function SignupPage() {
         <StackConatiner>
           <InputBox placeholder="인증번호 입력"></InputBox>
           <Btn
+            onClick={emailcheck}
             width="100px"
             height="33px"
             fontsize="15px"
@@ -133,18 +123,6 @@ function SignupPage() {
             Password
           </Title>
         </RightAlignContainer>
-=======
-        <Title fontSize="20px" margin="10px">
-          E-mail
-        </Title>
-        <InputBox placeholder="E-mail"></InputBox>
-        <Btn text="인증번호 발송"></Btn>
-        <InputBox placeholder="인증번호 입력"></InputBox>
-        <Btn text="인증번호 확인" onClick={emailcheck}></Btn>
-        <Title fontSize="20px" margin="10px">
-          Password
-        </Title>
->>>>>>> 15714dfa5e75922538bc7ab9f7d01d1b63343234
         <InputBox placeholder="Password"></InputBox>
         <InputBox placeholder="Password 확인"></InputBox>
         <StackConatiner>
@@ -155,5 +133,4 @@ function SignupPage() {
     </Container>
   );
 }
-
 export default SignupPage;

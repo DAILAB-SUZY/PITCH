@@ -1,6 +1,12 @@
 import styled from "styled-components";
 import { colors } from "../../styles/color";
-
+interface BtnProps {
+  text: string;
+  fontsize?: string;
+  width?: string;
+  height?: string;
+  onClick?: () => void;
+}
 const Btnstyle = styled.div<{
   fontSize: string;
   width: string;
@@ -21,26 +27,23 @@ const Btnstyle = styled.div<{
   position: absolute;
   right: 15px;
   top: 14px;
-
   &:hover {
     transition-duration: 0.1s;
     background: purple;
     color: white;
   }
 `;
-
-const Btn = (type: {
-  text: string;
-  fontsize: string;
-  width: string;
-  height: string;
-}) => {
+const Btn = ({ text, fontsize, width, height, onClick }: BtnProps) => {
   return (
-    <Btnstyle fontsize={type.fontsize} width={type.width} height={type.height}>
+    <Btnstyle
+      onClick={onClick}
+      fontsize={fontsize}
+      width={width}
+      height={height}
+    >
       {" "}
-      {type.text}{" "}
+      {text}{" "}
     </Btnstyle>
   );
 };
-
 export default Btn;
