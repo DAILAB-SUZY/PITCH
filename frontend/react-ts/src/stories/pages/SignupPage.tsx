@@ -55,45 +55,41 @@ function SignupPage() {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
 
-  const [idError, setIdError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
+  const [idError, setIdError] = useState("이메일를 입력해주세요.");
+  const [passwordError, setPasswordError] =
+    useState("비밀번호를 입력해주세요.");
   const [confirmError, setConfirmError] = useState("");
 
-  const [isIdCheck, setIsIdCheck] = useState(false); // 중복 검사를 했는지 안했는지
-  const [isIdAvailable, setIsIdAvailable] = useState(false); // 아이디 사용 가능한지 아닌지
+  const [noticeMail, setNoticeMail] = useState("");
 
-  const signupHandler = async (e) => {
-    e.preventDefault();
-
-    const idCheckresult = await idCheckHandler(id);
-    if (idCheckresult) setIdError("");
-    else return;
-    if (!isIdCheck || !isIdAvailable) {
-      alert("아이디 중복 검사를 해주세요.");
+  const signupHandler = async () => {
+    if (idError != "") {
+      alert("Email 형식을 확인해주세요.");
       return;
     }
-
-    const passwordCheckResult = passwordCheckHandler(password, confirm);
-    if (passwordCheckResult) {
-      setPasswordError("");
-      setConfirmError("");
-    } else return;
+    if (passwordError != "") {
+      alert("패스워드 형식을 확인해주세요.");
+      return;
+    }
+    if (confirmError != "") {
+      alert("패스워드가 일치하는지 확인해주세요.");
+      return;
+    }
+    GoToLoginPage();
   };
 
   const idCheckHandler = async (email: string) => {
-    const check1 = /(@.*@)|(\.\.)|(@\.)|(^\.)/;
-    const check2 = /^[a-zA-z0-9\-\.\_]+\@[a-zA-Z0-9\-\.]+([a-zA-Z]{2,4})$/;
+    const check = /[a-z0-9]+@[a-z]+\.[a-z]{2,3}/;
 
     if (email === "") {
       setIdError("이메일를 입력해주세요.");
-      setIsIdAvailable(false);
       return false;
-    } else if (!check1.test(email) && check2.test(email)) {
+    } else if (!check.test(email)) {
       setIdError("이메일의 형식이 아닙니다.");
-      setIsIdAvailable(false);
-      return false;
+      return true;
     } else {
       setIdError("");
+      return false;
     }
   };
 
@@ -124,7 +120,7 @@ function SignupPage() {
     idCheckHandler(idValue);
   };
 
-  const onChangePasswordHandler = (e) => {
+  const onChangePasswordHandler = (e: any) => {
     const { name, value } = e.target;
     if (name === "password") {
       setPassword(value);
@@ -147,7 +143,11 @@ function SignupPage() {
   //   setItemid(event.target.value);
   // }
   let url = "http://192.168.0.146:8080/mail/request";
+  let checkCodeUrl = "http://192.168.0.146:8080/mail/verify";
+
   const emailcheck = () => {
+    if (idError != "") return;
+    setNoticeMail("인증 메일을 발송했습니다. 3분 이내 입력해주세요.");
     const fetchDatas = async () => {
       console.log(123);
       const response = await fetch(url, {
@@ -155,7 +155,23 @@ function SignupPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email: "jd06017@naver.com" }),
+        body: JSON.stringify({ email: "dy9623@naver.com" }),
+      });
+      const data = await response.json();
+      console.log(data);
+    };
+    fetchDatas();
+  };
+
+  const codeCheck = () => {
+    const fetchDatas = async () => {
+      console.log(456);
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: "dy9623@naver.com", code: "123456" }),
       });
       const data = await response.json();
       console.log(data);
@@ -176,18 +192,15 @@ function SignupPage() {
           회원가입
         </Title>
         <RightAlignContainer>
-          <Title fontSize="20px" margin="10px">
-            이름
-          </Title>
+          <Title fontSize="20px">이름</Title>
         </RightAlignContainer>
-        <InputBox placeholder="이름"></InputBox>
+        <InputBox name="name" placeholder="이름"></InputBox>
         <RightAlignContainer>
-          <Title fontSize="20px" m argin="10px">
-            E-mail
-          </Title>
+          <Title fontSize="20px">E-mail</Title>
         </RightAlignContainer>
         <StackConatiner>
           <InputBox
+            name="E-Mail"
             placeholder="E-mail"
             onChange={onChangeIdHandler}
           ></InputBox>
@@ -200,34 +213,51 @@ function SignupPage() {
           ></Btn>
         </StackConatiner>
         <RightAlignContainer>
-          {idError && (
-            <small
-              style={{ color: "red" }}
-              className={isIdAvailable ? "idAvailable" : ""}
-            >
-              {idError}
-            </small>
-          )}
+          {idError && <small style={{ color: "red" }}>{idError}</small>}
+          {noticeMail && <small>{noticeMail}</small>}
         </RightAlignContainer>
         <StackConatiner>
-          <InputBox placeholder="인증번호 입력"></InputBox>
+          <InputBox name="auth" placeholder="인증번호 입력"></InputBox>
           <Btn
             width="100px"
             height="33px"
             fontsize="15px"
             text="인증번호 확인"
+            onClick={codeCheck}
           ></Btn>
         </StackConatiner>
         <RightAlignContainer>
-          <Title fontSize="20px" margin="10px">
-            Password
-          </Title>
+          <Title fontSize="20px">Password</Title>
         </RightAlignContainer>
-        <InputBox placeholder="Password"></InputBox>
-        <InputBox placeholder="Password 확인"></InputBox>
+        <InputBox
+          name="password"
+          placeholder="Password"
+          onChange={onChangePasswordHandler}
+        ></InputBox>
+        <RightAlignContainer>
+          {passwordError && (
+            <small style={{ color: "red" }}>{passwordError}</small>
+          )}
+        </RightAlignContainer>
+        <InputBox
+          name="confirm"
+          placeholder="Password 확인"
+          onChange={onChangePasswordHandler}
+        ></InputBox>
+        <RightAlignContainer>
+          {confirmError && (
+            <small style={{ color: "red" }}>{confirmError}</small>
+          )}
+        </RightAlignContainer>
         <StackConatiner>
           <LeftAlignContainer></LeftAlignContainer>
-          <Btn width="100px" height="33px" fontsize="15px" text="가입"></Btn>
+          <Btn
+            width="100px"
+            height="33px"
+            fontsize="15px"
+            text="가입"
+            onClick={signupHandler}
+          ></Btn>
         </StackConatiner>
       </WrappingContainer>
     </Container>
