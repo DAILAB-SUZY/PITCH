@@ -19,8 +19,8 @@ import java.util.Optional;
 public class UserService {
 
     private final TokenProvider tokenProvider;
-    private UsersRepository usersRepository;
-    private EmailRepository emailRepository;
+    private final UsersRepository usersRepository;
+    private final EmailRepository emailRepository;
 
     public UserService(UsersRepository usersRepository, EmailRepository emailRepository, TokenProvider tokenProvider) {
         this.usersRepository = usersRepository;

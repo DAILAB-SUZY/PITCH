@@ -12,7 +12,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.test.context.event.annotation.BeforeTestMethod;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,7 +45,7 @@ class SignInTest {
                 .verified(true)
                 .build());
 
-        User user = usersRepository.save(User.builder()
+        usersRepository.save(User.builder()
                 .email(email)
                 .username("goodwill")
                 .password(encoder.encode("123456"))
