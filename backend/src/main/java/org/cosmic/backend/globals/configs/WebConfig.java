@@ -15,17 +15,4 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/**");
     }
 
-    @Bean
-    public CorsFilter corsFilter() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true); // Allow cookies and credentials to be sent along
-        config.addAllowedOrigin("*"); // Allow all origins
-        config.addAllowedHeader("*"); // Allow all headers
-        config.addAllowedMethod("*"); // Allow all methods (POST, GET, etc.)
-
-        source.registerCorsConfiguration("/**", config); // Register CORS configuration for all URLs
-        return new CorsFilter(source);
-    }
-
 }
