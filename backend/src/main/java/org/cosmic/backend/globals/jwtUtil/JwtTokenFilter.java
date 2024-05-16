@@ -1,69 +1,57 @@
 package org.cosmic.backend.globals.jwtUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.cosmic.backend.domain.user.repository.UsersRepository;
-import org.springframework.http.HttpHeaders;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.cosmic.backend.domain.auth.dto.UserLogin;
+import org.cosmic.backend.domain.login.PrincipalDetails;
+import org.cosmic.backend.domain.user.domain.User;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.web.filter.OncePerRequestFilter;
-
-
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import java.io.IOException;
-import java.util.List;
 
-import static com.jayway.jsonpath.internal.Utils.isEmpty;
+public class JwtTokenFilter extends UsernamePasswordAuthenticationFilter {
 
-public class JwtTokenFilter extends OncePerRequestFilter {
+    private final JwtTokenUtil jwtTokenUtil;
+    private final AuthenticationManager authenticationManager;
 
-    private JwtTokenUtil jwtTokenUtil;
-    private UsersRepository usersRepository;
-    private UserDetailsService userDetailsService;
-
-    public JwtTokenFilter(JwtTokenUtil jwtTokenUtil, UsersRepository usersRepository,UserDetailsService userDetailsService) {
+    public JwtTokenFilter(JwtTokenUtil jwtTokenUtil, AuthenticationManager authenticationManager) {
         this.jwtTokenUtil = jwtTokenUtil;
-        this.usersRepository = usersRepository;
-        this.userDetailsService = userDetailsService;
+        this.authenticationManager = authenticationManager;
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-            throws ServletException, IOException {
-        // Get authorization header and validate
-        final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (isEmpty(header) || !header.startsWith("Bearer ")) {
-            chain.doFilter(request, response);
-            return;
+    public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res) throws AuthenticationException {
+        //로그인 시도할 때 실행
+        ObjectMapper objectMapper = new ObjectMapper();
+        UserLogin user=null;
+
+        try{
+            user=objectMapper.readValue(req.getInputStream(), UserLogin.class);
+            //request로 들어온 JSON형식을 userDto로 가져옴
+        }catch(Exception e){
+            throw new AuthenticationServiceException("Failed to parse authentication request body",e);
         }
+        //토큰 생성
+        UsernamePasswordAuthenticationToken token=new UsernamePasswordAuthenticationToken(user.getEmail(),user.getPassword());
+        //authenticationManager의 authenticate메소드 실행
+        Authentication authenticate = authenticationManager.authenticate(token);
+        //authenticationManager는 처리할 수 있는 authenticationProvider를 찾아서 authenticationProvider의 authenticate 메소드 실행.
+        return authenticate;
+    }
 
-        // Get jwt token and validate
-        final String token = header.split(" ")[1].trim();
-        if (!jwtTokenUtil.validate(token)) {
-            chain.doFilter(request, response);
-            return;
-        }
-
-        // Get user identity and set it on the spring security context
-        UserDetails userDetails = usersRepository
-                .findByEmail_Email(jwtTokenUtil.getEmail(token))
-                .orElse(null);
-
-        UsernamePasswordAuthenticationToken
-                authentication = new UsernamePasswordAuthenticationToken(
-                userDetails, null,
-                userDetails == null ?
-                        List.of() : userDetails.getAuthorities()
-        );
-
-        authentication.setDetails(
-                new WebAuthenticationDetailsSource().buildDetails(request)
-        );
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        chain.doFilter(request, response);
+    @Override
+    protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain, Authentication auth) throws IOException, ServletException {
+        PrincipalDetails principal=(PrincipalDetails)auth.getPrincipal();
+        User user=principal.getUser();
+        String jwt=jwtTokenUtil.createJwt(user.getEmail().getEmail());
+        res.setContentType("Access-Control-Expose-Headers","Authorization");
+        res.setHeader("Authorization","Bearer " + jwt);
+        //super.successfulAuthentication(req, res, chain, auth);
     }
 }
