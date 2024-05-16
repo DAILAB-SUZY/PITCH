@@ -1,6 +1,7 @@
 package org.cosmic.backend.globals.handlers;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.cosmic.backend.domain.auth.exceptions.CredentialNotMatchException;
 import org.cosmic.backend.domain.mail.exceptions.ExistEmailException;
 import org.cosmic.backend.domain.mail.exceptions.IntervalNotEnoughException;
 import org.cosmic.backend.domain.user.exceptions.*;
@@ -62,5 +63,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handlerHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value(), "request body is empty");
         return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(errorResponse);
+    }
+
+    @ExceptionHandler(CredentialNotMatchException.class)
+    public ResponseEntity<ErrorResponse> handlerCredentialNotMatchException(CredentialNotMatchException e) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), e.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
 }

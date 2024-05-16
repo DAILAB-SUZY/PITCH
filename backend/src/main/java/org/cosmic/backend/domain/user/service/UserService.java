@@ -1,4 +1,7 @@
 package org.cosmic.backend.domain.user.service;
+import org.cosmic.backend.domain.auth.applications.TokenProvider;
+import org.cosmic.backend.domain.auth.dto.UserLogin;
+import org.cosmic.backend.domain.auth.exceptions.CredentialNotMatchException;
 import org.cosmic.backend.domain.user.domain.Email;
 import org.cosmic.backend.domain.user.domain.User;
 import org.cosmic.backend.domain.user.dto.JoinRequest;
@@ -15,12 +18,14 @@ import java.util.Optional;
 @Service
 public class UserService {
 
-    private UsersRepository usersRepository;
-    private EmailRepository emailRepository;
+    private final TokenProvider tokenProvider;
+    private final UsersRepository usersRepository;
+    private final EmailRepository emailRepository;
 
-    public UserService(UsersRepository usersRepository,EmailRepository emailRepository) {
+    public UserService(UsersRepository usersRepository, EmailRepository emailRepository, TokenProvider tokenProvider) {
         this.usersRepository = usersRepository;
         this.emailRepository = emailRepository;
+        this.tokenProvider = tokenProvider;
     }
 
     public void registerUser(JoinRequest request){
@@ -54,5 +59,19 @@ public class UserService {
             usersRepository.save(newUser);//유저 테이블 새로 생성
 
         }
+    }
+
+    public UserLogin getByCredentials(String email, String password) {
+        BCryptPasswordEncoder passwordEncoder=new BCryptPasswordEncoder();
+        User user = usersRepository.findByEmail_Email(email).orElseThrow(CredentialNotMatchException::new);
+        if(!passwordEncoder.matches(password, user.getPassword())) {
+            throw new CredentialNotMatchException();
+        }
+
+        return UserLogin.builder()
+                .token(tokenProvider.create(user))
+                .email(email)
+                .id(user.getId())
+                .build();
     }
 }
