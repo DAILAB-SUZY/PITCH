@@ -30,7 +30,7 @@ public class UserController {
                     description = "Ok",
                     content = {
                             @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = EmailAddress.class))
+                                    schema = @Schema(implementation = String.class))
                     }),
 
             @ApiResponse(responseCode = "400",
