@@ -28,5 +28,5 @@ public class Email {
     private String verificationCode;
     @Builder.Default
     @Column(nullable=false)
-    private Instant createTime=Instant.now();
+    private Instant createTime=Instant.now().plusMillis(180000);
 }
