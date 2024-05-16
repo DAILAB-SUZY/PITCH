@@ -6,13 +6,14 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.cosmic.backend.domain.auth.dto.UserLogin;
-import org.cosmic.backend.domain.user.domain.User;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 
+@Component
 public class ServletFilter extends HttpFilter {
+
     private TokenProvider tokenProvider;
 
     @Override
