@@ -10,7 +10,7 @@ const Container = styled.div`
 `;
 
 interface InputProps {
-  name: string;
+  name?: string;
   placeholder: string;
   onChange?: (e: any) => any;
 }

@@ -53,30 +53,15 @@ const StackConatiner = styled.div`
 function SignupPage() {
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
   const [confirm, setConfirm] = useState("");
-
+  const [checkcode, setCheckcode] = useState("");
   const [idError, setIdError] = useState("이메일를 입력해주세요.");
   const [passwordError, setPasswordError] =
     useState("비밀번호를 입력해주세요.");
   const [confirmError, setConfirmError] = useState("");
-
+  const [codecheckError, setCodecheckError] = useState("");
   const [noticeMail, setNoticeMail] = useState("");
-
-  const signupHandler = async () => {
-    if (idError != "") {
-      alert("Email 형식을 확인해주세요.");
-      return;
-    }
-    if (passwordError != "") {
-      alert("패스워드 형식을 확인해주세요.");
-      return;
-    }
-    if (confirmError != "") {
-      alert("패스워드가 일치하는지 확인해주세요.");
-      return;
-    }
-    GoToLoginPage();
-  };
 
   const idCheckHandler = async (email: string) => {
     const check = /[a-z0-9]+@[a-z]+\.[a-z]{2,3}/;
@@ -144,18 +129,20 @@ function SignupPage() {
   // }
   let url = "http://192.168.0.146:8080/mail/request";
   let checkCodeUrl = "http://192.168.0.146:8080/mail/verify";
+  let signUpUrl = "http://192.168.0.146:8080/user/register";
 
   const emailcheck = () => {
     if (idError != "") return;
     setNoticeMail("인증 메일을 발송했습니다. 3분 이내 입력해주세요.");
     const fetchDatas = async () => {
-      console.log(123);
+      console.log("emailcheck");
+      console.log(id);
       const response = await fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email: "dy9623@naver.com" }),
+        body: JSON.stringify({ email: id }),
       });
       const data = await response.json();
       console.log(data);
@@ -165,18 +152,58 @@ function SignupPage() {
 
   const codeCheck = () => {
     const fetchDatas = async () => {
-      console.log(456);
-      const response = await fetch(url, {
+      console.log("인증번호 확인");
+      const response = await fetch(checkCodeUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email: "dy9623@naver.com", code: "123456" }),
+        body: JSON.stringify({ email: id, code: checkcode }),
+      });
+      const data = await response.json();
+      console.log(response.status);
+      if (response.status == 200) setCodecheckError("인증번호 확인되었습니다.");
+      else setCodecheckError("인증번호를 다시 확인해주십시오.");
+      console.log(data);
+    };
+    fetchDatas();
+  };
+
+  const signupHandler = () => {
+    if (idError != "") {
+      alert("Email 형식을 확인해주세요.");
+      return;
+    }
+    if (passwordError != "") {
+      alert("패스워드 형식을 확인해주세요.");
+      return;
+    }
+    if (confirmError != "") {
+      alert("패스워드가 일치하는지 확인해주세요.");
+      return;
+    }
+    console.log(name);
+    const fetchDatas = async () => {
+      console.log("회원가입");
+      console.log(id);
+      console.log(password);
+      const response = await fetch(signUpUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: id,
+          password: password,
+          checkPassword: password,
+          name: name,
+        }),
       });
       const data = await response.json();
       console.log(data);
     };
     fetchDatas();
+    GoToLoginPage();
   };
 
   return (
@@ -194,7 +221,11 @@ function SignupPage() {
         <RightAlignContainer>
           <Title fontSize="20px">이름</Title>
         </RightAlignContainer>
-        <InputBox name="name" placeholder="이름"></InputBox>
+        <InputBox
+          name="name"
+          placeholder="이름"
+          onChange={(e) => setName(e.target.value)}
+        ></InputBox>
         <RightAlignContainer>
           <Title fontSize="20px">E-mail</Title>
         </RightAlignContainer>
@@ -217,7 +248,11 @@ function SignupPage() {
           {noticeMail && <small>{noticeMail}</small>}
         </RightAlignContainer>
         <StackConatiner>
-          <InputBox name="auth" placeholder="인증번호 입력"></InputBox>
+          <InputBox
+            name="auth"
+            placeholder="인증번호 입력"
+            onChange={(e) => setCheckcode(e.target.value)}
+          ></InputBox>
           <Btn
             width="100px"
             height="33px"
@@ -226,6 +261,9 @@ function SignupPage() {
             onClick={codeCheck}
           ></Btn>
         </StackConatiner>
+        <RightAlignContainer>
+          {codecheckError && <small>{codecheckError}</small>}
+        </RightAlignContainer>
         <RightAlignContainer>
           <Title fontSize="20px">Password</Title>
         </RightAlignContainer>
