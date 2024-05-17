@@ -1,6 +1,7 @@
 services:
   postgres:
     image: 'postgres:latest'
+    container_name: 'postgresql'
     environment:
       - 'POSTGRES_DB=pitch'
       - 'POSTGRES_PASSWORD=secret'
@@ -8,3 +9,11 @@ services:
       - 'TZ=Asia/Seoul'
     ports:
       - '9000:5432'
+
+  redis:
+    image: 'redis:latest'
+    container_name: 'redis'
+    restart: 'always'
+    hostname: 'redis'
+    ports:
+      - '9001:6379'
