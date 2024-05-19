@@ -1,6 +1,8 @@
 package org.cosmic.backend.domain.user.exceptions;
 
-public class NotMatchPasswordException extends RuntimeException {
+import org.cosmic.backend.globals.exceptions.NotFoundException;
+
+public class NotMatchPasswordException extends NotFoundException {
     public NotMatchPasswordException(String errorMessage) {
         super(errorMessage);
     }
