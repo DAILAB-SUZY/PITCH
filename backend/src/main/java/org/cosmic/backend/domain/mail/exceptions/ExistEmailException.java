@@ -1,6 +1,8 @@
 package org.cosmic.backend.domain.mail.exceptions;
 
-public class ExistEmailException extends RuntimeException {
+import org.cosmic.backend.globals.exceptions.UnAuthorizationException;
+
+public class ExistEmailException extends UnAuthorizationException {
     public ExistEmailException(String errorMessage) {
         super(errorMessage);
     }
