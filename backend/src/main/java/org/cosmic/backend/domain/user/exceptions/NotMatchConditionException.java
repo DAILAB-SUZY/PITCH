@@ -1,6 +1,8 @@
 package org.cosmic.backend.domain.user.exceptions;
 
-public class NotMatchConditionException extends RuntimeException {
+import org.cosmic.backend.globals.exceptions.BadRequestException;
+
+public class NotMatchConditionException extends BadRequestException {
     public NotMatchConditionException(String errorMessage) {
         super(errorMessage);
     }
