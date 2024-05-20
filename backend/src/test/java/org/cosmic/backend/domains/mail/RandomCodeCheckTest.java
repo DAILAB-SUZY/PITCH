@@ -35,8 +35,8 @@ public class RandomCodeCheckTest extends EmailBaseTest{
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(new VerificationForm("testman2@example.com", "123457"))))
                     .andDo(print())
-                    .andExpect(status().isBadRequest())
-                    .andExpect(content().string(containsString("Not exist email")));
+                    .andExpect(status().isUnauthorized())
+                    .andExpect(content().string(containsString("Not found email")));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -52,7 +52,7 @@ public class RandomCodeCheckTest extends EmailBaseTest{
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(new VerificationForm("testman@example.com", "123457"))))
                     .andDo(print())
-                    .andExpect(status().isBadRequest())
+                    .andExpect(status().isNotFound())
                     .andExpect(content().string(containsString("Not match password")));
         } catch (Exception e) {
             throw new RuntimeException(e);

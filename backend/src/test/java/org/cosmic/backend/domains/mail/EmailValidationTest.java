@@ -42,7 +42,7 @@ class EmailValidationTest extends EmailBaseTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(mailAddress)))
                     .andDo(print())
-                    .andExpect(status().isBadRequest())
+                    .andExpect(status().isUnauthorized())
                     .andExpect(content().string(containsString("Already exist email")));
         } catch (Exception e) {
             fail(e.getMessage());
@@ -60,7 +60,7 @@ class EmailValidationTest extends EmailBaseTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(mailAddress)))
                     .andDo(print())
-                    .andExpect(status().isBadRequest())
+                    .andExpect(status().isUnauthorized())
                     .andExpect(content().string(containsString("Not even 30 seconds passed")));
         } catch (Exception e) {
             fail(e.getMessage());
