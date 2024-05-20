@@ -94,12 +94,13 @@ function LoginPage() {
         localStorage.setItem("login-refreshToken", data.refreshToken);
         console.log(localStorage.getItem("login-refreshToken"));
       }
-      if (response.status == 200) console.log("로그인 완료");
-      else console.log("로그인 실패");
+      if (response.status == 200) {
+        console.log("로그인 완료");
+        GoToHomePage();
+      } else console.log("로그인 실패");
       console.log(data);
     };
     fetchDatas();
-    GoToHomePage();
   };
 
   return (
