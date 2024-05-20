@@ -99,6 +99,7 @@ function LoginPage() {
       console.log(data);
     };
     fetchDatas();
+    GoToHomePage();
   };
 
   return (
