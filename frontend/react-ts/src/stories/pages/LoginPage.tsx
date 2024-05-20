@@ -57,6 +57,9 @@ function LoginPage() {
   const GoToSignupPage = () => {
     navigate("/Signup");
   };
+  const GoToHomePage = () => {
+    navigate("/Home");
+  };
 
   // const token: string;
   // const email = useStore((state) => state.email);
@@ -105,7 +108,7 @@ function LoginPage() {
           src={logo}
           width="150px"
           height="150px"
-          onClick={GoToStartPage}
+          onClick={GoToHomePage}
         ></img>
         <Title fontSize="30px" margin="10px">
           {" "}
