@@ -1,10 +1,6 @@
 package org.cosmic.backend.globals.handlers;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.cosmic.backend.domain.auth.exceptions.CredentialNotMatchException;
-import org.cosmic.backend.domain.mail.exceptions.ExistEmailException;
-import org.cosmic.backend.domain.mail.exceptions.IntervalNotEnoughException;
-import org.cosmic.backend.domain.user.exceptions.*;
 import org.cosmic.backend.globals.dto.ErrorResponse;
 import org.cosmic.backend.globals.exceptions.BadRequestException;
 import org.cosmic.backend.globals.exceptions.NotFoundException;
