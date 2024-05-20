@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { colors } from "../../styles/color";
 import logo from "../../img/logo.png";
+import BottomNav from "../components/BottomNav";
 
 const Container = styled.div`
   display: flex;
@@ -52,6 +53,17 @@ const AlbumPostContainer = styled.div`
   background-color: blue;
 `;
 
+const BottomNavContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: white;
+`;
+
 const Title = styled.div<{ fontSize: string; margin: string }>`
   font-size: ${(props) => props.fontSize};
   margin: ${(props) => props.margin};
@@ -73,6 +85,9 @@ function HomePage() {
         <Title fontSize={"25px"}>Album Post +</Title>
       </LeftAlignContainer>
       <AlbumPostContainer></AlbumPostContainer>
+      <BottomNavContainer>
+        <BottomNav></BottomNav>
+      </BottomNavContainer>
     </Container>
   );
 }
