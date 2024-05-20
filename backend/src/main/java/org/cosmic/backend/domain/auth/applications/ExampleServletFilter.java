@@ -1,25 +1,17 @@
 package org.cosmic.backend.domain.auth.applications;
 
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.FilterConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 
-@Component
-public class ServletFilter extends HttpFilter {
-
+public class ExampleServletFilter extends HttpFilter {
     private TokenProvider tokenProvider;
 
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        //초기화 코드
-    }
     @Override
     protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         try{
