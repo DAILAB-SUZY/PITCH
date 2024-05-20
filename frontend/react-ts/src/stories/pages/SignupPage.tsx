@@ -5,6 +5,7 @@ import logo from "../../img/logo_withText.png";
 import { useNavigate } from "react-router-dom";
 import InputBox from "../inputs/InputBox";
 import { useState } from "react";
+import useStore from "../store/store";
 
 const Title = styled.div<{ fontSize: string; margin: string }>`
   font-size: ${(props) => props.fontSize};
@@ -52,8 +53,6 @@ const StackConatiner = styled.div`
 `;
 function SignupPage() {
   const [id, setId] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
   const [confirm, setConfirm] = useState("");
   const [checkcode, setCheckcode] = useState("");
   const [idError, setIdError] = useState("이메일를 입력해주세요.");
@@ -62,6 +61,14 @@ function SignupPage() {
   const [confirmError, setConfirmError] = useState("");
   const [codecheckError, setCodecheckError] = useState("");
   const [noticeMail, setNoticeMail] = useState("");
+
+  // const email = UserInfoStore((state) => state.email)
+  const email = useStore((state) => state.email);
+  const setEmail = useStore((state) => state.setEmail);
+  const name = useStore((state) => state.name);
+  const setName = useStore((state) => state.setName);
+  const password = useStore((state) => state.password);
+  const setPassword = useStore((state) => state.setPassword);
 
   const idCheckHandler = async (email: string) => {
     const check = /[a-z0-9]+@[a-z]+\.[a-z]{2,3}/;
@@ -101,7 +108,8 @@ function SignupPage() {
 
   const onChangeIdHandler = (e: any) => {
     const idValue = e.target.value;
-    setId(idValue);
+    // setId(idValue);
+    setEmail(idValue);
     idCheckHandler(idValue);
   };
 
@@ -136,13 +144,13 @@ function SignupPage() {
     setNoticeMail("인증 메일을 발송했습니다. 3분 이내 입력해주세요.");
     const fetchDatas = async () => {
       console.log("emailcheck");
-      console.log(id);
+      console.log(email);
       const response = await fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email: id }),
+        body: JSON.stringify({ email: email }),
       });
       const data = await response.json();
       console.log(data);
@@ -158,7 +166,7 @@ function SignupPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email: id, code: checkcode }),
+        body: JSON.stringify({ email: email, code: checkcode }),
       });
       const data = await response.json();
       console.log(response.status);
@@ -185,7 +193,7 @@ function SignupPage() {
     console.log(name);
     const fetchDatas = async () => {
       console.log("회원가입");
-      console.log(id);
+      console.log(email);
       console.log(password);
       const response = await fetch(signUpUrl, {
         method: "POST",
@@ -193,7 +201,7 @@ function SignupPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: id,
+          email: email,
           password: password,
           checkPassword: password,
           name: name,
