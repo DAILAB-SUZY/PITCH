@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserLogin {
+    private String refreshToken;
     private String token;
     private String email;
     private String password;

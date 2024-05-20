@@ -10,6 +10,7 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
@@ -32,6 +33,8 @@ class SignInTest {
     private EmailRepository emailRepository;
     @Autowired
     private UsersRepository usersRepository;
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
 
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
     ObjectMapper mapper = new ObjectMapper();
@@ -59,6 +62,8 @@ class SignInTest {
                         ))
                 ).andDo(print())
                 .andExpect(status().isOk());
+        log.info(redisTemplate.opsForValue().get("testman@example.com"));
+        Assertions.assertFalse(redisTemplate.opsForValue().get("testman@example.com").isEmpty());
     }
 
     @Test

@@ -69,6 +69,7 @@ public class UserService {
         }
 
         return UserLogin.builder()
+                .refreshToken(tokenProvider.createRefreshToken(user))
                 .token(tokenProvider.create(user))
                 .email(email)
                 .id(user.getId())
