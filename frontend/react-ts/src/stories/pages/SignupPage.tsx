@@ -275,6 +275,7 @@ function SignupPage() {
         <RightAlignContainer>
           <Title fontSize="20px">Password</Title>
         </RightAlignContainer>
+
         <InputBox
           name="password"
           placeholder="Password"
