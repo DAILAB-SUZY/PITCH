@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { colors } from "../../styles/color";
 import logo from "../../img/logo.png";
 import BottomNav from "../components/BottomNav";
+import PlaylistCircle from "../components/PlaylistCircle";
 
 const Container = styled.div`
   display: flex;
@@ -37,10 +38,7 @@ const PlaylistContainer = styled.div`
   width: 100vw;
   height: 10vh;
   display: flex;
-  align-items: center;
   justify-content: center;
-  flex-direction: column;
-  background-color: red;
 `;
 
 const AlbumPostContainer = styled.div`
@@ -80,7 +78,9 @@ function HomePage() {
       <LeftAlignContainer>
         <Title fontSize={"25px"}>Friend's Playlist</Title>
       </LeftAlignContainer>
-      <PlaylistContainer></PlaylistContainer>
+      <PlaylistContainer>
+        <PlaylistCircle></PlaylistCircle>
+      </PlaylistContainer>
       <LeftAlignContainer>
         <Title fontSize={"25px"}>Album Post +</Title>
       </LeftAlignContainer>
