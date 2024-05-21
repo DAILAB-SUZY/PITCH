@@ -4,6 +4,7 @@ import LoginPage from "./stories/pages/LoginPage";
 import StartPage from "./stories/pages/StartPage";
 import SignupPage from "./stories/pages/SignupPage";
 import HomePage from "./stories/pages/HomePage";
+import "./styles/reset.css";
 
 type titleType = {
   fontSize: string;

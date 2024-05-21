@@ -13,6 +13,7 @@ interface InputProps {
   name?: string;
   placeholder: string;
   onChange?: (e: any) => any;
+  type?: string;
 }
 
 const Input = styled.input`
@@ -47,10 +48,15 @@ const Line = styled.span`
   transition: 0.5s;
 `;
 
-const InputBox = ({ name, placeholder, onChange }: InputProps) => {
+const InputBox = ({ name, placeholder, onChange, type }: InputProps) => {
   return (
     <Container>
-      <Input name={name} placeholder={placeholder} onChange={onChange}></Input>
+      <Input
+        name={name}
+        placeholder={placeholder}
+        onChange={onChange}
+        type={type}
+      ></Input>
       <Line></Line>
     </Container>
   );

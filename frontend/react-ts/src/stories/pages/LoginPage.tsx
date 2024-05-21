@@ -123,6 +123,7 @@ function LoginPage() {
         <InputBox
           placeholder="Password"
           onChange={(e) => setTypedPassword(e.target.value)}
+          type="password"
         ></InputBox>
         <StackConatiner>
           <LeftAlignContainer></LeftAlignContainer>
