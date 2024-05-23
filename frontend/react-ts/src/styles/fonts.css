@@ -1,0 +1,15 @@
+@font-face {
+  font-family: "Bd";
+  src: url("../font/The\ Jamsil\ OTF\ 5\ Bold.woff") format("font-woff");
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: "Rg";
+  src: url("../font/The\ Jamsil\ OTF\ 3\ Regular.woff") format("font-woff");
+  font-weight: bold;
+}
+
+body {
+  font-family: "Bd";
+}
