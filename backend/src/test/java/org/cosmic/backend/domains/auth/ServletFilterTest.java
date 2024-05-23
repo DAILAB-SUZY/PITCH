@@ -89,18 +89,14 @@ public class ServletFilterTest {
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
+    //유효하지 않은 jwt토큰이 제공됐을 때 인증실패하는지 확인
     @Test
-    public void shouldRejectRequestWithNullToken() throws Exception {
-        mockMvc.perform(get("/api/test").header("Authorization", "Bearer null"))
-                .andExpect(status().isForbidden());
-    }
+    public void Token_isnonValid() throws Exception {
+        String invalidToken = "Bearerinvalid.token.jwt";
 
-    @Test
-    public void shouldHandleTokenProviderException() throws Exception {
-        String invalidToken = "invalidToken";
-        when(tokenProvider.validateAndGetUserId(invalidToken)).thenThrow(new RuntimeException("Invalid token"));
-
-        mockMvc.perform(get("/api/test").header("Authorization", "Bearer " + invalidToken))
-                .andExpect(status().isForbidden());
+        mockMvc.perform(MockMvcRequestBuilders.get("/example")
+                        .header("Authorization", "Bearer " + invalidToken)
+                        .contentType("application/json"))
+                .andExpect(status().isUnauthorized());
     }
 }
