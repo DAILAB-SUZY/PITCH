@@ -1,4 +1,5 @@
 package org.cosmic.backend.domain.user.service;
+import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.auth.applications.TokenProvider;
 import org.cosmic.backend.domain.auth.dto.UserLogin;
 import org.cosmic.backend.domain.auth.exceptions.CredentialNotMatchException;
@@ -10,22 +11,26 @@ import org.cosmic.backend.domain.user.exceptions.NotMatchConditionException;
 import org.cosmic.backend.domain.user.exceptions.NotMatchPasswordException;
 import org.cosmic.backend.domain.user.repository.EmailRepository;
 import org.cosmic.backend.domain.user.repository.UsersRepository;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+@Log4j2
 @Service
 public class UserService {
 
     private final TokenProvider tokenProvider;
     private final UsersRepository usersRepository;
     private final EmailRepository emailRepository;
+    private final RedisTemplate<String, String> redisTemplate;
 
-    public UserService(UsersRepository usersRepository, EmailRepository emailRepository, TokenProvider tokenProvider) {
+    public UserService(UsersRepository usersRepository, EmailRepository emailRepository, TokenProvider tokenProvider, RedisTemplate<String, String> redisTemplate) {
         this.usersRepository = usersRepository;
         this.emailRepository = emailRepository;
         this.tokenProvider = tokenProvider;
+        this.redisTemplate = redisTemplate;
     }
 
     public void registerUser(JoinRequest request){
@@ -74,5 +79,25 @@ public class UserService {
                 .email(email)
                 .id(user.getId())
                 .build();
+    }
+
+    private UserLogin getByEmail(String email){
+        User user = usersRepository.findById(Long.parseLong(email)).orElseThrow(CredentialNotMatchException::new);
+
+        return UserLogin.builder()
+                .refreshToken(tokenProvider.createRefreshToken(user))
+                .token(tokenProvider.create(user))
+                .email(user.getEmail().getEmail())
+                .id(user.getId())
+                .build();
+    }
+
+    public UserLogin getUserByRefreshToken(String refreshToken) {
+        String email = tokenProvider.validateAndGetUserId(refreshToken);
+        if(email == null){
+            throw new CredentialNotMatchException();
+        }
+        redisTemplate.opsForValue().getAndDelete(email);
+        return getByEmail(email);
     }
 }
