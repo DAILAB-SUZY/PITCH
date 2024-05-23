@@ -12,6 +12,11 @@ const Title = styled.div<{ fontSize: string; margin: string }>`
   margin: ${(props) => props.margin};
   font-family: "Bd";
 `;
+const Text = styled.div<{ fontSize: string; margin: string }>`
+  font-size: ${(props) => props.fontSize};
+  margin: ${(props) => props.margin};
+  font-family: "Rg";
+`;
 
 const Container = styled.div`
   display: flex;
@@ -29,7 +34,7 @@ const LeftAlignContainer = styled.div`
   flex-direction: row;
   justify-content: flex-end;
   align-items: center;
-  width: 280px;
+  width: 270px;
   margin: 10px;
   height: 10px;
 `;
@@ -61,8 +66,11 @@ function LoginPage() {
     navigate("/Home");
   };
   const [isVisible, setIsVisible] = useState(false);
+  const [inputType, setInputType] = useState("password");
   const passwordVisible = () => {
     setIsVisible(!isVisible);
+    if (isVisible == true) setInputType("password");
+    else setInputType("text");
   };
 
   // const token: string;
@@ -120,16 +128,20 @@ function LoginPage() {
           {" "}
           로그인{" "}
         </Title>
-        <div>
-          <InputBox
-            placeholder="E-mail"
-            onChange={(e) => setTypedEmail(e.target.value)}
-          ></InputBox>
-          <InputBox
-            placeholder="Password"
-            onChange={(e) => setTypedPassword(e.target.value)}
-            type="password"
-          ></InputBox>
+        <InputBox
+          placeholder="E-mail"
+          onChange={(e) => setTypedEmail(e.target.value)}
+        ></InputBox>
+        <InputBox
+          placeholder="Password"
+          onChange={(e) => setTypedPassword(e.target.value)}
+          type={inputType}
+        ></InputBox>
+        <LeftAlignContainer>
+          <Text fontSize="16px" margin="10px">
+            {" "}
+            비밀번호 보기
+          </Text>
           {isVisible ? (
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -158,7 +170,7 @@ function LoginPage() {
               <path d="M3.35 5.47q-.27.24-.518.487A13 13 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.881 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7 7 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.709zm10.296 8.884-12-12 .708-.708 12 12z" />
             </svg>
           )}
-        </div>
+        </LeftAlignContainer>
 
         <StackConatiner>
           <LeftAlignContainer></LeftAlignContainer>
