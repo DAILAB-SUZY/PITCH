@@ -26,8 +26,7 @@ public class ExampleServletFilter extends HttpFilter {
             }
         }
         catch(Exception e){
-            //예외 발생시 response를 403 forbidden으로 설정
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
     }
 
