@@ -56,9 +56,6 @@ const StackConatiner = styled.div`
 
 function LoginPage() {
   const navigate = useNavigate();
-  const GoToStartPage = () => {
-    navigate("/");
-  };
   const GoToSignupPage = () => {
     navigate("/Signup");
   };
