@@ -1,5 +1,10 @@
 import styled from "styled-components";
 import { colors } from "../../styles/color";
+import { useNavigate } from "react-router-dom";
+
+interface ButtonProps {
+  onClick?: () => void;
+}
 
 const PlaylistContainer = styled.div`
   width: 85vw;
@@ -35,14 +40,19 @@ const RainbowBorder = styled.div`
   background-clip: content-box, border-box;
 `;
 
-const PlaylistCircle = () => {
+const PlaylistCircle = ({ onClick }: ButtonProps) => {
+  const navigate = useNavigate();
+  const GoToPlayListPage = () => {
+    navigate("/PlayListPage");
+  };
+
   const items = Array.from({ length: 20 }, (_, index) => `Item ${index + 1}`);
 
   return (
     <PlaylistContainer>
       {items.map((item, index) => (
         <RainbowBorder show="hidden">
-          <Item key={index}></Item>
+          <Item key={index} onClick={() => GoToPlayListPage()}></Item>
         </RainbowBorder>
       ))}
     </PlaylistContainer>
