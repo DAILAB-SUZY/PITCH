@@ -1,8 +1,8 @@
 import styled from "styled-components";
 
 const Container = styled.div`
-  width: 100%;
-  height: 100%;
+  width: 90vw;
+  height: 60vh;
   border-radius: 5%;
   background-color: black;
   background-image: linear-gradient(to top right, #fb96a5, #ffdae0);
@@ -10,12 +10,12 @@ const Container = styled.div`
   align-items: center;
   justify-content: space-evenly;
   flex-direction: column;
+  overflow-y: auto;
 `;
 
 const ListBox = styled.div`
-  width: 90%;
-  height: 15%;
-  padding-left: 10px;
+  width: 85vw;
+  height: 20vh;
   display: flex;
   align-items: center;
   justify-content: start;
@@ -23,15 +23,15 @@ const ListBox = styled.div`
 `;
 
 const AlbumCover = styled.div`
-  width: 20%;
-  height: 80%;
+  width: 15vw;
+  height: 7vh;
   border-radius: 10%;
   background-color: black;
+  margin: 10px;
 `;
 
 const TextBox = styled.div`
   height: 80%;
-  margin: 10px;
   display: flex;
   align-items: start;
   justify-content: space-evenly;
@@ -46,7 +46,7 @@ const Title = styled.div<{ fontSize: string; margin: string }>`
 `;
 
 const PlayListBox = () => {
-  const items = Array.from({ length: 7 }, (_, index) => `Item ${index + 1}`);
+  const items = Array.from({ length: 20 }, (_, index) => `Item ${index + 1}`);
 
   return (
     <Container>
