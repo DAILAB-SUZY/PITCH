@@ -20,7 +20,6 @@ const Item = styled.div`
   background-color: #fff;
   border-radius: 100px;
   border-image-slice: 1;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   background-color: white;
 `;
 
@@ -42,7 +41,7 @@ const PlaylistCircle = () => {
   return (
     <PlaylistContainer>
       {items.map((item, index) => (
-        <RainbowBorder>
+        <RainbowBorder show="hidden">
           <Item key={index}></Item>
         </RainbowBorder>
       ))}
