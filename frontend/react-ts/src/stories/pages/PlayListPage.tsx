@@ -3,16 +3,18 @@ import { colors } from "../../styles/color";
 import logo from "../../img/logo.png";
 import BottomNav from "../components/BottomNav";
 import PlaylistCircle from "../components/PlaylistCircle";
+import PlayListBox from "../components/PlayListBox";
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-evenly;
   align-items: center;
-  height: 100vh;
+  height: 90vh;
   width: 100vw;
   background-color: white;
   color: black;
+  margin-bottom: 10vh;
 `;
 
 const HeaderContainer = styled.div`
@@ -69,6 +71,22 @@ const ModBtn = styled.div`
   flex-direction: row;
 `;
 
+const BottomNavContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: white;
+`;
+
+const PlayList = styled.div`
+  width: 90vw;
+  height: 60vh;
+`;
+
 function PlayListPage() {
   return (
     <Container>
@@ -97,6 +115,12 @@ function PlayListPage() {
           </ModBtn>
         </RightAlignContainer>
       </HeaderContainer>
+      <PlayList>
+        <PlayListBox></PlayListBox>
+      </PlayList>
+      <BottomNavContainer>
+        <BottomNav></BottomNav>
+      </BottomNavContainer>
     </Container>
   );
 }
