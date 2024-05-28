@@ -2,7 +2,7 @@ package org.cosmic.backend.domain.musicDNA.api;
 
 import org.cosmic.backend.domain.musicDNA.applications.MusicDNAService;
 import org.cosmic.backend.domain.musicDNA.domain.MusicDna;
-import org.cosmic.backend.domain.musicDNA.dto.DNA;
+import org.cosmic.backend.domain.musicDNA.dto.DnaDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,10 +23,11 @@ public class MusicDNAApi {
     }
 
     @PostMapping("/save")
-    public String saveUserDNAData(@RequestBody DNA dna) {
+    public String saveUserDNAData(@RequestBody DnaDTO dna) {
         // 데이터 받을 때
-        String userEmail= dna.getUserEmail();
-        musicDNAService.saveDNA(userEmail, dna.getMusicDNA());
+        Long Key= dna.getKey();
+        System.out.println(dna);
+        musicDNAService.saveDNA(Key, dna.getDna());//Long
         return "success";
     }
 }
