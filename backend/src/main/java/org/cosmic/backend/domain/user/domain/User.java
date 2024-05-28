@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.cosmic.backend.domain.musicDNA.domain.MusicDna;
+import org.cosmic.backend.domain.musicDNA.domain.User_Dna;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -32,10 +32,9 @@ public class User {
     @Column(length=255)
     private String profilePicture="base";
     @Builder.Default
-    @ElementCollection
-    private List<String> MusicDNAs=new ArrayList<>();
-    @Builder.Default
     @Column(nullable=false)
     private Instant signupDate=Instant.now();
 
+    @OneToMany(mappedBy = "user")
+    private List<User_Dna>userDnas=new ArrayList<>();
 }
