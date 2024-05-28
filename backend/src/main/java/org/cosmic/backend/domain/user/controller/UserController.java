@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
-import org.cosmic.backend.domain.mail.dto.EmailAddress;
 import org.cosmic.backend.domain.user.dto.JoinRequest;
 import org.cosmic.backend.domain.user.service.UserService;
 import org.cosmic.backend.globals.dto.ErrorResponse;
