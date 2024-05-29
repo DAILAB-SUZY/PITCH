@@ -1,9 +1,16 @@
 package org.cosmic.backend.domain.musicDNA.api;
 
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.transaction.Transactional;
 import org.cosmic.backend.domain.musicDNA.applications.MusicDNAService;
-import org.cosmic.backend.domain.musicDNA.domain.MusicDna;
 import org.cosmic.backend.domain.musicDNA.dto.DnaDTO;
+import org.cosmic.backend.domain.musicDNA.dto.ListDNA;
+import org.cosmic.backend.globals.dto.ErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,17 +24,40 @@ public class MusicDNAApi {
     @Autowired
     private MusicDNAService musicDNAService;
 
+    @Transactional
     @PostMapping("/give")
-    public List<MusicDna> giveDNAData() {
+    public List<ListDNA> giveDNAData() {
         return musicDNAService.getAllDna();
     }
 
     @PostMapping("/save")
-    public String saveUserDNAData(@RequestBody DnaDTO dna) {
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Ok",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = String.class))
+                    }),
+            @ApiResponse(responseCode = "400",
+                    description = "Need 4 MusicDna",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponse.class))
+                    }
+            ),
+            @ApiResponse(responseCode = "415",
+                    description = "Request body is empty",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponse.class))
+                    }
+            )
+        }
+    )
+    public ResponseEntity<?> saveUserDNAData(@RequestBody DnaDTO dna) {
         // 데이터 받을 때
         Long Key= dna.getKey();
-        System.out.println(dna);
         musicDNAService.saveDNA(Key, dna.getDna());//Long
-        return "success";
+        return ResponseEntity.ok("성공");//회원가입 완료 표시
     }
 }
