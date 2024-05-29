@@ -30,8 +30,9 @@ public class MusicDNAService {
 
         List<User_Dna> userDnas = dnaRepository.findAllByUserId(key);
 
-        if (dna == null || dna.size() != 4) {
-            //에러
+        if (dna.size() != 4) {
+            //dna개수가 맞지 않을 때
+            throw new NotMatchMusicDnaCountException();
         }
 
         if (!dnaRepository.findById(key).isPresent()) {
@@ -60,9 +61,12 @@ public class MusicDNAService {
             }
         }
     }
-    //모든 dna데이터들을 보내는.
-    public List<MusicDna> getAllDna(){
-        return emotionRepository.findAll();
+    @Transactional
+    public List<ListDNA> getAllDna(){
+        return emotionRepository.findAll().stream()
+                .map(dna->new ListDNA(dna.getEmotionId(),dna.getEmotion()))
+                .collect(Collectors.toList())
+                ;
     }
 
 }
