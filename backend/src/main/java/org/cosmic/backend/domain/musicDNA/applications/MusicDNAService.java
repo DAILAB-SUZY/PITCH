@@ -4,6 +4,8 @@ import jakarta.transaction.Transactional;
 import org.cosmic.backend.domain.musicDNA.domain.MusicDna;
 import org.cosmic.backend.domain.musicDNA.domain.User_Dna;
 import org.cosmic.backend.domain.musicDNA.dto.DNADetail;
+import org.cosmic.backend.domain.musicDNA.dto.ListDNA;
+import org.cosmic.backend.domain.musicDNA.exceptions.NotMatchMusicDnaCountException;
 import org.cosmic.backend.domain.musicDNA.repository.DnaRepository;
 import org.cosmic.backend.domain.musicDNA.repository.EmotionRepository;
 import org.cosmic.backend.domain.user.domain.User;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class MusicDNAService {
@@ -57,7 +60,6 @@ public class MusicDNAService {
                 User_Dna userDna=userDnas.get(i);
                 userDna.setEmotion(dans);
                 dnaRepository.save(userDna);
-
             }
         }
     }
