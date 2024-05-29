@@ -90,11 +90,37 @@ public class MusicDNAControllerTest {
             .andExpect(status().isOk());
     }
 
-    //DNA데이터 잘 받아서 들어가서 repository에 잘 들어갔는지
     @Test
-    public void response_DNA() throws Exception {
-        List<String>DNA=new ArrayList<String>();
-        //dnaRepository
+    public void notMatchDataTest() throws Exception {
+        List<MusicDna> TestDNA= Arrays.asList(new MusicDna("느긋한"),new MusicDna("신나는"),new MusicDna("청순한"));
+        for(int i=0;i<3;i++)
+        {
+            emotionRepository.save(TestDNA.get(i));
+        }
+        DnaDTO dnaDTO=new DnaDTO();
+        dnaDTO.setKey(1L);
+        dnaDTO.setDna(Arrays.asList(new DNADetail(1L),new DNADetail(2L),new DNADetail(3L)));
+        Email email = emailRepository.save(Email.builder()
+                .email("testman@example.com")
+                .verificationCode("123456")
+                .verified(true)
+                .build());
+
+        usersRepository.save(User.builder()
+                .email(email)
+                .username("goodwill")
+                .password(encoder.encode("123456"))
+                .build());
+
+        mockMvc.perform(post("/api/dna/save")
+                        .contentType("application/json")
+                        .content(mapper.writeValueAsString(DnaDTO.builder()
+                                .key(dnaDTO.getKey())
+                                .dna(dnaDTO.getDna())
+                                .build()
+                        )))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
     }
 }
 
