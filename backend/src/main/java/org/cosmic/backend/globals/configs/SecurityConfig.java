@@ -45,8 +45,10 @@ public class SecurityConfig{
             )).authorizeHttpRequests(authorize ->
                 authorize
                 .requestMatchers("/user/**").permitAll()
-                .requestMatchers("/auth/signin/**").permitAll()
+                .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/example").permitAll()
+                .requestMatchers("/mail/**").permitAll()
+                .requestMatchers("/api/**").permitAll()
                 .anyRequest().authenticated()
             );
         //filter등록 후 매 요청마다 CorsFilter 실행한 후에 jwtAuthenticationFilter 실행한다.
