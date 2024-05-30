@@ -96,7 +96,7 @@ public class ServletFilterTest {
 
         mockMvc.perform(MockMvcRequestBuilders.get("/example")
                         .header("Authorization", "Bearer " + invalidToken)
-                        .contentType("application/json"))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
     }
 }
