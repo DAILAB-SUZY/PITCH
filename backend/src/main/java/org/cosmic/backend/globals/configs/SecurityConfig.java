@@ -21,6 +21,9 @@ public class SecurityConfig{
 
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
+    @Autowired
+    private ExceptionHandlerFilter exceptionHandlerFilter;
+
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
