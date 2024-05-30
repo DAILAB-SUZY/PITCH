@@ -68,7 +68,7 @@ public class MusicDNAControllerTest {
         dnaDTO.setKey(1L);
         dnaDTO.setDna(Arrays.asList(new DNADetail(1L),new DNADetail(2L),new DNADetail(3L),new DNADetail(4L)));
         Email email = emailRepository.save(Email.builder()
-                .email("testman@example.com")
+                .email("testboy@example.com")
                 .verificationCode("123456")
                 .verified(true)
                 .build());
@@ -101,7 +101,7 @@ public class MusicDNAControllerTest {
         dnaDTO.setKey(1L);
         dnaDTO.setDna(Arrays.asList(new DNADetail(1L),new DNADetail(2L),new DNADetail(3L)));
         Email email = emailRepository.save(Email.builder()
-                .email("testman@example.com")
+                .email("testgirl@example.com")
                 .verificationCode("123456")
                 .verified(true)
                 .build());

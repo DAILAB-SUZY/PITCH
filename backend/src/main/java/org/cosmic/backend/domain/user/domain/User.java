@@ -36,5 +36,6 @@ public class User {
     private Instant signupDate=Instant.now();
 
     @OneToMany(mappedBy = "user")
+    @Builder.Default
     private List<User_Dna>userDnas=new ArrayList<>();
 }
