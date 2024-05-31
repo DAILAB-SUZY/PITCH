@@ -5,9 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.cosmic.backend.domain.music.domain.Tracks;
 import org.cosmic.backend.domain.musicDNA.domain.User_Dna;
-
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +37,16 @@ public class User {
     @Column(nullable=false)
     private Instant signupDate=Instant.now();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     @Builder.Default
     private List<User_Dna>userDnas=new ArrayList<>();
+
+    @ManyToMany(cascade = {CascadeType.REFRESH, CascadeType.MERGE})
+    @JoinTable(
+            name="liked_tracks",
+            joinColumns = @JoinColumn(name="tracks_id"),
+            inverseJoinColumns = @JoinColumn(name="users")
+    )
+    @Builder.Default
+    private Set<Tracks> likedTracks = new HashSet<>();
 }
