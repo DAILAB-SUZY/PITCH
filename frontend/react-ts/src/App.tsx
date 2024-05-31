@@ -4,6 +4,7 @@ import LoginPage from "./stories/pages/LoginPage";
 import StartPage from "./stories/pages/StartPage";
 import SignupPage from "./stories/pages/SignupPage";
 import HomePage from "./stories/pages/HomePage";
+import PlayListPage from "./stories/pages/PlayListPage";
 import "./styles/reset.css";
 
 type titleType = {
@@ -31,6 +32,7 @@ function App() {
         <Route path="/Login" element={<LoginPage />} />
         <Route path="/Signup" element={<SignupPage />} />
         <Route path="/Home" element={<HomePage />} />
+        <Route path="/PlayListPage" element={<PlayListPage />} />
       </Routes>
     </BrowserRouter>
   );
