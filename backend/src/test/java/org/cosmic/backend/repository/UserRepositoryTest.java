@@ -18,7 +18,7 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 @SpringBootTest
 @Testcontainers
-public class userRepositoryTest extends TestContainerBase {
+public class UserRepositoryTest extends TestContainerBase {
 
     @Autowired
     private UsersRepository usersRepository;

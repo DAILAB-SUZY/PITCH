@@ -5,7 +5,6 @@ import org.cosmic.backend.domain.user.domain.Email;
 import org.cosmic.backend.domain.user.domain.User;
 import org.cosmic.backend.domain.user.repository.EmailRepository;
 import org.cosmic.backend.domain.user.repository.UsersRepository;
-import org.cosmic.backend.testcontainer.RepositoryBaseTest;
 import org.cosmic.backend.testcontainer.TestContainerBase;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -14,7 +13,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -22,7 +20,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @Testcontainers
 @SpringBootTest
-public class verifyTest extends TestContainerBase {
+public class VerifyTest extends TestContainerBase {
 
 @Autowired
     private EmailRepository emailRepository;
@@ -169,7 +167,7 @@ public class verifyTest extends TestContainerBase {
         JSONObject jsonObject = new JSONObject(jsonString);
         //Email에 있는 email과 verified가 true인지
         String emailID=jsonObject.getString("email");
-        if(!email.getEmail().equals(emailID) && email.getVerified()!=true)
+        if(!email.getEmail().equals(emailID) && !email.getVerified())
         {
             //해당 이메일이 없거나 인증된게아니라면
         }
