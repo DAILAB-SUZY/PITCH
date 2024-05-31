@@ -135,9 +135,9 @@ function SignupPage() {
   // const onChange = (event) => {
   //   setItemid(event.target.value);
   // }
-  let url = "http://192.168.0.146:8080/mail/request";
-  let checkCodeUrl = "http://192.168.0.146:8080/mail/verify";
-  let signUpUrl = "http://192.168.0.146:8080/user/register";
+  let url = "http://10.255.81.70:8030/mail/request";
+  let checkCodeUrl = "http://10.255.81.70:8030/mail/verify";
+  let signUpUrl = "http://10.255.81.70:8030/user/register";
 
   const emailcheck = () => {
     if (idError != "") return;
