@@ -6,6 +6,7 @@ import org.cosmic.backend.domain.user.domain.Email;
 import org.cosmic.backend.domain.user.domain.User;
 import org.cosmic.backend.domain.user.repository.EmailRepository;
 import org.cosmic.backend.domain.user.repository.UsersRepository;
+import org.cosmic.backend.testcontainer.TestContainerBase;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -26,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Log4j2
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class SignInTest {
+class SignInTest extends TestContainerBase {
     @Autowired
     private MockMvc mockMvc;
     @Autowired

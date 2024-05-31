@@ -13,7 +13,6 @@ import org.springframework.http.MediaType;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.*;
@@ -53,7 +52,7 @@ class EmailValidationTest extends EmailBaseTest {
     public void verifyEmailBeforeInterval() {
         MailAddress mailAddress = new MailAddress("twotimes@example.com");
         ObjectMapper objectMapper = new ObjectMapper();
-        emailRepository.save(Email.builder().email(mailAddress.getEmail()).verificationCode("123456").createTime(Instant.now().plus(9, ChronoUnit.HOURS)).build());
+        emailRepository.save(Email.builder().email(mailAddress.getEmail()).verificationCode("123456").createTime(Instant.now()).build());
 
         try {
             this.mockMvc.perform(post("/mail/request")

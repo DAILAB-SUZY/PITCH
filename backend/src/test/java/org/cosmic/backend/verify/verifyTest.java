@@ -6,6 +6,7 @@ import org.cosmic.backend.domain.user.domain.User;
 import org.cosmic.backend.domain.user.repository.EmailRepository;
 import org.cosmic.backend.domain.user.repository.UsersRepository;
 import org.cosmic.backend.testcontainer.RepositoryBaseTest;
+import org.cosmic.backend.testcontainer.TestContainerBase;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
@@ -21,7 +22,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @Testcontainers
 @SpringBootTest
-public class verifyTest {
+public class verifyTest extends TestContainerBase {
 
 @Autowired
     private EmailRepository emailRepository;
