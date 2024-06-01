@@ -91,16 +91,17 @@ const Text = styled.div<{
 const PostContainer = styled.div<{ height: string }>`
   display: flex;
   border-radius: 0 0 20px 20px;
-  width: 100%;
-  max-height: ${(props) => props.height};
-  overflow: hidden;
+  width: 320px;
+
+  height: auto;
+  /* overflow: hidden; */
   align-items: center;
   justify-content: flex-start;
   flex-direction: column;
   padding: 10px;
   box-sizing: border-box;
   background-color: ${colors.BG_grey};
-  transition: all ease-out 3s;
+  transition: max-height linear 1s;
 `;
 
 const ProfileContainer = styled.div`
@@ -140,15 +141,22 @@ const ProfileImage = styled.div`
 
 const PostContent = styled.div`
   display: flex;
-  width: 100%;
-  height: auto;
+  width: 320px;
+  height: 36px;
+  box-sizing: border-box;
+
+  /* white-space: nowrap; */
   overflow: hidden;
+  /* text-overflow: ellipsis; */
+
   flex-direction: column;
   justify-content: space-between;
   font-size: 15px;
   font-family: "Rg";
-  margin: 10px;
-  white-space: pre-wrap;
+  padding: 0px 10px;
+  margin: 10px 0;
+
+  transition: height ease 0.7s;
 `;
 
 const ButtonContainer = styled.div`
@@ -188,20 +196,40 @@ interface AlbumPost {
 }
 
 const AlbumPost = ({ postClick }: AlbumPost) => {
-  const [isViewMore, setIsMoreView] = useState(false);
+  const [isViewMore, setIsMoreView] = useState(true);
   const [boxHeight, setBoxHeight] = useState("120px");
   const [albumPostBoxheight, setAlbumPostBoxheight] = useState("auto");
 
-  const divRef = useRef<HTMLDivElement>(null);
   const [divHeight, setDivHeight] = useState(320);
 
   const divRef2 = useRef<HTMLDivElement>(null);
 
+  const divRef = useRef<HTMLDivElement>(null);
+  const contentHeight = useRef<HTMLDivElement>(null);
+  const textHeight = useRef<HTMLDivElement>(null);
+
   const changeViewMore = () => {
-    setIsMoreView(!isViewMore);
-    if (boxHeight == "120px") setBoxHeight("1000px");
-    else if (boxHeight == "1000px") setBoxHeight("120px");
-    postClick;
+    const divRefStyle = window.getComputedStyle(
+      divRef.current as HTMLDivElement
+    );
+    const contentHeightStyle = window.getComputedStyle(
+      contentHeight.current as HTMLDivElement
+    );
+    const textHeightStyle = window.getComputedStyle(
+      textHeight.current as HTMLDivElement
+    );
+
+    if (contentHeightStyle.getPropertyValue("height") === "36px") {
+      contentHeight.current?.style.setProperty(
+        "height",
+        textHeightStyle.getPropertyValue("height")
+      );
+    } else if (
+      contentHeightStyle.getPropertyValue("height") ===
+      textHeightStyle.getPropertyValue("height")
+    )
+      contentHeight.current?.style.setProperty("height", "36px");
+    // postClick;
   };
 
   return (
@@ -209,7 +237,7 @@ const AlbumPost = ({ postClick }: AlbumPost) => {
       <AlbumTitleContainer>
         <ImageContainer>
           <img
-            src={cover2}
+            src={cover}
             width="320px"
             height="320px"
             object-fit="cover"
@@ -226,7 +254,7 @@ const AlbumPost = ({ postClick }: AlbumPost) => {
           </Text>
         </TextContainer>
       </AlbumTitleContainer>
-      <PostContainer height={boxHeight}>
+      <PostContainer ref={divRef}>
         <ProfileContainer>
           <ProfileImage></ProfileImage>
           <ProfileTextContainer>
@@ -234,31 +262,28 @@ const AlbumPost = ({ postClick }: AlbumPost) => {
             <PostUploadTime> 1시간 전</PostUploadTime>
           </ProfileTextContainer>
         </ProfileContainer>
-        {isViewMore == false ? (
-          <PostContent>
-            {" "}
-            하니 민지 해린 혜인 다니엘{"\n"}뉴진스 짱 뉴진스 짱 뉴진스 짱{" "}
-          </PostContent>
-        ) : (
-          <PostContent>
+        <PostContent ref={contentHeight}>
+          <p ref={textHeight}>
             {" "}
             뉴진스 짱 뉴진스 최고야 뉴진스 짜릿해 뉴진스 짱 뉴진스 최고야 뉴진스
-            짜릿해 뉴진스 짱{"\n"}
-            {"\n"}
+            짜릿해 뉴진스 짱 뉴진스 짱 뉴진스 최고야 뉴진스 짜릿해 뉴진스 짱
+            뉴진스 최고야 뉴진스 짜릿해 뉴진스 짱 뉴진스 짱 뉴진스 최고야 뉴진스
+            짜릿해 뉴진스 짱 뉴진스 최고야 뉴진스 짜릿해 뉴진스 짱
+            <br />
             뉴진스 최고야 뉴진스 짜릿해 뉴진스 짱 뉴진스 최고야 뉴진스 짜릿해
             뉴진스 짱 뉴진스 최고야 뉴진스 짜릿해 뉴진스 짱 뉴진스 최고야 뉴진스
-            짜릿해 뉴진스 짱 뉴진스 최고야 {"\n"}
-            {"\n"}
+            짜릿해 뉴진스 짱 뉴진스 최고야 <br />
+            <br />
             뉴진스 짜릿해 뉴진스 짱 뉴진스 최고야 뉴진스 짜릿해 뉴진스 짱 뉴진스
             최고야 뉴진스 짜릿해 뉴진스 짱 뉴진스 최고야 뉴진스 짜릿해 뉴진스 짱
-            뉴진스 최고야 뉴진스 짜릿해 {"\n"}
+            뉴진스 최고야 뉴진스 짜릿해 <br />
             뉴진스 최고야 뉴진스 짜릿해 뉴진스 짱 뉴진스 최고야 뉴진스 짜릿해
             뉴진스 짱 뉴진스 최고야 뉴진스 짜릿해 뉴진스 짱 뉴진스 최고야 뉴진스
-            짜릿해 뉴진스 짱 뉴진스 최고야 {"\n"}
-            {"\n"}
+            짜릿해 뉴진스 짱 뉴진스 최고야 <br />
+            <br />
             화이팅
-          </PostContent>
-        )}
+          </p>
+        </PostContent>
 
         <ButtonContainer>
           <Text

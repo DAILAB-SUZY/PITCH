@@ -12,7 +12,7 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   overflow: scroll;
-  height: 100%;
+  height: auto;
   width: 100vw;
   background-color: white;
   color: black;
@@ -62,6 +62,7 @@ const BottomNavContainer = styled.div`
   bottom: 0;
   left: 0;
   right: 0;
+  z-index: 2;
   background-color: white;
 `;
 
@@ -84,7 +85,7 @@ function HomePage() {
       <BackgroundBlur></BackgroundBlur>
       <HeaderContainer>
         <img src={logo} width="80px" height="80px"></img>
-        <Title fontSize={"25px"}>이준석님 안녕하세요!</Title>
+        <Title fontSize={"25px"}>김준호님 안녕하세요!</Title>
       </HeaderContainer>
       <LeftAlignContainer>
         <Title fontSize={"25px"}>Friend's Playlist</Title>
