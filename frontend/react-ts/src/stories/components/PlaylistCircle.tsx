@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { colors } from "../../styles/color";
 import { useNavigate } from "react-router-dom";
-
+import img from "../../img/cat.webp";
 interface ButtonProps {
   onClick?: () => void;
 }
@@ -17,15 +17,16 @@ const PlaylistContainer = styled.div`
 `;
 
 const Item = styled.div`
-  width: 35px;
-  height: 35px;
+  width: 58px;
+  height: 58px;
   display: inline-block;
-  padding: 12px;
+  /* padding: 12px; */
   margin-right: 10px;
   background-color: #fff;
   border-radius: 100px;
   border-image-slice: 1;
   background-color: white;
+  overflow: hidden;
 `;
 
 const RainbowBorder = styled.div`
@@ -52,7 +53,9 @@ const PlaylistCircle = ({ onClick }: ButtonProps) => {
     <PlaylistContainer>
       {items.map((item, index) => (
         <RainbowBorder show="hidden">
-          <Item key={index} onClick={() => GoToPlayListPage()}></Item>
+          <Item key={index} onClick={() => GoToPlayListPage()}>
+            <img src={img} width="58" height="58"></img>
+          </Item>
         </RainbowBorder>
       ))}
     </PlaylistContainer>

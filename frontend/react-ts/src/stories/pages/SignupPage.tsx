@@ -244,10 +244,10 @@ function SignupPage() {
             onChange={onChangeIdHandler}
           ></InputBox>
           <Btn
-            width="100px"
+            width="70px"
             height="33px"
             fontsize="15px"
-            text="인증번호 발송"
+            text="인증요청"
             onClick={emailcheck}
           ></Btn>
         </StackConatiner>
@@ -262,10 +262,10 @@ function SignupPage() {
             onChange={(e) => setCheckcode(e.target.value)}
           ></InputBox>
           <Btn
-            width="100px"
+            width="70px"
             height="33px"
             fontsize="15px"
-            text="인증번호 확인"
+            text="인증확인"
             onClick={codeCheck}
           ></Btn>
         </StackConatiner>

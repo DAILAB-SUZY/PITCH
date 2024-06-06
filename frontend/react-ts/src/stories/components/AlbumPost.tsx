@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { colors } from "../../styles/color";
 import { useRef, useEffect, useState } from "react";
-import cover from "../../img/newjeans_cover.png";
+import cover1 from "../../img/newjeans.png";
 import cover2 from "../../img/aespa.webp";
 
 const AlbumPostBG = styled.div`
@@ -72,7 +72,7 @@ const TextContainer = styled.div`
   height: auto;
   display: flex;
   justify-content: flex-start;
-  align-items: center;
+  align-items: flex-end;
   padding: 0px 0px 20px 20px;
   box-sizing: border-box;
   z-index: 3;
@@ -86,6 +86,7 @@ const Text = styled.div<{
   font-size: ${(props) => props.fontSize};
   font-family: ${(props) => props.fontFamily};
   color: ${(props) => props.color};
+  margin-right: 15px;
 `;
 
 const PostContainer = styled.div<{ height: string }>`
@@ -191,27 +192,26 @@ const GradientText = styled.div`
   );
 `;
 
-interface AlbumPost {
-  postClick?: () => void;
+interface AlbumPostProps {
+  postClick: () => void;
+  song: string;
 }
 
-const AlbumPost = ({ postClick }: AlbumPost) => {
-  const [isViewMore, setIsMoreView] = useState(true);
-  const [boxHeight, setBoxHeight] = useState("120px");
-  const [albumPostBoxheight, setAlbumPostBoxheight] = useState("auto");
-
-  const [divHeight, setDivHeight] = useState(320);
-
-  const divRef2 = useRef<HTMLDivElement>(null);
-
-  const divRef = useRef<HTMLDivElement>(null);
+const AlbumPost = (props: AlbumPostProps) => {
   const contentHeight = useRef<HTMLDivElement>(null);
   const textHeight = useRef<HTMLDivElement>(null);
 
+  const { postClick, song } = props;
+  // const [songname, setSongname] = useState("");
+  // setSongname(song);
+  const getCover = (name: string) => {
+    try {
+      return require(`../../img/${name}.png`); // 확장자에 맞게 변경
+    } catch (error) {}
+  };
+  console.log("song:" + song);
+
   const changeViewMore = () => {
-    const divRefStyle = window.getComputedStyle(
-      divRef.current as HTMLDivElement
-    );
     const contentHeightStyle = window.getComputedStyle(
       contentHeight.current as HTMLDivElement
     );
@@ -229,7 +229,8 @@ const AlbumPost = ({ postClick }: AlbumPost) => {
       textHeightStyle.getPropertyValue("height")
     )
       contentHeight.current?.style.setProperty("height", "36px");
-    // postClick;
+    postClick();
+    console.log("id:" + song);
   };
 
   return (
@@ -237,7 +238,7 @@ const AlbumPost = ({ postClick }: AlbumPost) => {
       <AlbumTitleContainer>
         <ImageContainer>
           <img
-            src={cover}
+            src={cover1}
             width="320px"
             height="320px"
             object-fit="cover"
@@ -254,7 +255,7 @@ const AlbumPost = ({ postClick }: AlbumPost) => {
           </Text>
         </TextContainer>
       </AlbumTitleContainer>
-      <PostContainer ref={divRef}>
+      <PostContainer>
         <ProfileContainer>
           <ProfileImage></ProfileImage>
           <ProfileTextContainer>
@@ -265,23 +266,22 @@ const AlbumPost = ({ postClick }: AlbumPost) => {
         <PostContent ref={contentHeight}>
           <p ref={textHeight}>
             {" "}
-            뉴진스 짱 뉴진스 최고야 뉴진스 짜릿해 뉴진스 짱 뉴진스 최고야 뉴진스
-            짜릿해 뉴진스 짱 뉴진스 짱 뉴진스 최고야 뉴진스 짜릿해 뉴진스 짱
-            뉴진스 최고야 뉴진스 짜릿해 뉴진스 짱 뉴진스 짱 뉴진스 최고야 뉴진스
-            짜릿해 뉴진스 짱 뉴진스 최고야 뉴진스 짜릿해 뉴진스 짱
+            뉴진스의 "Get Up" 앨범은 그들의 음악적 성장과 변화를 잘 보여주는
+            작품입니다.
             <br />
-            뉴진스 최고야 뉴진스 짜릿해 뉴진스 짱 뉴진스 최고야 뉴진스 짜릿해
-            뉴진스 짱 뉴진스 최고야 뉴진스 짜릿해 뉴진스 짱 뉴진스 최고야 뉴진스
-            짜릿해 뉴진스 짱 뉴진스 최고야 <br />
             <br />
-            뉴진스 짜릿해 뉴진스 짱 뉴진스 최고야 뉴진스 짜릿해 뉴진스 짱 뉴진스
-            최고야 뉴진스 짜릿해 뉴진스 짱 뉴진스 최고야 뉴진스 짜릿해 뉴진스 짱
-            뉴진스 최고야 뉴진스 짜릿해 <br />
-            뉴진스 최고야 뉴진스 짜릿해 뉴진스 짱 뉴진스 최고야 뉴진스 짜릿해
-            뉴진스 짱 뉴진스 최고야 뉴진스 짜릿해 뉴진스 짱 뉴진스 최고야 뉴진스
-            짜릿해 뉴진스 짱 뉴진스 최고야 <br />
+            앨범 전반에 걸쳐 뉴진스만의 청량하고 에너제틱한 매력이 잘 드러나며,
+            듣는 이에게 긍정적인 에너지를 전달합니다.
             <br />
-            화이팅
+            <br />
+            각 곡마다 멤버들의 개성과 실력이 돋보이며, K-pop 팬들에게 새로운
+            즐거움을 선사합니다.
+            <br />
+            <br />
+            앞으로 뉴진스가 어떤 음악을 선보일지 기대하게 만드는, 매력 넘치는
+            앨범입니다. <br />
+            <br />
+            뉴진스 화이팅🔥
           </p>
         </PostContent>
 
