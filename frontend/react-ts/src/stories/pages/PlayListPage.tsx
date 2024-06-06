@@ -4,13 +4,14 @@ import logo from "../../img/logo.png";
 import BottomNav from "../components/BottomNav";
 import PlaylistCircle from "../components/PlaylistCircle";
 import PlayListBox from "../components/PlayListBox";
+import profile from "../../img/cat.webp";
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: space-evenly;
+  justify-content: flex-start;
   align-items: center;
-  height: 90vh;
+  height: 98vh;
   width: 100vw;
   background-color: white;
   color: black;
@@ -19,7 +20,7 @@ const Container = styled.div`
 
 const HeaderContainer = styled.div`
   width: 100vw;
-  height: 20vh;
+  height: 250px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -36,7 +37,7 @@ const RowContainer = styled.div`
 `;
 
 const RightAlignContainer = styled.div`
-  width: 80vw;
+  width: 90vw;
   height: 4vh;
   display: flex;
   align-items: center;
@@ -55,6 +56,7 @@ const Circle = styled.div`
   height: 50px;
   border-radius: 100%;
   background-color: black;
+  overflow: hidden;
 `;
 
 const ModBtn = styled.div`
@@ -93,7 +95,9 @@ function PlayListPage() {
       <HeaderContainer>
         <img src={logo} width="80px" height="80px"></img>
         <RowContainer>
-          <Circle></Circle>
+          <Circle>
+            <img src={profile} width="100%" height="100%"></img>
+          </Circle>
           <Title fontSize={"25px"}>이준석's Playlist</Title>
         </RowContainer>
         <RightAlignContainer>

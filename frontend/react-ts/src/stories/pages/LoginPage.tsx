@@ -56,9 +56,6 @@ const StackConatiner = styled.div`
 
 function LoginPage() {
   const navigate = useNavigate();
-  const GoToStartPage = () => {
-    navigate("/");
-  };
   const GoToSignupPage = () => {
     navigate("/Signup");
   };
@@ -79,7 +76,7 @@ function LoginPage() {
   const [typedEmail, setTypedEmail] = useState("");
   const [typedPassword, setTypedPassword] = useState("");
 
-  let loginUrl = "http://192.168.0.146:8080/auth/signin";
+  let loginUrl = "http://10.255.81.70:8030/auth/signin";
   const Login = () => {
     const fetchDatas = async () => {
       console.log("로그인");

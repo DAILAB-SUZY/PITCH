@@ -135,9 +135,9 @@ function SignupPage() {
   // const onChange = (event) => {
   //   setItemid(event.target.value);
   // }
-  let url = "http://192.168.0.146:8080/mail/request";
-  let checkCodeUrl = "http://192.168.0.146:8080/mail/verify";
-  let signUpUrl = "http://192.168.0.146:8080/user/register";
+  let url = "http://10.255.81.70:8030/mail/request";
+  let checkCodeUrl = "http://10.255.81.70:8030/mail/verify";
+  let signUpUrl = "http://10.255.81.70:8030/user/register";
 
   const emailcheck = () => {
     if (idError != "") return;
@@ -244,10 +244,10 @@ function SignupPage() {
             onChange={onChangeIdHandler}
           ></InputBox>
           <Btn
-            width="100px"
+            width="70px"
             height="33px"
             fontsize="15px"
-            text="인증번호 발송"
+            text="인증요청"
             onClick={emailcheck}
           ></Btn>
         </StackConatiner>
@@ -262,10 +262,10 @@ function SignupPage() {
             onChange={(e) => setCheckcode(e.target.value)}
           ></InputBox>
           <Btn
-            width="100px"
+            width="70px"
             height="33px"
             fontsize="15px"
-            text="인증번호 확인"
+            text="인증확인"
             onClick={codeCheck}
           ></Btn>
         </StackConatiner>

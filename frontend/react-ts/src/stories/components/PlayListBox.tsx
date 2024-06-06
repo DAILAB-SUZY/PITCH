@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import img from "../../img/yanggang.webp";
 
 const Container = styled.div`
   width: 90vw;
@@ -28,6 +29,7 @@ const AlbumCover = styled.div`
   border-radius: 10%;
   background-color: black;
   margin: 10px;
+  overflow: hidden;
 `;
 
 const TextBox = styled.div`
@@ -69,16 +71,18 @@ const CircleBtn = styled.div`
 `;
 
 const PlayListBox = () => {
-  const items = Array.from({ length: 20 }, (_, index) => `Item ${index + 1}`);
+  const items = Array.from({ length: 10 }, (_, index) => `Item ${index + 1}`);
 
   return (
     <Container>
       {items.map((item, index) => (
         <ListBox>
-          <AlbumCover></AlbumCover>
+          <AlbumCover>
+            <img src={img} width="100%" height="100%"></img>
+          </AlbumCover>
           <TextBox>
             <Title fontSize={"20px"}>밤양갱</Title>
-            <Title fontSize={"10px"}>밤양갱</Title>
+            <Title fontSize={"15px"}>비비</Title>
           </TextBox>
         </ListBox>
       ))}

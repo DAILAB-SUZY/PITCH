@@ -130,3 +130,6 @@ input[type="password"] {
 input[type="password"]::placeholder {
   font-family: "Rg";
 }
+::-webkit-scrollbar {
+  display: none;
+}
