@@ -7,6 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface playlistTrackRepository extends JpaRepository<Playlist_Track,Long> {
-    Optional<Playlist_Track> findById(Long PlaylistId);//key로 찾기
-    List<Playlist_Track> findAllById(Long PlaylistId);
+    //Optional<Playlist_Track> findByPlaylistId(Long playlistId);//key로 찾기
+    List<Playlist_Track> findByPlaylist_PlaylistId(Long playlistId);
 }
