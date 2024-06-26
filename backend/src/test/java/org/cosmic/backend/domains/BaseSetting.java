@@ -21,7 +21,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.testcontainers.shaded.com.fasterxml.jackson.core.JsonProcessingException;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.Instant;
@@ -29,7 +28,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -70,11 +68,12 @@ public class BaseSetting {
 
     private User user;
     private Email email;
-
-    public User RegisterUser(){
+    private String emailTest;
+    public User RegisterUser(String emailtest){
+        emailTest = emailtest;
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         email = emailRepository.save(Email.builder()
-                .email("testboy@example.com")
+                .email(emailTest)
                 .verificationCode("123456")
                 .verified(true)
                 .build());
@@ -89,7 +88,7 @@ public class BaseSetting {
 
     public String GiveToken() throws Exception {
         UserLogin userLogin = UserLogin.builder()
-                .email("testboy@example.com")
+                .email(emailTest)
                 .password("123456")
                 .build();
 
@@ -103,8 +102,9 @@ public class BaseSetting {
         return validToken;
     }
 
-    public User DNASetting() throws Exception {
+    public User DNASetting(String emailtest) throws Exception {
         //userdna세팅
+        emailTest=emailtest;
         List<MusicDna> DNA= Arrays.asList(new MusicDna("느긋한"),new MusicDna("신나는"),new MusicDna("조용한"),new MusicDna("청순한"));
         for(int i=0;i<4;i++)
         {
@@ -115,7 +115,7 @@ public class BaseSetting {
         dnaDTO.setKey(1L);
         dnaDTO.setDna(Arrays.asList(new DNADetail(1L),new DNADetail(2L),new DNADetail(3L),new DNADetail(4L)));
 
-        user=RegisterUser();
+        user=RegisterUser(emailTest);
 
         mockMvc.perform(post("/api/dna/save")
                 .contentType("application/json")
