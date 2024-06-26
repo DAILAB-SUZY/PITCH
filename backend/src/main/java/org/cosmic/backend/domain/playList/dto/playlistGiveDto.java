@@ -13,7 +13,9 @@ import java.time.Instant;
 public class playlistGiveDto {
 
     Long playlistId;
-    private Instant createdDate;
-    private Instant updatedDate;
+    Long trackId;
     Long userId;
+    String title;
+    String artistName;
+    String Cover;
 }
