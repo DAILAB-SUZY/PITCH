@@ -77,7 +77,7 @@ public class UserService {
                 .refreshToken(tokenProvider.createRefreshToken(user))
                 .token(tokenProvider.create(user))
                 .email(email)
-                .id(user.getId())
+                .id(user.getUserId())
                 .build();
     }
 
@@ -88,7 +88,7 @@ public class UserService {
                 .refreshToken(tokenProvider.createRefreshToken(user))
                 .token(tokenProvider.create(user))
                 .email(user.getEmail().getEmail())
-                .id(user.getId())
+                .id(user.getUserId())
                 .build();
     }
 
@@ -100,4 +100,6 @@ public class UserService {
         redisTemplate.opsForValue().getAndDelete(email);
         return getByEmail(email);
     }
+
+
 }

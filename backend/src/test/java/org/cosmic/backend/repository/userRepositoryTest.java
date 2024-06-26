@@ -85,7 +85,7 @@ public class userRepositoryTest {
 
         //then
         for(User user:findList){
-            assertThat(user.getId()).isNotNull();
+            assertThat(user.getUserId()).isNotNull();
             assertThat(user.getEmail()).isNotNull();
             assertThat(user.getUsername()).isNotNull();
             assertThat(user.getPassword()).isNotNull();
@@ -115,7 +115,7 @@ public class userRepositoryTest {
         User searchuser=usersRepository.findByEmail_Email("kimjunho1231@naver.com").get();
 
         // then
-        Assertions.assertThat(searchuser.getId()).isGreaterThan(0);
+        Assertions.assertThat(searchuser.getUserId()).isGreaterThan(0);
     }
 
     @Test
@@ -137,7 +137,7 @@ public class userRepositoryTest {
         User searchuser=usersRepository.findByEmail_Email("kimjunho1231@naver.com").get();//아이디로 확인 후
         if(searchuser.getPassword().equals("1234")){//입력받은 비번이랑 일치하다면
             System.out.println("ok");
-            Assertions.assertThat(searchuser.getId()).isGreaterThan(0);
+            Assertions.assertThat(searchuser.getUserId()).isGreaterThan(0);
             Assertions.assertThat(searchuser.getUsername().equals("junho"));
         }
     }
