@@ -30,6 +30,10 @@ public class Track {//여기엔 모든 노래들이 담길 것임. 담길 때 �
     private String title;//곡 제목
 
     @Builder.Default
+    @Column(nullable=false,length=255)
+    private String Cover="base";//곡 제목
+
+    @Builder.Default
     @Column(nullable=false)
     private Instant createdDate=Instant.now();//발매 일
 
@@ -46,10 +50,11 @@ public class Track {//여기엔 모든 노래들이 담길 것임. 담길 때 �
     @JoinColumn(name="artistId")
     private Artist artist;
 
-    public Track(String genre, String title, Artist artist, Instant createdDate){
+    public Track(String genre, String title,String cover, Artist artist, Instant createdDate){
         this.genre = genre;
         this.title = title;
         this.artist = artist;
+        this.Cover=cover;
         this.createdDate = createdDate;
     }
 }

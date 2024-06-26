@@ -133,7 +133,7 @@ public class BaseSetting {
         Artist artist = new Artist("비비");
         artistRepository.save(artist);
 
-        Track track= new Track("발라드","밤양갱",artist, now);
+        Track track= new Track("발라드","밤양갱","base",artist, now);
         trackRepository.save(track);
 
         Album album= new Album("발라드","밤양갱","base",artist, now);
