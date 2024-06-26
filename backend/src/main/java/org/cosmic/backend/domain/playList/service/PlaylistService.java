@@ -1,6 +1,7 @@
 package org.cosmic.backend.domain.playList.service;
 
 import jakarta.transaction.Transactional;
+import org.cosmic.backend.domain.musicDNA.dto.ListDNA;
 import org.cosmic.backend.domain.playList.domain.Playlist;
 import org.cosmic.backend.domain.playList.domain.Playlist_Track;
 import org.cosmic.backend.domain.playList.domain.Track;
@@ -50,6 +51,7 @@ public class PlaylistService {
             }
         }
         else{//없었다면
+
             for(int i=0;i<playlist.size();i++)
             {
                 playlistDetail playlistdetail = playlist.get(i);
@@ -64,16 +66,29 @@ public class PlaylistService {
     }
     //플레이리스트 생성 또는 수정시 저장
 
-    public playlistGiveDto open(Long userId) {
-        User newuser=usersRepository.findById(userId).get();
-        Playlist newplaylist=newuser.getPlaylist();
-        playlistGiveDto newplaylistGiveDto=new playlistGiveDto();
-        newplaylistGiveDto.setPlaylistId(newplaylist.getPlaylistId());
-        newplaylistGiveDto.setCreatedDate(newplaylist.getCreatedDate());
-        newplaylistGiveDto.setUpdatedDate(newplaylist.getUpdatedDate());
-        newplaylistGiveDto.setUserId(newplaylist.getUser().getUserId());
+    @Transactional
+    public List<playlistGiveDto> open(Long userId) {
 
-        return newplaylistGiveDto;
+        List<playlistGiveDto> playlistGiveDtos=new ArrayList<>();
+        User newuser=usersRepository.findById(userId).get();
+
+        Playlist newplaylist=newuser.getPlaylist();//플레이리스트를 가져오고
+        List<Playlist_Track> playlist_track=playlistTrackRepository.findByPlaylist_PlaylistId(newplaylist.getPlaylistId());//해당 플레이리스트로 playlist_track에 해당 플레이리스트에 있는 모든 id가져오기
+
+        System.out.println(playlist_track.size());
+        for(int i=0;i<playlist_track.size();i++)
+        {
+            playlistGiveDto newplaylistGiveDto=new playlistGiveDto();
+
+            newplaylistGiveDto.setPlaylistId(newplaylist.getPlaylistId());
+            newplaylistGiveDto.setUserId(newplaylist.getUser().getUserId());
+            newplaylistGiveDto.setTrackId(playlist_track.get(i).getTrack().getTrackId());
+            newplaylistGiveDto.setTitle(playlist_track.get(i).getTrack().getTitle());
+            newplaylistGiveDto.setCover(playlist_track.get(i).getTrack().getCover());
+            newplaylistGiveDto.setArtistName(playlist_track.get(i).getTrack().getArtist().getName());
+
+            playlistGiveDtos.add(newplaylistGiveDto);
+        }
+        return playlistGiveDtos;
     }
-    //userid로 플레이리스트 찾기.
 }
