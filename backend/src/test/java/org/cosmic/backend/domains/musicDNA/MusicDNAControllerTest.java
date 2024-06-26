@@ -66,7 +66,7 @@ public class MusicDNAControllerTest extends BaseSetting {
         dnaDTO.setKey(1L);
         dnaDTO.setDna(Arrays.asList(new DNADetail(1L),new DNADetail(2L),new DNADetail(3L),new DNADetail(4L)));
 
-        RegisterUser();
+        RegisterUser("testmans@naver.com");
 
         mockMvc.perform(post("/api/dna/save")
         .contentType("application/json")
@@ -89,7 +89,7 @@ public class MusicDNAControllerTest extends BaseSetting {
         DnaDTO dnaDTO=new DnaDTO();
         dnaDTO.setKey(1L);
         dnaDTO.setDna(Arrays.asList(new DNADetail(1L),new DNADetail(2L),new DNADetail(3L)));
-        RegisterUser();
+        RegisterUser("testboys@naver.com");
 
         mockMvc.perform(post("/api/dna/save")
                         .contentType("application/json")
