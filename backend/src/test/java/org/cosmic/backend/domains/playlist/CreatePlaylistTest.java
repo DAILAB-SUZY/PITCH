@@ -3,20 +3,13 @@ package org.cosmic.backend.domains.playlist;
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.playList.dto.playlistDTO;
 import org.cosmic.backend.domain.playList.dto.playlistDetail;
-import org.cosmic.backend.domain.playList.repository.ArtistRepository;
-import org.cosmic.backend.domain.playList.repository.PlaylistRepository;
-import org.cosmic.backend.domain.playList.repository.TrackRepository;
-import org.cosmic.backend.domain.playList.repository.playlistTrackRepository;
 import org.cosmic.backend.domain.user.domain.User;
 import org.cosmic.backend.domain.user.dto.userDto;
-import org.cosmic.backend.domain.user.repository.EmailRepository;
-import org.cosmic.backend.domain.user.repository.UsersRepository;
 import org.cosmic.backend.domains.BaseSetting;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -31,22 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Log4j2
 public class CreatePlaylistTest extends BaseSetting {
     @Autowired
-    private EmailRepository emailRepository;
-    @Autowired
-    private UsersRepository usersRepository;
-    @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private playlistTrackRepository playlisttrackRepository;
-    @Autowired
-    private ArtistRepository artistRepository;
-    @Autowired
-    private TrackRepository trackRepository;
-    @Autowired
-    private PlaylistRepository playlistRepository;
-
-    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
     ObjectMapper mapper = new ObjectMapper();
 
     @Test
