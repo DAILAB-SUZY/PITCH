@@ -19,7 +19,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @Log4j2
-public class findTrackTest extends BaseSetting {
+public class findWrongTrackTest extends BaseSetting {
+
     @Autowired
     private MockMvc mockMvc;
     ObjectMapper mapper = new ObjectMapper();
@@ -51,31 +52,4 @@ public class findTrackTest extends BaseSetting {
                 .andExpect(status().isUnauthorized());
     }
 
-    @Test
-    public void findRightInfoTest() throws Exception {
-        User newuser=DNASetting("testboi@naver.com");//DNA들 넣어놓고 user등록 후 넣는 과정까지
-        PlaylistSetting();//playlist 넣어놓고 각 앨범, 아티스트, 노래들의 연관관계 연결
-
-        String validToken = GiveToken();
-        mockMvc.perform(post("/api/playlist/Tracksearch")
-                        .header("Authorization", "Bearer " + validToken)
-                        .contentType("application/json")
-                        .content(mapper.writeValueAsString(trackDTO.builder()
-                                .trackName("밤양갱")
-                                .build()
-                        )))
-                .andDo(print())
-                .andExpect(status().isOk());
-
-        mockMvc.perform(post("/api/playlist/Artistsearch")
-                        .header("Authorization", "Bearer " + validToken)
-                        .contentType("application/json")
-                        .content(mapper.writeValueAsString(ArtistDTO.builder()
-                                .artistName("비비")
-                                .build()
-                        )))
-                .andDo(print())
-                .andExpect(status().isOk());
-    }
-    // 유효한 상태에서 잘 만들어지는지
 }

@@ -33,8 +33,6 @@ public class PlaylistService {
     private playlistTrackRepository playlistTrackRepository;
     @Autowired
     private ArtistRepository artistRepository;
-    /*@Autowired
-    private TrackArtistRepository trackArtistRepository;*/
 
     @Transactional
     public void save(long userId, List<playlistDetail> playlist) {
@@ -42,16 +40,17 @@ public class PlaylistService {
         List<Playlist_Track> playlistTrack =playlistRepository.findByuser(usersRepository.findById(userId).get()).getPlaylist_track();
 
         User user = usersRepository.findById(userId).get();
-        Playlist newPlaylist = playlistRepository.findByuser(user);//user의 플레이리스트를 찾음
-            playlistTrackRepository.deleteByPlaylist_PlaylistId(playlistRepository.findByuser(user).getPlaylistId());
 
-            for (playlistDetail playlistdetail : playlist) {
-                Track track= trackRepository.findBytrackId(playlistdetail.getTrackId());
-                Playlist_Track playlist_track=new Playlist_Track();
-                playlist_track.setTrack(track);
-                playlist_track.setPlaylist(newPlaylist);
-                playlistTrackRepository.save(playlist_track);
-            }
+        Playlist newPlaylist = playlistRepository.findByuser(user);//user의 플레이리스트를 찾음
+        playlistTrackRepository.deleteByPlaylist_PlaylistId(playlistRepository.findByuser(user).getPlaylistId());
+
+        for (playlistDetail playlistdetail : playlist) {
+            Track track= trackRepository.findBytrackId(playlistdetail.getTrackId());
+            Playlist_Track playlist_track=new Playlist_Track();
+            playlist_track.setTrack(track);
+            playlist_track.setPlaylist(newPlaylist);
+            playlistTrackRepository.save(playlist_track);
+        }
     }
     //플레이리스트 생성 또는 수정시 저장
 

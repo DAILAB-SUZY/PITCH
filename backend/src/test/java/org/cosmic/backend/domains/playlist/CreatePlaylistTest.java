@@ -29,12 +29,12 @@ public class CreatePlaylistTest extends BaseSetting {
 
     @Test
     public void savePlaylistTest() throws Exception {
+
         User newuser=DNASetting("testgirls@naver.com");//DNA들 넣어놓고 user등록 후 넣는 과정까지
-        PlaylistSetting();//playlist 넣어놓고 각 앨범, 아티스트, 노래들의 연관관계 연결
+        PlaylistSetting(); //playlist 넣어놓고 각 앨범, 아티스트, 노래들의 연관관계 연결
 
         String validToken = GiveToken();
 
-        //User의 dna를 설정하고 user_dna를 가져옴
         playlistDTO playlistdto=new playlistDTO();
         playlistdto.setId(1L);
         playlistdto.setPlaylist(Arrays.asList(new playlistDetail(1L)));

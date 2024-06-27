@@ -128,5 +128,8 @@ public class BaseSetting {
 
         Track track= new Track("발라드","밤양갱","base",artist, now,album);
         trackRepository.save(track);
+
+        Playlist playlist =new Playlist(now,now,user);
+        playlistRepository.save(playlist);
     }
 }
