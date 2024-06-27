@@ -2,7 +2,6 @@ package org.cosmic.backend.domains.auth;
 
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.auth.applications.JwtAuthenticationFilter;
-import org.cosmic.backend.domain.auth.applications.TokenProvider;
 import org.cosmic.backend.domain.auth.dto.UserLogin;
 import org.cosmic.backend.domain.user.domain.Email;
 import org.cosmic.backend.domain.user.domain.User;
@@ -38,8 +37,6 @@ public class ServletFilterTest {
     private EmailRepository emailRepository;
     @Autowired
     private UsersRepository usersRepository;
-    @Autowired
-    private TokenProvider tokenProvider;
 
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
     ObjectMapper mapper = new ObjectMapper();
@@ -70,7 +67,6 @@ public class ServletFilterTest {
 
         MvcResult result = resultActions.andReturn();
         validToken = mapper.readValue(result.getResponse().getContentAsString(), UserLogin.class).getToken();
-        log.info(validToken);
     }
 
     @AfterEach
