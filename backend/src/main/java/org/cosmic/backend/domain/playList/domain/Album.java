@@ -43,7 +43,7 @@ public class Album {//앨범과 트랙은 1:N관계이며 앨범과 아티스트
 
     @OneToMany(mappedBy = "album")
     @Builder.Default
-    private List<Album_Track>album_track=new ArrayList<>();
+    private List<Track> tracks=new ArrayList<>();
 
     public Album(String genre, String title,String cover, Artist artist, Instant createdDate){
         this.genre = genre;

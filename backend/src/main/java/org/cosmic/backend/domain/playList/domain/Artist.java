@@ -18,23 +18,23 @@ import java.util.List;
 public class Artist {//
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name="ArtistId")
-    private Long ArtistId ;
+    @Column(name="artistId")
+    private Long artistId ;
 
-    @Column(length=255)
-    private String name;
+    @Column(length=255,name="artistName")
+    private String artistName;
 
     //아티스트 1 앨범 N
     @OneToMany(mappedBy = "artist")
     @Builder.Default
-    private List<Album_Artist>album_artist=new ArrayList<>();
+    private List<Album>album=new ArrayList<>();
 
     //아티스트 1 트랙 N
     @OneToMany(mappedBy = "artist")
     @Builder.Default
-    private List<Track_Artist>track_artist=new ArrayList<>();
+    private List<Track>track=new ArrayList<>();
 
     public Artist(String name) {
-        this.name = name;
+        this.artistName = name;
     }
 }

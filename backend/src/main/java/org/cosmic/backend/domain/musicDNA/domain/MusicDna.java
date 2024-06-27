@@ -29,7 +29,7 @@ public class MusicDna {//dna들을 담고 있는 테이블.
     private String emotion="느긋한";
 
     @OneToMany(mappedBy = "emotion")
-    private List<User_Dna> users=new ArrayList<>();
+    private List<User_Dna> users;
 
     public MusicDna(String emotion) {
         this.emotion = emotion;

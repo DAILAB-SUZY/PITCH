@@ -39,22 +39,24 @@ public class Track {//여기엔 모든 노래들이 담길 것임. 담길 때 �
 
 
     @OneToMany(mappedBy = "track")
-    private List<Playlist_Track> playlist_track=new ArrayList<>();
+    private List<Playlist_Track> playlist_track;
 
 
-    @OneToMany(mappedBy = "track")
-    private List<Album_Track> album_track=new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="albumId")
+    private Album album;
 
     //아티스트와 1:N관계
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="artistId")
     private Artist artist;
 
-    public Track(String genre, String title,String cover, Artist artist, Instant createdDate){
+    public Track(String genre, String title,String cover, Artist artist, Instant createdDate,Album album){
         this.genre = genre;
         this.title = title;
         this.artist = artist;
         this.Cover=cover;
         this.createdDate = createdDate;
+        this.album = album;
     }
 }
