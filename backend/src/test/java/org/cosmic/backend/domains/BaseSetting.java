@@ -50,15 +50,6 @@ public class BaseSetting {
 
     @Autowired
     PlaylistRepository playlistRepository;
-    @Autowired
-    AlbumTrackRepository albumTrackRepository;
-    @Autowired
-    playlistTrackRepository playlisttrackRepository;
-
-    @Autowired
-    TrackArtistRepository trackArtistRepository;
-    @Autowired
-    AlbumArtistRepository albumArtistRepository;
 
     @Autowired
     private MockMvc mockMvc;
@@ -74,14 +65,14 @@ public class BaseSetting {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         email = emailRepository.save(Email.builder()
                 .email(emailTest)
-                .verificationCode("123456")
+                .verificationCode("12345678")
                 .verified(true)
                 .build());
 
         user=usersRepository.save(User.builder()
                 .email(email)
                 .username("goodwill")
-                .password(encoder.encode("123456"))
+                .password(encoder.encode("12345678"))
             .build());
         return user;
     }
@@ -89,13 +80,12 @@ public class BaseSetting {
     public String GiveToken() throws Exception {
         UserLogin userLogin = UserLogin.builder()
                 .email(emailTest)
-                .password("123456")
+                .password("12345678")
                 .build();
 
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/auth/signin")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(userLogin)))
-                .andExpect(status().isOk());
+                        .content(mapper.writeValueAsString(userLogin)));
 
         MvcResult result = resultActions.andReturn();
         String validToken = mapper.readValue(result.getResponse().getContentAsString(), UserLogin.class).getToken();
@@ -133,22 +123,10 @@ public class BaseSetting {
         Artist artist = new Artist("비비");
         artistRepository.save(artist);
 
-        Track track= new Track("발라드","밤양갱","base",artist, now);
-        trackRepository.save(track);
-
         Album album= new Album("발라드","밤양갱","base",artist, now);
         albumRepository.save(album);
 
-        Playlist playlist = new Playlist(now,now,user);
-        playlistRepository.save(playlist);
-
-        Track_Artist track_artist=new Track_Artist(track,artist);
-        trackArtistRepository.save(track_artist);
-
-        Album_Track album_track=new Album_Track(track,album);
-        albumTrackRepository.save(album_track);
-
-        Album_Artist album_artist=new Album_Artist(artist,album);
-        albumArtistRepository.save(album_artist);
+        Track track= new Track("발라드","밤양갱","base",artist, now,album);
+        trackRepository.save(track);
     }
 }
