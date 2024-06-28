@@ -26,6 +26,24 @@ public class PlatlistApi {
     private PlaylistService playlistService;
     private playlistGiveDto newplaylistGiveDto = new playlistGiveDto();
 
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Ok",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = String.class))
+                    }),
+
+            @ApiResponse(responseCode = "401",
+                    description = "Not Found User",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponse.class))
+                    }
+            )
+    }
+    )
+
     @Transactional
     @PostMapping("/give")
     public List<playlistGiveDto> giveData(@RequestBody userDto user) {
@@ -34,6 +52,24 @@ public class PlatlistApi {
        return playlistService.open(user.getUserid());
 
     }//특정 플레이어의 플레이리스트 가져와서 줌
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Ok",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = String.class))
+                    }),
+
+            @ApiResponse(responseCode = "401",
+                    description = "Not Found User",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponse.class))
+                    }
+            )
+    }
+    )
 
     @PostMapping("/save")//수정한 플레이리스트를 여기 저장
     public ResponseEntity<?> savePlaylistData(@RequestBody playlistDTO playlist) {

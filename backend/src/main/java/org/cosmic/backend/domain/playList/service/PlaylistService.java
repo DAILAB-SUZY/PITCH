@@ -9,6 +9,7 @@ import org.cosmic.backend.domain.playList.dto.TrackGiveDto;
 import org.cosmic.backend.domain.playList.dto.playlistDetail;
 import org.cosmic.backend.domain.playList.dto.playlistGiveDto;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundArtistException;
+import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.playList.exceptions.NotMatchTrackException;
 import org.cosmic.backend.domain.playList.repository.*;
 import org.cosmic.backend.domain.user.domain.User;
@@ -16,6 +17,7 @@ import org.cosmic.backend.domain.user.repository.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,19 +39,25 @@ public class PlaylistService {
     @Transactional
     public void save(long userId, List<playlistDetail> playlist) {
 
-        List<Playlist_Track> playlistTrack =playlistRepository.findByuser(usersRepository.findById(userId).get()).getPlaylist_track();
+        if(!usersRepository.findById(userId).isPresent()) {
+            throw new NotFoundUserException();
+        }
+        else{
+            List<Playlist_Track> playlistTrack =playlistRepository.findByuser(usersRepository.findById(userId).get()).getPlaylist_track();
 
-        User user = usersRepository.findById(userId).get();
+            User user = usersRepository.findById(userId).get();
 
-        Playlist newPlaylist = playlistRepository.findByuser(user);//user의 플레이리스트를 찾음
-        playlistTrackRepository.deleteByPlaylist_PlaylistId(playlistRepository.findByuser(user).getPlaylistId());
+            Playlist newPlaylist = playlistRepository.findByuser(user);//user의 플레이리스트를 찾음
+            newPlaylist.setUpdatedDate(Instant.now());
+            playlistTrackRepository.deleteByPlaylist_PlaylistId(playlistRepository.findByuser(user).getPlaylistId());
 
-        for (playlistDetail playlistdetail : playlist) {
-            Track track= trackRepository.findBytrackId(playlistdetail.getTrackId());
-            Playlist_Track playlist_track=new Playlist_Track();
-            playlist_track.setTrack(track);
-            playlist_track.setPlaylist(newPlaylist);
-            playlistTrackRepository.save(playlist_track);
+            for (playlistDetail playlistdetail : playlist) {
+                Track track= trackRepository.findBytrackId(playlistdetail.getTrackId());
+                Playlist_Track playlist_track=new Playlist_Track();
+                playlist_track.setTrack(track);
+                playlist_track.setPlaylist(newPlaylist);
+                playlistTrackRepository.save(playlist_track);
+            }
         }
     }
     //플레이리스트 생성 또는 수정시 저장
@@ -60,24 +68,33 @@ public class PlaylistService {
         List<playlistGiveDto> playlistGiveDtos=new ArrayList<>();
         User newuser=usersRepository.findById(userId).get();
 
-        Playlist newplaylist=newuser.getPlaylist();//플레이리스트를 가져오고
-        List<Playlist_Track> playlist_track=playlistTrackRepository.findByPlaylist_PlaylistId(newplaylist.getPlaylistId()).get();//해당 플레이리스트로 playlist_track에 해당 플레이리스트에 있는 모든 id가져오기
-
-        System.out.println(playlist_track.size());
-        for(int i=0;i<playlist_track.size();i++)
+        if(newuser==null)
         {
-            playlistGiveDto newplaylistGiveDto=new playlistGiveDto();
+            //없는 유저라고 에러발생
 
-            newplaylistGiveDto.setPlaylistId(newplaylist.getPlaylistId());
-            newplaylistGiveDto.setUserId(newplaylist.getUser().getUserId());
-            newplaylistGiveDto.setTrackId(playlist_track.get(i).getTrack().getTrackId());
-            newplaylistGiveDto.setTitle(playlist_track.get(i).getTrack().getTitle());
-            newplaylistGiveDto.setCover(playlist_track.get(i).getTrack().getCover());
-            newplaylistGiveDto.setArtistName(playlist_track.get(i).getTrack().getArtist().getArtistName());
-
-            playlistGiveDtos.add(newplaylistGiveDto);
+            throw new NotFoundUserException();//해당 아티스트가 없을 때
         }
-        return playlistGiveDtos;
+        else{
+            Playlist newplaylist=newuser.getPlaylist();//플레이리스트를 가져오고
+            List<Playlist_Track> playlist_track=playlistTrackRepository.findByPlaylist_PlaylistId(newplaylist.getPlaylistId()).get();//해당 플레이리스트로 playlist_track에 해당 플레이리스트에 있는 모든 id가져오기
+
+            System.out.println(playlist_track.size());
+            for(int i=0;i<playlist_track.size();i++)
+            {
+                playlistGiveDto newplaylistGiveDto=new playlistGiveDto();
+
+                newplaylistGiveDto.setPlaylistId(newplaylist.getPlaylistId());
+                newplaylistGiveDto.setUserId(newplaylist.getUser().getUserId());
+                newplaylistGiveDto.setTrackId(playlist_track.get(i).getTrack().getTrackId());
+                newplaylistGiveDto.setTitle(playlist_track.get(i).getTrack().getTitle());
+                newplaylistGiveDto.setCover(playlist_track.get(i).getTrack().getCover());
+                newplaylistGiveDto.setArtistName(playlist_track.get(i).getTrack().getArtist().getArtistName());
+
+                playlistGiveDtos.add(newplaylistGiveDto);
+            }
+
+            return playlistGiveDtos;
+        }
     }
 
     @Transactional
@@ -122,5 +139,4 @@ public class PlaylistService {
             //오류발생
         }
     }
-
 }
