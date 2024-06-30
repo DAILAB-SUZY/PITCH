@@ -1,10 +1,6 @@
 import type { Preview } from "@storybook/react";
 
-import { createGlobalStyle, ThemeProvider } from "styled-components";
-import { withThemeFromJSXProvider } from "@storybook/addon-themes";
-
 /* TODO: update import for your custom theme configurations */
-import fontSize from "../src/themes/themes.js";
 
 /* TODO: replace with your own global styles, or remove */
 const GlobalStyles = createGlobalStyle`
@@ -23,16 +19,9 @@ const preview: Preview = {
     },
   },
 
-  decorators: [
-    withThemeFromJSXProvider({
-      themes: {
-        fontSize,
-      },
-      defaultTheme: "light",
-      Provider: ThemeProvider,
-      GlobalStyles,
-    }),
-  ],
+  themes: {},
+  Provider: ThemeProvider,
+  GlobalStyles,
 };
 
 export default preview;
