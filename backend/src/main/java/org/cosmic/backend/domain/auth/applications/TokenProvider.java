@@ -29,7 +29,7 @@ public class TokenProvider {
 
         return Jwts.builder()
                 .signWith(KEY)
-                .subject(user.getId().toString())
+                .subject(user.getUserId().toString())
                 .issuer("pitch")
                 .issuedAt(new Date())
                 .expiration(expiredDate)
@@ -44,7 +44,7 @@ public class TokenProvider {
 
         String refreshToken = Jwts.builder()
                 .signWith(KEY)
-                .subject(user.getId().toString())
+                .subject(user.getUserId().toString())
                 .issuer("pitch")
                 .issuedAt(new Date())
                 .expiration(expiredDate)
@@ -66,7 +66,6 @@ public class TokenProvider {
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
-
         return claims.getSubject();
     }
 }

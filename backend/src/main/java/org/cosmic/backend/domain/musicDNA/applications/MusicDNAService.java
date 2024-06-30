@@ -31,14 +31,14 @@ public class MusicDNAService {
     @Transactional
     public void saveDNA(Long key, List<DNADetail>dna) {
 
-        List<User_Dna> userDnas = dnaRepository.findAllByUserId(key);
+        List<User_Dna>userDnas=usersRepository.findById(key).get().getUserDnas();
 
         if (dna.size() != 4) {
             //dna개수가 맞지 않을 때
             throw new NotMatchMusicDnaCountException();
         }
 
-        if (!dnaRepository.findById(key).isPresent()) {
+        if (!dnaRepository.findByUser(usersRepository.findById(key).get()).isPresent()) {
 
             User user = usersRepository.findById(key).get();
 
