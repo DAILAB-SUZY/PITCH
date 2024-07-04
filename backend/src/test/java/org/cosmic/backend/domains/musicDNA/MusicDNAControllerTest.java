@@ -5,6 +5,8 @@ import org.cosmic.backend.domain.musicDNA.domain.MusicDna;
 import org.cosmic.backend.domain.musicDNA.dto.DNADetail;
 import org.cosmic.backend.domain.musicDNA.dto.DnaDTO;
 import org.cosmic.backend.domain.musicDNA.repository.EmotionRepository;
+import org.cosmic.backend.domain.user.domain.Email;
+import org.cosmic.backend.domain.user.domain.User;
 import org.cosmic.backend.domain.user.repository.EmailRepository;
 import org.cosmic.backend.domain.user.repository.UsersRepository;
 import org.cosmic.backend.domains.BaseSetting;
@@ -62,11 +64,22 @@ public class MusicDNAControllerTest extends BaseSetting {
         {
             emotionRepository.save(TestDNA.get(i));
         }
-        DnaDTO dnaDTO=new DnaDTO();
-        dnaDTO.setKey(1L);
-        dnaDTO.setDna(Arrays.asList(new DNADetail(1L),new DNADetail(2L),new DNADetail(3L),new DNADetail(4L)));
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        Email email = emailRepository.save(Email.builder()
+                .email("testu1@naver.com")
+                .verificationCode("12345678")
+                .verified(true)
+                .build());
 
-        RegisterUser("testmans@naver.com");
+        User user=usersRepository.save(User.builder()
+                .email(email)
+                .username("goodwill")
+                .password(encoder.encode("12345678"))
+                .build());
+
+        DnaDTO dnaDTO=new DnaDTO();
+        dnaDTO.setKey(user.getUserId());
+        dnaDTO.setDna(Arrays.asList(new DNADetail(1L),new DNADetail(2L),new DNADetail(3L),new DNADetail(4L)));
 
         mockMvc.perform(post("/api/dna/save")
         .contentType("application/json")
@@ -82,15 +95,29 @@ public class MusicDNAControllerTest extends BaseSetting {
     @Test
     public void notMatchDataTest() throws Exception {
         List<MusicDna> TestDNA= Arrays.asList(new MusicDna("느긋한"),new MusicDna("신나는"),new MusicDna("청순한"));
+        System.out.println("*****1");
         for(int i=0;i<3;i++)
         {
             emotionRepository.save(TestDNA.get(i));
         }
-        DnaDTO dnaDTO=new DnaDTO();
-        dnaDTO.setKey(1L);
-        dnaDTO.setDna(Arrays.asList(new DNADetail(1L),new DNADetail(2L),new DNADetail(3L)));
-        RegisterUser("testboys@naver.com");
+        System.out.println("*****2");
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        Email email = emailRepository.save(Email.builder()
+                .email("testu2@naver.com")
+                .verificationCode("12345678")
+                .verified(true)
+                .build());
 
+        User user=usersRepository.save(User.builder()
+                .email(email)
+                .username("goodwill")
+                .password(encoder.encode("12345678"))
+                .build());
+
+        System.out.println("*****2");
+        DnaDTO dnaDTO=new DnaDTO();
+        dnaDTO.setKey(user.getUserId());
+        dnaDTO.setDna(Arrays.asList(new DNADetail(1L),new DNADetail(2L),new DNADetail(3L)));
         mockMvc.perform(post("/api/dna/save")
                         .contentType("application/json")
                         .content(mapper.writeValueAsString(DnaDTO.builder()

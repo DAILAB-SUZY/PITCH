@@ -42,21 +42,20 @@ public class ServletFilterTest {
     ObjectMapper mapper = new ObjectMapper();
     private String validToken;
     private String invalidToken = "invalidToken";
-
-    @BeforeEach
-    void setUp() throws Exception {
-        Email email = emailRepository.save(Email.builder()
-                .email("testman@example.com")
-                .verificationCode("123456")
-                .verified(true)
-                .build());
+    //유효한 jwt토큰이 제공됐을 때 인증이 성공적으로 수행되는지 확인
+    @Test
+    public void Token_isValid() throws Exception {  Email email = emailRepository.save(Email.builder()
+            .email("testq1@example.com")
+            .verificationCode("123456")
+            .verified(true)
+            .build());
         User user = usersRepository.save(User.builder()
                 .email(email)
                 .username("goodwill")
                 .password(encoder.encode("123456"))
                 .build());
         UserLogin userLogin = UserLogin.builder()
-                .email("testman@example.com")
+                .email("testq1@example.com")
                 .password("123456")
                 .build();
 
@@ -67,17 +66,7 @@ public class ServletFilterTest {
 
         MvcResult result = resultActions.andReturn();
         validToken = mapper.readValue(result.getResponse().getContentAsString(), UserLogin.class).getToken();
-    }
 
-    @AfterEach
-    void setDown() {
-        usersRepository.deleteAll();
-        emailRepository.deleteAll();
-    }
-
-    //유효한 jwt토큰이 제공됐을 때 인증이 성공적으로 수행되는지 확인
-    @Test
-    public void Token_isValid() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/example")
                         .header("Authorization", "Bearer " + validToken)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -88,6 +77,29 @@ public class ServletFilterTest {
     //유효하지 않은 jwt토큰이 제공됐을 때 인증실패하는지 확인
     @Test
     public void Token_isnonValid() throws Exception {
+        Email email = emailRepository.save(Email.builder()
+                .email("testn1@example.com")
+                .verificationCode("123456")
+                .verified(true)
+                .build());
+        User user = usersRepository.save(User.builder()
+                .email(email)
+                .username("goodwill")
+                .password(encoder.encode("123456"))
+                .build());
+        UserLogin userLogin = UserLogin.builder()
+                .email("testn1@example.com")
+                .password("123456")
+                .build();
+
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/auth/signin")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(userLogin)))
+                .andExpect(status().isOk());
+
+        MvcResult result = resultActions.andReturn();
+        validToken = mapper.readValue(result.getResponse().getContentAsString(), UserLogin.class).getToken();
+
         String invalidToken = "Bearerinvalid.token.jwt";
 
         mockMvc.perform(MockMvcRequestBuilders.get("/example")
