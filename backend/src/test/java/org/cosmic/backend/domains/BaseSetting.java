@@ -38,7 +38,6 @@ public class BaseSetting {
     EmailRepository emailRepository;
     @Autowired
     UsersRepository usersRepository;
-
     @Autowired
     ArtistRepository artistRepository;
     @Autowired
@@ -47,10 +46,8 @@ public class BaseSetting {
     TrackRepository trackRepository;
     @Autowired
     EmotionRepository emotionRepository;
-
     @Autowired
     PlaylistRepository playlistRepository;
-
     @Autowired
     private MockMvc mockMvc;
 
