@@ -31,25 +31,25 @@ public class MusicDNAService {
     @Transactional
     public void saveDNA(Long key, List<DNADetail>dna) {
 
-        List<User_Dna>userDnas=usersRepository.findById(key).get().getUserDnas();
-
+        User user=usersRepository.findByUserId(key).get();
         if (dna.size() != 4) {
             //dna개수가 맞지 않을 때
             throw new NotMatchMusicDnaCountException();
         }
+        List<User_Dna>userDnas=user.getUserDnas();
 
-        if (!dnaRepository.findByUser(usersRepository.findById(key).get()).isPresent()) {
-
-            User user = usersRepository.findById(key).get();
-
+        if (!dnaRepository.findByUser(usersRepository.findByUserId(key).get()).isPresent()) {
             List<MusicDna> dnaKeys = new ArrayList<>();
+            List<User_Dna> userdnas = new ArrayList<>();
             for (DNADetail dnaDetail : dna) {
                 MusicDna dnas = emotionRepository.findByEmotionId(dnaDetail.getDnaKey()).get();
                 User_Dna userDna=new User_Dna();
                 userDna.setUser(user);
                 userDna.setEmotion(dnas);
                 dnaRepository.save(userDna);
+                userdnas.add(userDna);
             }
+            user.setUserDnas(userDnas);
 
         }
         else{//이미있다면
@@ -60,6 +60,7 @@ public class MusicDNAService {
                 User_Dna userDna=userDnas.get(i);
                 userDna.setEmotion(dans);
                 dnaRepository.save(userDna);
+
             }
         }
     }

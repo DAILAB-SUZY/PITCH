@@ -38,14 +38,13 @@ public class PlaylistService {
 
     @Transactional
     public void save(long userId, List<playlistDetail> playlist) {
-
         if(!usersRepository.findById(userId).isPresent()) {
             throw new NotFoundUserException();
         }
         else{
-            List<Playlist_Track> playlistTrack =playlistRepository.findByuser(usersRepository.findById(userId).get()).getPlaylist_track();
+            List<Playlist_Track> playlistTrack =playlistRepository.findByuser(usersRepository.findByUserId(userId).get()).getPlaylist_track();
 
-            User user = usersRepository.findById(userId).get();
+            User user = usersRepository.findByUserId(userId).get();
 
             Playlist newPlaylist = playlistRepository.findByuser(user);//user의 플레이리스트를 찾음
             newPlaylist.setUpdatedDate(Instant.now());
@@ -76,9 +75,7 @@ public class PlaylistService {
         }
         else{
             Playlist newplaylist=newuser.getPlaylist();//플레이리스트를 가져오고
-            List<Playlist_Track> playlist_track=playlistTrackRepository.findByPlaylist_PlaylistId(newplaylist.getPlaylistId()).get();//해당 플레이리스트로 playlist_track에 해당 플레이리스트에 있는 모든 id가져오기
-
-            System.out.println(playlist_track.size());
+            List<Playlist_Track> playlist_track=playlistTrackRepository.findByPlaylist_PlaylistId(newplaylist.getPlaylistId()).get();//해당 플레이리스트로 playlist_track에 해당 플레이리스트에 있는 모든 id가져오기럍
             for(int i=0;i<playlist_track.size();i++)
             {
                 playlistGiveDto newplaylistGiveDto=new playlistGiveDto();

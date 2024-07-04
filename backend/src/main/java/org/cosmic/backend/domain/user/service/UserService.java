@@ -51,10 +51,6 @@ public class UserService {
             throw new NotExistEmailException();
         }
 
-        /*비밀번호 조건 확인
-        8자이상,
-        */
-
         if(request.getPassword().length() < 8) {
             throw new NotMatchConditionException();
         }
