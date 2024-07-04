@@ -5,4 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AlbumRepository extends JpaRepository<Album,Long> {
     Album findByAlbumId(Long albumId);
+    void deleteByAlbumId(Long albumId);
 }

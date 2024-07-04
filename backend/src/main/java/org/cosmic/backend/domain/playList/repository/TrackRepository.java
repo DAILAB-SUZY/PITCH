@@ -9,5 +9,6 @@ public interface TrackRepository extends JpaRepository<Track,Long> {
     Track findByTitle(String title);
     List<Track> findByArtist_ArtistId(Long artistId);
     Track findBytrackId(Long trackId);
+    void deleteByTrackId(Long trackId);
 
 }
