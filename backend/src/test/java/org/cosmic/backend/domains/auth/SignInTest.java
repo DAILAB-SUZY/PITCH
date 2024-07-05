@@ -43,7 +43,7 @@ class SignInTest {
     @Order(1)
     public void signInTest() throws Exception {
         Email email = emailRepository.save(Email.builder()
-                .email("testman@example.com")
+                .email("testboy9@example.com")
                 .verificationCode("123456")
                 .verified(true)
                 .build());
@@ -56,13 +56,13 @@ class SignInTest {
         mockMvc.perform(post("/auth/signin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(UserLogin.builder()
-                                .email("testman@example.com")
+                                .email("testboy9@example.com")
                                 .password("123456")
                                 .build()
                         ))
                 ).andDo(print())
                 .andExpect(status().isOk());
-        log.info(redisTemplate.opsForValue().get("testman@example.com"));
+        log.info(redisTemplate.opsForValue().get("test3@example.com"));
         Assertions.assertFalse(redisTemplate.opsForValue().get("testman@example.com").isEmpty());
     }
 
@@ -72,7 +72,7 @@ class SignInTest {
         mockMvc.perform(post("/auth/signin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(UserLogin.builder()
-                                .email("testman@example.com")
+                                .email("test4@example.com")
                                 .password("123457")
                                 .build()
                         ))
