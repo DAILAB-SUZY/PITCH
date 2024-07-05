@@ -28,12 +28,12 @@ public class RandomCodeCheckTest extends EmailBaseTest{
     @Test
     public void emailExistCheck() {
         ObjectMapper objectMapper = new ObjectMapper();
-        emailRepository.save(Email.builder().email("testman@example.com").verificationCode("123456").build());
+        emailRepository.save(Email.builder().email("test6@example.com").verificationCode("123456").build());
 
         try {
             mockMvc.perform(post("/mail/verify")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(new VerificationForm("testman2@example.com", "123457"))))
+                            .content(objectMapper.writeValueAsString(new VerificationForm("test7@example.com", "123457"))))
                     .andDo(print())
                     .andExpect(status().isUnauthorized())
                     .andExpect(content().string(containsString("Not found email")));
@@ -45,12 +45,12 @@ public class RandomCodeCheckTest extends EmailBaseTest{
     @Test
     public void codeNotMatchCheck() {
         ObjectMapper objectMapper = new ObjectMapper();
-        emailRepository.save(Email.builder().email("testman@example.com").verificationCode("123456").build());
+        emailRepository.save(Email.builder().email("test8@example.com").verificationCode("123456").build());
 
         try {
             mockMvc.perform(post("/mail/verify")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(new VerificationForm("testman@example.com", "123457"))))
+                            .content(objectMapper.writeValueAsString(new VerificationForm("test8@example.com", "123457"))))
                     .andDo(print())
                     .andExpect(status().isNotFound())
                     .andExpect(content().string(containsString("Not match password")));
