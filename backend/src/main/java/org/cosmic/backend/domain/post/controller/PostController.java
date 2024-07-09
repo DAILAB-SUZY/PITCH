@@ -73,11 +73,28 @@ public class PostController {
     }
     //특정 post열 때
 
-    @PostMapping("/create")
-    public ResponseEntity<?> createPost(@RequestBody Post post) {//Post로 내용이 추가됨
-        postService.createPost(post);
-        return ResponseEntity.ok("성공");
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Ok",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = String.class))
+                    }),
+
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found Album",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponse.class))
+                    }
+            )
     }
+    )
+    @PostMapping("/create")
+    public PostDto createPost(@RequestBody CreatePost post) {//Post로 내용이 추가됨
+        return postService.createPost(post);
+    }
+
     //포스트 하나 만들 때
 
     @PostMapping("/update")
