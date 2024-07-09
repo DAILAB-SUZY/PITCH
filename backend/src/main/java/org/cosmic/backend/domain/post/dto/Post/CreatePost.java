@@ -1,4 +1,4 @@
-package org.cosmic.backend.domain.post.dto;
+package org.cosmic.backend.domain.post.dto.Post;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import java.time.Instant;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Post {
+public class CreatePost {
     private Long userId;
     private String cover;
     private String artistName;
