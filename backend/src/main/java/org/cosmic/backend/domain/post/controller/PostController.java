@@ -96,9 +96,25 @@ public class PostController {
     }
 
     //포스트 하나 만들 때
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Ok",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = String.class))
+                    }),
 
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found Post",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponse.class))
+                    }
+            )
+    }
+    )
     @PostMapping("/update")
-    public ResponseEntity<?> updatePost(@RequestBody Post post) {//Post로 내용이 추가됨
+    public ResponseEntity<?> updatePost(@RequestBody UpdatePost post) {//Post로 내용이 추가됨
         postService.updatePost(post);
         return ResponseEntity.ok("성공");
     }
