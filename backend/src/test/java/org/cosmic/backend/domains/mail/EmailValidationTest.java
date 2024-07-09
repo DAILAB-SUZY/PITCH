@@ -32,7 +32,7 @@ class EmailValidationTest extends EmailBaseTest {
 
     @Test
     public void alreadyExistEmailTest() {
-        MailAddress mailAddress = new MailAddress("test1@example.com");
+        MailAddress mailAddress = new MailAddress("teste1@example.com");
         ObjectMapper objectMapper = new ObjectMapper();
         Email email = emailRepository.save(Email.builder().email(mailAddress.getEmail()).verificationCode("123456").build());
         usersRepository.save(User.builder().email(email).username("testman").password("123456").profilePicture(null).build());

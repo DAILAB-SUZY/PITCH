@@ -30,7 +30,7 @@ public class verifyTest {
     private Email email;
     private User user=new User();
 
-    @BeforeEach
+    /*@BeforeEach
     void setUp() {
         email=new Email();
         email.setEmail("kimjunho1231@naver.com");
@@ -42,12 +42,16 @@ public class verifyTest {
     public void clean(){
         usersRepository.deleteAll();
         emailRepository.deleteAll();
-    }
+    }*/
 
     @Test
-    @DisplayName("간단한 json데이터파싱")
+    @DisplayName("간단한 json데이터파싱")//*
     void simpleDataParsing() {
-        String jsonString = "{\"email\": \"kimjunho1231@naver.com\","
+        email=new Email();
+        email.setEmail("kimjunho12315@naver.com");
+        email.setVerificationCode("123456");
+        emailRepository.save(email);
+        String jsonString = "{\"email\": \"kimjunho12315@naver.com\","
                 + "\"password\": \"1234\","
                 + "\"name\": junho"
                 + "}";
@@ -67,29 +71,33 @@ public class verifyTest {
         user.setPassword(password);
         usersRepository.save(user);
 
-        Assertions.assertThat(user.getEmail().getEmail()).isEqualTo("kimjunho1231@naver.com");//이메일이 일치하게 들어가야함
+        Assertions.assertThat(user.getEmail().getEmail()).isEqualTo("kimjunho12315@naver.com");//이메일이 일치하게 들어가야함
         Assertions.assertThat(user.getPassword()).isEqualTo("1234");//인증코드가 일치하게 들어가야함
         Assertions.assertThat(user.getUsername()).isEqualTo("junho");//인증코드가 일치하게 들어가야함
 
     }
     @Test
-    @DisplayName("jsonArray파싱")
+    @DisplayName("jsonArray파싱")//*
     void datasParsing() {
+        email=new Email();
+        email.setEmail("kimjunho12316@naver.com");
+        email.setVerificationCode("123456");
+        emailRepository.save(email);
         String jsonString =
                 "{"
                         +   "\"posts\": ["
                         +       "{"
-                        +           "\"email\": \"kimjunho1231@naver.com\","
+                        +           "\"email\": \"kimjunho12316@naver.com\","
                         +           "\"name\": \"junho\","
                         +           "\"password\": \"1234\""
                         +       "},"
                         +       "{"
-                        +           "\"email\": \"kimjunho1231@google.co.kr\","
+                        +           "\"email\": \"kimjunho12317@google.co.kr\","
                         +           "\"name\": \"suhyeon\","
                         +           "\"password\": \"12345\""
                         +       "},"
                         +       "{"
-                        +           "\"email\": \"kimjunho1231@nate.com\","
+                        +           "\"email\": \"kimjunho12318@nate.com\","
                         +           "\"name\": \"dongyul\","
                         +           "\"password\": \"123456\""
                         +       "},"
@@ -97,12 +105,12 @@ public class verifyTest {
                         +"}";
 
         email=new Email();
-        email.setEmail("kimjunho1231@google.co.kr");
+        email.setEmail("kimjunho12317@google.co.kr");
         email.setVerificationCode("123456");
         emailRepository.save(email);
 
         email=new Email();
-        email.setEmail("kimjunho1231@nate.com");
+        email.setEmail("kimjunho12318@nate.com");
         email.setVerificationCode("123456");
         emailRepository.save(email);
         JSONObject jsonObject=new JSONObject(jsonString);
@@ -126,7 +134,7 @@ public class verifyTest {
             user.setPassword(password);
             usersRepository.save(user);
         }
-        Assertions.assertThat(user.getEmail().getEmail()).isEqualTo("kimjunho1231@nate.com");//이메일이 일치하게 들어가야함
+        Assertions.assertThat(user.getEmail().getEmail()).isEqualTo("kimjunho12318@nate.com");//이메일이 일치하게 들어가야함
         Assertions.assertThat(user.getPassword()).isEqualTo("123456");//인증코드가 일치하게 들어가야함
         Assertions.assertThat(user.getUsername()).isEqualTo("dongyul");//인증코드가 일치하게 들어가야함
 
@@ -134,6 +142,10 @@ public class verifyTest {
     @Test
     @DisplayName("null값 없는지 확인")
     void checkNull() {
+        email=new Email();
+        email.setEmail("kimjunho1231@naver.com");
+        email.setVerificationCode("123456");
+        emailRepository.save(email);
         String jsonString = "{\"email\": \"kimjunho1231@naver.com\","
                 + "\"password\": \"1234\","
                 + "\"checkpassword\": \"\","
@@ -157,6 +169,10 @@ public class verifyTest {
     @Test
     @DisplayName("모든 조건 충족하는지")
     void checkCondition() {
+        email=new Email();
+        email.setEmail("kimjunho1231@naver.com");
+        email.setVerificationCode("123456");
+        emailRepository.save(email);
         String jsonString = "{\"email\": \"kimjunho1231@naver.com\","
                 + "\"password\": \"1234\","
                 + "\"checkpassword\": \"\","

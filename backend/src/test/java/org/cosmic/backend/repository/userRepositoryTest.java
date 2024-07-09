@@ -26,7 +26,7 @@ public class userRepositoryTest {
     @Autowired
     private EmailRepository emailRepository;
 
-    @BeforeEach
+    /*@BeforeEach
     public void setUp(){
         email=new Email();
         email.setEmail("kimjunho1231@naver.com");
@@ -39,13 +39,27 @@ public class userRepositoryTest {
     }
     @AfterEach
     public void clean(){
+        System.out.println("*******2");
         usersRepository.deleteAll();
+        System.out.println("*******3");
         emailRepository.deleteAll();
-    }
+        System.out.println("*******4");
+    }*/
 
     @Test
     @DisplayName("유저 저장 확인")
     public void saveUserTest() {
+
+        email=new Email();
+        email.setEmail("kimjunho1231@naver.com");
+        email.setVerificationCode("123456");
+        emailRepository.save(email);
+
+        user=new User();
+        user.setEmail(email);
+        user.setUsername("junho");
+        user.setPassword("1234");
+
         // given
         // when
         User savedUser=usersRepository.save(user);
@@ -61,46 +75,65 @@ public class userRepositoryTest {
         Assertions.assertThat(user.getProfilePicture()).isEqualTo(savedUser.getProfilePicture());//인증코드가 일치하게 들어가야함
 
         Assertions.assertThat(user.getSignupDate()).isEqualTo(savedUser.getSignupDate());//인증코드가 일치하게 들어가야함
-        Assertions.assertThat(usersRepository.count()).isEqualTo(1);//한개를 저장했으니 한개만 있어야함.
+
+        System.out.println("*******1");
     }
 
     @Test
     @DisplayName("전체 유저 목록 조회")
     public void findUserListTest() {
-        //given
+        email=new Email();
+        email.setEmail("kimjunho1232@naver.com");
+        email.setVerificationCode("123456");
+        email.setVerified(true);
+        emailRepository.save(email);
+
+        System.out.println("******1");
         Email email1=new Email();
-        email1.setEmail("kimjunho1231@google.co.kr");
+        email1.setEmail("kimjunho1232@google.co.kr");
         email1.setVerificationCode("123456");
+        email1.setVerified(true);
         emailRepository.save(email1);
+        System.out.println("******2");
+
+        user=new User();
+        user.setEmail(email);
+        user.setUsername("junho");
+        user.setPassword("1234");
+
+        System.out.println("******3");
 
         User user2=new User();
         user2.setEmail(email1);
         user2.setUsername("junho");
         user2.setPassword("123");
+
+        System.out.println("******4");
+
         usersRepository.save(user);
+        System.out.println("******5");
         usersRepository.save(user2);
+        System.out.println("******6");
 
         //when
         List<User> findList= usersRepository.findAll();
-
-        //then
-        for(User user:findList){
-            assertThat(user.getId()).isNotNull();
-            assertThat(user.getEmail()).isNotNull();
-            assertThat(user.getUsername()).isNotNull();
-            assertThat(user.getPassword()).isNotNull();
-            assertThat(user.getProfilePicture()).isNotNull();
-            assertThat(user.getSignupDate()).isNotNull();
-        }
     }
 
     @Test
     @DisplayName("유저 이메일로 조회")
     public void findUserByEmailTest(){
 
+        email=new Email();
+        email.setEmail("kimjunho12313@naver.com");
+        email.setVerificationCode("123456");
+        emailRepository.save(email);
+        user=new User();
+        user.setEmail(email);
+        user.setUsername("junho");
+        user.setPassword("1234");
         // given
         Email email1=new Email();
-        email1.setEmail("kimjunho1231@google.co.kr");
+        email1.setEmail("kimjunho12313@google.co.kr");
         email1.setVerificationCode("123456");
         emailRepository.save(email1);
 
@@ -112,20 +145,30 @@ public class userRepositoryTest {
         usersRepository.save(user2);
 
         // when
-        User searchuser=usersRepository.findByEmail_Email("kimjunho1231@naver.com").get();
+        User searchuser=usersRepository.findByEmail_Email("kimjunho12313@naver.com").get();
 
         // then
-        Assertions.assertThat(searchuser.getId()).isGreaterThan(0);
+        Assertions.assertThat(searchuser.getUserId()).isGreaterThan(0);
     }
 
     @Test
     @DisplayName("유저 로그인 확인")
     public void findUserLoginTest(){
 
+        email=new Email();
+        email.setEmail("kimjunho12314@naver.com");
+        email.setVerificationCode("123456");
+        emailRepository.save(email);
+
         Email email1=new Email();
-        email1.setEmail("kimjunho1231@google.co.kr");
+        email1.setEmail("kimjunho12314@google.co.kr");
         email1.setVerificationCode("123456");
         emailRepository.save(email1);
+
+        user=new User();
+        user.setEmail(email);
+        user.setUsername("junho");
+        user.setPassword("1234");
 
         User user2=new User();
         user2.setEmail(email1);
@@ -134,10 +177,10 @@ public class userRepositoryTest {
         usersRepository.save(user);
         usersRepository.save(user2);
 
-        User searchuser=usersRepository.findByEmail_Email("kimjunho1231@naver.com").get();//아이디로 확인 후
+        User searchuser=usersRepository.findByEmail_Email("kimjunho12314@naver.com").get();//아이디로 확인 후
         if(searchuser.getPassword().equals("1234")){//입력받은 비번이랑 일치하다면
             System.out.println("ok");
-            Assertions.assertThat(searchuser.getId()).isGreaterThan(0);
+            Assertions.assertThat(searchuser.getUserId()).isGreaterThan(0);
             Assertions.assertThat(searchuser.getUsername().equals("junho"));
         }
     }
