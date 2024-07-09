@@ -56,17 +56,24 @@ public class PostService {
         }
     }
 
-    public Post getPostById(Long userId, Long postId) {
-        Post post = new Post();
-        //여기서 postId를 찾는 과정 진행
-        //찾았다면 해당 post를 가져오고 return
-        post.setUserId(userId);
-        post.setCover("base");
-        post.setTitle("밤양갱");
-        post.setArtistName("비비");
-        post.setContent("안녕하세요");
-        post.setUpdateTime(Instant.now());
-        return post;
+    public PostReq getPostById(Long postId) {
+        //해당 postId인 포스트만 가져온다.
+        PostReq postreq = new PostReq();
+        if(!postRepository.findById(postId).isPresent())
+        {
+            throw new NotFoundPostException();
+        }
+        else{
+            Post post=postRepository.findByPostId(postId);
+            //postRepository에서 해당 postId로 내용물들 다 가져와서 넣고 반환
+            postreq.setCover(post.getCover());
+            postreq.setTitle(post.getTitle());
+            postreq.setArtistName(post.getArtistName());
+            postreq.setContent(post.getContent());
+            postreq.setUpdateTime(post.getUpdateTime());
+            postreq.setPostId(post.getPostId());
+            return postreq;
+    }
     }
 
     public void createPost(Post post) {
