@@ -1,8 +1,8 @@
 package org.cosmic.backend.domain.playList.exceptions;
 
-import org.cosmic.backend.globals.exceptions.UnAuthorizationException;
+import org.cosmic.backend.globals.exceptions.NotFoundException;
 
-public class NotMatchTrackException extends UnAuthorizationException {
+public class NotMatchTrackException extends NotFoundException {
     public NotMatchTrackException(String errorMessage) {
         super(errorMessage);
     }

@@ -63,7 +63,7 @@ class SignInTest {
                 ).andDo(print())
                 .andExpect(status().isOk());
         log.info(redisTemplate.opsForValue().get("test3@example.com"));
-        Assertions.assertFalse(redisTemplate.opsForValue().get("testman@example.com").isEmpty());
+        Assertions.assertFalse(redisTemplate.opsForValue().get("testboy9@example.com").isEmpty());
     }
 
     @Test

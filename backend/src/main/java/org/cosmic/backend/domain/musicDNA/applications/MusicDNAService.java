@@ -5,9 +5,11 @@ import org.cosmic.backend.domain.musicDNA.domain.MusicDna;
 import org.cosmic.backend.domain.musicDNA.domain.User_Dna;
 import org.cosmic.backend.domain.musicDNA.dto.DNADetail;
 import org.cosmic.backend.domain.musicDNA.dto.ListDNA;
+import org.cosmic.backend.domain.musicDNA.exceptions.NotFoundEmotionException;
 import org.cosmic.backend.domain.musicDNA.exceptions.NotMatchMusicDnaCountException;
 import org.cosmic.backend.domain.musicDNA.repository.DnaRepository;
 import org.cosmic.backend.domain.musicDNA.repository.EmotionRepository;
+import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.user.domain.User;
 import org.cosmic.backend.domain.user.repository.UsersRepository;
 import org.springframework.stereotype.Service;
@@ -31,36 +33,57 @@ public class MusicDNAService {
     @Transactional
     public void saveDNA(Long key, List<DNADetail>dna) {
 
-        User user=usersRepository.findByUserId(key).get();
+        if(!usersRepository.findById(key).isPresent())
+        {
+            throw new NotFoundUserException();
+        }
         if (dna.size() != 4) {
             //dna개수가 맞지 않을 때
             throw new NotMatchMusicDnaCountException();
         }
-        List<User_Dna>userDnas=user.getUserDnas();
+        else{
+            User user=usersRepository.findByUserId(key).get();
 
-        if (!dnaRepository.findByUser(usersRepository.findByUserId(key).get()).isPresent()) {
-            List<MusicDna> dnaKeys = new ArrayList<>();
-            List<User_Dna> userdnas = new ArrayList<>();
-            for (DNADetail dnaDetail : dna) {
-                MusicDna dnas = emotionRepository.findByEmotionId(dnaDetail.getDnaKey()).get();
-                User_Dna userDna=new User_Dna();
-                userDna.setUser(user);
-                userDna.setEmotion(dnas);
-                dnaRepository.save(userDna);
-                userdnas.add(userDna);
+            List<User_Dna>userDnas=user.getUserDnas();
+
+            if (!dnaRepository.findByUser(usersRepository.findByUserId(key).get()).isPresent()) {
+                List<MusicDna> dnaKeys = new ArrayList<>();
+                List<User_Dna> userdnas = new ArrayList<>();
+                for (DNADetail dnaDetail : dna) {
+                    if(!emotionRepository.findByEmotionId(dnaDetail.getDnaKey()).isPresent())
+                    {
+                        throw new NotFoundEmotionException();
+                        //없는 감정일 때
+                    }
+                    else{
+                        MusicDna dnas = emotionRepository.findByEmotionId(dnaDetail.getDnaKey()).get();
+                        User_Dna userDna=new User_Dna();
+                        userDna.setUser(user);
+                        userDna.setEmotion(dnas);
+                        dnaRepository.save(userDna);
+                        userdnas.add(userDna);
+                    }
+                }
+                user.setUserDnas(userDnas);
+
             }
-            user.setUserDnas(userDnas);
+            else{//이미있다면
+                for(int i=0;i<dna.size();i++)
+                {
+                    DNADetail dnaDetail = dna.get(i);
+                    if(!emotionRepository.findByEmotionId(dnaDetail.getDnaKey()).isPresent())
+                    {
+                        throw new NotFoundEmotionException();
+                        //없는 감정일 때
+                    }
+                    else{
+                        MusicDna dans=emotionRepository.findByEmotionId(dnaDetail.getDnaKey()).get();
+                        User_Dna userDna=userDnas.get(i);
+                        userDna.setEmotion(dans);
+                        dnaRepository.save(userDna);
+                    }
 
-        }
-        else{//이미있다면
-            for(int i=0;i<dna.size();i++)
-            {
-                DNADetail dnaDetail = dna.get(i);
-                MusicDna dans=emotionRepository.findByEmotionId(dnaDetail.getDnaKey()).get();
-                User_Dna userDna=userDnas.get(i);
-                userDna.setEmotion(dans);
-                dnaRepository.save(userDna);
-
+                }
             }
         }
     }
@@ -68,8 +91,7 @@ public class MusicDNAService {
     public List<ListDNA> getAllDna(){
         return emotionRepository.findAll().stream()
                 .map(dna->new ListDNA(dna.getEmotionId(),dna.getEmotion()))
-                .collect(Collectors.toList())
-                ;
+                .collect(Collectors.toList());
     }
 
 }
