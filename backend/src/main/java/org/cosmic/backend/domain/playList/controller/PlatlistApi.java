@@ -24,7 +24,6 @@ public class PlatlistApi {
 
     @Autowired
     private PlaylistService playlistService;
-    private playlistGiveDto newplaylistGiveDto = new playlistGiveDto();
 
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
@@ -34,7 +33,7 @@ public class PlatlistApi {
                                     schema = @Schema(implementation = String.class))
                     }),
 
-            @ApiResponse(responseCode = "401",
+            @ApiResponse(responseCode = "404",
                     description = "Not Found User",
                     content = {
                             @Content(mediaType = "application/json",
@@ -61,8 +60,8 @@ public class PlatlistApi {
                                     schema = @Schema(implementation = String.class))
                     }),
 
-            @ApiResponse(responseCode = "401",
-                    description = "Not Found User",
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found User or Track",
                     content = {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ErrorResponse.class))
@@ -72,6 +71,7 @@ public class PlatlistApi {
     )
 
     @PostMapping("/save")//수정한 플레이리스트를 여기 저장
+    @Transactional
     public ResponseEntity<?> savePlaylistData(@RequestBody playlistDTO playlist) {
         // 데이터 받을 때
         Long Key= playlist.getId();
@@ -87,7 +87,7 @@ public class PlatlistApi {
                                     schema = @Schema(implementation = String.class))
                     }),
 
-            @ApiResponse(responseCode = "401",
+            @ApiResponse(responseCode = "404",
                     description = "Not Match Artist Name",
                     content = {
                             @Content(mediaType = "application/json",
@@ -98,6 +98,7 @@ public class PlatlistApi {
     )
 
     @PostMapping("/Artistsearch")
+    @Transactional
     public List<TrackGiveDto> searchArtist(@RequestBody ArtistDTO artist) {
         return playlistService.searchArtist(artist.getArtistName());
     }
@@ -111,7 +112,7 @@ public class PlatlistApi {
                                     schema = @Schema(implementation = String.class))
                     }),
 
-            @ApiResponse(responseCode = "401",
+            @ApiResponse(responseCode = "404",
                     description = "Not Match Track Title",
                     content = {
                             @Content(mediaType = "application/json",
@@ -122,6 +123,7 @@ public class PlatlistApi {
     )
 
     @PostMapping("/Tracksearch")
+    @Transactional
     public List<TrackGiveDto> searchTrack(@RequestBody trackDTO track) {
         return playlistService.searchTrack(track.getTrackName());
     }
