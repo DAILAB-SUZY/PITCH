@@ -49,10 +49,27 @@ public class PostController {
     }
 
     //모든 포스트 줄 때
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Ok",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = String.class))
+                    }),
 
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found Post",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponse.class))
+                    }
+            )
+    }
+    )
+    @Transactional
     @PostMapping("/open")
-    public Post getPostById(@RequestBody PostDto post) {//Post가 아니라 post에서 나와야할 내용들이 리턴되야함
-        return postService.getPostById(post.getUserId(),post.getPostId());
+    public PostReq getPostById(@RequestBody PostDto post) {//Post가 아니라 post에서 나와야할 내용들이 리턴되야함
+        return postService.getPostById(post.getPostId());
     }
     //특정 post열 때
 
