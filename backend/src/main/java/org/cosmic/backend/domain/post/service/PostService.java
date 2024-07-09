@@ -141,14 +141,28 @@ public class PostService {
         }
     }
 
-    public List<AlbumDto> searchArtist(Artist artist) {//postid가져오면
+    public List<AlbumDto> searchArtist(String artistName) {
+        //사용자가 앨범 찾기 위해 아티스트 이름을 검색할 때
         List<AlbumDto> albums = new ArrayList<>();
+        //해당 아티스트이름과 같은 앨범 정보들을 모두 가져와 담음
         AlbumDto albumDto = new AlbumDto();
-        albumDto.setAlbumId(1L);
-        albumDto.setAlbumName("Celebrity");
-        albumDto.setArtistName(artist.getArtistName());
-        albums.add(albumDto);
-        return albums;
+        if(!artistRepository.findByArtistName(artistName).isPresent())
+        {
+            throw new NotFoundArtistException();
+        }
+        else{
+            Artist artistInfo= artistRepository.findByArtistName(artistName).get();
+            List<Album> album=albumRepository.findByArtist_ArtistId(artistInfo.getArtistId());//트랙들을 모두 가져옴
+            for(int i=0;i<album.size();i++)
+            {
+                albumDto.setArtistName(artistName);
+                albumDto.setAlbumName(album.get(i).getTitle());
+                albumDto.setAlbumId(album.get(i).getAlbumId());
+                albums.add(albumDto);
+            }
+            return albums;
+        }
+
     }
 
 }
