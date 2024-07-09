@@ -23,10 +23,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/bestAlbum")
 public class BestAlbumApi {
-
     @Autowired
     private BestAlbumService bestAlbumService;
-    private playlistGiveDto newplaylistGiveDto = new playlistGiveDto();
 
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
@@ -36,7 +34,7 @@ public class BestAlbumApi {
                                     schema = @Schema(implementation = String.class))
                     }),
 
-            @ApiResponse(responseCode = "401",
+            @ApiResponse(responseCode = "404",
                     description = "Not Found User",
                     content = {
                             @Content(mediaType = "application/json",
@@ -60,8 +58,8 @@ public class BestAlbumApi {
                                     schema = @Schema(implementation = String.class))
                     }),
 
-            @ApiResponse(responseCode = "401",
-                    description = "Not Found User",
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found User or Album",
                     content = {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ErrorResponse.class))
@@ -69,7 +67,6 @@ public class BestAlbumApi {
             )
     }
     )
-
     @Transactional
     @PostMapping("/add")
     public ResponseEntity<?> addData(@RequestBody BestAlbumDto bestAlbumDto) {
@@ -77,7 +74,6 @@ public class BestAlbumApi {
         return ResponseEntity.ok("성공");
     }
     //사용자가 앨범을 선택해서 등록 버튼을 누르면 1개의 앨범이 추가됨(기존 리스트 뒷부분에 추가)
-
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "Ok",
@@ -86,8 +82,8 @@ public class BestAlbumApi {
                                     schema = @Schema(implementation = String.class))
                     }),
 
-            @ApiResponse(responseCode = "401",
-                    description = "Not Found User",
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found User or Album",
                     content = {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ErrorResponse.class))
@@ -95,7 +91,6 @@ public class BestAlbumApi {
             )
     }
     )
-
     @Transactional
     @PostMapping("/save")
     public ResponseEntity<?> saveData(@RequestBody BestAlbumListDTO bestAlbumlistDto) {
@@ -113,7 +108,7 @@ public class BestAlbumApi {
                                     schema = @Schema(implementation = String.class))
                     }),
 
-            @ApiResponse(responseCode = "401",
+            @ApiResponse(responseCode = "404",
                     description = "Not Match Artist Name",
                     content = {
                             @Content(mediaType = "application/json",
@@ -139,7 +134,7 @@ public class BestAlbumApi {
                                     schema = @Schema(implementation = String.class))
                     }),
 
-            @ApiResponse(responseCode = "401",
+            @ApiResponse(responseCode = "404",
                     description = "Not Match Album Title",
                     content = {
                             @Content(mediaType = "application/json",
