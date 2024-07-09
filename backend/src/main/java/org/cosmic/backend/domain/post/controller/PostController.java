@@ -119,10 +119,26 @@ public class PostController {
         return ResponseEntity.ok("성공");
     }
     //업데이트할 때
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Ok",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = String.class))
+                    }),
 
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found Post",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponse.class))
+                    }
+            )
+    }
+    )
     @PostMapping("/delete")
     public ResponseEntity<?> deletePost(@RequestBody PostDto post) {//postid가져오면
-        postService.deletePost(post.getUserId(),post.getPostId());
+        postService.deletePost(post.getPostId());
         return ResponseEntity.ok("성공");
     }
     //포스트 하나 없앨때
