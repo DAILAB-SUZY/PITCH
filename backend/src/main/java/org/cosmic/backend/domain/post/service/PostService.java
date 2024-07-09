@@ -113,14 +113,16 @@ public class PostService {
         }
      }
 
-    public void deletePost(Long userId, Long postId) {
-
-        //없으면 지우지 못한다는 에러
-        //있다면 repository에서 지움
-
+    public void deletePost(Long postId) {
+        if(!postRepository.findById(postId).isPresent())
+        {
+            throw new NotFoundPostException();
+        }
+        postRepository.deleteById(postId);
     }
-
-    public List<AlbumDto> searchAlbum(Album album) {//postid가져오면
+//*
+    public List<AlbumDto> searchAlbum(String albumName) {
+        //사용자가 앨범 찾기 위해 앨범 이름을 검색할 때
         List<AlbumDto> albums = new ArrayList<>();
         AlbumDto albumDto = new AlbumDto();
         albumDto.setAlbumId(1L);
