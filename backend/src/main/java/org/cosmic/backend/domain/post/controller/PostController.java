@@ -1,8 +1,15 @@
 package org.cosmic.backend.domain.post.controller;
 
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.transaction.Transactional;
-import org.cosmic.backend.domain.post.dto.*;
+import org.cosmic.backend.domain.playList.dto.ArtistDTO;
+import org.cosmic.backend.domain.post.dto.Post.*;
 import org.cosmic.backend.domain.post.service.PostService;
+import org.cosmic.backend.domain.user.dto.userDto;
+import org.cosmic.backend.globals.dto.ErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,15 +22,32 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/post")
 public class PostController {
-
     @Autowired
     private PostService postService;
 
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200",
+            description = "Ok",
+            content = {
+            @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = String.class))
+            }),
+
+        @ApiResponse(responseCode = "404",
+            description = "Not Found User",
+            content = {
+                @Content(mediaType = "application/json",
+                        schema = @Schema(implementation = ErrorResponse.class))
+            }
+        )
+    }
+    )
     @Transactional
     @PostMapping("/give")
-    public List<Post> giveAllPosts(@RequestBody UserDto user) {
-        return postService.getAllPosts(user.getId());
+    public List<PostReq> giveAllPosts(@RequestBody userDto user) {
+        return postService.getAllPosts(user.getUserid());
     }
+
     //모든 포스트 줄 때
 
     @PostMapping("/open")
