@@ -100,16 +100,18 @@ public class PostService {
         }
     }
 
-    public void updatePost(Post post) {
-        Post newpost = new Post();
-        newpost.setUserId(post.getUserId());
-        newpost.setCover(post.getCover());
-        newpost.setTitle(post.getTitle());
-        newpost.setArtistName(post.getArtistName());
-        newpost.setContent(post.getContent());
-        newpost.setUpdateTime(Instant.now());
-        //repository에 넣고
-    }
+    public void updatePost(UpdatePost post) {
+        if(!postRepository.findById(post.getPostId()).isPresent())
+        {
+            throw new NotFoundPostException();
+        }
+        else {
+            Post post1 = postRepository.findByPostId(post.getPostId());
+            post1.setContent(post.getContent());
+            post1.setUpdateTime(Instant.now());
+            postRepository.save(post1);//새로생기는지 업데이트만 되는지 만약 새로생기는거면업데이트만 되게만들어야함.
+        }
+     }
 
     public void deletePost(Long userId, Long postId) {
 
