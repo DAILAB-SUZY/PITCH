@@ -25,11 +25,11 @@ public class MusicDna {//dna들을 담고 있는 테이블.
     private Long emotionId;//emotion key
 
     @Builder.Default
-    @Column()
+    @Column(name="emotion")
     private String emotion="느긋한";
 
-    @OneToMany(mappedBy = "emotion")
-    private List<User_Dna> users=new ArrayList<>();
+    @OneToMany(mappedBy = "emotion",fetch = FetchType.EAGER)
+    private List<User_Dna> users;
 
     public MusicDna(String emotion) {
         this.emotion = emotion;

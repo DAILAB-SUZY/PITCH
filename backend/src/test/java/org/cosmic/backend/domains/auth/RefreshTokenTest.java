@@ -47,8 +47,9 @@ public class RefreshTokenTest {
     @Test
     @Order(1)
     public void reIssuedTest() throws Exception {
+
         Email email = emailRepository.save(Email.builder()
-                .email("testman@example.com")
+                .email("testw1@example.com")
                 .verificationCode("123456")
                 .verified(true)
                 .build());
@@ -62,7 +63,7 @@ public class RefreshTokenTest {
         mockMvc.perform(post("/auth/signin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(UserLogin.builder()
-                                .email("testman@example.com")
+                                .email("testw1@example.com")
                                 .password("123456")
                                 .build()
                         ))
