@@ -142,11 +142,28 @@ public class PostController {
         return ResponseEntity.ok("성공");
     }
     //포스트 하나 없앨때
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Ok",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = String.class))
+                    }),
 
-    @PostMapping("/searchAlbum")
-    public List<AlbumDto> searchAlbum(@RequestBody Album album) {//postid가져오면
-        return postService.searchAlbum(album);
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found Album",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponse.class))
+                    }
+            )
     }
+    )
+    @PostMapping("/searchAlbum")
+    public List<AlbumDto> searchAlbum(@RequestBody AlbumDto album) {//postid가져오면
+        return postService.searchAlbum(album.getAlbumName());
+    }
+
     //앨범이름으로 찾기
 
     @PostMapping("/searchArtist")
