@@ -76,15 +76,28 @@ public class PostService {
     }
     }
 
-    public void createPost(Post post) {
-        Post newpost = new Post();
-        newpost.setUserId(post.getUserId());
-        newpost.setCover(post.getCover());
-        newpost.setTitle(post.getTitle());
-        newpost.setArtistName(post.getArtistName());
-        newpost.setContent(post.getContent());
-        newpost.setUpdateTime(Instant.now());
-        //repository에 넣고
+    public PostDto createPost(CreatePost post) {
+        //post생성 버튼 눌렀을 때
+        if(!userRepository.findById(post.getUserId()).isPresent())
+        {
+            throw new NotFoundUserException();
+        }
+        else{
+            User user=userRepository.findByUserId(post.getUserId()).get();
+            Post post1=new Post();
+            post1.setTitle(post.getTitle());
+            post1.setArtistName(post.getArtistName());
+            post1.setContent(post.getContent());
+            post1.setUpdateTime(Instant.now());
+            post1.setUser(user);
+            post1.setCover(post.getCover());
+            post1.setComments(null);
+            post1.setLikes(null);
+            postRepository.save(post1);
+            PostDto postDto = new PostDto();
+            postDto.setPostId(post1.getPostId());
+            return postDto;
+        }
     }
 
     public void updatePost(Post post) {
