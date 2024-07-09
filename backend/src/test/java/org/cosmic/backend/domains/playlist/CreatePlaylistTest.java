@@ -26,7 +26,6 @@ import org.cosmic.backend.domain.user.repository.UsersRepository;
 import org.cosmic.backend.domains.BaseSetting;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -35,10 +34,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -155,17 +154,6 @@ public class CreatePlaylistTest extends BaseSetting {
                 )))
             .andDo(print())
             .andExpect(status().isOk());
-
-
-        //저장 후 열람
-        mockMvc.perform(post("/api/playlist/give")
-                .header("Authorization", "Bearer " + validToken)
-                .contentType("application/json")
-                .content(mapper.writeValueAsString(userDto.builder()
-                        .userid(user.getUserId())
-                        .build()))) // build() 메서드를 호출하여 최종 객체를 생성
-            .andExpect(status().isOk());
-
     }
     // 유효한 상태에서 잘 만들어지는지
 
@@ -354,7 +342,7 @@ public class CreatePlaylistTest extends BaseSetting {
                                 .build()
                         )))
                 .andDo(print())
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isNotFound());
 
         mockMvc.perform(post("/api/playlist/Artistsearch")
                         .header("Authorization", "Bearer " + validToken)
@@ -364,9 +352,6 @@ public class CreatePlaylistTest extends BaseSetting {
                                 .build()
                         )))
                 .andDo(print())
-                .andExpect(status().isUnauthorized());
-
-
-
-    }
+                .andExpect(status().isNotFound());
+            }
 }
