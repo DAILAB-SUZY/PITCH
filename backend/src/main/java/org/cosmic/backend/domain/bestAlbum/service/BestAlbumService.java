@@ -35,16 +35,20 @@ public class BestAlbumService {
         if(!usersRepository.findById(userId).isPresent()) {
             throw new NotFoundUserException();
         }
-
         else{
             List<Album_User> albumUsers=album_userRepository.findByUser_UserId(userId).get();
             album_userRepository.deleteByUser_UserId(userId);
             for (bestAlbumDetail bestalbumDetail : bestalbumList) {
-                Album album= albumRepository.findByAlbumId(bestalbumDetail.getAlbumId());
-                Album_User album_User=new Album_User();
-                album_User.setAlbum(album);
-                album_User.setUser(usersRepository.findById(userId).get());
-                album_userRepository.save(album_User);
+                if(!albumRepository.findByAlbumId(bestalbumDetail.getAlbumId()).isPresent()) {
+                    throw new NotFoundAlbumException();
+                }
+                else{
+                    Album album= albumRepository.findByAlbumId(bestalbumDetail.getAlbumId()).get();
+                    Album_User album_User=new Album_User();
+                    album_User.setAlbum(album);
+                    album_User.setUser(usersRepository.findById(userId).get());
+                    album_userRepository.save(album_User);
+                }
             }
         }
     }
@@ -59,9 +63,14 @@ public class BestAlbumService {
         else{
             //해당 앨범이 있는건지도 확인필요
             User newuser = usersRepository.findById(userId).get();
-            Album album=albumRepository.findById(albumId).get();
-            Album_User albumUser=new Album_User(album,newuser);
-            album_userRepository.save(albumUser);
+            if(!albumRepository.findById(albumId).isPresent()) {
+                throw new NotFoundUserException();
+            }
+            else{
+                Album album=albumRepository.findById(albumId).get();
+                Album_User albumUser=new Album_User(album,newuser);
+                album_userRepository.save(albumUser);
+            }
         }
     }
 
@@ -69,26 +78,22 @@ public class BestAlbumService {
     public List<BestAlbumGiveDto> open(Long userId) {
 
         List<BestAlbumGiveDto> bestAlbumGiveDtos=new ArrayList<>();
-
-        User newuser=usersRepository.findById(userId).get();
-
-        if(newuser==null)
-        {
-            throw new NotFoundUserException();//해당 아티스트가 없을 때
+        if(!usersRepository.findById(userId).isPresent()) {
+            throw new NotFoundUserException();
         }
-        else{
-            //Album_User newalbum_user=newuser.getAlbum_users();
-            List<Album_User> album_user=album_userRepository.findByUser_UserId(userId).get();//해당 유저의 모든 album을 가져올 것임
+        else {
+            User newuser = usersRepository.findById(userId).get();
 
-            for(int i=0;i<album_user.size();i++)
-            {
-                BestAlbumGiveDto newbestAlbumGiveDto=new BestAlbumGiveDto();
+            //Album_User newalbum_user=newuser.getAlbum_users();
+            List<Album_User> album_user = album_userRepository.findByUser_UserId(userId).get();//해당 유저의 모든 album을 가져올 것임
+
+            for (int i = 0; i < album_user.size(); i++) {
+                BestAlbumGiveDto newbestAlbumGiveDto = new BestAlbumGiveDto();
 
                 newbestAlbumGiveDto.setAlbumId(album_user.get(i).getAlbum().getAlbumId());
 
                 bestAlbumGiveDtos.add(newbestAlbumGiveDto);
             }
-
             return bestAlbumGiveDtos;
         }
     }
@@ -97,10 +102,11 @@ public class BestAlbumService {
     @Transactional
     public List<AlbumGiveDto> searchArtist (String artist) {
         List<AlbumGiveDto>albumGiveDtos=new ArrayList<>();
-        Artist artistInfo= artistRepository.findByArtistName(artist);
-
-        if(artistInfo!=null)
-        {
+        if(!artistRepository.findByArtistName(artist).isPresent()) {
+            throw new NotFoundArtistException();
+        }
+        else{
+            Artist artistInfo= artistRepository.findByArtistName(artist).get();
             List<Album> album=albumRepository.findByArtist_ArtistId(artistInfo.getArtistId());//트랙들을 모두 가져옴
             for(int i=0;i<album.size();i++)
             {
@@ -111,29 +117,24 @@ public class BestAlbumService {
                 albumGiveDtos.add(albumGiveDto);
             }
             return albumGiveDtos;
-        }
-        else{
-            throw new NotFoundArtistException();//해당 아티스트가 없을 때
+
         }
     }
 
     @Transactional
     public List<AlbumGiveDto> searchAlbum (String album) {
         List<AlbumGiveDto>albumGiveDtos=new ArrayList<>();
-        Album albumInfo= albumRepository.findByTitle(album);
-
-        if(albumInfo!=null)
-        {
+        if(!artistRepository.findByArtistName(artist).isPresent()) {
+            throw new NotFoundArtistException();
+        }
+        else{
+            Album albumInfo= albumRepository.findByTitle(album);
             AlbumGiveDto albumGiveDto=new AlbumGiveDto();
             albumGiveDto.setArtistName(albumInfo.getArtist().getArtistName());
             albumGiveDto.setTitle(albumInfo.getTitle());
             albumGiveDto.setCover("base");
             albumGiveDtos.add(albumGiveDto);
             return albumGiveDtos;
-        }
-        else{
-            throw new NotMatchAlbumException();//해당 곡이 없을 때
-            //오류발생
         }
     }
 }
