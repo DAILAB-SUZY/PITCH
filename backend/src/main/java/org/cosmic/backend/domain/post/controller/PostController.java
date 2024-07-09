@@ -165,10 +165,26 @@ public class PostController {
     }
 
     //앨범이름으로 찾기
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Ok",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = String.class))
+                    }),
 
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found Artist",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponse.class))
+                    }
+            )
+    }
+    )
     @PostMapping("/searchArtist")
-    public List<AlbumDto> searchArtist(@RequestBody Artist artist) {//postid가져오면
-        return postService.searchArtist(artist);
+    public List<AlbumDto> searchArtist(@RequestBody ArtistDTO artist) {//postid가져오면
+        return postService.searchArtist(artist.getArtistName());
     }
     //아티스트이름으로 찾기
 }
