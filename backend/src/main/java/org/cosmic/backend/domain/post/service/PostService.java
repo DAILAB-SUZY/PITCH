@@ -124,12 +124,21 @@ public class PostService {
     public List<AlbumDto> searchAlbum(String albumName) {
         //사용자가 앨범 찾기 위해 앨범 이름을 검색할 때
         List<AlbumDto> albums = new ArrayList<>();
-        AlbumDto albumDto = new AlbumDto();
-        albumDto.setAlbumId(1L);
-        albumDto.setAlbumName(album.getAlbumName());
-        albumDto.setArtistName("아이유");
-        albums.add(albumDto);
-        return albums;
+        if(!albumRepository.findByTitle(albumName).isPresent())
+        {
+            throw new NotFoundAlbumException();
+        }
+        else {
+            List<Album> albumInfo = albumRepository.findByTitle(albumName).get();
+            AlbumDto albumDto = new AlbumDto();
+            for (int i = 0; i < albumInfo.size(); i++) {
+                albumDto.setArtistName(albumInfo.get(i).getArtist().getArtistName());
+                albumDto.setAlbumName(albumInfo.get(i).getTitle());
+                albumDto.setAlbumId(albumInfo.get(i).getAlbumId());
+                albums.add(albumDto);
+            }
+            return albums;
+        }
     }
 
     public List<AlbumDto> searchArtist(Artist artist) {//postid가져오면
