@@ -14,6 +14,7 @@ import org.cosmic.backend.domain.user.domain.Email;
 import org.cosmic.backend.domain.user.domain.User;
 import org.cosmic.backend.domain.user.repository.EmailRepository;
 import org.cosmic.backend.domain.user.repository.UsersRepository;
+import org.cosmic.backend.domains.BaseSetting;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -26,6 +27,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
+import org.testcontainers.shaded.com.fasterxml.jackson.databind.ser.Serializers;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -34,7 +37,7 @@ import java.time.Instant;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @Log4j2
-public class openAlbumChatTest {
+public class openAlbumChatTest extends BaseSetting {
     @Autowired
     private MockMvc mockMvc;
     ObjectMapper mapper = new ObjectMapper();
@@ -57,53 +60,15 @@ public class openAlbumChatTest {
     @Test
     @Transactional
     public void albumChatOpenTest() throws Exception {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        Email email = emailRepository.save(Email.builder()
-                .email("testmand@example.com")
-                .verificationCode("12345678")
-                .verified(true)
-                .build());
-
-        User user=userRepository.save(User.builder()
-                .email(email)
-                .username("goodwill")
-                .password(encoder.encode("12345678"))
-                .build());
-
-        UserLogin userLogin = UserLogin.builder()
-                .email("testmand@example.com")
-                .password("12345678")
-                .build();
-
-        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/auth/signin")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(userLogin)));
-
-        MvcResult result = resultActions.andReturn();
-        String validToken = mapper.readValue(result.getResponse().getContentAsString(), UserLogin.class).getToken();
-
+        UserLogin userLogin = loginUser("test@example.com","12345678");
+        String validToken=userLogin.getToken();
         Instant now = Instant.now();
 
-        Artist artist=artistRepository.save(Artist.builder()
-                .artistName("비비")
-                .build());
-        Album album=albumRepository.save(Album.builder()
-                .title("밤양갱")
-                .cover("base")
-                .artist(artist)
-                .createdDate(now)
-                .genre("발라드")
-                .build());
+        Artist artist=saveArtist("비비");
 
-        AlbumChat albumChat= albumChatRepository.save(AlbumChat.builder()
-                .CreateTime(now)
-                .genre("발라드")
-                .cover("base")
-                .title("밤양갱")
-                .album(album)
-                .artistName("비비")
-                .build()
-        );
+        Album album=saveAlbum("밤양갱", artist, now, "발라드");
+
+        AlbumChat albumChat= saveAlbumChat("밤양갱", artist, album,now, "발라드");
 
         mockMvc.perform(post("/api/albumchat/open")
                         .header("Authorization", "Bearer " + validToken)
@@ -120,53 +85,15 @@ public class openAlbumChatTest {
     @Test
     @Transactional
     public void albumChatNotOpenTest() throws Exception {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        Email email = emailRepository.save(Email.builder()
-                .email("testmand@example.com")
-                .verificationCode("12345678")
-                .verified(true)
-                .build());
-
-        User user=userRepository.save(User.builder()
-                .email(email)
-                .username("goodwill")
-                .password(encoder.encode("12345678"))
-                .build());
-
-        UserLogin userLogin = UserLogin.builder()
-                .email("testmand@example.com")
-                .password("12345678")
-                .build();
-
-        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/auth/signin")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(userLogin)));
-
-        MvcResult result = resultActions.andReturn();
-        String validToken = mapper.readValue(result.getResponse().getContentAsString(), UserLogin.class).getToken();
-
+        UserLogin userLogin = loginUser("test@example.com","12345678");
+        String validToken=userLogin.getToken();
         Instant now = Instant.now();
 
-        Artist artist=artistRepository.save(Artist.builder()
-                .artistName("비비")
-                .build());
-        Album album=albumRepository.save(Album.builder()
-                .title("밤양갱")
-                .cover("base")
-                .artist(artist)
-                .createdDate(now)
-                .genre("발라드")
-                .build());
+        Artist artist=saveArtist("비비");
 
-        AlbumChat albumChat= albumChatRepository.save(AlbumChat.builder()
-                .CreateTime(now)
-                .genre("발라드")
-                .cover("base")
-                .title("밤양갱")
-                .album(album)
-                .artistName("비비")
-                .build()
-        );
+        Album album=saveAlbum("밤양갱", artist, now, "발라드");
+
+        AlbumChat albumChat= saveAlbumChat("밤양갱", artist, album,now, "발라드");
 
         mockMvc.perform(post("/api/albumchat/open")
                         .header("Authorization", "Bearer " + validToken)

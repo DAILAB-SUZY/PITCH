@@ -15,6 +15,7 @@ import org.cosmic.backend.domain.user.domain.Email;
 import org.cosmic.backend.domain.user.domain.User;
 import org.cosmic.backend.domain.user.repository.EmailRepository;
 import org.cosmic.backend.domain.user.repository.UsersRepository;
+import org.cosmic.backend.domains.BaseSetting;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -29,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.Instant;
+import java.util.Base64;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -37,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @Log4j2
-public class UpdatePostTest {
+public class UpdatePostTest extends BaseSetting {
     @Autowired
     private MockMvc mockMvc;
     ObjectMapper mapper = new ObjectMapper();
@@ -52,57 +54,22 @@ public class UpdatePostTest {
     @Autowired
     TrackRepository trackRepository;
     //내용 잘 바뀌는지
+    private ResultActions resultActions;
+    private MvcResult result;
 
     @Test
     @Transactional
     public void UpdatepostTest() throws Exception {
 
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        Email email = emailRepository.save(Email.builder()
-                .email("testgirl@example.com")
-                .verificationCode("12345678")
-                .verified(true)
-                .build());
-
-        User user=userRepository.save(User.builder()
-                .email(email)
-                .username("goodwill")
-                .password(encoder.encode("12345678"))
-                .build());
-
-        UserLogin userLogin = UserLogin.builder()
-                .email("testgirl@example.com")
-                .password("12345678")
-                .build();
-
-        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/auth/signin")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(userLogin)));
-
-        MvcResult result = resultActions.andReturn();
-        String validToken = mapper.readValue(result.getResponse().getContentAsString(), UserLogin.class).getToken();
-
+        UserLogin userLogin = loginUser("test@example.com","12345678");
+        String validToken=userLogin.getToken();
+        User user=getUser();
         Instant now = Instant.now();
 
-        Artist artist=artistRepository.save(Artist.builder()
-                .artistName("비비")
-                .build());
-        Album album=albumRepository.save(Album.builder()
-                .title("밤양갱")
-                .cover("base")
-                .artist(artist)
-                .createdDate(now)
-                .genre("발라드")
-                .build());
+        Artist artist=saveArtist("비비");
 
-        Track track=trackRepository.save(Track.builder()
-                .title("밤양갱")
-                .album(album)
-                .Cover("base")
-                .artist(artist)
-                .createdDate(now)
-                .genre("발라드")
-                .build());
+        Album album=saveAlbum("밤양갱", artist, now, "발라드");
+        Track track=saveTrack("밤양갱",album,artist,now,"발라드");
 
         resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/api/post/create")
                 .header("Authorization", "Bearer " + validToken)
