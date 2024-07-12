@@ -30,7 +30,7 @@ public class Comment {
     private Instant updateTime;
 
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Reply> replies = new ArrayList<>();
+    private List<Reply> replies;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

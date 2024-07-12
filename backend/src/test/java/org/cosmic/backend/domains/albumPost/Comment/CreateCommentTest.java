@@ -1,24 +1,23 @@
 package org.cosmic.backend.domains.albumPost.Comment;
 
 import lombok.extern.log4j.Log4j2;
+import org.cosmic.backend.domain.albumChat.domain.AlbumChat;
 import org.cosmic.backend.domain.auth.dto.UserLogin;
 import org.cosmic.backend.domain.playList.domain.Album;
 import org.cosmic.backend.domain.playList.domain.Artist;
 import org.cosmic.backend.domain.playList.domain.Track;
-import org.cosmic.backend.domain.playList.dto.ArtistDTO;
 import org.cosmic.backend.domain.playList.repository.AlbumRepository;
 import org.cosmic.backend.domain.playList.repository.ArtistRepository;
 import org.cosmic.backend.domain.playList.repository.TrackRepository;
 import org.cosmic.backend.domain.post.dto.Comment.CommentDto;
 import org.cosmic.backend.domain.post.dto.Comment.CreateCommentReq;
-import org.cosmic.backend.domain.post.dto.Post.AlbumDto;
 import org.cosmic.backend.domain.post.dto.Post.CreatePost;
 import org.cosmic.backend.domain.post.dto.Post.PostDto;
 import org.cosmic.backend.domain.user.domain.Email;
 import org.cosmic.backend.domain.user.domain.User;
-import org.cosmic.backend.domain.user.dto.userDto;
 import org.cosmic.backend.domain.user.repository.EmailRepository;
 import org.cosmic.backend.domain.user.repository.UsersRepository;
+import org.cosmic.backend.domains.BaseSetting;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -41,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @Log4j2
-public class CreateCommentTest {
+public class CreateCommentTest extends BaseSetting {
     @Autowired
     private MockMvc mockMvc;
     ObjectMapper mapper = new ObjectMapper();
@@ -62,52 +61,15 @@ public class CreateCommentTest {
     @Test
     @Transactional
     public void createcommentTest() throws Exception {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        Email email = emailRepository.save(Email.builder()
-                .email("testma@example.com")
-                .verificationCode("12345678")
-                .verified(true)
-                .build());
-
-        User user = userRepository.save(User.builder()
-                .email(email)
-                .username("goodwill")
-                .password(encoder.encode("12345678"))
-                .build());
-
-        UserLogin userLogin = UserLogin.builder()
-                .email("testma@example.com")
-                .password("12345678")
-                .build();
-
-        resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/auth/signin")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(userLogin)));
-
-        result = resultActions.andReturn();
-        String validToken = mapper.readValue(result.getResponse().getContentAsString(), UserLogin.class).getToken();
-
+        UserLogin userLogin = loginUser("test@example.com","12345678");
+        String validToken=userLogin.getToken();
+        User user=getUser();
         Instant now = Instant.now();
 
-        Artist artist = artistRepository.save(Artist.builder()
-                .artistName("비비")
-                .build());
-        Album album = albumRepository.save(Album.builder()
-                .title("밤양갱")
-                .cover("base")
-                .artist(artist)
-                .createdDate(now)
-                .genre("발라드")
-                .build());
+        Artist artist=saveArtist("비비");
 
-        Track track = trackRepository.save(Track.builder()
-                .title("밤양갱")
-                .album(album)
-                .Cover("base")
-                .artist(artist)
-                .createdDate(now)
-                .genre("발라드")
-                .build());
+        Album album=saveAlbum("밤양갱", artist, now, "발라드");
+        Track track=saveTrack("밤양갱",album,artist,now,"발라드");
 
         resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/api/post/create")
                 .header("Authorization", "Bearer " + validToken)
@@ -144,52 +106,15 @@ public class CreateCommentTest {
     @Test
     @Transactional
     public void GivePostTest() throws Exception {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        Email email = emailRepository.save(Email.builder()
-                .email("testma@example.com")
-                .verificationCode("12345678")
-                .verified(true)
-                .build());
-
-        User user = userRepository.save(User.builder()
-                .email(email)
-                .username("goodwill")
-                .password(encoder.encode("12345678"))
-                .build());
-
-        UserLogin userLogin = UserLogin.builder()
-                .email("testma@example.com")
-                .password("12345678")
-                .build();
-
-        resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/auth/signin")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(userLogin)));
-
-        result = resultActions.andReturn();
-        String validToken = mapper.readValue(result.getResponse().getContentAsString(), UserLogin.class).getToken();
-
+        UserLogin userLogin = loginUser("test@example.com","12345678");
+        String validToken=userLogin.getToken();
+        User user=getUser();
         Instant now = Instant.now();
 
-        Artist artist = artistRepository.save(Artist.builder()
-                .artistName("비비")
-                .build());
-        Album album = albumRepository.save(Album.builder()
-                .title("밤양갱")
-                .cover("base")
-                .artist(artist)
-                .createdDate(now)
-                .genre("발라드")
-                .build());
+        Artist artist=saveArtist("비비");
 
-        Track track = trackRepository.save(Track.builder()
-                .title("밤양갱")
-                .album(album)
-                .Cover("base")
-                .artist(artist)
-                .createdDate(now)
-                .genre("발라드")
-                .build());
+        Album album=saveAlbum("밤양갱", artist, now, "발라드");
+        Track track=saveTrack("밤양갱",album,artist,now,"발라드");
 
         resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/api/post/create")
                 .header("Authorization", "Bearer " + validToken)

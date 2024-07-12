@@ -1,6 +1,8 @@
 package org.cosmic.backend.domains;
 
 import lombok.extern.log4j.Log4j2;
+import org.cosmic.backend.domain.albumChat.domain.AlbumChat;
+import org.cosmic.backend.domain.albumChat.repository.AlbumChatRepository;
 import org.cosmic.backend.domain.auth.dto.UserLogin;
 import org.cosmic.backend.domain.musicDNA.domain.MusicDna;
 import org.cosmic.backend.domain.musicDNA.dto.DNADetail;
@@ -35,98 +37,103 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Log4j2
 public class BaseSetting {
     @Autowired
-    EmailRepository emailRepository;
+    protected MockMvc mockMvc;
     @Autowired
-    UsersRepository usersRepository;
+    protected UsersRepository userRepository;
     @Autowired
-    ArtistRepository artistRepository;
+    protected EmailRepository emailRepository;
     @Autowired
-    AlbumRepository albumRepository;
+    protected ArtistRepository artistRepository;
     @Autowired
-    TrackRepository trackRepository;
+    protected AlbumRepository albumRepository;
     @Autowired
-    EmotionRepository emotionRepository;
+    protected TrackRepository trackRepository;
     @Autowired
-    PlaylistRepository playlistRepository;
+    protected AlbumChatRepository albumChatRepository;
     @Autowired
-    private MockMvc mockMvc;
+    protected PlaylistRepository playlistRepository;
 
-    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-    ObjectMapper mapper = new ObjectMapper();
-
+    protected ObjectMapper mapper = new ObjectMapper();
     private User user;
-    private Email email;
-    private String emailTest;
-    public User RegisterUser(String emailtest){
-        emailTest = emailtest;
+
+    protected UserLogin loginUser(String email, String password) throws Exception {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        email = emailRepository.save(Email.builder()
-                .email(emailTest)
+        Email savedEmail = emailRepository.save(Email.builder()
+                .email(email)
                 .verificationCode("12345678")
                 .verified(true)
                 .build());
 
-        user=usersRepository.save(User.builder()
-                .email(email)
+        User savedUser = userRepository.save(User.builder()
+                .email(savedEmail)
                 .username("goodwill")
-                .password(encoder.encode("12345678"))
-            .build());
-        return user;
-    }
-
-    public String GiveToken() throws Exception {
+                .password(encoder.encode(password))
+                .build());
+        user=savedUser;
         UserLogin userLogin = UserLogin.builder()
-                .email(emailTest)
-                .password("12345678")
+                .email(email)
+                .password(password)
                 .build();
 
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/auth/signin")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(userLogin)));
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(userLogin)));
 
         MvcResult result = resultActions.andReturn();
         String validToken = mapper.readValue(result.getResponse().getContentAsString(), UserLogin.class).getToken();
-        return validToken;
+
+        return UserLogin.builder()
+                .email(email)
+                .token(validToken)
+                .build();
     }
 
-    public User DNASetting(String emailtest) throws Exception {
-        //userdna세팅
-        emailTest=emailtest;
-        List<MusicDna> DNA= Arrays.asList(new MusicDna("느긋한"),new MusicDna("신나는"),new MusicDna("조용한"),new MusicDna("청순한"));
-        for(int i=0;i<4;i++)
-        {
-            emotionRepository.save(DNA.get(i));
-        }
-
-        DnaDTO dnaDTO=new DnaDTO();
-        dnaDTO.setKey(1L);
-        dnaDTO.setDna(Arrays.asList(new DNADetail(1L),new DNADetail(2L),new DNADetail(3L),new DNADetail(4L)));
-
-        user=RegisterUser(emailTest);
-
-        mockMvc.perform(post("/api/dna/save")
-                .contentType("application/json")
-                .content(mapper.writeValueAsString(DnaDTO.builder()
-                        .key(dnaDTO.getKey())
-                        .dna(dnaDTO.getDna())
-                        .build()
-                )));
+    protected User getUser() throws Exception {
         return user;
     }
 
-    public void PlaylistSetting(){
-        //playlist세팅 함수
-        Instant now = Instant.now();
-        Artist artist = new Artist("비비");
-        artistRepository.save(artist);
+    protected Artist saveArtist(String artistName) {
+        return artistRepository.save(Artist.builder()
+                .artistName(artistName)
+                .build());
+    }
 
-        Album album= new Album("발라드","밤양갱","base",artist, now);
-        albumRepository.save(album);
+    protected Album saveAlbum(String title, Artist artist, Instant createdDate, String genre) {
+        return albumRepository.save(Album.builder()
+                .title(title)
+                .cover("base")
+                .artist(artist)
+                .createdDate(createdDate)
+                .genre(genre)
+                .build());
+    }
 
-        Track track= new Track("발라드","밤양갱","base",artist, now,album);
-        trackRepository.save(track);
+    protected AlbumChat saveAlbumChat(String title, Artist artist, Album album,Instant createdDate, String genre) {
+        return albumChatRepository.save(AlbumChat.builder()
+                .CreateTime(createdDate)
+                .genre("발라드")
+                .cover("base")
+                .title("밤양갱")
+                .album(album)
+                .artistName("비비")
+                .build());
+    }
 
-        Playlist playlist =new Playlist(now,now,user);
-        playlistRepository.save(playlist);
+    protected Track saveTrack(String title, Album album, Artist artist, Instant createdDate, String genre) {
+        return trackRepository.save(Track.builder()
+                .title(title)
+                .album(album)
+                .Cover("base")
+                .artist(artist)
+                .createdDate(createdDate)
+                .genre(genre)
+                .build());
+    }
+    protected Playlist savePlaylist(Instant createdDate,User user,Instant updatedDate) {
+        return playlistRepository.save(Playlist.builder()
+                .createdDate(createdDate)
+                .user(user)
+                .updatedDate(updatedDate)
+                .build());
     }
 }

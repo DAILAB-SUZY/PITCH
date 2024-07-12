@@ -16,7 +16,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -45,6 +44,7 @@ public class MusicDNAControllerTest extends BaseSetting {
     //DNA데이터 잘 주는지
     @Test
     public void request_DNATest() throws Exception {
+
         List<MusicDna> DNA= Arrays.asList(new MusicDna("느긋한"),new MusicDna("신나는"),new MusicDna("조용한"),new MusicDna("청순한"));
         for(int i=0;i<4;i++)
         {
@@ -54,6 +54,7 @@ public class MusicDNAControllerTest extends BaseSetting {
         .contentType("application/json")
         .content(mapper.writeValueAsString(DNA)))
         .andExpect(status().isOk())
+
         .andExpect(jsonPath("$[0].emotion").value("느긋한"))
         .andExpect(jsonPath("$[1].emotion").value("신나는"));
     }
