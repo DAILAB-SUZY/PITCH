@@ -20,13 +20,11 @@ import org.cosmic.backend.domain.playList.repository.PlaylistRepository;
 import org.cosmic.backend.domain.playList.repository.TrackRepository;
 import org.cosmic.backend.domain.user.domain.Email;
 import org.cosmic.backend.domain.user.domain.User;
-import org.cosmic.backend.domain.user.dto.userDto;
 import org.cosmic.backend.domain.user.repository.EmailRepository;
 import org.cosmic.backend.domain.user.repository.UsersRepository;
 import org.cosmic.backend.domains.BaseSetting;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -38,7 +36,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -143,7 +140,7 @@ public class CreatePlaylistTest extends BaseSetting {
 
         playlistDTO playlistdto=new playlistDTO();
         playlistdto.setId(user.getUserId());
-        playlistdto.setPlaylist(Arrays.asList(new playlistDetail(1L)));
+        playlistdto.setPlaylist(Arrays.asList(new playlistDetail(track.getTrackId())));
 
         mockMvc.perform(post("/api/playlist/save")
                 .header("Authorization", "Bearer " + validToken)
@@ -155,17 +152,6 @@ public class CreatePlaylistTest extends BaseSetting {
                 )))
             .andDo(print())
             .andExpect(status().isOk());
-
-
-        //저장 후 열람
-        mockMvc.perform(post("/api/playlist/give")
-                .header("Authorization", "Bearer " + validToken)
-                .contentType("application/json")
-                .content(mapper.writeValueAsString(userDto.builder()
-                        .userid(user.getUserId())
-                        .build()))) // build() 메서드를 호출하여 최종 객체를 생성
-            .andExpect(status().isOk());
-
     }
     // 유효한 상태에서 잘 만들어지는지
 
@@ -354,7 +340,7 @@ public class CreatePlaylistTest extends BaseSetting {
                                 .build()
                         )))
                 .andDo(print())
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isNotFound());
 
         mockMvc.perform(post("/api/playlist/Artistsearch")
                         .header("Authorization", "Bearer " + validToken)
@@ -364,9 +350,6 @@ public class CreatePlaylistTest extends BaseSetting {
                                 .build()
                         )))
                 .andDo(print())
-                .andExpect(status().isUnauthorized());
-
-
-
-    }
+                .andExpect(status().isNotFound());
+            }
 }

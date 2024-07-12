@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.cosmic.backend.domain.albumChat.domain.AlbumChat;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -44,6 +45,9 @@ public class Album {//앨범과 트랙은 1:N관계이며 앨범과 아티스트
     @OneToMany(mappedBy = "album")
     @Builder.Default
     private List<Track> tracks=new ArrayList<>();
+
+    @OneToOne(mappedBy = "album")
+    private AlbumChat albumchat;
 
     public Album(String genre, String title,String cover, Artist artist, Instant createdDate){
         this.genre = genre;

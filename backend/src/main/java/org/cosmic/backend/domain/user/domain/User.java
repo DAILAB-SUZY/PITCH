@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.cosmic.backend.domain.musicDNA.domain.User_Dna;
+import org.cosmic.backend.domain.post.entity.Comment;
+import org.cosmic.backend.domain.post.entity.Like;
+import org.cosmic.backend.domain.post.entity.Post;
 import org.cosmic.backend.domain.playList.domain.Playlist;
 
 import java.time.Instant;
@@ -47,4 +50,16 @@ public class User {
 
     @OneToOne(mappedBy = "user")
     private Playlist playlist;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Post> posts=new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Comment> comments=new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Like> likes=new ArrayList<>();
 }

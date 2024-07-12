@@ -4,6 +4,7 @@ import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.cosmic.backend.globals.dto.ErrorResponse;
 import org.cosmic.backend.globals.exceptions.BadRequestException;
+import org.cosmic.backend.globals.exceptions.ConflictException;
 import org.cosmic.backend.globals.exceptions.NotFoundException;
 import org.cosmic.backend.globals.exceptions.UnAuthorizationException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -53,5 +54,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handlerJwtException(JwtException e) {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), "Token invalid");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+    }
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ErrorResponse> handlerConflictException(ConflictException e) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(), e.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
 }
