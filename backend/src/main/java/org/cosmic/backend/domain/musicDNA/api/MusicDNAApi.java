@@ -45,8 +45,8 @@ public class MusicDNAApi {
                                     schema = @Schema(implementation = ErrorResponse.class))
                     }
             ),
-            @ApiResponse(responseCode = "415",
-                    description = "Request body is empty",
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found Emotion",
                     content = {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ErrorResponse.class))

@@ -1,8 +1,8 @@
 package org.cosmic.backend.domain.playList.exceptions;
 
-import org.cosmic.backend.globals.exceptions.UnAuthorizationException;
+import org.cosmic.backend.globals.exceptions.NotFoundException;
 
-public class NotFoundArtistException extends UnAuthorizationException {
+public class NotFoundArtistException extends NotFoundException {
     public NotFoundArtistException(String errorMessage) {
         super(errorMessage);
     }
