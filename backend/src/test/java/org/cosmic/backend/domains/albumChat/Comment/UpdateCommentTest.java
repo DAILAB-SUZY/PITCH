@@ -2,7 +2,6 @@ package org.cosmic.backend.domains.albumChat.Comment;
 
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.albumChat.domain.AlbumChat;
-import org.cosmic.backend.domain.albumChat.dto.albumChat.AlbumChatDto;
 import org.cosmic.backend.domain.albumChat.dto.albumChat.AlbumChatResponse;
 import org.cosmic.backend.domain.albumChat.dto.comment.AlbumChatCommentDto;
 import org.cosmic.backend.domain.albumChat.dto.comment.CreateAlbumChatCommentReq;

@@ -20,7 +20,6 @@ import org.cosmic.backend.domain.playList.repository.PlaylistRepository;
 import org.cosmic.backend.domain.playList.repository.TrackRepository;
 import org.cosmic.backend.domain.user.domain.Email;
 import org.cosmic.backend.domain.user.domain.User;
-import org.cosmic.backend.domain.user.dto.userDto;
 import org.cosmic.backend.domain.user.repository.EmailRepository;
 import org.cosmic.backend.domain.user.repository.UsersRepository;
 import org.cosmic.backend.domains.BaseSetting;
@@ -34,7 +33,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.Instant;
@@ -142,7 +140,7 @@ public class CreatePlaylistTest extends BaseSetting {
 
         playlistDTO playlistdto=new playlistDTO();
         playlistdto.setId(user.getUserId());
-        playlistdto.setPlaylist(Arrays.asList(new playlistDetail(1L)));
+        playlistdto.setPlaylist(Arrays.asList(new playlistDetail(track.getTrackId())));
 
         mockMvc.perform(post("/api/playlist/save")
                 .header("Authorization", "Bearer " + validToken)

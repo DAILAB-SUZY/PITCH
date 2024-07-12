@@ -111,9 +111,7 @@ public class createPostTest {
                         .content(mapper.writeValueAsString(AlbumDto.builder()
                                 .albumName("밤양갱")
                                 .build()
-                        )))
-                .andDo(print())
-                .andExpect(status().isOk());
+                        )));
 
         mockMvc.perform(post("/api/post/searchArtist")
                         .header("Authorization", "Bearer " + validToken)
@@ -178,7 +176,7 @@ public class createPostTest {
                 .genre("발라드")
                 .build());
 
-        resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/api/post/create")
+        mockMvc.perform(post("/api/post/create")
                 .header("Authorization", "Bearer " + validToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(CreatePost.builder()
@@ -189,8 +187,8 @@ public class createPostTest {
                         .title("밤양갱")
                         .updateTime(null)
                         .build()
-                )));
-
+                ))).andDo(print())
+                .andExpect(status().isOk());
     }
 
     //post잘 만들어지는지

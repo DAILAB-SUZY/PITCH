@@ -10,7 +10,6 @@ import org.cosmic.backend.domain.playList.repository.ArtistRepository;
 import org.cosmic.backend.domain.playList.repository.TrackRepository;
 import org.cosmic.backend.domain.post.dto.Comment.CommentDto;
 import org.cosmic.backend.domain.post.dto.Comment.CreateCommentReq;
-import org.cosmic.backend.domain.post.dto.Comment.UpdateCommentReq;
 import org.cosmic.backend.domain.post.dto.Post.CreatePost;
 import org.cosmic.backend.domain.post.dto.Post.PostDto;
 import org.cosmic.backend.domain.post.dto.Reply.CreateReplyReq;

@@ -14,7 +14,6 @@ import org.cosmic.backend.domain.post.dto.Post.CreatePost;
 import org.cosmic.backend.domain.post.dto.Post.PostDto;
 import org.cosmic.backend.domain.post.dto.Reply.CreateReplyReq;
 import org.cosmic.backend.domain.post.dto.Reply.ReplyDto;
-import org.cosmic.backend.domain.post.dto.Reply.UpdateReplyReq;
 import org.cosmic.backend.domain.user.domain.Email;
 import org.cosmic.backend.domain.user.domain.User;
 import org.cosmic.backend.domain.user.repository.EmailRepository;
