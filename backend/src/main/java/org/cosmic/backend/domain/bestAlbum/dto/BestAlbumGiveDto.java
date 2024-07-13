@@ -9,4 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class BestAlbumGiveDto {
     Long albumId;
+    String albumName;
+    String cover;
 }
