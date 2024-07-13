@@ -8,7 +8,6 @@ import jakarta.transaction.Transactional;
 import org.cosmic.backend.domain.bestAlbum.dto.*;
 import org.cosmic.backend.domain.bestAlbum.service.BestAlbumService;
 import org.cosmic.backend.domain.playList.dto.ArtistDTO;
-import org.cosmic.backend.domain.playList.dto.playlistGiveDto;
 import org.cosmic.backend.domain.user.dto.userDto;
 import org.cosmic.backend.globals.dto.ErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,6 +73,7 @@ public class BestAlbumApi {
         return ResponseEntity.ok("성공");
     }
     //사용자가 앨범을 선택해서 등록 버튼을 누르면 1개의 앨범이 추가됨(기존 리스트 뒷부분에 추가)
+
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "Ok",
@@ -81,6 +81,14 @@ public class BestAlbumApi {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = String.class))
                     }),
+
+            @ApiResponse(responseCode = "400",
+                    description = "Not Match BestAlbum",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponse.class))
+                    }
+            ),
 
             @ApiResponse(responseCode = "404",
                     description = "Not Found User or Album",
