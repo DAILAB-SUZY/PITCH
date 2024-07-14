@@ -1,10 +1,11 @@
 import styled from "styled-components";
 import BottomNav from "../components/BottomNav";
+import AlbumChatBox from "../components/AlbumChatBox";
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: start;
   align-items: center;
   height: 100vh;
   width: 100vw;
@@ -89,6 +90,34 @@ const Circle = styled.div`
   border-radius: 100px;
 `;
 
+const Line = styled.div`
+  width: 90vw;
+  border-bottom: 1px;
+`;
+
+const ChatContainer = styled.div`
+  width: 90vw;
+  height: 70vh;
+  overflow-y: auto;
+`;
+
+const ChatBox = styled.div`
+  width: 90vw;
+  height: 110px;
+`;
+
+const BottomNavContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  background-color: white;
+`;
+
 const Title = styled.div<{ fontSize: string; margin: string }>`
   font-size: ${(props) => props.fontSize};
   margin: ${(props) => props.margin};
@@ -101,6 +130,8 @@ const Text = styled.div<{ fontSize: string; margin: string }>`
 `;
 
 function AlbumChatPage() {
+  const items = Array.from({ length: 20 }, (_, index) => `Item ${index + 1}`);
+
   return (
     <Container>
       <HeaderContainer>
@@ -138,7 +169,17 @@ function AlbumChatPage() {
       <ChatHeaderContainer>
         <Title fontSize="35px">CHAT</Title>
       </ChatHeaderContainer>
-      <BottomNav></BottomNav>
+      <ChatContainer>
+        <ChatBox>
+          {items.map((item, index) => (
+            <AlbumChatBox></AlbumChatBox>
+          ))}
+        </ChatBox>
+      </ChatContainer>
+      <Line></Line>
+      <BottomNavContainer>
+        <BottomNav></BottomNav>
+      </BottomNavContainer>
     </Container>
   );
 }
