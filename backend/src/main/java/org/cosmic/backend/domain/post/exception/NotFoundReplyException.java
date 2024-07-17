@@ -7,6 +7,6 @@ public class NotFoundReplyException extends NotFoundException {
         super(errorMessage);
     }
     public NotFoundReplyException(){
-        this("Not found post");
+        this("Not Found Reply");
     }
 }
