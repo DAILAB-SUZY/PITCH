@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 @Service
 public class AlbumChatCommentService {
 
@@ -33,7 +35,7 @@ public class AlbumChatCommentService {
             throw new NotFoundAlbumChatException();
         }
         else {
-            List<AlbumChatComment> commentList = commentRepository.findByAlbumChat_AlbumChatId(albumChatId);
+            List<AlbumChatComment> commentList = commentRepository.findByAlbumChat_AlbumChatId(albumChatId).get();
             for (AlbumChatComment comment : commentList) {
                 AlbumChatCommentResponse commentReq = new AlbumChatCommentResponse();
                 commentReq.setAlbumChatCommentId(comment.getAlbumChatCommentId());
@@ -89,4 +91,20 @@ public class AlbumChatCommentService {
             commentRepository.deleteById(commentdto.getAlbumChatCommentId());
         }
     }
+
+    public List<AlbumChatCommentResponse> sortedAlbumChatComment(List<Map.Entry<AlbumChatComment, Long>> sortedComments) {
+
+        List<AlbumChatCommentResponse> comments = new ArrayList<>();
+
+        for (Map.Entry<AlbumChatComment, Long> entry : sortedComments) {
+            AlbumChatCommentResponse commentReq = new AlbumChatCommentResponse();
+            commentReq.setAlbumChatCommentId(entry.getKey().getAlbumChatCommentId());
+            commentReq.setContent(entry.getKey().getContent());
+            commentReq.setCreateTime(entry.getKey().getUpdateTime());
+            commentReq.setUserId(entry.getKey().getUser().getUserId());
+            comments.add(commentReq);
+        }
+        return comments;
+    }
+
 }

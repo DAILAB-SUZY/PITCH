@@ -2,8 +2,8 @@ package org.cosmic.backend.domain.albumChat.service;
 import org.cosmic.backend.domain.albumChat.domain.AlbumChat;
 import org.cosmic.backend.domain.albumChat.domain.AlbumChatComment;
 import org.cosmic.backend.domain.albumChat.dto.albumChat.AlbumChatDto;
-import org.cosmic.backend.domain.albumChat.dto.albumChat.AlbumChatManyLikeListResponse;
 import org.cosmic.backend.domain.albumChat.dto.albumChat.AlbumChatResponse;
+import org.cosmic.backend.domain.albumChat.dto.comment.AlbumChatCommentResponse;
 import org.cosmic.backend.domain.albumChat.exception.NotFoundAlbumChatException;
 import org.cosmic.backend.domain.albumChat.repository.AlbumChatCommentLikeRepository;
 import org.cosmic.backend.domain.albumChat.repository.AlbumChatCommentRepository;
@@ -28,6 +28,8 @@ public class AlbumChatService {
     private AlbumChatCommentRepository albumChatCommentRepository;
     @Autowired
     private AlbumChatCommentLikeRepository albumChatCommentLikeRepository;
+    @Autowired
+    private AlbumChatCommentService albumChatCommentService;
 
     @Transactional
     public AlbumChatResponse getAlbumChatById(AlbumDto album) {//Post가 아니라 post에서 나와야할 내용들이 리턴되야함
@@ -48,17 +50,14 @@ public class AlbumChatService {
     }
 
     @Transactional
-    public List<AlbumChatManyLikeListResponse> getAlbumChatCommentByManyLikeId(AlbumChatDto albumchat) {//Post가 아니라 post에서 나와야할 내용들이 리턴되야함
-        List<AlbumChatManyLikeListResponse> albumChatManyLikeListResponses=new ArrayList<>();
+    public List<AlbumChatCommentResponse> getAlbumChatCommentByManyLikeId(AlbumChatDto albumchat) {//Post가 아니라 post에서 나와야할 내용들이 리턴되야함
 
         if(!albumChatCommentRepository.findByAlbumChat_AlbumChatId(albumchat.getAlbumChatId()).isPresent())
         {
             throw new NotFoundAlbumChatException();
         }
         else{
-            AlbumChatManyLikeListResponse albumChatManyLikeListResponse=new AlbumChatManyLikeListResponse();
             List<AlbumChatComment> albumChatCommentList= albumChatCommentRepository.findByAlbumChat_AlbumChatId(albumchat.getAlbumChatId()).get();
-            //해당 앨범챗의 댓글들을 모두 가져온 후
             Map<AlbumChatComment,Long>albumMap=new HashMap<>();
             for(AlbumChatComment albumChatComment:albumChatCommentList){
                 Long likeCount =albumChatCommentLikeRepository.countByAlbumChatComment_AlbumChatCommentId(albumChatComment.getAlbumChatCommentId());
@@ -70,18 +69,7 @@ public class AlbumChatService {
                     .sorted((entry1, entry2) -> Long.compare(entry2.getValue(), entry1.getValue()))
                     .collect(Collectors.toList());
 
-            for (Map.Entry<AlbumChatComment, Long> entry : sortedComments) {
-                AlbumChatComment comment = entry.getKey();
-                long likeCount = entry.getValue();
-
-                AlbumChatManyLikeListResponse response = new AlbumChatManyLikeListResponse();
-                response.setAlbumChatCommentId(comment.getAlbumChatCommentId());
-                response.setLikeCount(likeCount);
-                // 필요한 다른 필드들을 설정
-
-                albumChatManyLikeListResponses.add(response);
-            }
-            return albumChatManyLikeListResponses;
+            return albumChatCommentService.sortedAlbumChatComment(sortedComments);
         }
     }
 }
