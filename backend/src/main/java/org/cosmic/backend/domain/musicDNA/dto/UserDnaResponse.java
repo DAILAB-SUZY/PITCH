@@ -1,4 +1,4 @@
-package org.cosmic.backend.domain.favoriteArtist.dto;
+package org.cosmic.backend.domain.musicDNA.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDto {
+public class UserDnaResponse {
     private Long userId;
+    private String Emotion;
 }
