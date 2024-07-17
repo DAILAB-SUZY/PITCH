@@ -14,7 +14,6 @@ import org.cosmic.backend.domain.playList.repository.AlbumRepository;
 import org.cosmic.backend.domain.playList.repository.ArtistRepository;
 import org.cosmic.backend.domain.playList.repository.TrackRepository;
 import org.cosmic.backend.domain.post.dto.Post.AlbumDto;
-import org.cosmic.backend.domain.user.domain.Email;
 import org.cosmic.backend.domain.user.domain.User;
 import org.cosmic.backend.domain.user.repository.EmailRepository;
 import org.cosmic.backend.domain.user.repository.UsersRepository;
@@ -24,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
@@ -111,6 +109,7 @@ public class UpdateCommentTest extends BaseSetting {
                                 .albumChatCommentId(albumChatCommentId)
                                 .userId(user.getUserId())
                                 .content("hi")
+                                .albumChatId(albumChatId)
                                 .createTime(null)
                                 .build()
                         ))).andDo(print())
@@ -169,6 +168,7 @@ public class UpdateCommentTest extends BaseSetting {
                                 .albumChatCommentId(100L)
                                 .userId(user.getUserId())
                                 .content("hi")
+                                .albumChatId(albumChatId)
                                 .createTime(null)
                                 .build()
                         ))).andDo(print())

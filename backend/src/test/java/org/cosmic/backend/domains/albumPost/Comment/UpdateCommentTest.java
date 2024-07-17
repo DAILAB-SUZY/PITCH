@@ -13,7 +13,6 @@ import org.cosmic.backend.domain.post.dto.Comment.CreateCommentReq;
 import org.cosmic.backend.domain.post.dto.Comment.UpdateCommentReq;
 import org.cosmic.backend.domain.post.dto.Post.CreatePost;
 import org.cosmic.backend.domain.post.dto.Post.PostDto;
-import org.cosmic.backend.domain.user.domain.Email;
 import org.cosmic.backend.domain.user.domain.User;
 import org.cosmic.backend.domain.user.repository.EmailRepository;
 import org.cosmic.backend.domain.user.repository.UsersRepository;
@@ -23,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
@@ -112,6 +110,7 @@ public class UpdateCommentTest extends BaseSetting {
                                 .content("밤양갱 노래 별론대")
                                 .userId(user.getUserId())
                                 .commentId(commentId)
+                                .postId(postId)
                                 .build()
                         )))
                 .andDo(print())
