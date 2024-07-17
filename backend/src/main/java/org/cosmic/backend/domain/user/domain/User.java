@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.cosmic.backend.domain.favoriteArtist.domain.FavoriteArtist;
 import org.cosmic.backend.domain.musicDNA.domain.User_Dna;
 import org.cosmic.backend.domain.post.entity.Comment;
 import org.cosmic.backend.domain.post.entity.Like;
@@ -50,6 +51,9 @@ public class User {
 
     @OneToOne(mappedBy = "user")
     private Playlist playlist;
+
+    @OneToOne(mappedBy = "user")
+    private FavoriteArtist favoriteAlbum;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
