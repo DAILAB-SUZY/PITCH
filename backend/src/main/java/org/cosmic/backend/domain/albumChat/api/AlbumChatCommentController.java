@@ -80,7 +80,13 @@ public class AlbumChatCommentController {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = String.class))
                     }),
-
+            @ApiResponse(responseCode = "400",
+                    description = "Not Found AlbumChatComment",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponse.class))
+                    }
+            ),
             @ApiResponse(responseCode = "404",
                     description = "Not Found AlbumChatComment",
                     content = {

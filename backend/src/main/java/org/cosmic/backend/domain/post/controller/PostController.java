@@ -45,7 +45,7 @@ public class PostController {
     @Transactional
     @PostMapping("/give")
     public List<PostReq> giveAllPosts(@RequestBody userDto user) {
-        return postService.getAllPosts(user.getUserid());
+        return postService.getAllPosts(user.getUserId());
     }
 
     //모든 포스트 줄 때

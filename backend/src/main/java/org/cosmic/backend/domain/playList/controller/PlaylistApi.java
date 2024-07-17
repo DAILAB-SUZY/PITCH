@@ -20,7 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/playlist")
-public class PlatlistApi {
+public class PlaylistApi {
 
     @Autowired
     private PlaylistService playlistService;
@@ -48,7 +48,7 @@ public class PlatlistApi {
     public List<playlistGiveDto> giveData(@RequestBody userDto user) {
         //없는 유저 아이디일 때 오류 발생
         //유저의 플렝
-       return playlistService.open(user.getUserid());
+       return playlistService.open(user.getUserId());
 
     }//특정 플레이어의 플레이리스트 가져와서 줌
 
@@ -87,7 +87,7 @@ public class PlatlistApi {
                                     schema = @Schema(implementation = String.class))
                     }),
 
-            @ApiResponse(responseCode = "404",
+            @ApiResponse(responseCode = "400",
                     description = "Not Match Artist Name",
                     content = {
                             @Content(mediaType = "application/json",

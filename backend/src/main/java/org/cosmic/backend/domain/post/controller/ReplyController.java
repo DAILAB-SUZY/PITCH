@@ -75,6 +75,12 @@ public class ReplyController {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = String.class))
                     }),
+            @ApiResponse(responseCode = "400",
+                    description = "Not Match User Or Comment",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = String.class))
+                    }),
             @ApiResponse(responseCode = "404",
                     description = "Not Found Reply",
                     content = {

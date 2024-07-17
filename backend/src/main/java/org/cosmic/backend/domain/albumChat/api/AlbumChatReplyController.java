@@ -74,6 +74,13 @@ public class AlbumChatReplyController {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = String.class))
                     }),
+            @ApiResponse(responseCode = "400",
+                    description = "Not Match Comment Or User",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponse.class))
+                    }
+            ),
             @ApiResponse(responseCode = "404",
                     description = "Not Found Reply",
                     content = {
