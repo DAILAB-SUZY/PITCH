@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AlbumData {
     private Long albumId;
-    private String albumName;
+    private String trackName;
 }

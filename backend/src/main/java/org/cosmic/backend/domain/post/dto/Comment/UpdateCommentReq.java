@@ -13,6 +13,7 @@ import java.time.Instant;
 @Builder
 public class UpdateCommentReq {
     private Long userId;
+    private Long postId;
     private Long commentId;
     private String content;
     private Instant createTime;

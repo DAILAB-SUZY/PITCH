@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class userDto {
-    private Long userid;
+    private Long userId;
 }

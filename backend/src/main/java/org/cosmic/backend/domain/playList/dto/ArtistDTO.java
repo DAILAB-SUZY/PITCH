@@ -10,5 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class ArtistDTO {
+    //artistId도 필요해보임
     private String artistName;
 }

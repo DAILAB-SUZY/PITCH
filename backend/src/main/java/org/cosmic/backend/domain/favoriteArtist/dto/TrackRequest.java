@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AlbumDTO {
-    private Long artistId;
-    private String albumName;
+public class TrackRequest {
+    private Long albumId;
+    private String trackName;
 }

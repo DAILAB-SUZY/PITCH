@@ -10,8 +10,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class favoriteArtistDTO {
+    private String artistName;
+    private String albumName;
+    private String cover;
+    private String trackName;
     private Long userId;
-    private Long artistId;
-    private Long albumId;
-    private Long trackId;
 }
