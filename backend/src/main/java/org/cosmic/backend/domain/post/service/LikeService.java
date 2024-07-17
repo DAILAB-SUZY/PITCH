@@ -29,14 +29,13 @@ private LikeRepository likeRepository;
     public List<LikeResponse> getLikesByPostId(Long postId) {
         List<LikeResponse> likes = new ArrayList<>();
         //postId를 통해 이 id의 좋아요한 사람의 정보 다 가져옴
-        LikeResponse likeresponse = new LikeResponse();
         if(!postRepository.findById(postId).isPresent()) {
             throw new NotFoundPostException();
         }
         else{
             List<Like> likeList=likeRepository.findByPost_PostId(postId);//해당 포스트의 좋아요들을 모두 볼 수 있음
             for(Like like:likeList) {
-
+                LikeResponse likeresponse = new LikeResponse();
                 likeresponse.setUserId(like.getUser().getUserId());
                 likeresponse.setUserName(like.getUser().getUsername());
                 likeresponse.setProfilePicture(like.getUser().getProfilePicture());

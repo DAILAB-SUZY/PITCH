@@ -4,6 +4,7 @@ import org.cosmic.backend.domain.playList.domain.Album;
 import org.cosmic.backend.domain.playList.domain.Artist;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundArtistException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
+import org.cosmic.backend.domain.playList.exceptions.NotMatchAlbumException;
 import org.cosmic.backend.domain.playList.repository.AlbumRepository;
 import org.cosmic.backend.domain.playList.repository.ArtistRepository;
 import org.cosmic.backend.domain.post.dto.Post.*;
@@ -78,9 +79,13 @@ public class PostService {
 
     public PostDto createPost(CreatePost post) {
         //post생성 버튼 눌렀을 때
+        System.out.println("*******"+post);
         if(!userRepository.findById(post.getUserId()).isPresent())
         {
             throw new NotFoundUserException();
+        }
+        else if(!albumRepository.findByTitleAndArtist_ArtistName(post.getTitle(),post.getArtistName()).isPresent()){
+            throw new NotMatchAlbumException();
         }
         else{
             User user=userRepository.findByUserId(post.getUserId()).get();
@@ -130,8 +135,8 @@ public class PostService {
         }
         else {
             List<Album> albumInfo = albumRepository.findByTitle(albumName).get();
-            AlbumDto albumDto = new AlbumDto();
             for (int i = 0; i < albumInfo.size(); i++) {
+                AlbumDto albumDto = new AlbumDto();
                 albumDto.setArtistName(albumInfo.get(i).getArtist().getArtistName());
                 albumDto.setAlbumName(albumInfo.get(i).getTitle());
                 albumDto.setAlbumId(albumInfo.get(i).getAlbumId());
@@ -145,16 +150,16 @@ public class PostService {
         //사용자가 앨범 찾기 위해 아티스트 이름을 검색할 때
         List<AlbumDto> albums = new ArrayList<>();
         //해당 아티스트이름과 같은 앨범 정보들을 모두 가져와 담음
-        AlbumDto albumDto = new AlbumDto();
         if(!artistRepository.findByArtistName(artistName).isPresent())
         {
             throw new NotFoundArtistException();
         }
         else{
             Artist artistInfo= artistRepository.findByArtistName(artistName).get();
-            List<Album> album=albumRepository.findByArtist_ArtistId(artistInfo.getArtistId());//트랙들을 모두 가져옴
+            List<Album> album=albumRepository.findAllByArtist_ArtistId(artistInfo.getArtistId());//트랙들을 모두 가져옴
             for(int i=0;i<album.size();i++)
             {
+                AlbumDto albumDto = new AlbumDto();
                 albumDto.setArtistName(artistName);
                 albumDto.setAlbumName(album.get(i).getTitle());
                 albumDto.setAlbumId(album.get(i).getAlbumId());
