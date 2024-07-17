@@ -8,6 +8,5 @@ import java.util.Optional;
 
 public interface ArtistRepository extends JpaRepository<Artist,Long> {
     Optional<Artist> findByArtistName(String artistName);
-    void deleteByArtistId(Long artistId);
-
+    Optional<List<Artist>>findAllByArtistName(String artistName);
 }
