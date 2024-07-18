@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { colors } from "../../styles/color";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface NavProps {
   onClick?: () => void;
@@ -32,11 +33,23 @@ const Title = styled.div<{ fontSize: string; margin: string; color: string }>`
 `;
 
 const BottomNav = ({ onClick }: NavProps) => {
+  const navigate = useNavigate();
+  const GoToAlbumChatPage = () => {
+    navigate("/AlbumChatPage");
+  };
+  const GoToHomePage = () => {
+    navigate("/Home");
+  };
   const [activeNav, setActiveNav] = useState(2);
 
   return (
     <Container>
-      <Button onClick={() => setActiveNav(1)}>
+      <Button
+        onClick={() => {
+          setActiveNav(1);
+          GoToAlbumChatPage();
+        }}
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="36"
@@ -49,7 +62,12 @@ const BottomNav = ({ onClick }: NavProps) => {
         </svg>
         <Title color={activeNav === 1 ? "black" : "grey"}>앨범챗</Title>
       </Button>
-      <Button onClick={() => setActiveNav(2)}>
+      <Button
+        onClick={() => {
+          setActiveNav(2);
+          GoToHomePage();
+        }}
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="36"
