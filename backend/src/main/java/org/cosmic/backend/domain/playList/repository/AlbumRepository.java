@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AlbumRepository extends JpaRepository<Album,Long> {
-    Album findByAlbumId(Long albumId);
+    Optional<Album> findByAlbumId(Long albumId);
     void deleteByAlbumId(Long albumId);
     List<Album> findByArtist_ArtistId(Long artistId);
     Optional<List<Album>> findByTitle(String title);
