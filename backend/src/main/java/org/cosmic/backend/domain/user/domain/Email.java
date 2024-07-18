@@ -1,10 +1,7 @@
 package org.cosmic.backend.domain.user.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -16,6 +13,7 @@ import java.time.Instant;
 @Entity
 @Builder
 @Table(name="emails")
+@EqualsAndHashCode(exclude = {})
 public class Email {
 
     @Id
@@ -29,4 +27,14 @@ public class Email {
     @Builder.Default
     @Column(nullable=false)
     private Instant createTime=Instant.now();
+
+    @Override
+    public String toString() {
+        return "Email{" +
+                "email='" + email + '\'' +
+                ", verified=" + verified +
+                ", verificationCode='" + verificationCode + '\'' +
+                ", createTime=" + createTime +
+                '}';
+    }
 }
