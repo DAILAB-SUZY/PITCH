@@ -80,8 +80,14 @@ public class CommentController {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = String.class))
                     }),
-
-            @ApiResponse(responseCode = "401",
+            @ApiResponse(responseCode = "400",
+            description = "Not Match Post Or User",
+            content = {
+                    @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))
+            }
+    ),
+            @ApiResponse(responseCode = "404",
                     description = "Not Found Post",
                     content = {
                             @Content(mediaType = "application/json",

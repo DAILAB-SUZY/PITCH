@@ -8,6 +8,8 @@ import org.cosmic.backend.domain.post.dto.Comment.UpdateCommentReq;
 import org.cosmic.backend.domain.post.entity.Comment;
 import org.cosmic.backend.domain.post.exception.NotFoundCommentException;
 import org.cosmic.backend.domain.post.exception.NotFoundPostException;
+import org.cosmic.backend.domain.post.exception.NotMatchPostException;
+import org.cosmic.backend.domain.post.exception.NotMatchUserException;
 import org.cosmic.backend.domain.post.repository.CommentRepository;
 import org.cosmic.backend.domain.post.repository.PostRepository;
 import org.cosmic.backend.domain.user.repository.UsersRepository;
@@ -80,9 +82,18 @@ public class CommentService {
         }
         else {
             Comment comment1 = commentRepository.findByCommentId(comment.getCommentId());
-            comment1.setContent(comment.getContent());
-            comment1.setUpdateTime(Instant.now());
-            commentRepository.save(comment1);//새로생기는지 업데이트만 되는지 만약 새로생기는거면업데이트만 되게만들어야함.
+            if(comment1.getUser().getUserId()!=comment.getUserId())
+            {
+                throw new NotMatchUserException();
+            }
+            else if(comment1.getPost().getPostId()!=comment.getPostId())
+            {
+                throw new NotMatchPostException();
+            }
+            else{
+                comment1.setContent(comment.getContent());
+                commentRepository.save(comment1);//새로생기는지 업데이트만 되는지 만약 새로생기는거면업데이트만 되게만들어야함.
+            }
         }
     }
 

@@ -6,8 +6,9 @@ import org.cosmic.backend.domain.post.dto.Reply.ReplyDto;
 import org.cosmic.backend.domain.post.dto.Reply.UpdateReplyReq;
 import org.cosmic.backend.domain.post.entity.Reply;
 import org.cosmic.backend.domain.post.exception.NotFoundCommentException;
-import org.cosmic.backend.domain.post.exception.NotFoundPostException;
 import org.cosmic.backend.domain.post.exception.NotFoundReplyException;
+import org.cosmic.backend.domain.post.exception.NotMatchCommentException;
+import org.cosmic.backend.domain.post.exception.NotMatchUserException;
 import org.cosmic.backend.domain.post.repository.CommentRepository;
 import org.cosmic.backend.domain.post.repository.ReplyRepository;
 import org.cosmic.backend.domain.user.repository.UsersRepository;
@@ -75,8 +76,15 @@ public class ReplyService {
         }
         else{
             Reply reply1=replyRepository.findByReplyId(reply.getReplyId());
+            if(reply1.getComment().getCommentId()!=reply.getCommentId())
+            {
+                throw new NotMatchCommentException();
+            }
+            else if(reply1.getUser().getUserId()!=reply.getUserId())
+            {
+                throw new NotMatchUserException();
+            }
             reply1.setContent(reply.getContent());
-            reply1.setUpdateTime(Instant.now());
             replyRepository.save(reply1);//새로생기는지 업데이트만 되는지 만약 새로생기는거면업데이트만 되게만들어야함.
         }
     }

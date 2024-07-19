@@ -8,6 +8,8 @@ import jakarta.transaction.Transactional;
 import org.cosmic.backend.domain.musicDNA.applications.MusicDNAService;
 import org.cosmic.backend.domain.musicDNA.dto.DnaDTO;
 import org.cosmic.backend.domain.musicDNA.dto.ListDNA;
+import org.cosmic.backend.domain.musicDNA.dto.UserDnaResponse;
+import org.cosmic.backend.domain.user.dto.userDto;
 import org.cosmic.backend.globals.dto.ErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -60,4 +62,12 @@ public class MusicDNAApi {
         musicDNAService.saveDNA(Key, dna.getDna());//Long
         return ResponseEntity.ok("성공");//회원가입 완료 표시
     }
+
+    @PostMapping("/info")
+    @Transactional
+    public List<UserDnaResponse> giveUserDNA(@RequestBody userDto user) {
+        System.out.println(user);
+        return musicDNAService.getUserDna(user);
+    }
+
 }

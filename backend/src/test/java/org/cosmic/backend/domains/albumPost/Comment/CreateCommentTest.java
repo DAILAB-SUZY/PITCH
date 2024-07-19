@@ -13,7 +13,6 @@ import org.cosmic.backend.domain.post.dto.Comment.CommentDto;
 import org.cosmic.backend.domain.post.dto.Comment.CreateCommentReq;
 import org.cosmic.backend.domain.post.dto.Post.CreatePost;
 import org.cosmic.backend.domain.post.dto.Post.PostDto;
-import org.cosmic.backend.domain.user.domain.Email;
 import org.cosmic.backend.domain.user.domain.User;
 import org.cosmic.backend.domain.user.repository.EmailRepository;
 import org.cosmic.backend.domain.user.repository.UsersRepository;
@@ -23,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
@@ -99,7 +97,7 @@ public class CreateCommentTest extends BaseSetting {
                         .postId(postId)
                         .content("안녕")
                         .build()
-                )));
+                ))).andExpect(status().isOk()).andDo(print());
     }
 
     //post잘 만들어지는지

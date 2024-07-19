@@ -1,4 +1,4 @@
-package org.cosmic.backend.domain.playList.dto;
+package org.cosmic.backend.domain.favoriteArtist.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,10 +6,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class ArtistDTO {
-    //artistId도 필요해보임
+public class favoriteArtist {
     private String artistName;
+    private String albumName;
+    private String trackName;
+    private String cover;
 }

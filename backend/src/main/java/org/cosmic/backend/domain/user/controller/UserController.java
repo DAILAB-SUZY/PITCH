@@ -33,21 +33,14 @@ public class UserController {
                     }),
 
             @ApiResponse(responseCode = "400",
-                    description = "Not met password condition",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class))
-                    }
-            ),
-            @ApiResponse(responseCode = "401",
-                    description = "Not found email",
+                    description = "Not met password condition or Not Match Password",
                     content = {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ErrorResponse.class))
                     }
             ),
             @ApiResponse(responseCode = "404",
-                    description = "Not match password",
+                    description = "Not found email",
                     content = {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ErrorResponse.class))

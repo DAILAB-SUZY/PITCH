@@ -1,16 +1,17 @@
-package org.cosmic.backend.domain.playList.controller;
+package org.cosmic.backend.domain.favoriteArtist.api;
 
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.transaction.Transactional;
-import org.cosmic.backend.domain.playList.dto.*;
-import org.cosmic.backend.domain.playList.service.PlaylistService;
+import org.cosmic.backend.domain.favoriteArtist.dto.*;
+import org.cosmic.backend.domain.favoriteArtist.service.favoriteArtistService;
+import org.cosmic.backend.domain.playList.dto.ArtistDTO;
 import org.cosmic.backend.domain.user.dto.userDto;
-import org.cosmic.backend.globals.dto.ErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,11 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/playlist")
-public class PlatlistApi {
+@RequestMapping("/api/favoriteArtist")
 
+public class favoriteController {
     @Autowired
-    private PlaylistService playlistService;
+    private favoriteArtistService favoriteartistService;
 
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
@@ -42,43 +43,13 @@ public class PlatlistApi {
             )
     }
     )
-
-    @Transactional
     @PostMapping("/give")
-    public List<playlistGiveDto> giveData(@RequestBody userDto user) {
-        //없는 유저 아이디일 때 오류 발생
-        //유저의 플렝
-       return playlistService.open(user.getUserid());
-
-    }//특정 플레이어의 플레이리스트 가져와서 줌
-
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200",
-                    description = "Ok",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = String.class))
-                    }),
-
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found User or Track",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class))
-                    }
-            )
-    }
-    )
-
-    @PostMapping("/save")//수정한 플레이리스트를 여기 저장
     @Transactional
-    public ResponseEntity<?> savePlaylistData(@RequestBody playlistDTO playlist) {
+    public favoriteArtist giveFavoriteArtistData(@RequestBody userDto user) {
         // 데이터 받을 때
-        Long Key= playlist.getId();
-        playlistService.save(Key,playlist.getPlaylist());
-        return ResponseEntity.ok("성공");
+        return  favoriteartistService.giveFavoriteArtistData(user.getUserId());//Long;
+        //줄때 아티스트 사진도 필요할듯 싶음
     }
-
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "Ok",
@@ -88,7 +59,7 @@ public class PlatlistApi {
                     }),
 
             @ApiResponse(responseCode = "404",
-                    description = "Not Match Artist Name",
+                    description = "Not Found Artist",
                     content = {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ErrorResponse.class))
@@ -96,14 +67,13 @@ public class PlatlistApi {
             )
     }
     )
-
-    @PostMapping("/Artistsearch")
     @Transactional
-    public List<TrackGiveDto> searchArtist(@RequestBody ArtistDTO artist) {
-        return playlistService.searchArtist(artist.getArtistName());
+    @PostMapping("/searchartist")
+    public List<ArtistData> searchArtistData(@RequestBody ArtistDTO artist) {//artist이름 주면
+        return favoriteartistService.searchArtistData(artist.getArtistName());
     }
 
-
+    //givealbum -> 해당 아티스트의 앨범들을 보여줌
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "Ok",
@@ -113,7 +83,7 @@ public class PlatlistApi {
                     }),
 
             @ApiResponse(responseCode = "404",
-                    description = "Not Match Track Title",
+                    description = "Not Found Album",
                     content = {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ErrorResponse.class))
@@ -121,11 +91,56 @@ public class PlatlistApi {
             )
     }
     )
-
-    @PostMapping("/Tracksearch")
     @Transactional
-    public List<TrackGiveDto> searchTrack(@RequestBody trackDTO track) {
-        return playlistService.searchTrack(track.getTrackName());
+    @PostMapping("/searchalbum")
+    public List<AlbumData> searchAlbumData(@RequestBody AlbumRequest album) {
+        return favoriteartistService.searchAlbumData(album.getArtistId(),album.getAlbumName());
     }
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Ok",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = String.class))
+                    }),
 
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found Track",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponse.class))
+                    }
+            )
+    }
+    )    @PostMapping("/searchtrack")
+    @Transactional
+    public TrackData searchTrackData(@RequestBody TrackRequest track) {
+        return favoriteartistService.searchTrackData(track.getAlbumId(),track.getTrackName());
+    }
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Ok",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = String.class))
+                    }),
+
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found User",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponse.class))
+                    }
+            )
+    }
+    )
+    //노래까지 다 찾으면 확인 누르면 save로
+
+    @PostMapping("/save")
+    @Transactional
+    public ResponseEntity<?> saveFavoriteArtistData(@RequestBody favoriteArtistDTO favoriteartist) {
+        // 데이터 받을 때
+        favoriteartistService.saveFavoriteArtistData(favoriteartist);
+        return ResponseEntity.ok("성공");//회원가입 완료 표시
+    }
 }

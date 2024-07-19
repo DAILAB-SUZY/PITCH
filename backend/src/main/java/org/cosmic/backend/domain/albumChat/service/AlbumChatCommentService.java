@@ -7,9 +7,11 @@ import org.cosmic.backend.domain.albumChat.dto.comment.CreateAlbumChatCommentReq
 import org.cosmic.backend.domain.albumChat.dto.comment.UpdateAlbumChatCommentReq;
 import org.cosmic.backend.domain.albumChat.exception.NotFoundAlbumChatCommentException;
 import org.cosmic.backend.domain.albumChat.exception.NotFoundAlbumChatException;
+import org.cosmic.backend.domain.albumChat.exception.NotMatchAlbumChatException;
 import org.cosmic.backend.domain.albumChat.repository.AlbumChatCommentRepository;
 import org.cosmic.backend.domain.albumChat.repository.AlbumChatRepository;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
+import org.cosmic.backend.domain.post.exception.NotMatchUserException;
 import org.cosmic.backend.domain.user.repository.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -77,8 +79,14 @@ public class AlbumChatCommentService {
         }
         else {
             AlbumChatComment comment1 = commentRepository.findByAlbumChatCommentId(comment.getAlbumChatCommentId());
+            if(comment1.getAlbumChat().getAlbumChatId()!=comment.getAlbumChatId()) {
+                throw new NotMatchAlbumChatException();
+            }
+            else if(!userRepository.findById(comment.getUserId()).isPresent())
+            {
+                throw new NotMatchUserException();
+            }
             comment1.setContent(comment.getContent());
-            comment1.setUpdateTime(Instant.now());
             commentRepository.save(comment1);//새로생기는지 업데이트만 되는지 만약 새로생기는거면업데이트만 되게만들어야함.
         }
     }

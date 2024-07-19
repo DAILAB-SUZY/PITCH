@@ -9,5 +9,6 @@ import java.util.Optional;
 
 public interface DnaRepository extends JpaRepository<User_Dna, User> {
     Optional<User_Dna> findByUser(User user);//key로 찾기
-    List<User_Dna> findAllByUser(User user);
+    void deleteByUser_UserId(Long userId);
+    Optional<List<User_Dna>> findByUser_UserId(Long userId);
 }

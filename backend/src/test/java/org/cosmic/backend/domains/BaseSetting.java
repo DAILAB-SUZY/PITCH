@@ -4,10 +4,6 @@ import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.albumChat.domain.AlbumChat;
 import org.cosmic.backend.domain.albumChat.repository.AlbumChatRepository;
 import org.cosmic.backend.domain.auth.dto.UserLogin;
-import org.cosmic.backend.domain.musicDNA.domain.MusicDna;
-import org.cosmic.backend.domain.musicDNA.dto.DNADetail;
-import org.cosmic.backend.domain.musicDNA.dto.DnaDTO;
-import org.cosmic.backend.domain.musicDNA.repository.EmotionRepository;
 import org.cosmic.backend.domain.playList.domain.*;
 import org.cosmic.backend.domain.playList.repository.*;
 import org.cosmic.backend.domain.user.domain.Email;
@@ -26,11 +22,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc

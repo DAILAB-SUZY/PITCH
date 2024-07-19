@@ -12,6 +12,7 @@ import java.time.Instant;
 @Builder
 public class UpdateAlbumChatCommentReq {
     private Long userId;
+    private Long albumChatId;
     private Long albumChatCommentId;
     private String content;
     private Instant createTime;
