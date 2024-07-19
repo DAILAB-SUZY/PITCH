@@ -1,4 +1,4 @@
-package org.cosmic.backend.domain.user.service;
+package org.cosmic.backend.domain.user.applications;
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.auth.applications.TokenProvider;
 import org.cosmic.backend.domain.auth.dto.UserLogin;
@@ -23,7 +23,6 @@ import java.util.Optional;
 @Log4j2
 @Service
 public class UserService {
-
     private final TokenProvider tokenProvider;
     private final UsersRepository usersRepository;
     private final EmailRepository emailRepository;

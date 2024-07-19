@@ -60,7 +60,7 @@ public class DeletePostTest extends BaseSetting {
     private MvcResult result;
     @Test
     @Transactional
-    public void deletepostTest() throws Exception {
+    public void deletePostTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
         User user=getUser();
@@ -103,7 +103,7 @@ public class DeletePostTest extends BaseSetting {
 
     @Test
     @Transactional
-    public void deletepostCommentTest() throws Exception {
+    public void deletePostCommentTest() throws Exception {
 
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
@@ -175,7 +175,7 @@ public class DeletePostTest extends BaseSetting {
 
     @Test
     @Transactional
-    public void deletepostLikeTest() throws Exception {
+    public void deletePostLikeTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
         User user=getUser();

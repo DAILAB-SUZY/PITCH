@@ -12,7 +12,7 @@ import org.cosmic.backend.domain.musicDNA.repository.DnaRepository;
 import org.cosmic.backend.domain.musicDNA.repository.EmotionRepository;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.user.domain.User;
-import org.cosmic.backend.domain.user.dto.userDto;
+import org.cosmic.backend.domain.user.dto.UserDto;
 import org.cosmic.backend.domain.user.repository.UsersRepository;
 import org.springframework.stereotype.Service;
 
@@ -45,12 +45,9 @@ public class MusicDNAService {
             throw new NotMatchMusicDnaCountException();
         }
         else{
-            System.out.println("*******HI 1");
             User user=usersRepository.findById(key).get();
             List<User_Dna>userDnas=user.getUserDnas();
-            System.out.println("*******HI 1");
             if (!dnaRepository.findByUser_UserId(key).isPresent()) {
-                System.out.println("*******HI 2");
                 List<MusicDna> dnaKeys = new ArrayList<>();
                 List<User_Dna> userdnas = new ArrayList<>();
                 for (DNADetail dnaDetail : dna) {
@@ -99,19 +96,16 @@ public class MusicDNAService {
     }
 
     @Transactional
-    public List<UserDnaResponse> getUserDna(userDto user) {
+    public List<UserDnaResponse> getUserDna(UserDto user) {
         if(!usersRepository.findById(user.getUserId()).isPresent())
         {
             throw new NotFoundUserException();
         }
         else{
-            System.out.println("*******HI 1");
             List<User_Dna>userDnas=dnaRepository.findByUser_UserId(user.getUserId()).get();
-            System.out.println("*******HI 2");
             List<UserDnaResponse> listDNA=new ArrayList<>();
             for(User_Dna dna:userDnas)
             {
-                System.out.println("*******HI 3");
                 UserDnaResponse dna2=new UserDnaResponse();
                 dna2.setEmotion(dna.getEmotion().getEmotion());
                 dna2.setUserId(user.getUserId());

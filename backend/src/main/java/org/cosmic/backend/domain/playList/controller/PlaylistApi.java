@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.transaction.Transactional;
 import org.cosmic.backend.domain.playList.dto.*;
 import org.cosmic.backend.domain.playList.service.PlaylistService;
-import org.cosmic.backend.domain.user.dto.userDto;
+import org.cosmic.backend.domain.user.dto.UserDto;
 import org.cosmic.backend.globals.dto.ErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -45,7 +45,7 @@ public class PlaylistApi {
 
     @Transactional
     @PostMapping("/give")
-    public List<playlistGiveDto> giveData(@RequestBody userDto user) {
+    public List<PlaylistGiveDto> giveData(@RequestBody UserDto user) {
         //없는 유저 아이디일 때 오류 발생
         //유저의 플렝
        return playlistService.open(user.getUserId());
@@ -72,7 +72,7 @@ public class PlaylistApi {
 
     @PostMapping("/save")//수정한 플레이리스트를 여기 저장
     @Transactional
-    public ResponseEntity<?> savePlaylistData(@RequestBody playlistDTO playlist) {
+    public ResponseEntity<?> savePlaylistData(@RequestBody PlaylistDTO playlist) {
         // 데이터 받을 때
         Long Key= playlist.getId();
         playlistService.save(Key,playlist.getPlaylist());
@@ -124,7 +124,7 @@ public class PlaylistApi {
 
     @PostMapping("/Tracksearch")
     @Transactional
-    public List<TrackGiveDto> searchTrack(@RequestBody trackDTO track) {
+    public List<TrackGiveDto> searchTrack(@RequestBody TrackDTO track) {
         return playlistService.searchTrack(track.getTrackName());
     }
 

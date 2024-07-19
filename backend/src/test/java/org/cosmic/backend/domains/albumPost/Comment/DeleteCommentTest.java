@@ -59,7 +59,7 @@ public class DeleteCommentTest extends BaseSetting {
     private MvcResult result;
     @Test
     @Transactional
-    public void DeleteCommentTest() throws Exception {
+    public void deleteCommentTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
         User user=getUser();
@@ -115,7 +115,7 @@ public class DeleteCommentTest extends BaseSetting {
                 .andDo(print())
                 .andExpect(status().isOk());
     }
-    public void DeleteCommentReplyTest() throws Exception {
+    public void deleteCommentReplyTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
         User user=getUser();

@@ -64,7 +64,7 @@ public class CreateCommentLikeTest extends BaseSetting {
 
     @Test
     @Transactional
-    public void createCommentlikeTest() throws Exception {
+    public void createCommentLikeTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
         User user=getUser();
@@ -119,7 +119,7 @@ public class CreateCommentLikeTest extends BaseSetting {
 
     @Test
     @Transactional
-    public void NotMatchCreateCommentLikeTest() throws Exception {
+    public void notMatchCreateCommentLikeTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
         User user=getUser();
@@ -173,7 +173,7 @@ public class CreateCommentLikeTest extends BaseSetting {
     }
     @Test
     @Transactional
-    public void ExistCommentlikeTest() throws Exception {
+    public void existCommentLikeTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
         User user=getUser();

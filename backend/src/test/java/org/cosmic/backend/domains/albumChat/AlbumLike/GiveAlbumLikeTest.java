@@ -63,7 +63,7 @@ public class GiveAlbumLikeTest extends BaseSetting {
 
     @Test
     @Transactional
-    public void giveAlbumlikesTest() throws Exception {
+    public void giveAlbumLikesTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
         User user=getUser();

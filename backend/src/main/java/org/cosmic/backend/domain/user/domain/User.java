@@ -1,10 +1,7 @@
 package org.cosmic.backend.domain.user.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.cosmic.backend.domain.favoriteArtist.domain.FavoriteArtist;
 import org.cosmic.backend.domain.musicDNA.domain.User_Dna;
 import org.cosmic.backend.domain.post.entity.Comment;

@@ -60,7 +60,7 @@ public class DeleteReplyTest extends BaseSetting {
     private MvcResult result;
     @Test
     @Transactional
-    public void DeleteReplyTest() throws Exception {
+    public void deleteReplyTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
         User user=getUser();

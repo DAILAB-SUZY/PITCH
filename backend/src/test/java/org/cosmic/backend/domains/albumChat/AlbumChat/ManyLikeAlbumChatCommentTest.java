@@ -41,7 +41,7 @@ import java.time.Instant;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @Log4j2
-public class manyLikeAlbumChatCommentTest extends BaseSetting {
+public class ManyLikeAlbumChatCommentTest extends BaseSetting {
     @Autowired
     private MockMvc mockMvc;
     ObjectMapper mapper = new ObjectMapper();
@@ -63,7 +63,7 @@ public class manyLikeAlbumChatCommentTest extends BaseSetting {
 
     @Test
     @Transactional
-    public void manylikeAlbumChatCommentTest() throws Exception {
+    public void manyLikeAlbumChatCommentTest() throws Exception {
         UserLogin userLogin = loginUser("test2@example.com","12345678");
         UserLogin userLogin2=loginUser2("test@example.com","12345678");
         String validToken=userLogin.getToken();
@@ -116,7 +116,6 @@ public class manyLikeAlbumChatCommentTest extends BaseSetting {
                         .userId(user.getUserId())
                         .build()
                 )));
-        System.out.println("*******"+albumChatCommentId2);
 
         resultActions=mockMvc.perform(MockMvcRequestBuilders.post("/api/albumchat/comment/create")
                 .header("Authorization", "Bearer " + validToken)

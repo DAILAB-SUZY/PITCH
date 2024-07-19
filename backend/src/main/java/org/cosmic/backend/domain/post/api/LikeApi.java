@@ -1,4 +1,4 @@
-package org.cosmic.backend.domain.post.controller;
+package org.cosmic.backend.domain.post.api;
 
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -21,7 +21,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/like")
-public class LikeController {
+public class LikeApi {
     //특정 post의 좋아요들임.
     @Autowired
     private LikeService likeService;

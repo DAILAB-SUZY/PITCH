@@ -11,7 +11,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class playlistDTO {
+public class PlaylistDTO {
     private Long id;
-    private List<playlistDetail> playlist;
+    private List<PlaylistDetail> playlist;
 }

@@ -9,9 +9,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class favoriteArtist {
+public class FavoriteReq {
     private String artistName;
     private String albumName;
-    private String trackName;
     private String cover;
+    private String trackName;
+    private Long userId;
 }

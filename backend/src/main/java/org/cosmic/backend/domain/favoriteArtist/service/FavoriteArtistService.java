@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class favoriteArtistService {
+public class FavoriteArtistService {
 
     @Autowired
     private ArtistRepository artistRepository;
@@ -34,10 +34,10 @@ public class favoriteArtistService {
     private FavoriteArtistRepository favoriteArtistRepository;
 
 
-    public favoriteArtist giveFavoriteArtistData(Long userId) {
+    public FavoriteArtistDto giveFavoriteArtistData(Long userId) {
         // 데이터 받을 때
-        favoriteArtist favoriteartist=new favoriteArtist();
-        if(!usersRepository.findById(userId).isPresent()) {
+        FavoriteArtistDto favoriteartist=new FavoriteArtistDto();
+        if(!usersRepository.findById(userId).isPresent()||!favoriteArtistRepository.findByUser_UserId(userId).isPresent()) {
             throw new NotFoundUserException();
         }
         else{
@@ -112,7 +112,7 @@ public class favoriteArtistService {
         }
     }
 
-    public void saveFavoriteArtistData(favoriteArtistDTO favoriteArtist) {
+    public void saveFavoriteArtistData(FavoriteReq favoriteArtist) {
         FavoriteArtist favoriteArtist1=new FavoriteArtist();
         if(!usersRepository.findById(favoriteArtist.getUserId()).isPresent()) {
             throw new NotFoundUserException();

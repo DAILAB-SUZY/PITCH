@@ -8,12 +8,12 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class playlistGiveDto {
+public class PlaylistGiveDto {
 
     Long playlistId;
     Long trackId;
     Long userId;
     String title;
     String artistName;
-    String Cover;
+    String cover;
 }

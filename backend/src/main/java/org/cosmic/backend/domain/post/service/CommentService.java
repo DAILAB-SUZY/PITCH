@@ -82,6 +82,8 @@ public class CommentService {
         }
         else {
             Comment comment1 = commentRepository.findByCommentId(comment.getCommentId());
+            System.out.println(comment1.getPost().getPostId());
+            System.out.println(comment.getPostId());
             if(comment1.getUser().getUserId()!=comment.getUserId())
             {
                 throw new NotMatchUserException();

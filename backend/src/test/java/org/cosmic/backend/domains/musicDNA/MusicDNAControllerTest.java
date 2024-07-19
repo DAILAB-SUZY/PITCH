@@ -97,12 +97,10 @@ public class MusicDNAControllerTest extends BaseSetting {
     @Test
     public void notMatchDataTest() throws Exception {
         List<MusicDna> TestDNA= Arrays.asList(new MusicDna("느긋한"),new MusicDna("신나는"),new MusicDna("청순한"));
-        System.out.println("*****1");
         for(int i=0;i<3;i++)
         {
             emotionRepository.save(TestDNA.get(i));
         }
-        System.out.println("*****2");
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         Email email = emailRepository.save(Email.builder()
                 .email("testu2@naver.com")
@@ -116,7 +114,6 @@ public class MusicDNAControllerTest extends BaseSetting {
                 .password(encoder.encode("12345678"))
                 .build());
 
-        System.out.println("*****2");
         DnaDTO dnaDTO=new DnaDTO();
         dnaDTO.setKey(user.getUserId());
         dnaDTO.setDna(Arrays.asList(new DNADetail(1L),new DNADetail(2L),new DNADetail(3L)));

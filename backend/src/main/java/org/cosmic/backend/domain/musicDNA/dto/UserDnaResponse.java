@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserDnaResponse {
     private Long userId;
-    private String Emotion;
+    private String emotion;
 }

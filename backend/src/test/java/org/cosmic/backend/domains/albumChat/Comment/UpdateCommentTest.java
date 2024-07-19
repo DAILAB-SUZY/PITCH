@@ -59,7 +59,7 @@ public class UpdateCommentTest extends BaseSetting {
     private MvcResult result;
     @Test
     @Transactional
-    public void UpdatecommentTest() throws Exception {
+    public void updateCommentTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
         User user=getUser();
@@ -118,7 +118,7 @@ public class UpdateCommentTest extends BaseSetting {
 
     @Test
     @Transactional
-    public void UpdateNotMatchcommentTest() throws Exception {
+    public void updateNotMatchCommentTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
         User user=getUser();

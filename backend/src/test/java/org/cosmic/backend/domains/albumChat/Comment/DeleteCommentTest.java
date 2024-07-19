@@ -115,7 +115,7 @@ public class DeleteCommentTest extends BaseSetting {
 
     @Test
     @Transactional
-    public void DeleteNotMatchCommentTest() throws Exception {
+    public void deleteNotMatchCommentTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
         User user=getUser();

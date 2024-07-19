@@ -129,12 +129,12 @@ public class PostService {
     public List<AlbumDto> searchAlbum(String albumName) {
         //사용자가 앨범 찾기 위해 앨범 이름을 검색할 때
         List<AlbumDto> albums = new ArrayList<>();
-        if(!albumRepository.findByTitle(albumName).isPresent())
+        if(albumRepository.findAllByTitle(albumName).get().isEmpty())
         {
             throw new NotFoundAlbumException();
         }
         else {
-            List<Album> albumInfo = albumRepository.findByTitle(albumName).get();
+            List<Album> albumInfo = albumRepository.findAllByTitle(albumName).get();
             for (int i = 0; i < albumInfo.size(); i++) {
                 AlbumDto albumDto = new AlbumDto();
                 albumDto.setArtistName(albumInfo.get(i).getArtist().getArtistName());

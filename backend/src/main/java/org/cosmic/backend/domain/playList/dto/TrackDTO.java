@@ -1,4 +1,4 @@
-package org.cosmic.backend.domain.user.dto;
+package org.cosmic.backend.domain.playList.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class userDto {
-    private Long userId;
+public class TrackDTO {
+   private String trackName;
 }

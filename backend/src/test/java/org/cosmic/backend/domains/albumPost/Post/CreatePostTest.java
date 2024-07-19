@@ -13,7 +13,7 @@ import org.cosmic.backend.domain.post.dto.Post.AlbumDto;
 import org.cosmic.backend.domain.post.dto.Post.CreatePost;
 import org.cosmic.backend.domain.post.dto.Post.PostDto;
 import org.cosmic.backend.domain.user.domain.User;
-import org.cosmic.backend.domain.user.dto.userDto;
+import org.cosmic.backend.domain.user.dto.UserDto;
 import org.cosmic.backend.domain.user.repository.EmailRepository;
 import org.cosmic.backend.domain.user.repository.UsersRepository;
 import org.cosmic.backend.domains.BaseSetting;
@@ -36,7 +36,7 @@ import java.time.Instant;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @Log4j2
-public class createPostTest extends BaseSetting {
+public class CreatePostTest extends BaseSetting {
     @Autowired
     private MockMvc mockMvc;
     ObjectMapper mapper = new ObjectMapper();
@@ -89,7 +89,7 @@ public class createPostTest extends BaseSetting {
 
     @Test
     @Transactional
-    public void createpostTest() throws Exception {
+    public void createPostTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
         User user=getUser();
@@ -118,7 +118,7 @@ public class createPostTest extends BaseSetting {
     //post잘 만들어지는지
     @Test
     @Transactional
-    public void GivePostTest() throws Exception {
+    public void givePostTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
         User user=getUser();
@@ -150,7 +150,7 @@ public class createPostTest extends BaseSetting {
         mockMvc.perform(post("/api/post/give")
                         .header("Authorization", "Bearer " + validToken)
                         .contentType("application/json")
-                        .content(mapper.writeValueAsString(userDto.builder()
+                        .content(mapper.writeValueAsString(UserDto.builder()
                                 .userId(user.getUserId())
                                 .build()
                         )))

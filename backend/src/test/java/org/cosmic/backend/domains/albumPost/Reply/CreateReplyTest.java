@@ -61,7 +61,7 @@ public class CreateReplyTest extends BaseSetting {
 
     @Test
     @Transactional
-    public void createreplyTest() throws Exception {
+    public void createReplyTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
         User user=getUser();
@@ -121,7 +121,7 @@ public class CreateReplyTest extends BaseSetting {
     //post잘 만들어지는지
     @Test
     @Transactional
-    public void GiveReplyTest() throws Exception {
+    public void giveReplyTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
         User user=getUser();

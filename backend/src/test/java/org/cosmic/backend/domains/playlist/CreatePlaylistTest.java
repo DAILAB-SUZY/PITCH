@@ -11,9 +11,9 @@ import org.cosmic.backend.domain.playList.domain.Artist;
 import org.cosmic.backend.domain.playList.domain.Playlist;
 import org.cosmic.backend.domain.playList.domain.Track;
 import org.cosmic.backend.domain.playList.dto.ArtistDTO;
-import org.cosmic.backend.domain.playList.dto.playlistDTO;
-import org.cosmic.backend.domain.playList.dto.playlistDetail;
-import org.cosmic.backend.domain.playList.dto.trackDTO;
+import org.cosmic.backend.domain.playList.dto.PlaylistDTO;
+import org.cosmic.backend.domain.playList.dto.PlaylistDetail;
+import org.cosmic.backend.domain.playList.dto.TrackDTO;
 import org.cosmic.backend.domain.playList.repository.AlbumRepository;
 import org.cosmic.backend.domain.playList.repository.ArtistRepository;
 import org.cosmic.backend.domain.playList.repository.PlaylistRepository;
@@ -138,14 +138,14 @@ public class CreatePlaylistTest extends BaseSetting {
         MvcResult result = resultActions.andReturn();
         String validToken = mapper.readValue(result.getResponse().getContentAsString(), UserLogin.class).getToken();
 
-        playlistDTO playlistdto=new playlistDTO();
+        PlaylistDTO playlistdto=new PlaylistDTO();
         playlistdto.setId(user.getUserId());
-        playlistdto.setPlaylist(Arrays.asList(new playlistDetail(track.getTrackId())));
+        playlistdto.setPlaylist(Arrays.asList(new PlaylistDetail(track.getTrackId())));
 
         mockMvc.perform(post("/api/playlist/save")
                 .header("Authorization", "Bearer " + validToken)
                 .contentType("application/json")
-                .content(mapper.writeValueAsString(playlistDTO.builder()
+                .content(mapper.writeValueAsString(PlaylistDTO.builder()
                         .id(playlistdto.getId())
                         .playlist(playlistdto.getPlaylist())
                         .build()
@@ -235,7 +235,7 @@ public class CreatePlaylistTest extends BaseSetting {
         mockMvc.perform(post("/api/playlist/Tracksearch")
                     .header("Authorization", "Bearer " + validToken)
                     .contentType("application/json")
-                    .content(mapper.writeValueAsString(trackDTO.builder()
+                    .content(mapper.writeValueAsString(TrackDTO.builder()
                             .trackName(track.getTitle())
                             .build()
                     )))
@@ -335,7 +335,7 @@ public class CreatePlaylistTest extends BaseSetting {
         mockMvc.perform(post("/api/playlist/Tracksearch")
                         .header("Authorization", "Bearer " + validToken)
                         .contentType("application/json")
-                        .content(mapper.writeValueAsString(trackDTO.builder()
+                        .content(mapper.writeValueAsString(TrackDTO.builder()
                                 .trackName("hi")
                                 .build()
                         )))

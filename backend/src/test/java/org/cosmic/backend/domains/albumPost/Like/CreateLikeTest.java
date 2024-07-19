@@ -60,7 +60,7 @@ public class CreateLikeTest extends BaseSetting {
 
     @Test
     @Transactional
-    public void createlikeTest() throws Exception {
+    public void createLikeTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
         User user=getUser();
@@ -102,7 +102,7 @@ public class CreateLikeTest extends BaseSetting {
     }
     @Test
     @Transactional
-    public void GivelikeTest() throws Exception {
+    public void giveLikeTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
         User user=getUser();
@@ -157,7 +157,7 @@ public class CreateLikeTest extends BaseSetting {
     }
     @Test
     @Transactional
-    public void ExistlikeTest() throws Exception {
+    public void existLikeTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
         User user=getUser();

@@ -61,7 +61,7 @@ public class CreateCommentTest extends BaseSetting {
 
     @Test
     @Transactional
-    public void createcommentTest() throws Exception {
+    public void createCommentTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
         User user=getUser();

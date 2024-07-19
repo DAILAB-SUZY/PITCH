@@ -31,7 +31,7 @@ import java.time.Instant;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @Log4j2
-public class openAlbumChatTest extends BaseSetting {
+public class OpenAlbumChatTest extends BaseSetting {
     @Autowired
     private MockMvc mockMvc;
     ObjectMapper mapper = new ObjectMapper();

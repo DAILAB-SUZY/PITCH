@@ -62,7 +62,7 @@ public class DeleteAlbumLikeTest extends BaseSetting {
     private MvcResult result;
     @Test
     @Transactional
-    public void DeleteAlbumlikeTest() throws Exception {
+    public void deleteAlbumlikeTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
         User user=getUser();
@@ -115,7 +115,7 @@ public class DeleteAlbumLikeTest extends BaseSetting {
 
     @Test
     @Transactional
-    public void DeleteNotMatchAlbumlikeTest() throws Exception {
+    public void deleteNotMatchAlbumlikeTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
         User user=getUser();

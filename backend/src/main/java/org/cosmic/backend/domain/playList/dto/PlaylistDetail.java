@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class playlistDetail {
+public class PlaylistDetail {
     private Long trackId;
     //앨범일지 음악일지 확인 후
 }
