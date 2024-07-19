@@ -63,7 +63,7 @@ public class CreateAlbumLikeTest extends BaseSetting {
 
     @Test
     @Transactional
-    public void createAlbumlikeTest() throws Exception {
+    public void createAlbumLikeTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
         User user=getUser();
@@ -102,7 +102,7 @@ public class CreateAlbumLikeTest extends BaseSetting {
     }
     @Test
     @Transactional
-    public void NotMatchCreateAlbumLikeTest() throws Exception {
+    public void notMatchCreateAlbumLikeTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
         User user=getUser();
@@ -140,7 +140,7 @@ public class CreateAlbumLikeTest extends BaseSetting {
     }
     @Test
     @Transactional
-    public void ExistAlbumlikeTest() throws Exception {
+    public void existAlbumlikeTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
         User user=getUser();

@@ -3,7 +3,7 @@ package org.cosmic.backend.domains.favoriteArtist;
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.albumChat.repository.AlbumChatRepository;
 import org.cosmic.backend.domain.auth.dto.UserLogin;
-import org.cosmic.backend.domain.favoriteArtist.dto.favoriteArtistDTO;
+import org.cosmic.backend.domain.favoriteArtist.dto.FavoriteReq;
 import org.cosmic.backend.domain.playList.domain.Album;
 import org.cosmic.backend.domain.playList.domain.Artist;
 import org.cosmic.backend.domain.playList.domain.Track;
@@ -69,7 +69,7 @@ public class SaveFavoriteArtistTest extends BaseSetting {
         mockMvc.perform(post("/api/favoriteArtist/save")
                         .header("Authorization", "Bearer " + validToken)
                         .contentType("application/json")
-                        .content(mapper.writeValueAsString(favoriteArtistDTO.builder()
+                        .content(mapper.writeValueAsString(FavoriteReq.builder()
                                 .albumName(album.getTitle())
                                 .artistName(artist.getArtistName())
                                 .cover(album.getCover())

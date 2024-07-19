@@ -58,7 +58,7 @@ public class DeleteLikeTest extends BaseSetting {
     private MvcResult result;
     @Test
     @Transactional
-    public void DeletelikeTest() throws Exception {
+    public void deleteLikeTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
         User user=getUser();

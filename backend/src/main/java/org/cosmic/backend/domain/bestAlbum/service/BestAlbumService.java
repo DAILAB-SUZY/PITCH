@@ -1,11 +1,11 @@
 package org.cosmic.backend.domain.bestAlbum.service;
 
 import jakarta.transaction.Transactional;
-import org.cosmic.backend.domain.bestAlbum.domain.Album_User;
+import org.cosmic.backend.domain.bestAlbum.domain.AlbumUser;
 import org.cosmic.backend.domain.bestAlbum.dto.AlbumGiveDto;
 import org.cosmic.backend.domain.bestAlbum.dto.BestAlbumGiveDto;
 import org.cosmic.backend.domain.bestAlbum.exception.NotMatchBestAlbumException;
-import org.cosmic.backend.domain.bestAlbum.repository.Album_UserRepository;
+import org.cosmic.backend.domain.bestAlbum.repository.AlbumUserRepository;
 import org.cosmic.backend.domain.playList.domain.*;
 import org.cosmic.backend.domain.bestAlbum.dto.*;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundArtistException;
@@ -29,7 +29,7 @@ public class BestAlbumService {
     @Autowired
     private ArtistRepository artistRepository;
     @Autowired
-    private Album_UserRepository album_userRepository;
+    private AlbumUserRepository albumUserRepository;
 
     @Transactional
     public List<BestAlbumGiveDto> open(Long userId) {
@@ -40,8 +40,7 @@ public class BestAlbumService {
         }
         else {
             User newuser = usersRepository.findById(userId).get();
-            //Album_User newalbum_user=newuser.getAlbum_users();
-            List<Album_User> album_user = album_userRepository.findByUser_UserId(userId).get();//해당 유저의 모든 album을 가져올 것임
+            List<AlbumUser> album_user = albumUserRepository.findByUser_UserId(userId).get();//해당 유저의 모든 album을 가져올 것임
 
             for (int i = 0; i < album_user.size(); i++) {
                 BestAlbumGiveDto newbestAlbumGiveDto = new BestAlbumGiveDto();
@@ -64,37 +63,37 @@ public class BestAlbumService {
         else{
             User newuser = usersRepository.findById(userId).get();
             Album album=albumRepository.findById(albumId).get();
-            Album_User albumUser=new Album_User(album,newuser);
-            album_userRepository.save(albumUser);
+            AlbumUser albumUser=new AlbumUser(album,newuser);
+            albumUserRepository.save(albumUser);
         }
     }
 
     @Transactional
-    public void save(long userId, List<bestAlbumDetail> bestalbumList) {
+    public void save(long userId, List<BestAlbumDetail> bestalbumList) {
         if(!usersRepository.findById(userId).isPresent()) {
             throw new NotFoundUserException();
         }
         else{
-            List<Album_User> albumUsers=album_userRepository.findByUser_UserId(userId).get();
+            List<AlbumUser> albumUsers=albumUserRepository.findByUser_UserId(userId).get();
             //앨범에서 내가 추가하지 않은 앨범이 하나라도 있는지 확인해야함. 있다면 에러
-            album_userRepository.deleteByUser_UserId(userId);
+            albumUserRepository.deleteByUser_UserId(userId);
 
-            for (bestAlbumDetail bestalbumDetail : bestalbumList) {
-                if(!albumRepository.findByAlbumId(bestalbumDetail.getAlbumId()).isPresent())
+            for (BestAlbumDetail bestalbumDetail : bestalbumList) {
+                if(!albumRepository.findById(bestalbumDetail.getAlbumId()).isPresent())
                 {
                     throw new NotFoundAlbumException();//해당 앨범이 없는것일때
                 }
-                else if(!album_userRepository.findByAlbum_AlbumIdAndUser_UserId(bestalbumDetail.getAlbumId(),userId).isPresent())
+                else if(!albumUserRepository.findByAlbum_AlbumIdAndUser_UserId(bestalbumDetail.getAlbumId(),userId).isPresent())
                 {
                     throw new NotMatchBestAlbumException();
                     //해당 유저가 갖고있지 않은 앨범일 때
                 }
                 else{
-                    Album album= albumRepository.findByAlbumId(bestalbumDetail.getAlbumId()).get();
-                    Album_User album_User=new Album_User();
+                    Album album= albumRepository.findById(bestalbumDetail.getAlbumId()).get();
+                    AlbumUser album_User=new AlbumUser();
                     album_User.setAlbum(album);
                     album_User.setUser(usersRepository.findById(userId).get());
-                    album_userRepository.save(album_User);
+                    albumUserRepository.save(album_User);
                 }
             }
         }
@@ -111,7 +110,7 @@ public class BestAlbumService {
         }
         else{
             Artist artistInfo= artistRepository.findByArtistName(artist).get();
-            List<Album> album=albumRepository.findByArtist_ArtistId(artistInfo.getArtistId());//트랙들을 모두 가져옴
+            List<Album> album=albumRepository.findAllByArtist_ArtistId(artistInfo.getArtistId());//트랙들을 모두 가져옴
             for(int i=0;i<album.size();i++)
             {
                 AlbumGiveDto albumGiveDto=new AlbumGiveDto();
@@ -128,11 +127,11 @@ public class BestAlbumService {
     @Transactional
     public List<AlbumGiveDto> searchAlbum (String album) {//해당 앨범이름을 가진 모든 앨범들의 정보를 줌
         List<AlbumGiveDto>albumGiveDtos=new ArrayList<>();
-        if(!albumRepository.findByTitle(album).isPresent()) {
+        if(albumRepository.findAllByTitle(album).get().isEmpty()) {
             throw new NotFoundAlbumException();
         }
         else{
-            List<Album> albumInfo= albumRepository.findByTitle(album).get();
+            List<Album> albumInfo= albumRepository.findAllByTitle(album).get();
             for(Album albumInfo1:albumInfo){
                 AlbumGiveDto albumGiveDto=new AlbumGiveDto();
                 albumGiveDto.setArtistName(albumInfo1.getArtist().getArtistName());

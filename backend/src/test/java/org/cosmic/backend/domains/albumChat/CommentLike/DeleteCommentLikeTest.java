@@ -66,7 +66,7 @@ public class DeleteCommentLikeTest extends BaseSetting {
     private MvcResult result;
     @Test
     @Transactional
-    public void DeleteCommentlikeTest() throws Exception {
+    public void deleteCommentLikeTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
         User user=getUser();
@@ -137,7 +137,7 @@ public class DeleteCommentLikeTest extends BaseSetting {
 
     @Test
     @Transactional
-    public void DeleteNotMatchCommentlikeTest() throws Exception {
+    public void deleteNotMatchCommentLikeTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
         User user=getUser();

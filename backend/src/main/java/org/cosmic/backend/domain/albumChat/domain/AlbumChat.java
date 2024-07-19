@@ -18,8 +18,8 @@ public class AlbumChat {
     @Column(name = "albumChat_id") // 컬럼 이름 명시
     private Long albumChatId;
 
-    private String cover; // 앨범커버
-    private String title; // 앨범제목
+    private String cover;
+    private String title;
     private String genre;
     private String artistName;
     private Instant CreateTime;

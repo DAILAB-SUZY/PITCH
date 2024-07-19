@@ -5,9 +5,9 @@ import org.cosmic.backend.domain.playList.domain.Artist;
 import org.cosmic.backend.domain.playList.domain.Playlist;
 import org.cosmic.backend.domain.playList.domain.Playlist_Track;
 import org.cosmic.backend.domain.playList.domain.Track;
+import org.cosmic.backend.domain.playList.dto.PlaylistDetail;
+import org.cosmic.backend.domain.playList.dto.PlaylistGiveDto;
 import org.cosmic.backend.domain.playList.dto.TrackGiveDto;
-import org.cosmic.backend.domain.playList.dto.playlistDetail;
-import org.cosmic.backend.domain.playList.dto.playlistGiveDto;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundArtistException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundTrackException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
@@ -32,12 +32,12 @@ public class PlaylistService {
     @Autowired
     private TrackRepository trackRepository;
     @Autowired
-    private playlistTrackRepository playlistTrackRepository;
+    private PlaylistTrackRepository playlistTrackRepository;
     @Autowired
     private ArtistRepository artistRepository;
 
     @Transactional
-    public void save(long userId, List<playlistDetail> playlist) {
+    public void save(long userId, List<PlaylistDetail> playlist) {
         if(!usersRepository.findById(userId).isPresent()) {
             throw new NotFoundUserException();
         }
@@ -50,7 +50,7 @@ public class PlaylistService {
             newPlaylist.setUpdatedDate(Instant.now());
             playlistTrackRepository.deleteByPlaylist_PlaylistId(playlistRepository.findByuser(user).getPlaylistId());
 
-            for (playlistDetail playlistdetail : playlist) {
+            for (PlaylistDetail playlistdetail : playlist) {
                 if(!trackRepository.findById(playlistdetail.getTrackId()).isPresent()) {
                     throw new NotFoundTrackException();
                 }
@@ -67,9 +67,9 @@ public class PlaylistService {
     //플레이리스트 생성 또는 수정시 저장
 
     @Transactional
-    public List<playlistGiveDto> open(Long userId) {
+    public List<PlaylistGiveDto> open(Long userId) {
 
-        List<playlistGiveDto> playlistGiveDtos=new ArrayList<>();
+        List<PlaylistGiveDto> playlistGiveDtos=new ArrayList<>();
         if(!usersRepository.findById(userId).isPresent()) {
             throw new NotFoundUserException();
         }
@@ -80,7 +80,7 @@ public class PlaylistService {
             List<Playlist_Track> playlist_track=newplaylist.getPlaylist_track();
             for(int i=0;i<playlist_track.size();i++)
             {
-                playlistGiveDto newplaylistGiveDto=new playlistGiveDto();
+                PlaylistGiveDto newplaylistGiveDto=new PlaylistGiveDto();
 
                 newplaylistGiveDto.setPlaylistId(newplaylist.getPlaylistId());
                 newplaylistGiveDto.setUserId(newplaylist.getUser().getUserId());

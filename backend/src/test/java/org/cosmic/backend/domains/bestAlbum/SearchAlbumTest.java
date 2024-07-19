@@ -47,7 +47,7 @@ public class SearchAlbumTest extends BaseSetting {
     ObjectMapper mapper = new ObjectMapper();
     @Test
     @Transactional
-    public void SearchAlbumNameTest() throws Exception {
+    public void searchAlbumNameTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
         Instant now = Instant.now();
@@ -69,7 +69,7 @@ public class SearchAlbumTest extends BaseSetting {
 
     @Test
     @Transactional
-    public void SearchArtistNameTest() throws Exception {
+    public void searchArtistNameTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
         Instant now = Instant.now();

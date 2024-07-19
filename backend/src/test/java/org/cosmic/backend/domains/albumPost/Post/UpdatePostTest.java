@@ -59,7 +59,7 @@ public class UpdatePostTest extends BaseSetting {
 
     @Test
     @Transactional
-    public void UpdatepostTest() throws Exception {
+    public void updatePostTest() throws Exception {
 
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();

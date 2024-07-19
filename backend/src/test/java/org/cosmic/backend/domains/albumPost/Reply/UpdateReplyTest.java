@@ -61,7 +61,7 @@ public class UpdateReplyTest extends BaseSetting {
     private MvcResult result;
     @Test
     @Transactional
-    public void UpdatereplyTest() throws Exception {
+    public void updateReplyTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
         User user=getUser();

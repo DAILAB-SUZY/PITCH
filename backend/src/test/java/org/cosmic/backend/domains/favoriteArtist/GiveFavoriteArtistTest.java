@@ -10,7 +10,7 @@ import org.cosmic.backend.domain.playList.repository.AlbumRepository;
 import org.cosmic.backend.domain.playList.repository.ArtistRepository;
 import org.cosmic.backend.domain.playList.repository.TrackRepository;
 import org.cosmic.backend.domain.user.domain.User;
-import org.cosmic.backend.domain.user.dto.userDto;
+import org.cosmic.backend.domain.user.dto.UserDto;
 import org.cosmic.backend.domain.user.repository.EmailRepository;
 import org.cosmic.backend.domain.user.repository.UsersRepository;
 import org.cosmic.backend.domains.BaseSetting;
@@ -69,7 +69,7 @@ public class GiveFavoriteArtistTest extends BaseSetting {
         mockMvc.perform(post("/api/favoriteArtist/save")
                         .header("Authorization", "Bearer " + validToken)
                         .contentType("application/json")
-                        .content(mapper.writeValueAsString(userDto.builder()
+                        .content(mapper.writeValueAsString(UserDto.builder()
                                 .userId(user.getUserId())
                                 .build()
                         )))
@@ -92,7 +92,7 @@ public class GiveFavoriteArtistTest extends BaseSetting {
         mockMvc.perform(post("/api/favoriteArtist/save")
                         .header("Authorization", "Bearer " + validToken)
                         .contentType("application/json")
-                        .content(mapper.writeValueAsString(userDto.builder()
+                        .content(mapper.writeValueAsString(UserDto.builder()
                                 .userId(100L)
                                 .build()
                         )))

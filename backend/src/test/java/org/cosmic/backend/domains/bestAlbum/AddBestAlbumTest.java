@@ -47,7 +47,7 @@ public class AddBestAlbumTest extends BaseSetting {
 
     @Test
     @Transactional
-    public void AddAlbumTest() throws Exception {
+    public void addAlbumTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         User user=getUser();
         String validToken=userLogin.getToken();
@@ -70,7 +70,7 @@ public class AddBestAlbumTest extends BaseSetting {
     }
     @Test
     @Transactional
-    public void AddNotMatchAlbumTest() throws Exception {
+    public void addNotMatchAlbumTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         User user=getUser();
         String validToken=userLogin.getToken();
