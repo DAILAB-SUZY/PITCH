@@ -12,5 +12,5 @@ import java.util.List;
 @NoArgsConstructor
 public class BestAlbumListDTO {
     private Long userId;
-    private List<bestAlbumDetail> bestalbum;
+    private List<BestAlbumDetail> bestalbum;
 }

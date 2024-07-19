@@ -21,7 +21,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/albumchat/commentlike")
-public class AlbumChatCommentLikeController {//댓글 마다의 좋아요
+public class AlbumChatCommentLikeApi {//댓글 마다의 좋아요
 
     @Autowired
     private AlbumChatCommentLikeService likeService;
@@ -73,8 +73,8 @@ public class AlbumChatCommentLikeController {//댓글 마다의 좋아요
     }
     )
     @PostMapping("/create")
-    public AlbumChatCommentLikeReq AlbumChatcreateCommentLike(@RequestBody AlbumChatCommentLikeDto like) {
-        return likeService.AlbumChatcreateCommentLike(like.getUserId(),like.getAlbumChatCommentId());//유저 정보줌으로써 추가
+    public AlbumChatCommentLikeReq albumChatCreateCommentLike(@RequestBody AlbumChatCommentLikeDto like) {
+        return likeService.albumChatCreateCommentLike(like.getUserId(),like.getAlbumChatCommentId());//유저 정보줌으로써 추가
     }
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",

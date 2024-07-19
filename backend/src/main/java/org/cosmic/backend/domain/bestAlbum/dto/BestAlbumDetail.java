@@ -7,6 +7,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class bestAlbumDetail {
+public class BestAlbumDetail {
     private Long albumId;
 }

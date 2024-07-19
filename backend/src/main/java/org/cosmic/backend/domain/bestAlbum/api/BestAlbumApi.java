@@ -1,16 +1,14 @@
-package org.cosmic.backend.domain.albumChat.api;
+package org.cosmic.backend.domain.bestAlbum.api;
 
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.transaction.Transactional;
-import org.cosmic.backend.domain.albumChat.dto.albumChat.AlbumChatDto;
-import org.cosmic.backend.domain.albumChat.dto.comment.AlbumChatCommentDto;
-import org.cosmic.backend.domain.albumChat.dto.comment.AlbumChatCommentResponse;
-import org.cosmic.backend.domain.albumChat.dto.comment.CreateAlbumChatCommentReq;
-import org.cosmic.backend.domain.albumChat.dto.comment.UpdateAlbumChatCommentReq;
-import org.cosmic.backend.domain.albumChat.service.AlbumChatCommentService;
+import org.cosmic.backend.domain.bestAlbum.dto.*;
+import org.cosmic.backend.domain.bestAlbum.service.BestAlbumService;
+import org.cosmic.backend.domain.playList.dto.ArtistDTO;
+import org.cosmic.backend.domain.user.dto.UserDto;
 import org.cosmic.backend.globals.dto.ErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,10 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/albumchat/comment")
-public class AlbumChatCommentController {
+@RequestMapping("/api/bestAlbum")
+public class BestAlbumApi {
     @Autowired
-    private AlbumChatCommentService commentService;
+    private BestAlbumService bestAlbumService;
 
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
@@ -36,7 +34,7 @@ public class AlbumChatCommentController {
                     }),
 
             @ApiResponse(responseCode = "404",
-                    description = "Not Found AlbumChat",
+                    description = "Not Found User",
                     content = {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ErrorResponse.class))
@@ -44,12 +42,12 @@ public class AlbumChatCommentController {
             )
     }
     )
+    @Transactional
     @PostMapping("/give")
-    @Transactional
-    public List<AlbumChatCommentResponse> getCommentsByAlbumChat(@RequestBody AlbumChatDto albumchat) {//postid에 있는 comment들을
-        return commentService.getCommentsByAlbumChat(albumchat.getAlbumChatId());
+    public List<BestAlbumGiveDto> giveData(@RequestBody UserDto user) {
+        return bestAlbumService.open(user.getUserId());
     }
-    //특정 앨범에 대한 comment들을 모두 가져옴
+    //사용자의 앨범정보 가져오는 함수
 
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
@@ -58,8 +56,9 @@ public class AlbumChatCommentController {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = String.class))
                     }),
+
             @ApiResponse(responseCode = "404",
-                    description = "Not Found User or AlbumChat",
+                    description = "Not Found User or Album",
                     content = {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ErrorResponse.class))
@@ -67,11 +66,13 @@ public class AlbumChatCommentController {
             )
     }
     )
-    @PostMapping("create")
     @Transactional
-    public AlbumChatCommentDto createAlbumChatComment(@RequestBody CreateAlbumChatCommentReq comment) {
-        return commentService.createAlbumChatComment(comment);
+    @PostMapping("/add")
+    public ResponseEntity<?> addData(@RequestBody BestAlbumDto bestAlbumDto) {
+        bestAlbumService.add(bestAlbumDto.getUserId(),bestAlbumDto.getAlbumId());
+        return ResponseEntity.ok("성공");
     }
+    //사용자가 앨범을 선택해서 등록 버튼을 누르면 1개의 앨범이 추가됨(기존 리스트 뒷부분에 추가)
 
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
@@ -80,15 +81,17 @@ public class AlbumChatCommentController {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = String.class))
                     }),
+
             @ApiResponse(responseCode = "400",
-                    description = "Not Found AlbumChatComment",
+                    description = "Not Match BestAlbum",
                     content = {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ErrorResponse.class))
                     }
             ),
+
             @ApiResponse(responseCode = "404",
-                    description = "Not Found AlbumChatComment",
+                    description = "Not Found User or Album",
                     content = {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ErrorResponse.class))
@@ -96,12 +99,14 @@ public class AlbumChatCommentController {
             )
     }
     )
-    @PostMapping("update")
     @Transactional
-    public ResponseEntity<?> updateAlbumChatComment(@RequestBody UpdateAlbumChatCommentReq comment) {
-        commentService.updateAlbumChatComment(comment);
+    @PostMapping("/save")
+    public ResponseEntity<?> saveData(@RequestBody BestAlbumListDTO bestAlbumlistDto) {
+        bestAlbumService.save(bestAlbumlistDto.getUserId(),bestAlbumlistDto.getBestalbum());
         return ResponseEntity.ok("성공");
+
     }
+    //앨범 위치 조정
 
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
@@ -110,8 +115,9 @@ public class AlbumChatCommentController {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = String.class))
                     }),
+
             @ApiResponse(responseCode = "404",
-                    description = "Not Found AlbumChatComment",
+                    description = "Not Match Artist Name",
                     content = {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ErrorResponse.class))
@@ -119,10 +125,36 @@ public class AlbumChatCommentController {
             )
     }
     )
-    @PostMapping("/delete")
-    @Transactional
-    public ResponseEntity<?> deleteAlbumChatComment(@RequestBody AlbumChatCommentDto commentdto) {
-        commentService.deleteAlbumChatComment(commentdto);
-        return ResponseEntity.ok("성공");
+
+    @PostMapping("/Artistsearch")
+    public List<AlbumGiveDto> searchArtist(@RequestBody ArtistDTO artist) {
+        return bestAlbumService.searchArtist(artist.getArtistName());
     }
+    //앨범 찾기 아티스트이름
+
+
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Ok",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = String.class))
+                    }),
+
+            @ApiResponse(responseCode = "404",
+                    description = "Not Match Album Title",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponse.class))
+                    }
+            )
+    }
+    )
+
+    @PostMapping("/Albumsearch")
+    public List<AlbumGiveDto> searchAlbum(@RequestBody AlbumDTO album) {
+        return bestAlbumService.searchAlbum(album.getAlbumName());
+    }
+    //앨범 찾기 앨범이름
 }

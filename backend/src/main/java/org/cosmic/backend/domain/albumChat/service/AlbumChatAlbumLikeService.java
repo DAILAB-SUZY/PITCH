@@ -45,7 +45,7 @@ public class AlbumChatAlbumLikeService {
         }
     }
 
-    public AlbumChatAlbumLikeReq AlbumChatcreateAlbumLike(Long userId, Long albumChatId) {
+    public AlbumChatAlbumLikeReq albumChatCreateAlbumLike(Long userId, Long albumChatId) {
         AlbumChatAlbumLike like = new AlbumChatAlbumLike();
         if(!albumChatRepository.findById(albumChatId).isPresent()) {
             throw new NotFoundAlbumChatException();

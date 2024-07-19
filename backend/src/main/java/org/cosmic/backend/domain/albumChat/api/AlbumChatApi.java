@@ -21,7 +21,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/albumchat")
-public class AlbumChatController {
+public class AlbumChatApi {
     @Autowired
     private AlbumChatService albumChatService;
 

@@ -13,8 +13,8 @@ import org.cosmic.backend.domain.user.domain.User;
 @AllArgsConstructor
 @Entity
 @Builder
-@Table(name="`Album_User`")
-public class Album_User {
+@Table(name="`AlbumUser`")
+public class AlbumUser {
     //user와 album은 1:n관계
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -29,7 +29,7 @@ public class Album_User {
     @JoinColumn(name="AlbumId")
     private Album album;
 
-    public Album_User(Album album, User user) {
+    public AlbumUser(Album album, User user) {
         this.album = album;
         this.user = user;
     }
