@@ -1,9 +1,6 @@
 package org.cosmic.backend.domain.albumChat.domain;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.cosmic.backend.domain.playList.domain.Album;
 
 import java.time.Instant;
@@ -14,6 +11,7 @@ import java.util.List;
 @Entity
 @Builder
 @Table(name = "albumChat") // 테이블 이름 수정
+@EqualsAndHashCode(exclude = {"album"})
 public class AlbumChat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,4 +34,16 @@ public class AlbumChat {
 
     @OneToMany(mappedBy = "albumChat")
     private List<AlbumChatAlbumLike> albumChatAlbumLikes;
+    @Override
+    public String toString() {
+        return "AlbumChat{" +
+                "albumChatId=" + albumChatId +
+                ", cover='" + cover + '\'' +
+                ", title='" + title + '\'' +
+                ", genre='" + genre + '\'' +
+                ", artistName='" + artistName + '\'' +
+                ", CreateTime=" + CreateTime +
+                ", album=" + (album != null ? album.getAlbumId() : "null") +
+                '}';
+    }
 }

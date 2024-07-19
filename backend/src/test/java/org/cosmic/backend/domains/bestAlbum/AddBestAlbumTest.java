@@ -1,15 +1,13 @@
-package org.cosmic.backend.domains.albumChat.AlbumChat;
-
+package org.cosmic.backend.domains.bestAlbum;
 import lombok.extern.log4j.Log4j2;
-import org.cosmic.backend.domain.albumChat.domain.AlbumChat;
-import org.cosmic.backend.domain.albumChat.repository.AlbumChatRepository;
 import org.cosmic.backend.domain.auth.dto.UserLogin;
+import org.cosmic.backend.domain.bestAlbum.dto.BestAlbumDto;
 import org.cosmic.backend.domain.playList.domain.Album;
 import org.cosmic.backend.domain.playList.domain.Artist;
 import org.cosmic.backend.domain.playList.repository.AlbumRepository;
 import org.cosmic.backend.domain.playList.repository.ArtistRepository;
 import org.cosmic.backend.domain.playList.repository.TrackRepository;
-import org.cosmic.backend.domain.post.dto.Post.AlbumDto;
+import org.cosmic.backend.domain.user.domain.User;
 import org.cosmic.backend.domain.user.repository.EmailRepository;
 import org.cosmic.backend.domain.user.repository.UsersRepository;
 import org.cosmic.backend.domains.BaseSetting;
@@ -18,43 +16,40 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.time.Instant;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import java.time.Instant;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @Log4j2
-public class openAlbumChatTest extends BaseSetting {
+public class AddBestAlbumTest extends BaseSetting {
+
     @Autowired
     private MockMvc mockMvc;
-    ObjectMapper mapper = new ObjectMapper();
-    @Autowired
-    UsersRepository userRepository;
     @Autowired
     EmailRepository emailRepository;
     @Autowired
-    ArtistRepository artistRepository;
-    @Autowired
-    AlbumRepository albumRepository;
+    UsersRepository userRepository;
     @Autowired
     TrackRepository trackRepository;
     @Autowired
-    AlbumChatRepository albumChatRepository;
+    AlbumRepository albumRepository;
+    @Autowired
+    ArtistRepository artistRepository;
 
-    private ResultActions resultActions;
-    private MvcResult result;
+    ObjectMapper mapper = new ObjectMapper();
 
     @Test
     @Transactional
-    public void albumChatOpenTest() throws Exception {
+    public void AddAlbumTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
+        User user=getUser();
         String validToken=userLogin.getToken();
         Instant now = Instant.now();
 
@@ -62,24 +57,22 @@ public class openAlbumChatTest extends BaseSetting {
 
         Album album=saveAlbum("밤양갱", artist, now, "발라드");
 
-        AlbumChat albumChat= saveAlbumChat("밤양갱", artist, album,now, "발라드");
-
-        mockMvc.perform(post("/api/albumchat/open")
+        mockMvc.perform(post("/api/bestAlbum/add")
                         .header("Authorization", "Bearer " + validToken)
                         .contentType("application/json")
-                        .content(mapper.writeValueAsString(AlbumDto.builder()
+                        .content(mapper.writeValueAsString(BestAlbumDto.builder()
+                                .userId(user.getUserId())
                                 .albumId(album.getAlbumId())
                                 .build()
                         )))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
-    //아티스트 또는 앨범으로 찾기
-
     @Test
     @Transactional
-    public void albumChatNotOpenTest() throws Exception {
+    public void AddNotMatchAlbumTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
+        User user=getUser();
         String validToken=userLogin.getToken();
         Instant now = Instant.now();
 
@@ -87,16 +80,27 @@ public class openAlbumChatTest extends BaseSetting {
 
         Album album=saveAlbum("밤양갱", artist, now, "발라드");
 
-        AlbumChat albumChat= saveAlbumChat("밤양갱", artist, album,now, "발라드");
-
-        mockMvc.perform(post("/api/albumchat/open")
+        mockMvc.perform(post("/api/bestAlbum/add")
                         .header("Authorization", "Bearer " + validToken)
                         .contentType("application/json")
-                        .content(mapper.writeValueAsString(AlbumDto.builder()
+                        .content(mapper.writeValueAsString(BestAlbumDto.builder()
+                                .userId(100L)
+                                .albumId(album.getAlbumId())
+                                .build()
+                        )))
+                .andDo(print())
+                .andExpect(status().isNotFound());
+        mockMvc.perform(post("/api/bestAlbum/add")
+                        .header("Authorization", "Bearer " + validToken)
+                        .contentType("application/json")
+                        .content(mapper.writeValueAsString(BestAlbumDto.builder()
+                                .userId(user.getUserId())
                                 .albumId(100L)
                                 .build()
                         )))
                 .andDo(print())
                 .andExpect(status().isNotFound());
     }
+    // 유효한 상태에서 잘 만들어지는지
+
 }

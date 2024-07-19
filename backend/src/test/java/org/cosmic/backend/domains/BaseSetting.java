@@ -46,6 +46,7 @@ public class BaseSetting {
 
     protected ObjectMapper mapper = new ObjectMapper();
     private User user;
+    private User user2;
 
     protected UserLogin loginUser(String email, String password) throws Exception {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -61,6 +62,7 @@ public class BaseSetting {
                 .password(encoder.encode(password))
                 .build());
         user=savedUser;
+
         UserLogin userLogin = UserLogin.builder()
                 .email(email)
                 .password(password)
@@ -79,8 +81,44 @@ public class BaseSetting {
                 .build();
     }
 
+    protected UserLogin loginUser2(String email, String password) throws Exception {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        Email savedEmail2 = emailRepository.save(Email.builder()
+                .email("test@example.com")
+                .verificationCode("12345678")
+                .verified(true)
+                .build());
+
+        User savedUser2 = userRepository.save(User.builder()
+                .email(savedEmail2)
+                .username("goodwill")
+                .password(encoder.encode(password))
+                .build());
+        user2=savedUser2;
+
+        UserLogin userLogin = UserLogin.builder()
+                .email("test@example.com")
+                .password(password)
+                .build();
+
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/auth/signin")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(userLogin)));
+
+        MvcResult result = resultActions.andReturn();
+        String validToken = mapper.readValue(result.getResponse().getContentAsString(), UserLogin.class).getToken();
+
+        return UserLogin.builder()
+                .email("test@example.com")
+                .token(validToken)
+                .build();
+    }
+
     protected User getUser() throws Exception {
         return user;
+    }
+    protected User getUser2() throws Exception {
+        return user2;
     }
 
     protected Artist saveArtist(String artistName) {

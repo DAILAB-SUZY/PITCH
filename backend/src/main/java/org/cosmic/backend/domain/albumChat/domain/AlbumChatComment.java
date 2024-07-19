@@ -37,4 +37,13 @@ public class AlbumChatComment {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+    @Override
+    public String toString() {
+        return "AlbumChatComment{" +
+                "albumChatCommentId=" + albumChatCommentId +
+                ", content='" + content + '\'' +
+                ", updateTime=" + updateTime +
+                ", user=" + (user != null ? user.getUserId() : "null") +
+                '}';
+    }
 }

@@ -22,6 +22,7 @@ import java.util.List;
 @Entity
 @Builder
 @Table(name="`user`")
+@EqualsAndHashCode(exclude = {"email", "playlist", "userDnas", "posts", "comments", "likes"})
 public class User {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -66,4 +67,15 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Like> likes=new ArrayList<>();
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "userId=" + userId +
+                ", email=" + (email != null ? email.getEmail() : "null") +
+                ", username='" + username + '\'' +
+                ", profilePicture='" + profilePicture + '\'' +
+                ", signupDate=" + signupDate +
+                '}';
+    }
 }

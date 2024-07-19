@@ -1,10 +1,7 @@
 package org.cosmic.backend.domain.playList.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.cosmic.backend.domain.albumChat.domain.AlbumChat;
 
 import java.time.Instant;
@@ -17,6 +14,7 @@ import java.util.List;
 @Entity
 @Builder
 @Table(name="`Album`")
+@EqualsAndHashCode(exclude = {"albumchat"})
 public class Album {//앨범과 트랙은 1:N관계이며 앨범과 아티스트는 더 생각 필요
 
     @Id
@@ -55,5 +53,16 @@ public class Album {//앨범과 트랙은 1:N관계이며 앨범과 아티스트
         this.artist = artist;
         this.createdDate = createdDate;
         this.cover = cover;
+    }
+    @Override
+    public String toString() {
+        return "Album{" +
+                "albumId=" + albumId +
+                ", title='" + title + '\'' +
+                ", cover='" + cover + '\'' +
+                ", genre='" + genre + '\'' +
+                ", createdDate=" + createdDate +
+                ", artist=" + (artist != null ? artist.getArtistId() : "null") +
+                '}';
     }
 }
