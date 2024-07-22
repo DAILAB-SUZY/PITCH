@@ -1,8 +1,7 @@
 package org.cosmic.backend.domains.favoriteArtist;
 
 import lombok.extern.log4j.Log4j2;
-import org.cosmic.backend.domain.albumChat.domain.AlbumChat;
-import org.cosmic.backend.domain.albumChat.repository.AlbumChatRepository;
+import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatRepository;
 import org.cosmic.backend.domain.auth.dto.UserLogin;
 import org.cosmic.backend.domain.favoriteArtist.dto.AlbumRequest;
 import org.cosmic.backend.domain.favoriteArtist.dto.TrackRequest;

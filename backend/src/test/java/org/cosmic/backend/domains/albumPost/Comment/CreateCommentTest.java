@@ -1,7 +1,6 @@
 package org.cosmic.backend.domains.albumPost.Comment;
 
 import lombok.extern.log4j.Log4j2;
-import org.cosmic.backend.domain.albumChat.domain.AlbumChat;
 import org.cosmic.backend.domain.auth.dto.UserLogin;
 import org.cosmic.backend.domain.playList.domain.Album;
 import org.cosmic.backend.domain.playList.domain.Artist;
