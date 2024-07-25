@@ -25,52 +25,48 @@ public class AlbumChatApi {
     @Autowired
     private AlbumChatService albumChatService;
 
-    //모든 포스트 줄 때
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200",
-                    description = "Ok",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = String.class))
-                    }),
+        @ApiResponse(responseCode = "200",
+            description = "Ok",
+            content = {
+                    @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = String.class))
+            }),
 
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found AlbumChat",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class))
-                    }
-            )
+        @ApiResponse(responseCode = "404",
+            description = "Not Found AlbumChat",
+            content = {
+                    @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))
+            }
+        )
     }
     )
     @Transactional
     @PostMapping("/open")
-    public AlbumChatResponse getAlbumChatById(@RequestBody AlbumDto album) {//Post가 아니라 post에서 나와야할 내용들이 리턴되야함
+    public AlbumChatResponse getAlbumChatById(@RequestBody AlbumDto album) {
         return albumChatService.getAlbumChatById(album);
     }
 
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200",
-                    description = "Ok",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = String.class))
-                    }),
-
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found AlbumChat",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class))
-                    }
-            )
+        @ApiResponse(responseCode = "200",
+            description = "Ok",
+            content = {
+                @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = String.class))
+            }),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found AlbumChat",
+            content = {
+                @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class))
+            }
+        )
     }
     )
-
     @Transactional
     @PostMapping("/manylike")
-    public List<AlbumChatCommentResponse> getAlbumChatCommentByManyLikeId(@RequestBody AlbumChatDto albumchat) {//Post가 아니라 post에서 나와야할 내용들이 리턴되야함
+    public List<AlbumChatCommentResponse> getAlbumChatCommentByManyLikeId(@RequestBody AlbumChatDto albumchat) {
         return albumChatService.getAlbumChatCommentByManyLikeId(albumchat);
     }
-    //좋아요 많이 받은 순으로 댓글 나열
 }

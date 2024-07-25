@@ -1,5 +1,6 @@
 package org.cosmic.backend.domain.albumChat.applications;
 
+import org.cosmic.backend.domain.albumChat.domains.AlbumChat;
 import org.cosmic.backend.domain.albumChat.domains.AlbumChatAlbumLike;
 import org.cosmic.backend.domain.albumChat.dtos.albumlike.AlbumChatAlbumLikeReq;
 import org.cosmic.backend.domain.albumChat.dtos.albumlike.AlbumChatAlbumLikeResponse;
@@ -9,7 +10,8 @@ import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatAlbumLikeReposit
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatRepository;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.post.exception.NotFoundLikeException;
-import org.cosmic.backend.domain.user.repository.UsersRepository;
+import org.cosmic.backend.domain.user.domains.User;
+import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +20,6 @@ import java.util.List;
 
 @Service
 public class AlbumChatAlbumLikeService {
-
     @Autowired
     private AlbumChatAlbumLikeRepository likeRepository;
     @Autowired
@@ -28,51 +29,42 @@ public class AlbumChatAlbumLikeService {
 
     public List<AlbumChatAlbumLikeResponse> getAlbumChatAlbumLikeByAlbumChatId(Long albumChatId) {
         List<AlbumChatAlbumLikeResponse> likes = new ArrayList<>();
-        //postId를 통해 이 id의 좋아요한 사람의 정보 다 가져옴
-        if(!albumChatRepository.findById(albumChatId).isPresent()) {
+        if(albumChatRepository.findById(albumChatId).isEmpty()) {
             throw new NotFoundAlbumChatException();
         }
-        else{
-            List<AlbumChatAlbumLike> likeList=likeRepository.findByAlbumChat_AlbumChatId(albumChatId);//해당 포스트의 좋아요들을 모두 볼 수 있음
-            for(AlbumChatAlbumLike like:likeList) {
-                AlbumChatAlbumLikeResponse likeresponse = new AlbumChatAlbumLikeResponse();
-                likeresponse.setUserId(like.getUser().getUserId());
-                likeresponse.setUserName(like.getUser().getUsername());
-                likeresponse.setProfilePicture(like.getUser().getProfilePicture());
-                likes.add(likeresponse);
-            }
-            return likes;
+        List<AlbumChatAlbumLike> likeList=likeRepository.findByAlbumChat_AlbumChatId(albumChatId);
+        for(AlbumChatAlbumLike like:likeList) {
+            AlbumChatAlbumLikeResponse likeresponse = new AlbumChatAlbumLikeResponse(
+                like.getUser().getUserId(),like.getUser().getUsername(),like.getUser().getProfilePicture()
+            );
+            likes.add(likeresponse);
         }
+        return likes;
     }
 
-    public AlbumChatAlbumLikeReq albumChatCreateAlbumLike(Long userId, Long albumChatId) {
-        AlbumChatAlbumLike like = new AlbumChatAlbumLike();
-        if(!albumChatRepository.findById(albumChatId).isPresent()) {
+    public AlbumChatAlbumLikeReq albumChatAlbumLikeCreate(Long userId, Long albumChatId) {
+        if(albumChatRepository.findById(albumChatId).isEmpty()) {
             throw new NotFoundAlbumChatException();
         }
-        else if(!usersRepository.findByUserId(userId).isPresent()) {
+        if(usersRepository.findByUserId(userId).isEmpty()) {
             throw new NotFoundUserException();
         }
-        else if(likeRepository.findByAlbumChat_AlbumChatIdAndUser_UserId(albumChatId, userId).isPresent())
+        if(likeRepository.findByAlbumChat_AlbumChatIdAndUser_UserId(albumChatId, userId).isPresent())
         {
-            throw new ExistAlbumLikeException();//409
+            throw new ExistAlbumLikeException();
         }
-        else{
-            like.setUser(usersRepository.findByUserId(userId).get());
-            like.setAlbumChat(albumChatRepository.findById(albumChatId).get());
-            likeRepository.save(like);
-            AlbumChatAlbumLikeReq likeReq = new AlbumChatAlbumLikeReq();
-            likeReq.setAlbumChatAlbumLikeId(like.getAlbumChatAlbumLikeId());
-            return likeReq;
-        }
+        User user=usersRepository.findByUserId(userId).get();
+        AlbumChat albumChat=albumChatRepository.findById(albumChatId).get();
+        AlbumChatAlbumLike like = new AlbumChatAlbumLike(user,albumChat);
+        likeRepository.save(like);
+        AlbumChatAlbumLikeReq likeReq = new AlbumChatAlbumLikeReq(like.getAlbumChatAlbumLikeId());
+        return likeReq;
     }
 
-    public void deleteAlbumChatAlbumLike(Long likeId) {
-        if(!likeRepository.findById(likeId).isPresent()) {
+    public void albumChatAlbumLikeDelete(Long likeId) {
+        if(likeRepository.findById(likeId).isEmpty()) {
             throw new NotFoundLikeException();
         }
-        else{
-            likeRepository.deleteById(likeId);
-        }
+        likeRepository.deleteById(likeId);
     }
 }

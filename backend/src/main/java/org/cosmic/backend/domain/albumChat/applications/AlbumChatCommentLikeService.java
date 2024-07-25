@@ -1,7 +1,7 @@
 package org.cosmic.backend.domain.albumChat.applications;
 
 import org.cosmic.backend.domain.albumChat.domains.AlbumChatCommentLike;
-import org.cosmic.backend.domain.albumChat.dtos.commentlike.AlbumChatCommentLikeReq;
+import org.cosmic.backend.domain.albumChat.dtos.commentlike.AlbumChatCommentLikeIdResponse;
 import org.cosmic.backend.domain.albumChat.dtos.commentlike.AlbumChatCommentLikeResponse;
 import org.cosmic.backend.domain.albumChat.exceptions.ExistCommentLikeException;
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatCommentException;
@@ -9,7 +9,7 @@ import org.cosmic.backend.domain.albumChat.exceptions.NotFoundCommentLikeExcepti
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatCommentLikeRepository;
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatCommentRepository;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
-import org.cosmic.backend.domain.user.repository.UsersRepository;
+import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,53 +25,47 @@ public class AlbumChatCommentLikeService {
     @Autowired
     private AlbumChatCommentRepository albumChatCommentRepository;
 
-    public List<AlbumChatCommentLikeResponse> getAlbumChatCommentLikeByAlbumChatComment(Long albumChatCommentId) {
+    public List<AlbumChatCommentLikeResponse> getAlbumChatCommentLikeByAlbumChatCommentId(Long albumChatCommentId) {
         List<AlbumChatCommentLikeResponse> likes = new ArrayList<>();
-        //postId를 통해 이 id의 좋아요한 사람의 정보 다 가져옴
-        if(!albumChatCommentRepository.findById(albumChatCommentId).isPresent()) {
+        if(albumChatCommentRepository.findById(albumChatCommentId).isEmpty()) {
             throw new NotFoundAlbumChatCommentException();
         }
-        else{
-            List<AlbumChatCommentLike> likeList=likeRepository.findByAlbumChatComment_AlbumChatCommentId(albumChatCommentId);//해당 포스트의 좋아요들을 모두 볼 수 있음
-            for(AlbumChatCommentLike like:likeList) {
-                AlbumChatCommentLikeResponse likeresponse = new AlbumChatCommentLikeResponse();
-                likeresponse.setUserId(like.getUser().getUserId());
-                likeresponse.setUserName(like.getUser().getUsername());
-                likeresponse.setProfilePicture(like.getUser().getProfilePicture());
-                likes.add(likeresponse);
-            }
-            return likes;
+        List<AlbumChatCommentLike> likeList=likeRepository.findByAlbumChatComment_AlbumChatCommentId(albumChatCommentId);
+        for(AlbumChatCommentLike like:likeList) {
+            Long userId=like.getUser().getUserId();
+            String userName=like.getUser().getUsername();
+            String profilePicture=like.getUser().getProfilePicture();
+            AlbumChatCommentLikeResponse likeresponse = new AlbumChatCommentLikeResponse(
+                userId,userName,profilePicture
+            );
+            likes.add(likeresponse);
         }
+        return likes;
     }
 
-    public AlbumChatCommentLikeReq albumChatCreateCommentLike(Long userId, Long albumChatCommentId) {
-        AlbumChatCommentLike like = new AlbumChatCommentLike();
-        if(!albumChatCommentRepository.findById(albumChatCommentId).isPresent()) {
+    public AlbumChatCommentLikeIdResponse albumChatCommentLikeCreate(Long userId, Long albumChatCommentId) {
+        if(albumChatCommentRepository.findById(albumChatCommentId).isEmpty()) {
             throw new NotFoundAlbumChatCommentException();
         }
-        else if(!usersRepository.findByUserId(userId).isPresent()) {
+        if(usersRepository.findByUserId(userId).isEmpty()) {
             throw new NotFoundUserException();
         }
-        else if(likeRepository.findByAlbumChatComment_AlbumChatCommentIdAndUser_UserId(albumChatCommentId, userId).isPresent())
+        if(likeRepository.findByAlbumChatComment_AlbumChatCommentIdAndUser_UserId(
+            albumChatCommentId, userId).isPresent())
         {
-            throw new ExistCommentLikeException();//409
+            throw new ExistCommentLikeException();
         }
-        else{
-            like.setUser(usersRepository.findByUserId(userId).get());
-            like.setAlbumChatComment(albumChatCommentRepository.findById(albumChatCommentId).get());
-            likeRepository.save(like);
-            AlbumChatCommentLikeReq likeReq = new AlbumChatCommentLikeReq();
-            likeReq.setAlbumChatCommentLikeId(like.getAlbumChatCommentLikeId());
-            return likeReq;
-        }
+        AlbumChatCommentLike like = new AlbumChatCommentLike(usersRepository.findByUserId(userId).get()
+            ,albumChatCommentRepository.findById(albumChatCommentId).get());
+        likeRepository.save(like);
+        AlbumChatCommentLikeIdResponse likeReq = new AlbumChatCommentLikeIdResponse(like.getAlbumChatCommentLikeId());
+        return likeReq;
     }
 
-    public void deleteAlbumChatCommentLike(Long likeId) {
-        if(!likeRepository.findById(likeId).isPresent()) {
+    public void albumChatCommentLikeDelete(Long likeId) {
+        if(likeRepository.findById(likeId).isEmpty()) {
             throw new NotFoundCommentLikeException();
         }
-        else{
-            likeRepository.deleteById(likeId);
-        }
+        likeRepository.deleteById(likeId);
     }
 }

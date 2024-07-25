@@ -1,13 +1,13 @@
 package org.cosmic.backend.domain.albumChat.domains;
 
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.cosmic.backend.domain.user.domain.User;
+import org.cosmic.backend.domain.user.domains.User;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -37,6 +37,15 @@ public class AlbumChatComment {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    public AlbumChatComment(String content, Instant updateTime, User user,List<AlbumChatReply> albumChatReply,AlbumChat albumChat) {
+        this.albumChat = albumChat;
+        this.content = content;
+        this.updateTime = updateTime;
+        this.user=user;
+        this.albumChatReplies = albumChatReply;
+    }
+
     @Override
     public String toString() {
         return "AlbumChatComment{" +

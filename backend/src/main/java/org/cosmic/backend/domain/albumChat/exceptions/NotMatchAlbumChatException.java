@@ -7,6 +7,6 @@ public class NotMatchAlbumChatException extends BadRequestException {
         super(errorMessage);
     }
     public NotMatchAlbumChatException(){
-        this("Not Match AlbumChat Exception");
+        this(getNotMatchAlbumChatError());
     }
 }

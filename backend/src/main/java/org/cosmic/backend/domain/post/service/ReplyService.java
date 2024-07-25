@@ -11,7 +11,7 @@ import org.cosmic.backend.domain.post.exception.NotMatchCommentException;
 import org.cosmic.backend.domain.post.exception.NotMatchUserException;
 import org.cosmic.backend.domain.post.repository.CommentRepository;
 import org.cosmic.backend.domain.post.repository.ReplyRepository;
-import org.cosmic.backend.domain.user.repository.UsersRepository;
+import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

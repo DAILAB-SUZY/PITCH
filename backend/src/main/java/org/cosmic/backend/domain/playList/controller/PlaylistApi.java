@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.transaction.Transactional;
 import org.cosmic.backend.domain.playList.dto.*;
 import org.cosmic.backend.domain.playList.service.PlaylistService;
-import org.cosmic.backend.domain.user.dto.UserDto;
+import org.cosmic.backend.domain.user.dtos.UserDto;
 import org.cosmic.backend.globals.dto.ErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -72,7 +72,7 @@ public class PlaylistApi {
 
     @PostMapping("/save")//수정한 플레이리스트를 여기 저장
     @Transactional
-    public ResponseEntity<?> savePlaylistData(@RequestBody PlaylistDTO playlist) {
+    public ResponseEntity<?> savePlaylistData(@RequestBody PlaylistDto playlist) {
         // 데이터 받을 때
         Long Key= playlist.getId();
         playlistService.save(Key,playlist.getPlaylist());
@@ -99,7 +99,7 @@ public class PlaylistApi {
 
     @PostMapping("/Artistsearch")
     @Transactional
-    public List<TrackGiveDto> searchArtist(@RequestBody ArtistDTO artist) {
+    public List<TrackGiveDto> searchArtist(@RequestBody ArtistDto artist) {
         return playlistService.searchArtist(artist.getArtistName());
     }
 
@@ -124,7 +124,7 @@ public class PlaylistApi {
 
     @PostMapping("/Tracksearch")
     @Transactional
-    public List<TrackGiveDto> searchTrack(@RequestBody TrackDTO track) {
+    public List<TrackGiveDto> searchTrack(@RequestBody TrackDto track) {
         return playlistService.searchTrack(track.getTrackName());
     }
 

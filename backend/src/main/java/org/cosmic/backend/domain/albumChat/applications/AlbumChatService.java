@@ -31,44 +31,38 @@ public class AlbumChatService {
     private AlbumChatCommentService albumChatCommentService;
 
     @Transactional
-    public AlbumChatResponse getAlbumChatById(AlbumDto album) {//Post가 아니라 post에서 나와야할 내용들이 리턴되야함
-        AlbumChatResponse albumChatResponse =new AlbumChatResponse();
-        if(!albumChatRepository.findByAlbum_AlbumId(album.getAlbumId()).isPresent())
+    public AlbumChatResponse getAlbumChatById(AlbumDto album) {
+        if(albumChatRepository.findByAlbum_AlbumId(album.getAlbumId()).isEmpty())
         {
             throw new NotFoundAlbumChatException();
         }
-        else{
-            AlbumChat albumChat=albumChatRepository.findByAlbum_AlbumId(album.getAlbumId()).get();
-            albumChatResponse.setAlbumChatId(albumChat.getAlbumChatId());
-            albumChatResponse.setTitle(albumChat.getTitle());
-            albumChatResponse.setCover(albumChat.getCover());
-            albumChatResponse.setGenre(albumChat.getGenre());
-            albumChatResponse.setArtistName(albumChat.getArtistName());
-            return albumChatResponse;
-        }
+        AlbumChat albumChat=albumChatRepository.findByAlbum_AlbumId(album.getAlbumId()).get();
+        AlbumChatResponse albumChatResponse =new AlbumChatResponse(
+            albumChat.getAlbumChatId(),albumChat.getTitle(),
+            albumChat.getCover(),albumChat.getGenre(),albumChat.getArtistName()
+        );
+        return albumChatResponse;
     }
 
     @Transactional
-    public List<AlbumChatCommentResponse> getAlbumChatCommentByManyLikeId(AlbumChatDto albumchat) {//Post가 아니라 post에서 나와야할 내용들이 리턴되야함
-
-        if(!albumChatCommentRepository.findByAlbumChat_AlbumChatId(albumchat.getAlbumChatId()).isPresent())
+    public List<AlbumChatCommentResponse> getAlbumChatCommentByManyLikeId(AlbumChatDto albumchat) {
+        if(albumChatCommentRepository.findByAlbumChat_AlbumChatId(albumchat.getAlbumChatId()).isEmpty())
         {
             throw new NotFoundAlbumChatException();
         }
-        else{
-            List<AlbumChatComment> albumChatCommentList= albumChatCommentRepository.findByAlbumChat_AlbumChatId(albumchat.getAlbumChatId()).get();
-            Map<AlbumChatComment,Long>albumMap=new HashMap<>();
-            for(AlbumChatComment albumChatComment:albumChatCommentList){
-                Long likeCount =albumChatCommentLikeRepository.countByAlbumChatComment_AlbumChatCommentId(albumChatComment.getAlbumChatCommentId());
-                albumMap.put(albumChatComment,likeCount);
-            }
-
-            List<Map.Entry<AlbumChatComment, Long>> sortedComments = albumMap.entrySet()
-                    .stream()
-                    .sorted((entry1, entry2) -> Long.compare(entry2.getValue(), entry1.getValue()))
-                    .collect(Collectors.toList());
-
-            return albumChatCommentService.sortedAlbumChatComment(sortedComments);
+        List<AlbumChatComment> albumChatCommentList= albumChatCommentRepository.findByAlbumChat_AlbumChatId(
+            albumchat.getAlbumChatId()).get();
+        Map<AlbumChatComment,Long>albumMap=new HashMap<>();
+        for(AlbumChatComment albumChatComment:albumChatCommentList){
+            Long likeCount =albumChatCommentLikeRepository.countByAlbumChatComment_AlbumChatCommentId(
+                albumChatComment.getAlbumChatCommentId());
+            albumMap.put(albumChatComment,likeCount);
         }
+
+        List<Map.Entry<AlbumChatComment, Long>> sortedComments = albumMap.entrySet()
+            .stream()
+            .sorted((entry1, entry2) -> Long.compare(entry2.getValue(), entry1.getValue()))
+            .collect(Collectors.toList());
+        return albumChatCommentService.albumChatCommentSorted(sortedComments);
     }
 }

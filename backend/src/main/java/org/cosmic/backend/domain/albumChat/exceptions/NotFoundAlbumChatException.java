@@ -7,7 +7,7 @@ public class NotFoundAlbumChatException extends NotFoundException {
         super(errorMessage);
     }
     public NotFoundAlbumChatException(){
-        this("Not found albumChat page");
+        this(getNotFoundAlbumChatError());
     }
 }
 

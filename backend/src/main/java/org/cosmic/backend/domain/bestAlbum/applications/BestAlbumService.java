@@ -1,0 +1,118 @@
+package org.cosmic.backend.domain.bestAlbum.applications;
+
+import jakarta.transaction.Transactional;
+import org.cosmic.backend.domain.bestAlbum.domains.AlbumUser;
+import org.cosmic.backend.domain.bestAlbum.dtos.AlbumGiveDto;
+import org.cosmic.backend.domain.bestAlbum.dtos.BestAlbumGiveDto;
+import org.cosmic.backend.domain.bestAlbum.exceptions.NotMatchBestAlbumException;
+import org.cosmic.backend.domain.bestAlbum.repositorys.AlbumUserRepository;
+import org.cosmic.backend.domain.playList.domain.*;
+import org.cosmic.backend.domain.bestAlbum.dtos.*;
+import org.cosmic.backend.domain.playList.exceptions.NotFoundArtistException;
+import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
+import org.cosmic.backend.domain.playList.repository.*;
+import org.cosmic.backend.domain.post.exception.NotFoundAlbumException;
+import org.cosmic.backend.domain.user.domains.User;
+import org.cosmic.backend.domain.user.repositorys.UsersRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+@Service
+public class BestAlbumService {
+
+    @Autowired
+    private UsersRepository usersRepository;
+    @Autowired
+    private AlbumRepository albumRepository;
+    @Autowired
+    private ArtistRepository artistRepository;
+    @Autowired
+    private AlbumUserRepository albumUserRepository;
+
+    @Transactional
+    public List<BestAlbumGiveDto> open(Long userId) {
+
+        List<BestAlbumGiveDto> bestAlbumGiveDtos=new ArrayList<>();
+        if(usersRepository.findById(userId).isEmpty()) {
+            throw new NotFoundUserException();
+        }
+        User newuser = usersRepository.findById(userId).get();
+        List<AlbumUser> album_user = albumUserRepository.findByUser_UserId(userId).get();//해당 유저의 모든 album을 가져올 것임
+
+        for (int i = 0; i < album_user.size(); i++) {
+            BestAlbumGiveDto newbestAlbumGiveDto = new BestAlbumGiveDto(album_user.get(i).getAlbum().getAlbumId(),
+                album_user.get(i).getAlbum().getTitle(),album_user.get(i).getAlbum().getCover());
+            bestAlbumGiveDtos.add(newbestAlbumGiveDto);
+        }
+        return bestAlbumGiveDtos;
+    }
+
+    @Transactional
+    public void add(long userId, Long albumId) {
+        if(usersRepository.findById(userId).isEmpty()) {
+            throw new NotFoundUserException();
+        }
+        if(albumRepository.findById(albumId).isEmpty()) {
+            throw new NotFoundAlbumException();
+        }
+        User newuser = usersRepository.findById(userId).get();
+        Album album=albumRepository.findById(albumId).get();
+        AlbumUser albumUser=new AlbumUser(album,newuser);
+        albumUserRepository.save(albumUser);
+    }
+
+    @Transactional
+    public void save(long userId, List<BestAlbumDetail> bestalbumList) {
+        if(usersRepository.findById(userId).isEmpty()) {
+            throw new NotFoundUserException();
+        }
+        albumUserRepository.deleteByUser_UserId(userId);
+
+        for (BestAlbumDetail bestalbumDetail : bestalbumList) {
+            if(!albumRepository.findById(bestalbumDetail.getAlbumId()).isPresent())
+            {
+                throw new NotFoundAlbumException();//해당 앨범이 없는것일때
+            }
+            if(albumUserRepository.findByAlbum_AlbumIdAndUser_UserId(bestalbumDetail.getAlbumId(),userId).isEmpty())
+            {
+                throw new NotMatchBestAlbumException();
+            }
+            Album album= albumRepository.findById(bestalbumDetail.getAlbumId()).get();
+            AlbumUser album_User=new AlbumUser(album,usersRepository.findById(userId).get());
+            albumUserRepository.save(album_User);
+        }
+    }
+    @Transactional
+    public List<AlbumGiveDto> searchArtist (String artist) {//해당 아티스트가 가지고 있는 모든 앨범들의 정보를 줌
+        List<AlbumGiveDto>albumGiveDtos=new ArrayList<>();
+
+        if(artistRepository.findByArtistName(artist).isEmpty()) {
+            throw new NotFoundArtistException();
+        }
+        Artist artistInfo= artistRepository.findByArtistName(artist).get();
+        List<Album> album=albumRepository.findAllByArtist_ArtistId(artistInfo.getArtistId());//트랙들을 모두 가져옴
+        for(int i=0;i<album.size();i++)
+        {
+            AlbumGiveDto albumGiveDto=new AlbumGiveDto(album.get(i).getTitle(),artist,album.get(i).getCover());
+            albumGiveDtos.add(albumGiveDto);
+        }
+        return albumGiveDtos;
+    }
+
+    @Transactional
+    public List<AlbumGiveDto> searchAlbum (String album) {//해당 앨범이름을 가진 모든 앨범들의 정보를 줌
+        List<AlbumGiveDto>albumGiveDtos=new ArrayList<>();
+        if(albumRepository.findAllByTitle(album).get().isEmpty()) {
+            throw new NotFoundAlbumException();
+        }
+        List<Album> albumInfo= albumRepository.findAllByTitle(album).get();
+        for(Album albumInfo1:albumInfo){
+            AlbumGiveDto albumGiveDto=new AlbumGiveDto(
+                albumInfo1.getTitle(),albumInfo1.getArtist().getArtistName(),albumInfo1.getCover());
+            albumGiveDtos.add(albumGiveDto);
+        }
+        return albumGiveDtos;
+    }
+}

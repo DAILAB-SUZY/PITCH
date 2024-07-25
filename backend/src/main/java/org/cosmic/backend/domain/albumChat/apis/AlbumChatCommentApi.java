@@ -6,11 +6,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.transaction.Transactional;
 import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumChatDto;
+import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentCreateReq;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDto;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentResponse;
-import org.cosmic.backend.domain.albumChat.dtos.comment.CreateAlbumChatCommentReq;
-import org.cosmic.backend.domain.albumChat.dtos.comment.UpdateAlbumChatCommentReq;
 import org.cosmic.backend.domain.albumChat.applications.AlbumChatCommentService;
+import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentUpdateReq;
 import org.cosmic.backend.globals.dto.ErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,101 +28,100 @@ public class AlbumChatCommentApi {
     private AlbumChatCommentService commentService;
 
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200",
-                    description = "Ok",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = String.class))
-                    }),
+        @ApiResponse(responseCode = "200",
+            description = "Ok",
+            content = {
+                @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = String.class))
+            }),
 
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found AlbumChat",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class))
-                    }
-            )
+        @ApiResponse(responseCode = "404",
+            description = "Not Found AlbumChat",
+            content = {
+                @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class))
+            }
+        )
     }
     )
     @PostMapping("/give")
     @Transactional
-    public List<AlbumChatCommentResponse> getCommentsByAlbumChat(@RequestBody AlbumChatDto albumchat) {//postid에 있는 comment들을
-        return commentService.getCommentsByAlbumChat(albumchat.getAlbumChatId());
+    public List<AlbumChatCommentResponse> getCommentByAlbumChatId(@RequestBody AlbumChatDto albumchat) {
+        return commentService.getCommentsByAlbumChatId(albumchat.getAlbumChatId());
     }
-    //특정 앨범에 대한 comment들을 모두 가져옴
 
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200",
-                    description = "Ok",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = String.class))
-                    }),
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found User or AlbumChat",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class))
-                    }
-            )
+        @ApiResponse(responseCode = "200",
+            description = "Ok",
+            content = {
+                @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = String.class))
+            }),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found User or AlbumChat",
+            content = {
+                @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class))
+            }
+        )
     }
     )
     @PostMapping("create")
     @Transactional
-    public AlbumChatCommentDto createAlbumChatComment(@RequestBody CreateAlbumChatCommentReq comment) {
-        return commentService.createAlbumChatComment(comment);
+    public AlbumChatCommentDto albumChatCommentCreate(@RequestBody AlbumChatCommentCreateReq comment) {
+        return commentService.albumChatCommentCreate(comment);
     }
 
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200",
-                    description = "Ok",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = String.class))
-                    }),
-            @ApiResponse(responseCode = "400",
-                    description = "Not Found AlbumChatComment",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class))
-                    }
-            ),
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found AlbumChatComment",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class))
-                    }
-            )
+        @ApiResponse(responseCode = "200",
+            description = "Ok",
+            content = {
+                @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = String.class))
+            }),
+        @ApiResponse(responseCode = "400",
+            description = "Not Match AlbumChat" ,
+            content = {
+                @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class))
+            }
+        ),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found AlbumChatComment Or User",
+            content = {
+                @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class))
+            }
+        )
     }
     )
     @PostMapping("update")
     @Transactional
-    public ResponseEntity<?> updateAlbumChatComment(@RequestBody UpdateAlbumChatCommentReq comment) {
-        commentService.updateAlbumChatComment(comment);
+    public ResponseEntity<?> albumChatCommentUpdate(@RequestBody AlbumChatCommentUpdateReq comment) {
+        commentService.albumChatCommentUpdate(comment);
         return ResponseEntity.ok("성공");
     }
 
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200",
-                    description = "Ok",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = String.class))
-                    }),
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found AlbumChatComment",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class))
-                    }
-            )
+        @ApiResponse(responseCode = "200",
+            description = "Ok",
+            content = {
+                @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = String.class))
+            }),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found AlbumChatComment",
+            content = {
+                @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class))
+            }
+        )
     }
     )
     @PostMapping("/delete")
     @Transactional
-    public ResponseEntity<?> deleteAlbumChatComment(@RequestBody AlbumChatCommentDto commentdto) {
-        commentService.deleteAlbumChatComment(commentdto);
+    public ResponseEntity<?> albumChatCommentDelete(@RequestBody AlbumChatCommentDto commentdto) {
+        commentService.albumChatCommentDelete(commentdto);
         return ResponseEntity.ok("성공");
     }
 }

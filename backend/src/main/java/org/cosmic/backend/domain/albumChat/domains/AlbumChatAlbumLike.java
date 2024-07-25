@@ -6,7 +6,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.cosmic.backend.domain.user.domain.User;
+import org.cosmic.backend.domain.user.domains.User;
 
 @Data
 @NoArgsConstructor
@@ -25,4 +25,9 @@ public class AlbumChatAlbumLike {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    public AlbumChatAlbumLike(final User user,final AlbumChat albumChat) {
+        this.albumChat = albumChat;
+        this.user = user;
+    }
 }

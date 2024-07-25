@@ -7,6 +7,6 @@ public class NotFoundCommentLikeException extends NotFoundException {
         super(errorMessage);
     }
     public NotFoundCommentLikeException(){
-        this("Not found CommentLike");
+        this(getNotFoundAlbumChatCommentLikeError());
     }
 }

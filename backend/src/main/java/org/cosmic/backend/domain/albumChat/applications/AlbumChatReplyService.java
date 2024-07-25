@@ -1,8 +1,9 @@
 package org.cosmic.backend.domain.albumChat.applications;
 import org.cosmic.backend.domain.albumChat.domains.AlbumChatReply;
+import org.cosmic.backend.domain.albumChat.dtos.reply.AlbumChatReplyCreateReq;
 import org.cosmic.backend.domain.albumChat.dtos.reply.AlbumChatReplyDto;
-import org.cosmic.backend.domain.albumChat.dtos.reply.CreateAlbumChatReplyReq;
-import org.cosmic.backend.domain.albumChat.dtos.reply.UpdateAlbumChatReplyReq;
+import org.cosmic.backend.domain.albumChat.dtos.reply.AlbumChatReplyResponse;
+import org.cosmic.backend.domain.albumChat.dtos.reply.AlbumChatReplyUpdateReq;
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatCommentRepository;
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatReplyRepository;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
@@ -10,7 +11,7 @@ import org.cosmic.backend.domain.post.exception.NotFoundCommentException;
 import org.cosmic.backend.domain.post.exception.NotFoundReplyException;
 import org.cosmic.backend.domain.post.exception.NotMatchCommentException;
 import org.cosmic.backend.domain.post.exception.NotMatchUserException;
-import org.cosmic.backend.domain.user.repository.UsersRepository;
+import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,68 +28,56 @@ public class AlbumChatReplyService {
     @Autowired
     private AlbumChatCommentRepository commentRepository;
 
-    public List<UpdateAlbumChatReplyReq> getAlbumChatRepliesByCommentId(Long commentId) {//해당 댓글에 있는 모든 reply가져오기
-        List<UpdateAlbumChatReplyReq> replies = new ArrayList<>();
-        if(!commentRepository.findById(commentId).isPresent()) {
+    public List<AlbumChatReplyResponse> getAlbumChatRepliesByCommentId(Long commentId) {
+        List<AlbumChatReplyResponse> replies = new ArrayList<>();
+        if(commentRepository.findById(commentId).isEmpty()) {
             throw new NotFoundCommentException();
         }
-        else{
-            List<AlbumChatReply> replyList=replyRepository.findByAlbumChatComment_AlbumChatCommentId(commentId).get();
-            for (AlbumChatReply reply : replyList) {
-                UpdateAlbumChatReplyReq replyreq = new UpdateAlbumChatReplyReq();
-                replyreq.setAlbumChatReplyId(reply.getAlbumChatReplyId());
-                replyreq.setContent(reply.getContent());
-                replyreq.setCreateTime(reply.getUpdateTime());
-                replyreq.setUserId(reply.getUser().getUserId());
-                replyreq.setAlbumChatCommentId(reply.getAlbumChatComment().getAlbumChatCommentId());
-                replies.add(replyreq);
-            }
-            return replies;
+        List<AlbumChatReply> replyList=replyRepository.findByAlbumChatComment_AlbumChatCommentId(commentId).get();
+        for (AlbumChatReply reply : replyList) {
+            AlbumChatReplyResponse replyreq = new AlbumChatReplyResponse(
+                reply.getAlbumChatReplyId(),reply.getUser().getUserId(),reply.getContent(),reply.getUpdateTime()
+            );
+            replies.add(replyreq);
         }
+        return replies;
     }
 
-    public AlbumChatReplyDto createAlbumChatReply(CreateAlbumChatReplyReq reply) {
-        //누가 쓴 comment인지 나와야하기 때문에 userId필요
-        //없는 comment인지 확인필요
-        AlbumChatReply replyEntity=new AlbumChatReply();
-        if(!userRepository.findById(reply.getUserId()).isPresent()) {
+    public AlbumChatReplyDto albumChatReplyCreate(AlbumChatReplyCreateReq reply) {
+        if(userRepository.findById(reply.getUserId()).isEmpty()) {
             throw new NotFoundUserException();
         }
-        else if(!commentRepository.findById(reply.getAlbumChatCommentId()).isPresent())
+        if(commentRepository.findById(reply.getAlbumChatCommentId()).isEmpty())
         {
             throw new NotFoundCommentException();
         }
-        replyEntity.setContent(reply.getContent());
-        replyEntity.setUpdateTime(Instant.now());
-        replyEntity.setUser(userRepository.findByUserId(reply.getUserId()).get());
-        replyEntity.setAlbumChatComment(commentRepository.findByAlbumChatCommentId(reply.getAlbumChatCommentId()));//어떤 댓글의 대댓글인지 알아야함.
+        AlbumChatReply replyEntity=new AlbumChatReply(reply.getContent(),Instant.now()
+            ,commentRepository.findByAlbumChatCommentId(reply.getAlbumChatCommentId())
+                ,userRepository.findById(reply.getUserId()).get());
         replyRepository.save(replyEntity);
-        AlbumChatReplyDto replyDto=new AlbumChatReplyDto();
-        replyDto.setAlbumChatReplyId(replyEntity.getAlbumChatReplyId());
+        AlbumChatReplyDto replyDto=new AlbumChatReplyDto(replyEntity.getAlbumChatReplyId());
         return replyDto;
     }
 
-    public void updateAlbumChatReply(UpdateAlbumChatReplyReq reply) {
-        if(!replyRepository.findById(reply.getAlbumChatReplyId()).isPresent()) {
+    public void albumChatReplyUpdate(AlbumChatReplyUpdateReq reply) {
+        if(replyRepository.findById(reply.getAlbumChatReplyId()).isEmpty()) {
             throw new NotFoundReplyException();
         }
-        else{
-            AlbumChatReply reply1=replyRepository.findByAlbumChatReplyId(reply.getAlbumChatReplyId());
-            if(!reply1.getAlbumChatComment().getAlbumChatCommentId().equals(reply.getAlbumChatCommentId())) {
-                throw new NotMatchCommentException();
-            }
-            else if(!reply1.getUser().getUserId().equals(reply.getUserId()))
-            {
-                throw new NotMatchUserException();
-            }
-            reply1.setContent(reply.getContent());
-            reply1.setUpdateTime(Instant.now());
-            replyRepository.save(reply1);//새로생기는지 업데이트만 되는지 만약 새로생기는거면업데이트만 되게만들어야함.
+        AlbumChatReply reply1=replyRepository.findByAlbumChatReplyId(reply.getAlbumChatReplyId());
+        if(!reply1.getAlbumChatComment().getAlbumChatCommentId().equals(reply.getAlbumChatCommentId())) {
+            throw new NotMatchCommentException();
         }
+        if(!reply1.getUser().getUserId().equals(reply.getUserId()))
+        {
+            throw new NotMatchUserException();
+        }
+        reply1.setContent(reply.getContent());
+        reply1.setUpdateTime(Instant.now());
+        replyRepository.save(reply1);
     }
 
-    public void deleteAlbumChatReply(Long replyId) {
-        if(!replyRepository.findById(replyId).isPresent()) {
+    public void albumChatReplyDelete(Long replyId) {
+        if(replyRepository.findById(replyId).isEmpty()) {
             throw new NotFoundReplyException();
         }
         replyRepository.deleteById(replyId);

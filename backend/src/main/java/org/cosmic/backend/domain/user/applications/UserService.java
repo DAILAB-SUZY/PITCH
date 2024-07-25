@@ -1,18 +1,20 @@
 package org.cosmic.backend.domain.user.applications;
+import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.auth.applications.TokenProvider;
-import org.cosmic.backend.domain.auth.dto.UserLogin;
+import org.cosmic.backend.domain.auth.dtos.UserLogin;
 import org.cosmic.backend.domain.auth.exceptions.CredentialNotMatchException;
 import org.cosmic.backend.domain.playList.domain.Playlist;
 import org.cosmic.backend.domain.playList.repository.PlaylistRepository;
-import org.cosmic.backend.domain.user.domain.Email;
-import org.cosmic.backend.domain.user.domain.User;
-import org.cosmic.backend.domain.user.dto.JoinRequest;
+import org.cosmic.backend.domain.user.domains.Email;
+import org.cosmic.backend.domain.user.domains.User;
+import org.cosmic.backend.domain.user.dtos.JoinRequest;
 import org.cosmic.backend.domain.user.exceptions.NotExistEmailException;
 import org.cosmic.backend.domain.user.exceptions.NotMatchConditionException;
 import org.cosmic.backend.domain.user.exceptions.NotMatchPasswordException;
-import org.cosmic.backend.domain.user.repository.EmailRepository;
-import org.cosmic.backend.domain.user.repository.UsersRepository;
+import org.cosmic.backend.domain.user.repositorys.EmailRepository;
+import org.cosmic.backend.domain.user.repositorys.UsersRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,52 +25,34 @@ import java.util.Optional;
 @Log4j2
 @Service
 public class UserService {
-    private final TokenProvider tokenProvider;
-    private final UsersRepository usersRepository;
-    private final EmailRepository emailRepository;
-    private final RedisTemplate<String, String> redisTemplate;
-    private final PlaylistRepository playlistRepository;
+    @Autowired
+    private  TokenProvider tokenProvider;
+    @Autowired
+    private  UsersRepository usersRepository;
+    @Autowired
+    private  EmailRepository emailRepository;
+    @Autowired
+    private  RedisTemplate<String, String> redisTemplate;
+    @Autowired
+    private  PlaylistRepository playlistRepository;
 
-    public UserService(UsersRepository usersRepository, EmailRepository emailRepository, TokenProvider tokenProvider, RedisTemplate<String, String> redisTemplate, PlaylistRepository playlistRepository) {
-        this.usersRepository = usersRepository;
-        this.emailRepository = emailRepository;
-        this.tokenProvider = tokenProvider;
-        this.redisTemplate = redisTemplate;
-        this.playlistRepository = playlistRepository;
-    }
-
-    public void registerUser(JoinRequest request){
+    public void userRegister(JoinRequest request){
+        BCryptPasswordEncoder passwordEncoder=new BCryptPasswordEncoder();
         if (!request.getPassword().equals(request.getCheckPassword())) {
             throw new NotMatchPasswordException();
         }
-
-        // 이메일일치 여부 검증
         Optional<Email> emailOpt = emailRepository.findByEmail(request.getEmail());
-
         //이메일 인증 확인
         if (emailOpt.isEmpty() || !emailOpt.get().getVerified()) {//해당 이메일이 등록된게 아니라면
             throw new NotExistEmailException();
         }
-
         if(request.getPassword().length() < 8) {
             throw new NotMatchConditionException();
         }
-
-        else{
-            // 모든 조건 만족했으므로 유저 객체 생성 및 저장
-            User newUser = new User();
-            newUser.setEmail(emailOpt.get());
-            BCryptPasswordEncoder passwordEncoder=new BCryptPasswordEncoder();
-            newUser.setPassword(passwordEncoder.encode(request.getPassword()));
-            newUser.setUsername(request.getName());
-            usersRepository.save(newUser);//유저 테이블 새로 생성
-
-            Playlist playlist = new Playlist();
-            playlist.setUser(newUser);
-            playlist.setCreatedDate(Instant.now());
-            playlist.setUpdatedDate(Instant.now());
-            playlistRepository.save(playlist);
-        }
+        User newUser = new User(emailOpt.get(),request.getName(),passwordEncoder.encode(request.getPassword()));
+        usersRepository.save(newUser);
+        Playlist playlist = new Playlist(Instant.now(),Instant.now(),newUser);
+        playlistRepository.save(playlist);
     }
 
     public UserLogin getByCredentials(String email, String password) {

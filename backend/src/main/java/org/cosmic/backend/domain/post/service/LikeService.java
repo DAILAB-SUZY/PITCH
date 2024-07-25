@@ -10,7 +10,7 @@ import org.cosmic.backend.domain.post.exception.NotFoundLikeException;
 import org.cosmic.backend.domain.post.exception.NotFoundPostException;
 import org.cosmic.backend.domain.post.repository.LikeRepository;
 import org.cosmic.backend.domain.post.repository.PostRepository;
-import org.cosmic.backend.domain.user.repository.UsersRepository;
+import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

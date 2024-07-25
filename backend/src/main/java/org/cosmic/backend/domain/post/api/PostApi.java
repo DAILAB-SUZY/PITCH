@@ -5,10 +5,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.transaction.Transactional;
-import org.cosmic.backend.domain.playList.dto.ArtistDTO;
+import org.cosmic.backend.domain.playList.dto.ArtistDto;
 import org.cosmic.backend.domain.post.dto.Post.*;
 import org.cosmic.backend.domain.post.service.PostService;
-import org.cosmic.backend.domain.user.dto.UserDto;
+import org.cosmic.backend.domain.user.dtos.UserDto;
 import org.cosmic.backend.globals.dto.ErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -183,7 +183,7 @@ public class PostApi {
     }
     )
     @PostMapping("/searchArtist")
-    public List<AlbumDto> searchArtist(@RequestBody ArtistDTO artist) {//postid가져오면
+    public List<AlbumDto> searchArtist(@RequestBody ArtistDto artist) {//postid가져오면
         return postService.searchArtist(artist.getArtistName());
     }
     //아티스트이름으로 찾기

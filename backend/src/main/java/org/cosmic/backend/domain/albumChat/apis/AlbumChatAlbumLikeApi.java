@@ -28,15 +28,15 @@ public class AlbumChatAlbumLikeApi {//각 앨범의 총 좋아요
         @ApiResponse(responseCode = "200",
             description = "Ok",
             content = {
-                    @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = String.class))
+                @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = String.class))
             }),
 
         @ApiResponse(responseCode = "404",
             description = "Not Found AlbumChat",
             content = {
-                    @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorResponse.class))
+                @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class))
             }
         )
     }
@@ -50,50 +50,51 @@ public class AlbumChatAlbumLikeApi {//각 앨범의 총 좋아요
         @ApiResponse(responseCode = "200",
             description = "Ok",
             content = {
-                    @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = String.class))
+                @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = String.class))
             }),
 
         @ApiResponse(responseCode = "404",
             description = "Not Found User or AlbumChat",
             content = {
-                    @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorResponse.class))
+                @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class))
             }
         ),
         @ApiResponse(responseCode = "409",
             description = "Like Already Exists",
             content = {
-                    @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorResponse.class))
+                @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class))
             }
         )
     }
     )
+
     @PostMapping("/create")
-    public AlbumChatAlbumLikeReq albumChatCreateAlbumLike(@RequestBody AlbumChatAlbumLikeDto like) {
-        return likeService.albumChatCreateAlbumLike(like.getUserId(),like.getAlbumChatId());//유저 정보줌으로써 추가
+    public AlbumChatAlbumLikeReq albumChatAlbumLikeCreate(@RequestBody AlbumChatAlbumLikeDto like) {
+        return likeService.albumChatAlbumLikeCreate(like.getUserId(),like.getAlbumChatId());
     }
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200",
-                    description = "Ok",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = String.class))
-                    }
-            ),
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found Like",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class))
-                    }
-            )
+        @ApiResponse(responseCode = "200",
+            description = "Ok",
+            content = {
+                @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = String.class))
+            }
+        ),
+        @ApiResponse(responseCode = "404",
+            description = "Not Found Like",
+            content = {
+                @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class))
+            }
+        )
     })
 
     @PostMapping("/delete")
-    public ResponseEntity<?> deleteAlbumChatAlbumLike(@RequestBody AlbumChatAlbumLikeReq likedto) {
-        likeService.deleteAlbumChatAlbumLike(likedto.getAlbumChatAlbumLikeId());//해당 likeid를 제거
+    public ResponseEntity<?> albumChatAlbumLikeDelete(@RequestBody AlbumChatAlbumLikeReq likedto) {
+        likeService.albumChatAlbumLikeDelete(likedto.getAlbumChatAlbumLikeId());
         return ResponseEntity.ok("성공");
     }
 }

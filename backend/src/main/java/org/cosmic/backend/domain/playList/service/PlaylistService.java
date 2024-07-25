@@ -11,10 +11,9 @@ import org.cosmic.backend.domain.playList.dto.TrackGiveDto;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundArtistException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundTrackException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
-import org.cosmic.backend.domain.playList.exceptions.NotMatchTrackException;
 import org.cosmic.backend.domain.playList.repository.*;
-import org.cosmic.backend.domain.user.domain.User;
-import org.cosmic.backend.domain.user.repository.UsersRepository;
+import org.cosmic.backend.domain.user.domains.User;
+import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

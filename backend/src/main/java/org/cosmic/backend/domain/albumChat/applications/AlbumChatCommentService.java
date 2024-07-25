@@ -1,18 +1,17 @@
 package org.cosmic.backend.domain.albumChat.applications;
 
 import org.cosmic.backend.domain.albumChat.domains.AlbumChatComment;
+import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentCreateReq;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDto;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentResponse;
-import org.cosmic.backend.domain.albumChat.dtos.comment.CreateAlbumChatCommentReq;
-import org.cosmic.backend.domain.albumChat.dtos.comment.UpdateAlbumChatCommentReq;
+import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentUpdateReq;
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatCommentException;
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatException;
 import org.cosmic.backend.domain.albumChat.exceptions.NotMatchAlbumChatException;
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatCommentRepository;
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatRepository;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
-import org.cosmic.backend.domain.post.exception.NotMatchUserException;
-import org.cosmic.backend.domain.user.repository.UsersRepository;
+import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +22,6 @@ import java.util.Map;
 
 @Service
 public class AlbumChatCommentService {
-
     @Autowired
     private AlbumChatRepository albumChatRepository;
     @Autowired
@@ -31,85 +29,75 @@ public class AlbumChatCommentService {
     @Autowired
     private UsersRepository userRepository;
 
-    public List<AlbumChatCommentResponse> getCommentsByAlbumChat(Long albumChatId) {
+    public List<AlbumChatCommentResponse> getCommentsByAlbumChatId(Long albumChatId) {
         List<AlbumChatCommentResponse> comments = new ArrayList<>();
-        if(!albumChatRepository.findById(albumChatId).isPresent()) {
+        if(albumChatRepository.findById(albumChatId).isEmpty()) {
             throw new NotFoundAlbumChatException();
         }
-        else {
-            List<AlbumChatComment> commentList = commentRepository.findByAlbumChat_AlbumChatId(albumChatId).get();
-            for (AlbumChatComment comment : commentList) {
-                AlbumChatCommentResponse commentReq = new AlbumChatCommentResponse();
-                commentReq.setAlbumChatCommentId(comment.getAlbumChatCommentId());
-                commentReq.setContent(comment.getContent());
-                commentReq.setCreateTime(comment.getUpdateTime());
-                commentReq.setUserId(comment.getUser().getUserId());
-                comments.add(commentReq);
-            }
-            return comments;
+        List<AlbumChatComment> commentList = commentRepository.findByAlbumChat_AlbumChatId(albumChatId).get();
+        for (AlbumChatComment comment : commentList) {
+            AlbumChatCommentResponse commentReq = new AlbumChatCommentResponse(
+                comment.getUser().getUserId(),comment.getAlbumChatCommentId(),
+                comment.getContent(),comment.getUpdateTime()
+            );
+            comments.add(commentReq);
         }
+        return comments;
     }
 
-    public AlbumChatCommentDto createAlbumChatComment(CreateAlbumChatCommentReq comment) {//누가 쓴 comment인지 나와야하기 때문에 userId필요
-        AlbumChatComment commentEntity=new AlbumChatComment();
+    public AlbumChatCommentDto albumChatCommentCreate(AlbumChatCommentCreateReq comment) {
 
-        if(!albumChatRepository.findById(comment.getAlbumChatId()).isPresent()) {
+        if(albumChatRepository.findById(comment.getAlbumChatId()).isEmpty()) {
             throw new NotFoundAlbumChatException();
         }
-        else if(!userRepository.findById(comment.getUserId()).isPresent())
+        if(userRepository.findById(comment.getUserId()).isEmpty())
         {
             throw new NotFoundUserException();
         }
-        else{
-            commentEntity.setContent(comment.getContent());
-            commentEntity.setUpdateTime(Instant.now());
-            commentEntity.setUser(userRepository.findByUserId(comment.getUserId()).get());
-            commentEntity.setAlbumChatReplies(null);
-            commentEntity.setAlbumChat(albumChatRepository.findById(comment.getAlbumChatId()).get());
-            commentRepository.save(commentEntity);
-            AlbumChatCommentDto commentDto=new AlbumChatCommentDto();
-            commentDto.setAlbumChatCommentId(commentEntity.getAlbumChatCommentId());
-            return commentDto;
-        }
+        AlbumChatComment commentEntity=new AlbumChatComment(comment.getContent(),
+            Instant.now(),userRepository.findByUserId(comment.getUserId()).get(),
+        null,albumChatRepository.findById(comment.getAlbumChatId()).get());
+        commentRepository.save(commentEntity);
+        AlbumChatCommentDto commentDto=new AlbumChatCommentDto();
+        commentDto.setAlbumChatCommentId(commentEntity.getAlbumChatCommentId());
+        return commentDto;
     }
 
-    public void updateAlbumChatComment(UpdateAlbumChatCommentReq comment) {
-        if(!commentRepository.findById(comment.getAlbumChatCommentId()).isPresent()) {
+    public void albumChatCommentUpdate(AlbumChatCommentUpdateReq comment) {
+        if(commentRepository.findById(comment.getAlbumChatCommentId()).isEmpty()) {
             throw new NotFoundAlbumChatCommentException();
         }
-        else {
-            AlbumChatComment comment1 = commentRepository.findByAlbumChatCommentId(comment.getAlbumChatCommentId());
-            if(comment1.getAlbumChat().getAlbumChatId()!=comment.getAlbumChatId()) {
-                throw new NotMatchAlbumChatException();
-            }
-            else if(!userRepository.findById(comment.getUserId()).isPresent())
-            {
-                throw new NotMatchUserException();
-            }
-            comment1.setContent(comment.getContent());
-            commentRepository.save(comment1);//새로생기는지 업데이트만 되는지 만약 새로생기는거면업데이트만 되게만들어야함.
+        AlbumChatComment comment1 = commentRepository.findByAlbumChatCommentId(comment.getAlbumChatCommentId());
+        if(!comment1.getAlbumChat().getAlbumChatId().equals(comment.getAlbumChatId())) {
+            throw new NotMatchAlbumChatException();
         }
+        if(userRepository.findById(comment.getUserId()).isEmpty())
+        {
+            throw new NotFoundUserException();
+        }
+        comment1.setContent(comment.getContent());
+        commentRepository.save(comment1);
+
     }
 
-    public void deleteAlbumChatComment(AlbumChatCommentDto commentdto) {
-        if(!commentRepository.findById(commentdto.getAlbumChatCommentId()).isPresent()) {
+    public void albumChatCommentDelete(AlbumChatCommentDto commentdto) {
+        if(commentRepository.findById(commentdto.getAlbumChatCommentId()).isEmpty()) {
             throw new NotFoundAlbumChatCommentException();
         }
-        else{
-            commentRepository.deleteById(commentdto.getAlbumChatCommentId());
-        }
+        commentRepository.deleteById(commentdto.getAlbumChatCommentId());
     }
 
-    public List<AlbumChatCommentResponse> sortedAlbumChatComment(List<Map.Entry<AlbumChatComment, Long>> sortedComments) {
+    public List<AlbumChatCommentResponse> albumChatCommentSorted(List<Map.Entry<AlbumChatComment, Long>> sortedComments) {
 
+        System.out.println("********hi10");
         List<AlbumChatCommentResponse> comments = new ArrayList<>();
-
         for (Map.Entry<AlbumChatComment, Long> entry : sortedComments) {
-            AlbumChatCommentResponse commentReq = new AlbumChatCommentResponse();
-            commentReq.setAlbumChatCommentId(entry.getKey().getAlbumChatCommentId());
-            commentReq.setContent(entry.getKey().getContent());
-            commentReq.setCreateTime(entry.getKey().getUpdateTime());
-            commentReq.setUserId(entry.getKey().getUser().getUserId());
+            System.out.println("********hi11"+entry);
+            AlbumChatCommentResponse commentReq = new AlbumChatCommentResponse(
+                entry.getKey().getUser().getUserId(),entry.getKey().getAlbumChatCommentId(),
+                entry.getKey().getContent(),entry.getKey().getUpdateTime()
+            );
+            System.out.println("********hi12");
             comments.add(commentReq);
         }
         return comments;
