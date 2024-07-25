@@ -1,27 +1,27 @@
 package org.cosmic.backend.domains.playlist;
 
 import lombok.extern.log4j.Log4j2;
-import org.cosmic.backend.domain.auth.dto.UserLogin;
-import org.cosmic.backend.domain.musicDNA.domain.MusicDna;
-import org.cosmic.backend.domain.musicDNA.dto.DNADetail;
-import org.cosmic.backend.domain.musicDNA.dto.DnaDTO;
-import org.cosmic.backend.domain.musicDNA.repository.EmotionRepository;
+import org.cosmic.backend.domain.auth.dtos.UserLogin;
+import org.cosmic.backend.domain.musicDna.domains.MusicDna;
+import org.cosmic.backend.domain.musicDna.dtos.DnaDetail;
+import org.cosmic.backend.domain.musicDna.dtos.DnaDto;
+import org.cosmic.backend.domain.musicDna.repositorys.EmotionRepository;
 import org.cosmic.backend.domain.playList.domain.Album;
 import org.cosmic.backend.domain.playList.domain.Artist;
 import org.cosmic.backend.domain.playList.domain.Playlist;
 import org.cosmic.backend.domain.playList.domain.Track;
-import org.cosmic.backend.domain.playList.dto.ArtistDTO;
-import org.cosmic.backend.domain.playList.dto.PlaylistDTO;
+import org.cosmic.backend.domain.playList.dto.ArtistDto;
 import org.cosmic.backend.domain.playList.dto.PlaylistDetail;
-import org.cosmic.backend.domain.playList.dto.TrackDTO;
+import org.cosmic.backend.domain.playList.dto.PlaylistDto;
+import org.cosmic.backend.domain.playList.dto.TrackDto;
 import org.cosmic.backend.domain.playList.repository.AlbumRepository;
 import org.cosmic.backend.domain.playList.repository.ArtistRepository;
 import org.cosmic.backend.domain.playList.repository.PlaylistRepository;
 import org.cosmic.backend.domain.playList.repository.TrackRepository;
-import org.cosmic.backend.domain.user.domain.Email;
-import org.cosmic.backend.domain.user.domain.User;
-import org.cosmic.backend.domain.user.repository.EmailRepository;
-import org.cosmic.backend.domain.user.repository.UsersRepository;
+import org.cosmic.backend.domain.user.domains.Email;
+import org.cosmic.backend.domain.user.domains.User;
+import org.cosmic.backend.domain.user.repositorys.EmailRepository;
+import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.cosmic.backend.domains.BaseSetting;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,13 +86,13 @@ public class CreatePlaylistTest extends BaseSetting {
                 .password(encoder.encode("12345678"))
                 .build());
 
-        DnaDTO dnaDTO=new DnaDTO();
+        DnaDto dnaDTO=new DnaDto();
         dnaDTO.setKey(user.getUserId());
-        dnaDTO.setDna(Arrays.asList(new DNADetail(1L),new DNADetail(2L),new DNADetail(3L),new DNADetail(4L)));
+        dnaDTO.setDna(Arrays.asList(new DnaDetail(1L),new DnaDetail(2L),new DnaDetail(3L),new DnaDetail(4L)));
 
         mockMvc.perform(post("/api/dna/save")
                 .contentType("application/json")
-                .content(mapper.writeValueAsString(DnaDTO.builder()
+                .content(mapper.writeValueAsString(DnaDto.builder()
                         .key(dnaDTO.getKey())
                         .dna(dnaDTO.getDna())
                         .build()
@@ -138,14 +138,14 @@ public class CreatePlaylistTest extends BaseSetting {
         MvcResult result = resultActions.andReturn();
         String validToken = mapper.readValue(result.getResponse().getContentAsString(), UserLogin.class).getToken();
 
-        PlaylistDTO playlistdto=new PlaylistDTO();
+        PlaylistDto playlistdto=new PlaylistDto();
         playlistdto.setId(user.getUserId());
         playlistdto.setPlaylist(Arrays.asList(new PlaylistDetail(track.getTrackId())));
 
         mockMvc.perform(post("/api/playlist/save")
                 .header("Authorization", "Bearer " + validToken)
                 .contentType("application/json")
-                .content(mapper.writeValueAsString(PlaylistDTO.builder()
+                .content(mapper.writeValueAsString(PlaylistDto.builder()
                         .id(playlistdto.getId())
                         .playlist(playlistdto.getPlaylist())
                         .build()
@@ -178,14 +178,14 @@ public class CreatePlaylistTest extends BaseSetting {
                 .signupDate(Instant.now())
                 .build());
 
-        DnaDTO dnaDTO=new DnaDTO();
+        DnaDto dnaDTO=new DnaDto();
         dnaDTO.setKey(user.getUserId());
-        dnaDTO.setDna(Arrays.asList(new DNADetail(1L),new DNADetail(2L),new DNADetail(3L),new DNADetail(4L)));
+        dnaDTO.setDna(Arrays.asList(new DnaDetail(1L),new DnaDetail(2L),new DnaDetail(3L),new DnaDetail(4L)));
 
         System.out.println(user);
         mockMvc.perform(post("/api/dna/save")
                 .contentType("application/json")
-                .content(mapper.writeValueAsString(DnaDTO.builder()
+                .content(mapper.writeValueAsString(DnaDto.builder()
                         .key(dnaDTO.getKey())
                         .dna(dnaDTO.getDna())
                         .build()
@@ -235,7 +235,7 @@ public class CreatePlaylistTest extends BaseSetting {
         mockMvc.perform(post("/api/playlist/Tracksearch")
                     .header("Authorization", "Bearer " + validToken)
                     .contentType("application/json")
-                    .content(mapper.writeValueAsString(TrackDTO.builder()
+                    .content(mapper.writeValueAsString(TrackDto.builder()
                             .trackName(track.getTitle())
                             .build()
                     )))
@@ -245,7 +245,7 @@ public class CreatePlaylistTest extends BaseSetting {
         mockMvc.perform(post("/api/playlist/Artistsearch")
                         .header("Authorization", "Bearer " + validToken)
                         .contentType("application/json")
-                        .content(mapper.writeValueAsString(ArtistDTO.builder()
+                        .content(mapper.writeValueAsString(ArtistDto.builder()
                                 .artistName("비비2")
                                 .build()
                         )))
@@ -279,13 +279,13 @@ public class CreatePlaylistTest extends BaseSetting {
                 .signupDate(Instant.now())
                 .build());
 
-        DnaDTO dnaDTO=new DnaDTO();
+        DnaDto dnaDTO=new DnaDto();
         dnaDTO.setKey(user.getUserId());
-        dnaDTO.setDna(Arrays.asList(new DNADetail(1L),new DNADetail(2L),new DNADetail(3L),new DNADetail(4L)));
+        dnaDTO.setDna(Arrays.asList(new DnaDetail(1L),new DnaDetail(2L),new DnaDetail(3L),new DnaDetail(4L)));
 
         mockMvc.perform(post("/api/dna/save")
                 .contentType("application/json")
-                .content(mapper.writeValueAsString(DnaDTO.builder()
+                .content(mapper.writeValueAsString(DnaDto.builder()
                         .key(dnaDTO.getKey())
                         .dna(dnaDTO.getDna())
                         .build()
@@ -335,7 +335,7 @@ public class CreatePlaylistTest extends BaseSetting {
         mockMvc.perform(post("/api/playlist/Tracksearch")
                         .header("Authorization", "Bearer " + validToken)
                         .contentType("application/json")
-                        .content(mapper.writeValueAsString(TrackDTO.builder()
+                        .content(mapper.writeValueAsString(TrackDto.builder()
                                 .trackName("hi")
                                 .build()
                         )))
@@ -345,7 +345,7 @@ public class CreatePlaylistTest extends BaseSetting {
         mockMvc.perform(post("/api/playlist/Artistsearch")
                         .header("Authorization", "Bearer " + validToken)
                         .contentType("application/json")
-                        .content(mapper.writeValueAsString(ArtistDTO.builder()
+                        .content(mapper.writeValueAsString(ArtistDto.builder()
                                 .artistName("아이")
                                 .build()
                         )))

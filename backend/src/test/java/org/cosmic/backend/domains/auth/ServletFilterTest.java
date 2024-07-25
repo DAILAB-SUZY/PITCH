@@ -2,11 +2,11 @@ package org.cosmic.backend.domains.auth;
 
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.auth.applications.JwtAuthenticationFilter;
-import org.cosmic.backend.domain.auth.dto.UserLogin;
-import org.cosmic.backend.domain.user.domain.Email;
-import org.cosmic.backend.domain.user.domain.User;
-import org.cosmic.backend.domain.user.repository.EmailRepository;
-import org.cosmic.backend.domain.user.repository.UsersRepository;
+import org.cosmic.backend.domain.auth.dtos.UserLogin;
+import org.cosmic.backend.domain.user.domains.Email;
+import org.cosmic.backend.domain.user.domains.User;
+import org.cosmic.backend.domain.user.repositorys.EmailRepository;
+import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;

@@ -1,16 +1,16 @@
 package org.cosmic.backend.domains.bestAlbum;
 
 import lombok.extern.log4j.Log4j2;
-import org.cosmic.backend.domain.auth.dto.UserLogin;
-import org.cosmic.backend.domain.bestAlbum.dto.AlbumDTO;
+import org.cosmic.backend.domain.auth.dtos.UserLogin;
+import org.cosmic.backend.domain.bestAlbum.dtos.AlbumDto;
 import org.cosmic.backend.domain.playList.domain.Album;
 import org.cosmic.backend.domain.playList.domain.Artist;
-import org.cosmic.backend.domain.playList.dto.ArtistDTO;
+import org.cosmic.backend.domain.playList.dto.ArtistDto;
 import org.cosmic.backend.domain.playList.repository.AlbumRepository;
 import org.cosmic.backend.domain.playList.repository.ArtistRepository;
 import org.cosmic.backend.domain.playList.repository.TrackRepository;
-import org.cosmic.backend.domain.user.repository.EmailRepository;
-import org.cosmic.backend.domain.user.repository.UsersRepository;
+import org.cosmic.backend.domain.user.repositorys.EmailRepository;
+import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.cosmic.backend.domains.BaseSetting;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +59,7 @@ public class SearchAlbumTest extends BaseSetting {
         mockMvc.perform(post("/api/bestAlbum/Albumsearch")
                         .header("Authorization", "Bearer " + validToken)
                         .contentType("application/json")
-                        .content(mapper.writeValueAsString(AlbumDTO.builder()
+                        .content(mapper.writeValueAsString(AlbumDto.builder()
                                 .albumName("밤양갱")
                                 .build()
                         )))
@@ -81,7 +81,7 @@ public class SearchAlbumTest extends BaseSetting {
         mockMvc.perform(post("/api/bestAlbum/Artistsearch")
                         .header("Authorization", "Bearer " + validToken)
                         .contentType("application/json")
-                        .content(mapper.writeValueAsString(ArtistDTO.builder()
+                        .content(mapper.writeValueAsString(ArtistDto.builder()
                                 .artistName("비비")
                                 .build()
                         )))

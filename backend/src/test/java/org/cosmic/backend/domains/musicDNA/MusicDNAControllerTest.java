@@ -1,14 +1,14 @@
 package org.cosmic.backend.domains.musicDNA;
 
 import lombok.extern.log4j.Log4j2;
-import org.cosmic.backend.domain.musicDNA.domain.MusicDna;
-import org.cosmic.backend.domain.musicDNA.dto.DNADetail;
-import org.cosmic.backend.domain.musicDNA.dto.DnaDTO;
-import org.cosmic.backend.domain.musicDNA.repository.EmotionRepository;
-import org.cosmic.backend.domain.user.domain.Email;
-import org.cosmic.backend.domain.user.domain.User;
-import org.cosmic.backend.domain.user.repository.EmailRepository;
-import org.cosmic.backend.domain.user.repository.UsersRepository;
+import org.cosmic.backend.domain.musicDna.domains.MusicDna;
+import org.cosmic.backend.domain.musicDna.dtos.DnaDetail;
+import org.cosmic.backend.domain.musicDna.dtos.DnaDto;
+import org.cosmic.backend.domain.musicDna.repositorys.EmotionRepository;
+import org.cosmic.backend.domain.user.domains.Email;
+import org.cosmic.backend.domain.user.domains.User;
+import org.cosmic.backend.domain.user.repositorys.EmailRepository;
+import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.cosmic.backend.domains.BaseSetting;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,13 +79,13 @@ public class MusicDNAControllerTest extends BaseSetting {
                 .password(encoder.encode("12345678"))
                 .build());
 
-        DnaDTO dnaDTO=new DnaDTO();
+        DnaDto dnaDTO=new DnaDto();
         dnaDTO.setKey(user.getUserId());
-        dnaDTO.setDna(Arrays.asList(new DNADetail(1L),new DNADetail(2L),new DNADetail(3L),new DNADetail(4L)));
+        dnaDTO.setDna(Arrays.asList(new DnaDetail(1L),new DnaDetail(2L),new DnaDetail(3L),new DnaDetail(4L)));
 
         mockMvc.perform(post("/api/dna/save")
         .contentType("application/json")
-        .content(mapper.writeValueAsString(DnaDTO.builder()
+        .content(mapper.writeValueAsString(DnaDto.builder()
                 .key(dnaDTO.getKey())
                 .dna(dnaDTO.getDna())
                 .build()
@@ -114,12 +114,12 @@ public class MusicDNAControllerTest extends BaseSetting {
                 .password(encoder.encode("12345678"))
                 .build());
 
-        DnaDTO dnaDTO=new DnaDTO();
+        DnaDto dnaDTO=new DnaDto();
         dnaDTO.setKey(user.getUserId());
-        dnaDTO.setDna(Arrays.asList(new DNADetail(1L),new DNADetail(2L),new DNADetail(3L)));
+        dnaDTO.setDna(Arrays.asList(new DnaDetail(1L),new DnaDetail(2L),new DnaDetail(3L)));
         mockMvc.perform(post("/api/dna/save")
                         .contentType("application/json")
-                        .content(mapper.writeValueAsString(DnaDTO.builder()
+                        .content(mapper.writeValueAsString(DnaDto.builder()
                                 .key(dnaDTO.getKey())
                                 .dna(dnaDTO.getDna())
                                 .build()

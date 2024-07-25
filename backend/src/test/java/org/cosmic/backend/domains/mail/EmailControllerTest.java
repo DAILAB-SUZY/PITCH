@@ -3,7 +3,7 @@ package org.cosmic.backend.domains.mail;
 import com.icegreen.greenmail.util.GreenMailUtil;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import org.cosmic.backend.domain.mail.dto.EmailAddress;
+import org.cosmic.backend.domain.mail.dtos.EmailAddress;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

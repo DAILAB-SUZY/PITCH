@@ -1,8 +1,8 @@
 package org.cosmic.backend.domains.mail;
 
 import lombok.extern.log4j.Log4j2;
-import org.cosmic.backend.domain.mail.dto.VerificationForm;
-import org.cosmic.backend.domain.user.domain.Email;
+import org.cosmic.backend.domain.mail.dtos.VerificationForm;
+import org.cosmic.backend.domain.user.domains.Email;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;

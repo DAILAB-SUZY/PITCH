@@ -1,16 +1,15 @@
-package org.cosmic.backend.domains.favoriteArtist;
+package org.cosmic.backend.domains.albumChat.AlbumChat;
 
 import lombok.extern.log4j.Log4j2;
+import org.cosmic.backend.domain.albumChat.domains.AlbumChat;
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatRepository;
 import org.cosmic.backend.domain.auth.dtos.UserLogin;
-import org.cosmic.backend.domain.favoriteArtist.dtos.FavoriteReq;
 import org.cosmic.backend.domain.playList.domain.Album;
 import org.cosmic.backend.domain.playList.domain.Artist;
-import org.cosmic.backend.domain.playList.domain.Track;
 import org.cosmic.backend.domain.playList.repository.AlbumRepository;
 import org.cosmic.backend.domain.playList.repository.ArtistRepository;
 import org.cosmic.backend.domain.playList.repository.TrackRepository;
-import org.cosmic.backend.domain.user.domains.User;
+import org.cosmic.backend.domain.post.dto.Post.AlbumDto;
 import org.cosmic.backend.domain.user.repositorys.EmailRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.cosmic.backend.domains.BaseSetting;
@@ -24,16 +23,15 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.time.Instant;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import java.time.Instant;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @Log4j2
-public class SaveFavoriteArtistTest extends BaseSetting {
+public class OpenAlbumChatTest extends BaseSetting {
     @Autowired
     private MockMvc mockMvc;
     ObjectMapper mapper = new ObjectMapper();
@@ -55,29 +53,50 @@ public class SaveFavoriteArtistTest extends BaseSetting {
 
     @Test
     @Transactional
-    public void saveFavoriteArtistTest() throws Exception {
-        UserLogin userLogin = loginUser("test@example.com", "12345678");
-        String validToken = userLogin.getToken();
+    public void albumChatOpenTest() throws Exception {
+        UserLogin userLogin = loginUser("test@example.com","12345678");
+        String validToken=userLogin.getToken();
         Instant now = Instant.now();
-        User user=getUser();
-        Artist artist = saveArtist("비비");
 
-        Album album = saveAlbum("밤양갱", artist, now, "발라드");
+        Artist artist=saveArtist("비비");
 
-        Track track = saveTrack("밤양갱", album, artist, now, "발라드");
+        Album album=saveAlbum("밤양갱", artist, now, "발라드");
 
-        mockMvc.perform(post("/api/favoriteArtist/save")
+        AlbumChat albumChat= saveAlbumChat("밤양갱", artist, album,now, "발라드");
+
+        mockMvc.perform(post("/api/albumchat/open")
                         .header("Authorization", "Bearer " + validToken)
                         .contentType("application/json")
-                        .content(mapper.writeValueAsString(FavoriteReq.builder()
-                                .albumName(album.getTitle())
-                                .artistName(artist.getArtistName())
-                                .cover(album.getCover())
-                                .trackName(track.getTitle())
-                                .userId(user.getUserId())
+                        .content(mapper.writeValueAsString(AlbumDto.builder()
+                                .albumId(album.getAlbumId())
                                 .build()
                         )))
                 .andDo(print())
                 .andExpect(status().isOk());
+    }
+    //아티스트 또는 앨범으로 찾기
+
+    @Test
+    @Transactional
+    public void albumChatNotOpenTest() throws Exception {
+        UserLogin userLogin = loginUser("test@example.com","12345678");
+        String validToken=userLogin.getToken();
+        Instant now = Instant.now();
+
+        Artist artist=saveArtist("비비");
+
+        Album album=saveAlbum("밤양갱", artist, now, "발라드");
+
+        AlbumChat albumChat= saveAlbumChat("밤양갱", artist, album,now, "발라드");
+
+        mockMvc.perform(post("/api/albumchat/open")
+                        .header("Authorization", "Bearer " + validToken)
+                        .contentType("application/json")
+                        .content(mapper.writeValueAsString(AlbumDto.builder()
+                                .albumId(100L)
+                                .build()
+                        )))
+                .andDo(print())
+                .andExpect(status().isNotFound());
     }
 }

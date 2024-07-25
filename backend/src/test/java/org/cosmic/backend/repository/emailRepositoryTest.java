@@ -1,10 +1,10 @@
 package org.cosmic.backend.repository;
 
 import org.assertj.core.api.Assertions;
-import org.cosmic.backend.domain.user.domain.Email;
-import org.cosmic.backend.domain.user.domain.User;
-import org.cosmic.backend.domain.user.repository.EmailRepository;
-import org.cosmic.backend.domain.user.repository.UsersRepository;
+import org.cosmic.backend.domain.user.domains.Email;
+import org.cosmic.backend.domain.user.domains.User;
+import org.cosmic.backend.domain.user.repositorys.EmailRepository;
+import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.cosmic.backend.testcontainer.RepositoryBaseTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

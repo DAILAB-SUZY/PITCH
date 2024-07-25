@@ -1,19 +1,19 @@
 package org.cosmic.backend.domains.bestAlbum;
 
 import lombok.extern.log4j.Log4j2;
-import org.cosmic.backend.domain.auth.dto.UserLogin;
-import org.cosmic.backend.domain.bestAlbum.dto.BestAlbumDto;
-import org.cosmic.backend.domain.bestAlbum.dto.BestAlbumListDTO;
-import org.cosmic.backend.domain.bestAlbum.dto.BestAlbumDetail;
+import org.cosmic.backend.domain.auth.dtos.UserLogin;
+import org.cosmic.backend.domain.bestAlbum.dtos.BestAlbumDto;
+import org.cosmic.backend.domain.bestAlbum.dtos.BestAlbumListDto;
+import org.cosmic.backend.domain.bestAlbum.dtos.BestAlbumDetail;
 import org.cosmic.backend.domain.playList.domain.Album;
 import org.cosmic.backend.domain.playList.domain.Artist;
 import org.cosmic.backend.domain.playList.repository.AlbumRepository;
 import org.cosmic.backend.domain.playList.repository.ArtistRepository;
 import org.cosmic.backend.domain.playList.repository.TrackRepository;
-import org.cosmic.backend.domain.user.domain.User;
-import org.cosmic.backend.domain.user.dto.UserDto;
-import org.cosmic.backend.domain.user.repository.EmailRepository;
-import org.cosmic.backend.domain.user.repository.UsersRepository;
+import org.cosmic.backend.domain.user.domains.User;
+import org.cosmic.backend.domain.user.dtos.UserDto;
+import org.cosmic.backend.domain.user.repositorys.EmailRepository;
+import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.cosmic.backend.domains.BaseSetting;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +61,7 @@ public class SaveBestAlbumTest extends BaseSetting {
         Album album=saveAlbum("밤양갱", artist, now, "발라드");
         Album album2=saveAlbum("celebrity", artist2, now, "발라드");
 
-        BestAlbumListDTO bestalbumListDTO=new BestAlbumListDTO();
+        BestAlbumListDto bestalbumListDTO=new BestAlbumListDto();
         bestalbumListDTO.setUserId(user.getUserId());
         bestalbumListDTO.setBestalbum(Arrays.asList(new BestAlbumDetail(album.getAlbumId()),new BestAlbumDetail(album2.getAlbumId())));
 
@@ -85,7 +85,7 @@ public class SaveBestAlbumTest extends BaseSetting {
         mockMvc.perform(post("/api/bestAlbum/save")
                         .header("Authorization", "Bearer " + validToken)
                         .contentType("application/json")
-                        .content(mapper.writeValueAsString(BestAlbumListDTO.builder()
+                        .content(mapper.writeValueAsString(BestAlbumListDto.builder()
                                 .userId(bestalbumListDTO.getUserId())
                                 .bestalbum(bestalbumListDTO.getBestalbum())
                                 .build()
@@ -114,7 +114,7 @@ public class SaveBestAlbumTest extends BaseSetting {
         Album album=saveAlbum("밤양갱", artist, now, "발라드");
         Album album2=saveAlbum("celebrity", artist2, now, "발라드");
 
-        BestAlbumListDTO bestalbumListDTO=new BestAlbumListDTO();
+        BestAlbumListDto bestalbumListDTO=new BestAlbumListDto();
         bestalbumListDTO.setUserId(user.getUserId());
         bestalbumListDTO.setBestalbum(Arrays.asList(new BestAlbumDetail(album.getAlbumId()),new BestAlbumDetail(album2.getAlbumId())));
 
@@ -130,7 +130,7 @@ public class SaveBestAlbumTest extends BaseSetting {
         mockMvc.perform(post("/api/bestAlbum/save")
                 .header("Authorization", "Bearer " + validToken)
                 .contentType("application/json")
-                .content(mapper.writeValueAsString(BestAlbumListDTO.builder()
+                .content(mapper.writeValueAsString(BestAlbumListDto.builder()
                         .userId(bestalbumListDTO.getUserId())
                         .bestalbum(bestalbumListDTO.getBestalbum())
                         .build()
