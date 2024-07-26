@@ -44,7 +44,8 @@ public class AlbumChatCommentLikeApi {//댓글 마다의 좋아요
     }
     )
     @PostMapping("/give")
-    public List<AlbumChatCommentLikeResponse> getAlbumChatCommentLikeByAlbumChatCommentId(@RequestBody AlbumChatCommentDto albumChatComment) {//특정 post의 좋아요만 보게해주는
+    public List<AlbumChatCommentLikeResponse> albumChatCommentLikeGetByAlbumChatCommentId
+        (@RequestBody AlbumChatCommentDto albumChatComment) {
         return likeService.getAlbumChatCommentLikeByAlbumChatCommentId(albumChatComment.getAlbumChatCommentId());
     }
 
@@ -74,7 +75,7 @@ public class AlbumChatCommentLikeApi {//댓글 마다의 좋아요
     )
     @PostMapping("/create")
     public AlbumChatCommentLikeIdResponse albumChatCommentLikeCreate(@RequestBody AlbumChatCommentLikeDto like) {
-        return likeService.albumChatCommentLikeCreate(like.getUserId(),like.getAlbumChatCommentId());//유저 정보줌으로써 추가
+        return likeService.albumChatCommentLikeCreate(like.getUserId(),like.getAlbumChatCommentId());
     }
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200",

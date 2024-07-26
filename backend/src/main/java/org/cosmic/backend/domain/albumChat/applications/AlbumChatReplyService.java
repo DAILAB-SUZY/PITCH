@@ -28,7 +28,7 @@ public class AlbumChatReplyService {
     @Autowired
     private AlbumChatCommentRepository commentRepository;
 
-    public List<AlbumChatReplyResponse> getAlbumChatRepliesByCommentId(Long commentId) {
+    public List<AlbumChatReplyResponse> albumChatRepliesGetByCommentId(Long commentId) {
         List<AlbumChatReplyResponse> replies = new ArrayList<>();
         if(commentRepository.findById(commentId).isEmpty()) {
             throw new NotFoundCommentException();

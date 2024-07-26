@@ -1,4 +1,4 @@
-package org.cosmic.backend.domain.playList.services;
+package org.cosmic.backend.domain.playList.applications;
 
 import jakarta.transaction.Transactional;
 import org.cosmic.backend.domain.playList.domains.Artist;
@@ -41,7 +41,7 @@ public class PlaylistService {
             throw new NotFoundUserException();
         }
 
-        List<Playlist_Track> playlistTrack = usersRepository.findByUserId(userId).get().getPlaylist().getPlaylist_track();
+        List<Playlist_Track>playlistTrack=usersRepository.findByUserId(userId).get().getPlaylist().getPlaylist_track();
 
         User user = usersRepository.findByUserId(userId).get();
 
@@ -91,7 +91,7 @@ public class PlaylistService {
 
 
     @Transactional
-    public List<TrackGiveDto> searchArtist (String artist) {
+    public List<TrackGiveDto> artistSearch (String artist) {
         List<TrackGiveDto>trackGiveDtos=new ArrayList<>();
         if(artistRepository.findByArtistName(artist).isEmpty())
         {
@@ -111,7 +111,7 @@ public class PlaylistService {
     }
 
     @Transactional
-    public List<TrackGiveDto> searchTrack (String track) {
+    public List<TrackGiveDto> trackSearch (String track) {
         List<TrackGiveDto>trackGiveDtos=new ArrayList<>();
         if(trackRepository.findByTitle(track).isEmpty())
         {

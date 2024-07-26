@@ -30,7 +30,7 @@ public class AlbumChatCommentLikeService {
         if(albumChatCommentRepository.findById(albumChatCommentId).isEmpty()) {
             throw new NotFoundAlbumChatCommentException();
         }
-        List<AlbumChatCommentLike> likeList=likeRepository.findByAlbumChatComment_AlbumChatCommentId(albumChatCommentId);
+        List<AlbumChatCommentLike>likeList=likeRepository.findByAlbumChatComment_AlbumChatCommentId(albumChatCommentId);
         for(AlbumChatCommentLike like:likeList) {
             Long userId=like.getUser().getUserId();
             String userName=like.getUser().getUsername();

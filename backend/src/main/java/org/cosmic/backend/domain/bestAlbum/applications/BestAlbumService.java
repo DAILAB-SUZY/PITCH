@@ -43,7 +43,7 @@ public class BestAlbumService {
             throw new NotFoundUserException();
         }
         User newuser = usersRepository.findById(userId).get();
-        List<AlbumUser> album_user = albumUserRepository.findByUser_UserId(userId).get();//해당 유저의 모든 album을 가져올 것임
+        List<AlbumUser> album_user = albumUserRepository.findByUser_UserId(userId).get();
 
         for (int i = 0; i < album_user.size(); i++) {
             BestAlbumGiveDto newbestAlbumGiveDto = new BestAlbumGiveDto(album_user.get(i).getAlbum().getAlbumId(),

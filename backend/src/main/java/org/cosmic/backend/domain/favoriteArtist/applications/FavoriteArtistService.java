@@ -71,7 +71,8 @@ public class FavoriteArtistService {
             throw new NotFoundAlbumException();
         }
         albums= albumRepository.findByTitleAndArtist_ArtistId(albumName,artistId).get();
-        List<Track> track=trackRepository.findByAlbum_AlbumIdAndArtist_ArtistId(albums.getAlbumId(),albums.getArtist().getArtistId()).get();
+        List<Track> track=trackRepository.findByAlbum_AlbumIdAndArtist_ArtistId
+            (albums.getAlbumId(),albums.getArtist().getArtistId()).get();
         for(Track track1:track) {
             AlbumData albumData=new AlbumData(track1.getAlbum().getAlbumId(),track1.getTitle());
             albumDataList.add(albumData);
@@ -92,11 +93,13 @@ public class FavoriteArtistService {
         if(usersRepository.findById(favoriteArtist.getUserId()).isEmpty()) {
             throw new NotFoundUserException();
         }
-        if(trackRepository.findByTrackIdAndArtist_ArtistId(favoriteArtist.getTrackId(),favoriteArtist.getArtistId()).isEmpty())
+        if(trackRepository.findByTrackIdAndArtist_ArtistId
+                (favoriteArtist.getTrackId(),favoriteArtist.getArtistId()).isEmpty())
         {
             throw new NotFoundTrackException();
         }
-        if(albumRepository.findByAlbumIdAndArtist_ArtistId(favoriteArtist.getAlbumId(),favoriteArtist.getArtistId()).isEmpty())
+        if(albumRepository.findByAlbumIdAndArtist_ArtistId
+            (favoriteArtist.getAlbumId(),favoriteArtist.getArtistId()).isEmpty())
         {
             throw new NotFoundAlbumException();
         }

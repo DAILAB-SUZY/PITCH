@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.transaction.Transactional;
 import org.cosmic.backend.domain.playList.dtos.*;
-import org.cosmic.backend.domain.playList.services.PlaylistService;
+import org.cosmic.backend.domain.playList.applications.PlaylistService;
 import org.cosmic.backend.domain.user.dtos.UserDto;
 import org.cosmic.backend.globals.dto.ErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,7 +96,7 @@ public class PlaylistApi {
     @PostMapping("/Artistsearch")
     @Transactional
     public List<TrackGiveDto> artistSearch(@RequestBody ArtistDto artist) {
-        return playlistService.searchArtist(artist.getArtistName());
+        return playlistService.artistSearch(artist.getArtistName());
     }
 
 
@@ -121,6 +121,6 @@ public class PlaylistApi {
     @PostMapping("/Tracksearch")
     @Transactional
     public List<TrackGiveDto> trackSearch(@RequestBody TrackDto track) {
-        return playlistService.searchTrack(track.getTrackName());
+        return playlistService.trackSearch(track.getTrackName());
     }
 }

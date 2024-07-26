@@ -87,17 +87,14 @@ public class AlbumChatCommentService {
         commentRepository.deleteById(commentdto.getAlbumChatCommentId());
     }
 
-    public List<AlbumChatCommentResponse> albumChatCommentSorted(List<Map.Entry<AlbumChatComment, Long>> sortedComments) {
+    public List<AlbumChatCommentResponse>albumChatCommentSorted(List<Map.Entry<AlbumChatComment,Long>> sortedComments){
 
-        System.out.println("********hi10");
         List<AlbumChatCommentResponse> comments = new ArrayList<>();
         for (Map.Entry<AlbumChatComment, Long> entry : sortedComments) {
-            System.out.println("********hi11"+entry);
             AlbumChatCommentResponse commentReq = new AlbumChatCommentResponse(
                 entry.getKey().getUser().getUserId(),entry.getKey().getAlbumChatCommentId(),
                 entry.getKey().getContent(),entry.getKey().getUpdateTime()
             );
-            System.out.println("********hi12");
             comments.add(commentReq);
         }
         return comments;

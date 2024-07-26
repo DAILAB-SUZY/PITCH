@@ -43,8 +43,8 @@ public class AlbumChatReplyApi {
     }
     )
     @PostMapping("/give")
-    public List<AlbumChatReplyResponse> getAlbumChatRepliesByCommentId(@RequestBody AlbumChatCommentDto comment) {
-        return replyService.getAlbumChatRepliesByCommentId(comment.getAlbumChatCommentId());
+    public List<AlbumChatReplyResponse> albumChatRepliesGetByCommentId(@RequestBody AlbumChatCommentDto comment) {
+        return replyService.albumChatRepliesGetByCommentId(comment.getAlbumChatCommentId());
     }
 
     @ApiResponses(value = {
