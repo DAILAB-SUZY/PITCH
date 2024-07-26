@@ -9,6 +9,6 @@ public interface AlbumUserRepository extends JpaRepository<AlbumUser,Long>
 {
     Optional<List<AlbumUser>> findByUser_UserId(Long userId);//key로 찾기
     void deleteByUser_UserId(Long albumId);
-    Optional<AlbumUser> findByAlbum_AlbumIdAndUser_UserId(Long albumId, Long userId);
+    Optional<AlbumUser> findByAlbum_AlbumIdAndUser_UserId(Long albumId,Long userId);
 
 }

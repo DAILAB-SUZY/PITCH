@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.transaction.Transactional;
 import org.cosmic.backend.domain.favoriteArtist.applications.FavoriteArtistService;
 import org.cosmic.backend.domain.favoriteArtist.dtos.*;
-import org.cosmic.backend.domain.playList.dto.ArtistDto;
+import org.cosmic.backend.domain.playList.dtos.ArtistDto;
 import org.cosmic.backend.domain.user.dtos.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -126,7 +126,7 @@ public class FavoriteApi {
             }),
 
         @ApiResponse(responseCode = "404",
-            description = "Not Found User",
+            description = "Not Found User Or Track Or Album Or Artist",
             content = {
                 @Content(mediaType = "application/json",
                     schema = @Schema(implementation = ErrorResponse.class))

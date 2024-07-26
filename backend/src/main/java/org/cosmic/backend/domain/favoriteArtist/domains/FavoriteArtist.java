@@ -28,11 +28,12 @@ public class FavoriteArtist {
     @JoinColumn(name="userId")
     private User user;
 
-    public FavoriteArtist(String artistName, String albumName, String cover, String trackName, User user) {
+    public FavoriteArtist(String artistName, String albumName,  String trackName,String cover, User user) {
         this.artistName = artistName;
         this.albumName = albumName;
         this.cover = cover;
         this.trackName = trackName;
+        this.user = user;
     }
 
 }

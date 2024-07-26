@@ -1,6 +1,6 @@
-package org.cosmic.backend.domain.playList.repository;
+package org.cosmic.backend.domain.playList.repositorys;
 
-import org.cosmic.backend.domain.playList.domain.Track;
+import org.cosmic.backend.domain.playList.domains.Track;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -12,5 +12,5 @@ public interface TrackRepository extends JpaRepository<Track,Long> {
     Track findBytrackId(Long trackId);
     Optional<Track> findByTitleAndAlbum_AlbumId(String title, Long albumId);
     Optional<List<Track>>findByAlbum_AlbumIdAndArtist_ArtistId(Long albumId,Long artistId);
-
+    Optional<Track> findByTrackIdAndArtist_ArtistId(Long trackId,Long artistId);
 }

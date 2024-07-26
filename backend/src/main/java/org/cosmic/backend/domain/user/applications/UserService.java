@@ -1,11 +1,10 @@
 package org.cosmic.backend.domain.user.applications;
-import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.auth.applications.TokenProvider;
 import org.cosmic.backend.domain.auth.dtos.UserLogin;
 import org.cosmic.backend.domain.auth.exceptions.CredentialNotMatchException;
-import org.cosmic.backend.domain.playList.domain.Playlist;
-import org.cosmic.backend.domain.playList.repository.PlaylistRepository;
+import org.cosmic.backend.domain.playList.domains.Playlist;
+import org.cosmic.backend.domain.playList.repositorys.PlaylistRepository;
 import org.cosmic.backend.domain.user.domains.Email;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.dtos.JoinRequest;
@@ -63,23 +62,23 @@ public class UserService {
         }
 
         return UserLogin.builder()
-                .refreshToken(tokenProvider.createRefreshToken(user))
-                .token(tokenProvider.create(user))
-                .email(email)
-                .password(user.getPassword())
-                .id(user.getUserId())
-                .build();
+            .refreshToken(tokenProvider.createRefreshToken(user))
+            .token(tokenProvider.create(user))
+            .email(email)
+            .password(user.getPassword())
+            .id(user.getUserId())
+            .build();
     }
 
     private UserLogin getByEmail(String email){
         User user = usersRepository.findById(Long.parseLong(email)).orElseThrow(CredentialNotMatchException::new);
 
         return UserLogin.builder()
-                .refreshToken(tokenProvider.createRefreshToken(user))
-                .token(tokenProvider.create(user))
-                .email(user.getEmail().getEmail())
-                .id(user.getUserId())
-                .build();
+            .refreshToken(tokenProvider.createRefreshToken(user))
+            .token(tokenProvider.create(user))
+            .email(user.getEmail().getEmail())
+            .id(user.getUserId())
+            .build();
     }
 
     public UserLogin getUserByRefreshToken(String refreshToken) {

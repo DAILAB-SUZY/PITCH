@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.transaction.Transactional;
-import org.cosmic.backend.domain.playList.dto.ArtistDto;
+import org.cosmic.backend.domain.playList.dtos.ArtistDto;
 import org.cosmic.backend.domain.post.dto.Post.*;
 import org.cosmic.backend.domain.post.service.PostService;
 import org.cosmic.backend.domain.user.dtos.UserDto;

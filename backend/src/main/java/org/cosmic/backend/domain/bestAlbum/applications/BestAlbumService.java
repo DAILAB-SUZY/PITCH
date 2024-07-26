@@ -4,13 +4,14 @@ import jakarta.transaction.Transactional;
 import org.cosmic.backend.domain.bestAlbum.domains.AlbumUser;
 import org.cosmic.backend.domain.bestAlbum.dtos.AlbumGiveDto;
 import org.cosmic.backend.domain.bestAlbum.dtos.BestAlbumGiveDto;
+import org.cosmic.backend.domain.bestAlbum.exceptions.ExistBestAlbumException;
 import org.cosmic.backend.domain.bestAlbum.exceptions.NotMatchBestAlbumException;
 import org.cosmic.backend.domain.bestAlbum.repositorys.AlbumUserRepository;
-import org.cosmic.backend.domain.playList.domain.*;
+import org.cosmic.backend.domain.playList.domains.*;
 import org.cosmic.backend.domain.bestAlbum.dtos.*;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundArtistException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
-import org.cosmic.backend.domain.playList.repository.*;
+import org.cosmic.backend.domain.playList.repositorys.*;
 import org.cosmic.backend.domain.post.exception.NotFoundAlbumException;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
@@ -18,7 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 @Service
 public class BestAlbumService {
 
@@ -57,6 +61,9 @@ public class BestAlbumService {
         if(albumRepository.findById(albumId).isEmpty()) {
             throw new NotFoundAlbumException();
         }
+        if(albumUserRepository.findByAlbum_AlbumIdAndUser_UserId(albumId,userId).isPresent()) {
+            throw new ExistBestAlbumException();
+        }
         User newuser = usersRepository.findById(userId).get();
         Album album=albumRepository.findById(albumId).get();
         AlbumUser albumUser=new AlbumUser(album,newuser);
@@ -65,24 +72,33 @@ public class BestAlbumService {
 
     @Transactional
     public void save(long userId, List<BestAlbumDetail> bestalbumList) {
-        if(usersRepository.findById(userId).isEmpty()) {
+        if(!usersRepository.findById(userId).isPresent()) {
             throw new NotFoundUserException();
         }
+        List<AlbumUser> albumUsers=albumUserRepository.findByUser_UserId(userId).get();
         albumUserRepository.deleteByUser_UserId(userId);
 
-        for (BestAlbumDetail bestalbumDetail : bestalbumList) {
-            if(!albumRepository.findById(bestalbumDetail.getAlbumId()).isPresent())
+        Set<Long> albumUserIds = new HashSet<>();
+        for (AlbumUser albumUser : albumUsers) {
+            albumUserIds.add(albumUser.getAlbum().getAlbumId());
+        }
+        for(int i=0;i<bestalbumList.size();i++)
+        {
+            if(albumRepository.findById(bestalbumList.get(i).getAlbumId()).isEmpty())
             {
-                throw new NotFoundAlbumException();//해당 앨범이 없는것일때
+                throw new NotFoundAlbumException();
             }
-            if(albumUserRepository.findByAlbum_AlbumIdAndUser_UserId(bestalbumDetail.getAlbumId(),userId).isEmpty())
+            if(!albumUserIds.contains(bestalbumList.get(i).getAlbumId()))
             {
                 throw new NotMatchBestAlbumException();
             }
-            Album album= albumRepository.findById(bestalbumDetail.getAlbumId()).get();
-            AlbumUser album_User=new AlbumUser(album,usersRepository.findById(userId).get());
+            Album album= albumRepository.findById(bestalbumList.get(i).getAlbumId()).get();
+            AlbumUser album_User=new AlbumUser();
+            album_User.setAlbum(album);
+            album_User.setUser(usersRepository.findById(userId).get());
             albumUserRepository.save(album_User);
         }
+
     }
     @Transactional
     public List<AlbumGiveDto> searchArtist (String artist) {//해당 아티스트가 가지고 있는 모든 앨범들의 정보를 줌

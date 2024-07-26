@@ -7,5 +7,6 @@ import java.util.Optional;
 
 public interface FavoriteArtistRepository extends JpaRepository<FavoriteArtist,Long> {
     Optional<FavoriteArtist> findByUser_UserId(Long userId);
+    void deleteByUser_UserId(Long userId);
 
 }

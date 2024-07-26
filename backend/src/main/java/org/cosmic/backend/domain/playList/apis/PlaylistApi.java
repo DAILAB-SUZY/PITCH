@@ -1,13 +1,12 @@
-package org.cosmic.backend.domain.bestAlbum.apis;
+package org.cosmic.backend.domain.playList.apis;
 
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.transaction.Transactional;
-import org.cosmic.backend.domain.bestAlbum.dtos.*;
-import org.cosmic.backend.domain.bestAlbum.applications.BestAlbumService;
-import org.cosmic.backend.domain.playList.dtos.ArtistDto;
+import org.cosmic.backend.domain.playList.dtos.*;
+import org.cosmic.backend.domain.playList.services.PlaylistService;
 import org.cosmic.backend.domain.user.dtos.UserDto;
 import org.cosmic.backend.globals.dto.ErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/bestAlbum")
-public class BestAlbumApi {
+@RequestMapping("/api/playlist")
+public class PlaylistApi {
+
     @Autowired
-    private BestAlbumService bestAlbumService;
+    private PlaylistService playlistService;
+
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200",
             description = "Ok",
@@ -41,10 +42,11 @@ public class BestAlbumApi {
         )
     }
     )
+
     @Transactional
     @PostMapping("/give")
-    public List<BestAlbumGiveDto> bestAlbumGive(@RequestBody UserDto user) {
-        return bestAlbumService.open(user.getUserId());
+    public List<PlaylistGiveDto> dataGive(@RequestBody UserDto user) {
+       return playlistService.open(user.getUserId());
     }
 
     @ApiResponses(value = {
@@ -56,25 +58,20 @@ public class BestAlbumApi {
             }),
 
         @ApiResponse(responseCode = "404",
-            description = "Not Found User or Album",
+            description = "Not Found User or Track",
             content = {
                 @Content(mediaType = "application/json",
                     schema = @Schema(implementation = ErrorResponse.class))
             }
-        ),
-            @ApiResponse(responseCode = "409",
-                description = "Exist BestAlbum",
-                content = {
-                    @Content(mediaType = "application/json",
-                        schema = @Schema(implementation = ErrorResponse.class))
-                }
-            )
+        )
     }
     )
+
+    @PostMapping("/save")//수정한 플레이리스트를 여기 저장
     @Transactional
-    @PostMapping("/add")
-    public ResponseEntity<?> bestAlbumAdd(@RequestBody BestAlbumDto bestAlbumDto) {
-        bestAlbumService.add(bestAlbumDto.getUserId(),bestAlbumDto.getAlbumId());
+    public ResponseEntity<?> savePlaylistData(@RequestBody PlaylistDto playlist) {
+        Long Key= playlist.getId();
+        playlistService.save(Key,playlist.getPlaylist());
         return ResponseEntity.ok("성공");
     }
 
@@ -87,40 +84,6 @@ public class BestAlbumApi {
             }),
 
         @ApiResponse(responseCode = "400",
-            description = "Not Match BestAlbum",
-            content = {
-                @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = ErrorResponse.class))
-            }
-        ),
-
-        @ApiResponse(responseCode = "404",
-            description = "Not Found User or Album",
-            content = {
-                @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = ErrorResponse.class))
-            }
-        )
-    }
-    )
-    @Transactional
-    @PostMapping("/save")
-    public ResponseEntity<?> bestAlbumSave(@RequestBody BestAlbumListDto bestAlbumlistDto) {
-        bestAlbumService.save(bestAlbumlistDto.getUserId(),bestAlbumlistDto.getBestalbum());
-        return ResponseEntity.ok("성공");
-
-    }
-    //앨범 위치 조정
-
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200",
-            description = "Ok",
-            content = {
-                @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = String.class))
-            }),
-
-        @ApiResponse(responseCode = "404",
             description = "Not Match Artist Name",
             content = {
                 @Content(mediaType = "application/json",
@@ -131,9 +94,12 @@ public class BestAlbumApi {
     )
 
     @PostMapping("/Artistsearch")
-    public List<AlbumGiveDto> artistSearch(@RequestBody ArtistDto artist) {
-        return bestAlbumService.searchArtist(artist.getArtistName());
+    @Transactional
+    public List<TrackGiveDto> artistSearch(@RequestBody ArtistDto artist) {
+        return playlistService.searchArtist(artist.getArtistName());
     }
+
+
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200",
             description = "Ok",
@@ -143,7 +109,7 @@ public class BestAlbumApi {
             }),
 
         @ApiResponse(responseCode = "404",
-            description = "Not Match Album Title",
+            description = "Not Match Track Title",
             content = {
                 @Content(mediaType = "application/json",
                     schema = @Schema(implementation = ErrorResponse.class))
@@ -152,9 +118,9 @@ public class BestAlbumApi {
     }
     )
 
-    @PostMapping("/Albumsearch")
-    public List<AlbumGiveDto> albumSearch(@RequestBody AlbumDto album) {
-        return bestAlbumService.searchAlbum(album.getAlbumName());
+    @PostMapping("/Tracksearch")
+    @Transactional
+    public List<TrackGiveDto> trackSearch(@RequestBody TrackDto track) {
+        return playlistService.searchTrack(track.getTrackName());
     }
-    //앨범 찾기 앨범이름
 }

@@ -1,12 +1,12 @@
 package org.cosmic.backend.domain.post.service;
 
-import org.cosmic.backend.domain.playList.domain.Album;
-import org.cosmic.backend.domain.playList.domain.Artist;
+import org.cosmic.backend.domain.playList.domains.Album;
+import org.cosmic.backend.domain.playList.domains.Artist;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundArtistException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.playList.exceptions.NotMatchAlbumException;
-import org.cosmic.backend.domain.playList.repository.AlbumRepository;
-import org.cosmic.backend.domain.playList.repository.ArtistRepository;
+import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
+import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
 import org.cosmic.backend.domain.post.dto.Post.*;
 
 import org.cosmic.backend.domain.post.entity.Post;

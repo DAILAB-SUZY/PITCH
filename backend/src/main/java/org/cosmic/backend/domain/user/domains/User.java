@@ -7,7 +7,7 @@ import org.cosmic.backend.domain.musicDna.domains.User_Dna;
 import org.cosmic.backend.domain.post.entity.Comment;
 import org.cosmic.backend.domain.post.entity.Like;
 import org.cosmic.backend.domain.post.entity.Post;
-import org.cosmic.backend.domain.playList.domain.Playlist;
+import org.cosmic.backend.domain.playList.domains.Playlist;
 
 import java.time.Instant;
 import java.util.ArrayList;

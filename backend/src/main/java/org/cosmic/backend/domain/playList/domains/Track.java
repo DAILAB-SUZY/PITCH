@@ -1,4 +1,4 @@
-package org.cosmic.backend.domain.playList.domain;
+package org.cosmic.backend.domain.playList.domains;
 
 
 import jakarta.persistence.*;
@@ -8,7 +8,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 
 @Data

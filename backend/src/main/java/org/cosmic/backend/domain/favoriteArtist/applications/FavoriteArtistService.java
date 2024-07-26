@@ -3,15 +3,15 @@ package org.cosmic.backend.domain.favoriteArtist.applications;
 import org.cosmic.backend.domain.favoriteArtist.domains.FavoriteArtist;
 import org.cosmic.backend.domain.favoriteArtist.dtos.*;
 import org.cosmic.backend.domain.favoriteArtist.repositorys.FavoriteArtistRepository;
-import org.cosmic.backend.domain.playList.domain.Album;
-import org.cosmic.backend.domain.playList.domain.Artist;
-import org.cosmic.backend.domain.playList.domain.Track;
+import org.cosmic.backend.domain.playList.domains.Album;
+import org.cosmic.backend.domain.playList.domains.Artist;
+import org.cosmic.backend.domain.playList.domains.Track;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundArtistException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundTrackException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
-import org.cosmic.backend.domain.playList.repository.AlbumRepository;
-import org.cosmic.backend.domain.playList.repository.ArtistRepository;
-import org.cosmic.backend.domain.playList.repository.TrackRepository;
+import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
+import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
+import org.cosmic.backend.domain.playList.repositorys.TrackRepository;
 import org.cosmic.backend.domain.post.exception.NotFoundAlbumException;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
@@ -55,7 +55,7 @@ public class FavoriteArtistService {
             List<Album> album=albumRepository.findAllByArtist_ArtistId(artist.getArtistId());
             for(Album album1:album) {
                 ArtistData artistData=new ArtistData(artist.getArtistId(),
-                    artist.getArtistName(),album1.getCreatedDate(),album1.getTitle());
+                        album1.getTitle(),album1.getCover(),album1.getCreatedDate(),artistName);
                 artistDataList.add(artistData);
             }
         }
@@ -92,9 +92,22 @@ public class FavoriteArtistService {
         if(usersRepository.findById(favoriteArtist.getUserId()).isEmpty()) {
             throw new NotFoundUserException();
         }
+        if(trackRepository.findByTrackIdAndArtist_ArtistId(favoriteArtist.getTrackId(),favoriteArtist.getArtistId()).isEmpty())
+        {
+            throw new NotFoundTrackException();
+        }
+        if(albumRepository.findByAlbumIdAndArtist_ArtistId(favoriteArtist.getAlbumId(),favoriteArtist.getArtistId()).isEmpty())
+        {
+            throw new NotFoundAlbumException();
+        }
         User user=usersRepository.findByUserId(favoriteArtist.getUserId()).get();
-        FavoriteArtist favoriteArtist1=new FavoriteArtist(favoriteArtist.getArtistName(),favoriteArtist.getAlbumName(),
-            favoriteArtist.getTrackName(),favoriteArtist.getCover(),user);
+        favoriteArtistRepository.deleteByUser_UserId(user.getUserId());
+        System.out.println(favoriteArtistRepository.findByUser_UserId(user.getUserId()));
+        FavoriteArtist favoriteArtist1=new FavoriteArtist(
+            artistRepository.findById(favoriteArtist.getArtistId()).get().getArtistName(),
+            albumRepository.findById(favoriteArtist.getAlbumId()).get().getTitle(),
+            trackRepository.findById(favoriteArtist.getTrackId()).get().getTitle(),
+            favoriteArtist.getCover(),user);
         favoriteArtistRepository.save(favoriteArtist1);
     }
 }

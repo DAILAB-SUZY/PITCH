@@ -1,7 +1,7 @@
 package org.cosmic.backend.domain.albumChat.domains;
 import jakarta.persistence.*;
 import lombok.*;
-import org.cosmic.backend.domain.playList.domain.Album;
+import org.cosmic.backend.domain.playList.domains.Album;
 
 import java.time.Instant;
 import java.util.List;

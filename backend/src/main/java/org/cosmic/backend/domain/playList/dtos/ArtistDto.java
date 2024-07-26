@@ -1,4 +1,4 @@
-package org.cosmic.backend.domain.playList.dto;
+package org.cosmic.backend.domain.playList.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

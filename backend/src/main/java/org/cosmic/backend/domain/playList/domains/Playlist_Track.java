@@ -1,4 +1,4 @@
-package org.cosmic.backend.domain.playList.domain;
+package org.cosmic.backend.domain.playList.domains;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

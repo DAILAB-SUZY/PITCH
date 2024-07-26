@@ -15,10 +15,11 @@ public class ArtistData {
     private String artistName;
     private Instant time;
 
-    public ArtistData(Long artistId, String albumName,Instant time, String cover ) {
+    public ArtistData(Long artistId, String albumName,String cover,Instant time, String artistName ) {
         this.artistId = artistId;
         this.albumName = albumName;
         this.cover = cover;
         this.time = time;
+        this.artistName = artistName;
     }
 }
