@@ -1,14 +1,13 @@
 package org.cosmic.backend.domains.albumPost.Comment;
 
 import lombok.extern.log4j.Log4j2;
-import org.cosmic.backend.domain.albumChat.domains.AlbumChat;
 import org.cosmic.backend.domain.auth.dtos.UserLogin;
-import org.cosmic.backend.domain.playList.domain.Album;
-import org.cosmic.backend.domain.playList.domain.Artist;
-import org.cosmic.backend.domain.playList.domain.Track;
-import org.cosmic.backend.domain.playList.repository.AlbumRepository;
-import org.cosmic.backend.domain.playList.repository.ArtistRepository;
-import org.cosmic.backend.domain.playList.repository.TrackRepository;
+import org.cosmic.backend.domain.playList.domains.Album;
+import org.cosmic.backend.domain.playList.domains.Artist;
+import org.cosmic.backend.domain.playList.domains.Track;
+import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
+import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
+import org.cosmic.backend.domain.playList.repositorys.TrackRepository;
 import org.cosmic.backend.domain.post.dto.Comment.CommentDto;
 import org.cosmic.backend.domain.post.dto.Comment.CreateCommentReq;
 import org.cosmic.backend.domain.post.dto.Post.CreatePost;

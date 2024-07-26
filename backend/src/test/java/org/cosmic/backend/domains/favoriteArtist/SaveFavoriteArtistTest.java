@@ -4,12 +4,12 @@ import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatRepository;
 import org.cosmic.backend.domain.auth.dtos.UserLogin;
 import org.cosmic.backend.domain.favoriteArtist.dtos.FavoriteReq;
-import org.cosmic.backend.domain.playList.domain.Album;
-import org.cosmic.backend.domain.playList.domain.Artist;
-import org.cosmic.backend.domain.playList.domain.Track;
-import org.cosmic.backend.domain.playList.repository.AlbumRepository;
-import org.cosmic.backend.domain.playList.repository.ArtistRepository;
-import org.cosmic.backend.domain.playList.repository.TrackRepository;
+import org.cosmic.backend.domain.playList.domains.Album;
+import org.cosmic.backend.domain.playList.domains.Artist;
+import org.cosmic.backend.domain.playList.domains.Track;
+import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
+import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
+import org.cosmic.backend.domain.playList.repositorys.TrackRepository;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.EmailRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
@@ -55,7 +55,7 @@ public class SaveFavoriteArtistTest extends BaseSetting {
 
     @Test
     @Transactional
-    public void saveFavoriteArtistTest() throws Exception {
+    public void favoriteArtistSaveTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com", "12345678");
         String validToken = userLogin.getToken();
         Instant now = Instant.now();
@@ -67,17 +67,17 @@ public class SaveFavoriteArtistTest extends BaseSetting {
         Track track = saveTrack("밤양갱", album, artist, now, "발라드");
 
         mockMvc.perform(post("/api/favoriteArtist/save")
-                        .header("Authorization", "Bearer " + validToken)
-                        .contentType("application/json")
-                        .content(mapper.writeValueAsString(FavoriteReq.builder()
-                                .albumName(album.getTitle())
-                                .artistName(artist.getArtistName())
-                                .cover(album.getCover())
-                                .trackName(track.getTitle())
-                                .userId(user.getUserId())
-                                .build()
-                        )))
-                .andDo(print())
-                .andExpect(status().isOk());
+                .header("Authorization", "Bearer " + validToken)
+                .contentType("application/json")
+                .content(mapper.writeValueAsString(FavoriteReq.builder()
+                    .albumId(album.getAlbumId())
+                    .artistId(artist.getArtistId())
+                    .cover(album.getCover())
+                    .trackId(track.getTrackId())
+                    .userId(user.getUserId())
+                    .build()
+                )))
+            .andDo(print())
+            .andExpect(status().isOk());
     }
 }

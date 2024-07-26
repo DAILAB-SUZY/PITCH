@@ -22,7 +22,8 @@ public class JDBCTests {
 
     @Test
     public void testConnection() {
-        try (Connection con = DriverManager.getConnection("jdbc:postgresql://localhost:9000/pitch", "myuser", "secret")) {
+        try (Connection con = DriverManager.getConnection("jdbc:postgresql://localhost:9000/pitch",
+            "myuser", "secret")) {
             log.info(con);
         } catch (Exception e) {
             fail(e.getMessage());

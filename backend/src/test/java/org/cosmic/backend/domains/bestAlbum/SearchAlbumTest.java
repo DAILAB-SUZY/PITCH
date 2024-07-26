@@ -3,12 +3,12 @@ package org.cosmic.backend.domains.bestAlbum;
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.auth.dtos.UserLogin;
 import org.cosmic.backend.domain.bestAlbum.dtos.AlbumDto;
-import org.cosmic.backend.domain.playList.domain.Album;
-import org.cosmic.backend.domain.playList.domain.Artist;
-import org.cosmic.backend.domain.playList.dto.ArtistDto;
-import org.cosmic.backend.domain.playList.repository.AlbumRepository;
-import org.cosmic.backend.domain.playList.repository.ArtistRepository;
-import org.cosmic.backend.domain.playList.repository.TrackRepository;
+import org.cosmic.backend.domain.playList.domains.Album;
+import org.cosmic.backend.domain.playList.domains.Artist;
+import org.cosmic.backend.domain.playList.dtos.ArtistDto;
+import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
+import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
+import org.cosmic.backend.domain.playList.repositorys.TrackRepository;
 import org.cosmic.backend.domain.user.repositorys.EmailRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.cosmic.backend.domains.BaseSetting;
@@ -47,7 +47,7 @@ public class SearchAlbumTest extends BaseSetting {
     ObjectMapper mapper = new ObjectMapper();
     @Test
     @Transactional
-    public void searchAlbumNameTest() throws Exception {
+    public void albumNameSearchTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
         Instant now = Instant.now();
@@ -57,19 +57,19 @@ public class SearchAlbumTest extends BaseSetting {
         Album album=saveAlbum("밤양갱", artist, now, "발라드");
 
         mockMvc.perform(post("/api/bestAlbum/Albumsearch")
-                        .header("Authorization", "Bearer " + validToken)
-                        .contentType("application/json")
-                        .content(mapper.writeValueAsString(AlbumDto.builder()
-                                .albumName("밤양갱")
-                                .build()
-                        )))
-                .andDo(print())
-                .andExpect(status().isOk());
+                .header("Authorization", "Bearer " + validToken)
+                .contentType("application/json")
+                .content(mapper.writeValueAsString(AlbumDto.builder()
+                    .albumName("밤양갱")
+                    .build()
+                )))
+            .andDo(print())
+            .andExpect(status().isOk());
     }
 
     @Test
     @Transactional
-    public void searchArtistNameTest() throws Exception {
+    public void artistNameSearchTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
         Instant now = Instant.now();
@@ -79,13 +79,13 @@ public class SearchAlbumTest extends BaseSetting {
         Album album=saveAlbum("밤양갱", artist, now, "발라드");
 
         mockMvc.perform(post("/api/bestAlbum/Artistsearch")
-                        .header("Authorization", "Bearer " + validToken)
-                        .contentType("application/json")
-                        .content(mapper.writeValueAsString(ArtistDto.builder()
-                                .artistName("비비")
-                                .build()
-                        )))
-                .andDo(print())
-                .andExpect(status().isOk());
+                .header("Authorization", "Bearer " + validToken)
+                .contentType("application/json")
+                .content(mapper.writeValueAsString(ArtistDto.builder()
+                    .artistName("비비")
+                    .build()
+                )))
+            .andDo(print())
+            .andExpect(status().isOk());
     }
 }

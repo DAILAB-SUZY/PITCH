@@ -1,18 +1,17 @@
 package org.cosmic.backend.domains.favoriteArtist;
 
 import lombok.extern.log4j.Log4j2;
-import org.cosmic.backend.domain.albumChat.domains.AlbumChat;
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatRepository;
 import org.cosmic.backend.domain.auth.dtos.UserLogin;
 import org.cosmic.backend.domain.favoriteArtist.dtos.AlbumRequest;
 import org.cosmic.backend.domain.favoriteArtist.dtos.TrackRequest;
-import org.cosmic.backend.domain.playList.domain.Album;
-import org.cosmic.backend.domain.playList.domain.Artist;
-import org.cosmic.backend.domain.playList.domain.Track;
-import org.cosmic.backend.domain.playList.dto.ArtistDto;
-import org.cosmic.backend.domain.playList.repository.AlbumRepository;
-import org.cosmic.backend.domain.playList.repository.ArtistRepository;
-import org.cosmic.backend.domain.playList.repository.TrackRepository;
+import org.cosmic.backend.domain.playList.domains.Album;
+import org.cosmic.backend.domain.playList.domains.Artist;
+import org.cosmic.backend.domain.playList.domains.Track;
+import org.cosmic.backend.domain.playList.dtos.ArtistDto;
+import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
+import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
+import org.cosmic.backend.domain.playList.repositorys.TrackRepository;
 import org.cosmic.backend.domain.user.repositorys.EmailRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.cosmic.backend.domains.BaseSetting;
@@ -57,7 +56,7 @@ public class SearchFavoriteArtistTest extends BaseSetting {
 
     @Test
     @Transactional
-    public void matchArtistSearchTest() throws Exception {
+    public void artistSearchMatchTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
         Instant now = Instant.now();
@@ -69,14 +68,14 @@ public class SearchFavoriteArtistTest extends BaseSetting {
         Track track=saveTrack("밤양갱",album,artist,now,"발라드");
 
         mockMvc.perform(post("/api/favoriteArtist/searchartist")
-                        .header("Authorization", "Bearer " + validToken)
-                        .contentType("application/json")
-                        .content(mapper.writeValueAsString(ArtistDto.builder()
-                                .artistName(artist.getArtistName())
-                                .build()
-                        )))
-                .andDo(print())
-                .andExpect(status().isOk());
+                .header("Authorization", "Bearer " + validToken)
+                .contentType("application/json")
+                .content(mapper.writeValueAsString(ArtistDto.builder()
+                    .artistName(artist.getArtistName())
+                    .build()
+                )))
+            .andDo(print())
+            .andExpect(status().isOk());
     }
     @Test
     @Transactional
@@ -92,18 +91,18 @@ public class SearchFavoriteArtistTest extends BaseSetting {
         Track track=saveTrack("밤양갱",album,artist,now,"발라드");
 
         mockMvc.perform(post("/api/favoriteArtist/searchartist")
-                        .header("Authorization", "Bearer " + validToken)
-                        .contentType("application/json")
-                        .content(mapper.writeValueAsString(ArtistDto.builder()
-                                .artistName("비")
-                                .build()
-                        )))
-                .andDo(print())
-                .andExpect(status().isNotFound());
+                .header("Authorization", "Bearer " + validToken)
+                .contentType("application/json")
+                .content(mapper.writeValueAsString(ArtistDto.builder()
+                    .artistName("비")
+                    .build()
+                )))
+            .andDo(print())
+            .andExpect(status().isNotFound());
     }
     @Test
     @Transactional
-    public void matchAlbumSearchTest() throws Exception {
+    public void albumSearchMatchTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
         Instant now = Instant.now();
@@ -115,15 +114,15 @@ public class SearchFavoriteArtistTest extends BaseSetting {
         Track track=saveTrack("밤양갱",album,artist,now,"발라드");
 
         mockMvc.perform(post("/api/favoriteArtist/searchalbum")
-                        .header("Authorization", "Bearer " + validToken)
-                        .contentType("application/json")
-                        .content(mapper.writeValueAsString(AlbumRequest.builder()
-                                .artistId(artist.getArtistId())
-                                .albumName(album.getTitle())
-                                .build()
-                        )))
-                .andDo(print())
-                .andExpect(status().isOk());
+                .header("Authorization", "Bearer " + validToken)
+                .contentType("application/json")
+                .content(mapper.writeValueAsString(AlbumRequest.builder()
+                    .artistId(artist.getArtistId())
+                    .albumName(album.getTitle())
+                    .build()
+                )))
+            .andDo(print())
+            .andExpect(status().isOk());
     }
     @Test
     @Transactional
@@ -139,20 +138,20 @@ public class SearchFavoriteArtistTest extends BaseSetting {
         Track track=saveTrack("밤양갱",album,artist,now,"발라드");
 
         mockMvc.perform(post("/api/favoriteArtist/searchalbum")
-                        .header("Authorization", "Bearer " + validToken)
-                        .contentType("application/json")
-                        .content(mapper.writeValueAsString(AlbumRequest.builder()
-                                .artistId(artist.getArtistId())
-                                .albumName("밤양")
-                                .build()
-                        )))
-                .andDo(print())
-                .andExpect(status().isNotFound());
-    }
+                .header("Authorization", "Bearer " + validToken)
+                .contentType("application/json")
+                .content(mapper.writeValueAsString(AlbumRequest.builder()
+                    .artistId(artist.getArtistId())
+                    .albumName("밤양")
+                    .build()
+                )))
+            .andDo(print())
+            .andExpect(status().isNotFound());
+}
 
     @Test
     @Transactional
-    public void matchTrackSearchTest() throws Exception {
+    public void trackSearchMatchTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
         Instant now = Instant.now();
@@ -164,15 +163,15 @@ public class SearchFavoriteArtistTest extends BaseSetting {
         Track track=saveTrack("밤양갱",album,artist,now,"발라드");
 
         mockMvc.perform(post("/api/favoriteArtist/searchtrack")
-                        .header("Authorization", "Bearer " + validToken)
-                        .contentType("application/json")
-                        .content(mapper.writeValueAsString(TrackRequest.builder()
-                                .trackName(track.getTitle())
-                                .albumId(album.getAlbumId())
-                                .build()
-                        )))
-                .andDo(print())
-                .andExpect(status().isOk());
+                .header("Authorization", "Bearer " + validToken)
+                .contentType("application/json")
+                .content(mapper.writeValueAsString(TrackRequest.builder()
+                    .trackName(track.getTitle())
+                    .albumId(album.getAlbumId())
+                    .build()
+                )))
+            .andDo(print())
+            .andExpect(status().isOk());
     }
 
     @Test
@@ -189,14 +188,14 @@ public class SearchFavoriteArtistTest extends BaseSetting {
         Track track=saveTrack("밤양갱",album,artist,now,"발라드");
 
         mockMvc.perform(post("/api/favoriteArtist/searchtrack")
-                        .header("Authorization", "Bearer " + validToken)
-                        .contentType("application/json")
-                        .content(mapper.writeValueAsString(TrackRequest.builder()
-                                .trackName("밤갱")
-                                .albumId(album.getAlbumId())
-                                .build()
-                        )))
-                .andDo(print())
-                .andExpect(status().isNotFound());
+                .header("Authorization", "Bearer " + validToken)
+                .contentType("application/json")
+                .content(mapper.writeValueAsString(TrackRequest.builder()
+                    .trackName("밤갱")
+                    .albumId(album.getAlbumId())
+                    .build()
+                )))
+            .andDo(print())
+            .andExpect(status().isNotFound());
     }
 }

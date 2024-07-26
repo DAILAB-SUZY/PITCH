@@ -2,22 +2,19 @@ package org.cosmic.backend.domains.playlist;
 
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.auth.dtos.UserLogin;
-import org.cosmic.backend.domain.musicDna.domains.MusicDna;
-import org.cosmic.backend.domain.musicDna.dtos.DnaDetail;
-import org.cosmic.backend.domain.musicDna.dtos.DnaDto;
 import org.cosmic.backend.domain.musicDna.repositorys.EmotionRepository;
-import org.cosmic.backend.domain.playList.domain.Album;
-import org.cosmic.backend.domain.playList.domain.Artist;
-import org.cosmic.backend.domain.playList.domain.Playlist;
-import org.cosmic.backend.domain.playList.domain.Track;
-import org.cosmic.backend.domain.playList.dto.ArtistDto;
-import org.cosmic.backend.domain.playList.dto.PlaylistDetail;
-import org.cosmic.backend.domain.playList.dto.PlaylistDto;
-import org.cosmic.backend.domain.playList.dto.TrackDto;
-import org.cosmic.backend.domain.playList.repository.AlbumRepository;
-import org.cosmic.backend.domain.playList.repository.ArtistRepository;
-import org.cosmic.backend.domain.playList.repository.PlaylistRepository;
-import org.cosmic.backend.domain.playList.repository.TrackRepository;
+import org.cosmic.backend.domain.playList.domains.Album;
+import org.cosmic.backend.domain.playList.domains.Artist;
+import org.cosmic.backend.domain.playList.domains.Playlist;
+import org.cosmic.backend.domain.playList.domains.Track;
+import org.cosmic.backend.domain.playList.dtos.ArtistDto;
+import org.cosmic.backend.domain.playList.dtos.PlaylistDetail;
+import org.cosmic.backend.domain.playList.dtos.PlaylistDto;
+import org.cosmic.backend.domain.playList.dtos.TrackDto;
+import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
+import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
+import org.cosmic.backend.domain.playList.repositorys.PlaylistRepository;
+import org.cosmic.backend.domain.playList.repositorys.TrackRepository;
 import org.cosmic.backend.domain.user.domains.Email;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.EmailRepository;
@@ -37,7 +34,6 @@ import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.Instant;
 import java.util.Arrays;
-import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -66,74 +62,57 @@ public class CreatePlaylistTest extends BaseSetting {
     TrackRepository trackRepository;
 
     @Test
-    public void savePlaylistTest() throws Exception {
-        List<MusicDna> DNA= Arrays.asList(new MusicDna("느긋한"),new MusicDna("신나는"),new MusicDna("조용한"),new MusicDna("청순한"));
-        for(int i=0;i<4;i++)
-        {
-            emotionRepository.save(DNA.get(i));
-        }
-
+    public void playlistSaveTest() throws Exception {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         Email email = emailRepository.save(Email.builder()
-                .email("2@example.com")
-                .verificationCode("12345678")
-                .verified(true)
-                .build());
+            .email("2@example.com")
+            .verificationCode("12345678")
+            .verified(true)
+            .build());
 
         User user=userRepository.save(User.builder()
-                .email(email)
-                .username("goodwill")
-                .password(encoder.encode("12345678"))
-                .build());
+            .email(email)
+            .username("goodwill")
+            .password(encoder.encode("12345678"))
+            .build());
 
-        DnaDto dnaDTO=new DnaDto();
-        dnaDTO.setKey(user.getUserId());
-        dnaDTO.setDna(Arrays.asList(new DnaDetail(1L),new DnaDetail(2L),new DnaDetail(3L),new DnaDetail(4L)));
-
-        mockMvc.perform(post("/api/dna/save")
-                .contentType("application/json")
-                .content(mapper.writeValueAsString(DnaDto.builder()
-                        .key(dnaDTO.getKey())
-                        .dna(dnaDTO.getDna())
-                        .build()
-                )));
 
         Instant now = Instant.now();
 
         Artist artist=artistRepository.save(Artist.builder()
-                .artistName("비비1")
-                .build());
+            .artistName("비비1")
+            .build());
         Album album=albumRepository.save(Album.builder()
-                .title("밤양갱1")
-                .cover("base")
-                .artist(artist)
-                .createdDate(now)
-                .genre("발라드")
-                .build());
+            .title("밤양갱1")
+            .cover("base")
+            .artist(artist)
+            .createdDate(now)
+            .genre("발라드")
+            .build());
 
         Track track=trackRepository.save(Track.builder()
-                .title("밤양갱1")
-                .album(album)
-                .Cover("base")
-                .artist(artist)
-                .createdDate(now)
-                .genre("발라드")
-                .build());
+            .title("밤양갱1")
+            .album(album)
+            .Cover("base")
+            .artist(artist)
+            .createdDate(now)
+            .genre("발라드")
+            .build());
 
         Playlist playlist=playlistRepository.save(Playlist.builder()
-                .createdDate(now)
-                .updatedDate(now)
-                .user(user)
-                .build());
+            .createdDate(now)
+            .updatedDate(now)
+            .user(user)
+            .build());
 
         UserLogin userLogin = UserLogin.builder()
-                .email("2@example.com")
-                .password("12345678")
-                .build();
+            .email("2@example.com")
+            .password("12345678")
+            .build();
 
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/auth/signin")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(userLogin)));
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsString(userLogin)));
 
         MvcResult result = resultActions.andReturn();
         String validToken = mapper.readValue(result.getResponse().getContentAsString(), UserLogin.class).getToken();
@@ -146,209 +125,165 @@ public class CreatePlaylistTest extends BaseSetting {
                 .header("Authorization", "Bearer " + validToken)
                 .contentType("application/json")
                 .content(mapper.writeValueAsString(PlaylistDto.builder()
-                        .id(playlistdto.getId())
-                        .playlist(playlistdto.getPlaylist())
-                        .build()
+                    .id(playlistdto.getId())
+                    .playlist(playlistdto.getPlaylist())
+                    .build()
                 )))
             .andDo(print())
             .andExpect(status().isOk());
     }
-    // 유효한 상태에서 잘 만들어지는지
 
     @Test
-    public void findRightInfoTest() throws Exception {
-        List<MusicDna> DNA= Arrays.asList(new MusicDna("느긋한"),new MusicDna("신나는"),new MusicDna("조용한"),new MusicDna("청순한"));
-        for(int i=0;i<4;i++)
-        {
-            emotionRepository.save(DNA.get(i));
-        }
-
+    public void rightInfoFindTest() throws Exception {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         Email email = emailRepository.save(Email.builder()
-                .email("3@example.com")
-                .verificationCode("12345678")
-                .verified(true)
-                .build());
+            .email("3@example.com")
+            .verificationCode("12345678")
+            .verified(true)
+            .build());
 
         User user=userRepository.save(User.builder()
-                .email(email)
-                .username("goodwill")
-                .password(encoder.encode("12345678"))
-                .profilePicture("base")
-                .signupDate(Instant.now())
-                .build());
-
-        DnaDto dnaDTO=new DnaDto();
-        dnaDTO.setKey(user.getUserId());
-        dnaDTO.setDna(Arrays.asList(new DnaDetail(1L),new DnaDetail(2L),new DnaDetail(3L),new DnaDetail(4L)));
-
-        System.out.println(user);
-        mockMvc.perform(post("/api/dna/save")
-                .contentType("application/json")
-                .content(mapper.writeValueAsString(DnaDto.builder()
-                        .key(dnaDTO.getKey())
-                        .dna(dnaDTO.getDna())
-                        .build()
-                )));
+            .email(email)
+            .username("goodwill")
+            .password(encoder.encode("12345678"))
+            .profilePicture("base")
+            .signupDate(Instant.now())
+            .build());
         Instant now = Instant.now();
 
         Artist artist=artistRepository.save(Artist.builder()
-                .artistName("비비2")
-                .build());
+            .artistName("비비2")
+            .build());
 
 
         Album album=albumRepository.save(Album.builder()
-                    .title("밤양갱2")
-                    .cover("base")
-                    .artist(artist)
-                    .createdDate(now)
-                    .genre("발라드")
-                .build());
+            .title("밤양갱2")
+            .cover("base")
+            .artist(artist)
+            .createdDate(now)
+            .genre("발라드")
+            .build());
 
 
         Track track=trackRepository.save(Track.builder()
-                .title("밤양갱2")
-                .album(album)
-                .Cover("base")
-                .artist(artist)
-                .createdDate(now)
-                .genre("발라드")
-                .build());
+            .title("밤양갱2")
+            .album(album)
+            .Cover("base")
+            .artist(artist)
+            .createdDate(now)
+            .genre("발라드")
+            .build());
 
         Playlist playlist=playlistRepository.save(Playlist.builder()
-                .createdDate(now)
-                .updatedDate(now)
-                .user(user)
-                .build());
+            .createdDate(now)
+            .updatedDate(now)
+            .user(user)
+            .build());
         UserLogin userLogin = UserLogin.builder()
-                .email("3@example.com")
-                .password("12345678")
-                .build();
+            .email("3@example.com")
+            .password("12345678")
+            .build();
 
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/auth/signin")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(userLogin)));
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsString(userLogin)));
 
         MvcResult result = resultActions.andReturn();
         String validToken = mapper.readValue(result.getResponse().getContentAsString(), UserLogin.class).getToken();
 
         mockMvc.perform(post("/api/playlist/Tracksearch")
-                    .header("Authorization", "Bearer " + validToken)
-                    .contentType("application/json")
-                    .content(mapper.writeValueAsString(TrackDto.builder()
-                            .trackName(track.getTitle())
-                            .build()
-                    )))
+                .header("Authorization", "Bearer " + validToken)
+                .contentType("application/json")
+                .content(mapper.writeValueAsString(TrackDto.builder()
+                    .trackName(track.getTitle())
+                    .build()
+                )))
             .andDo(print())
             .andExpect(status().isOk());
 
         mockMvc.perform(post("/api/playlist/Artistsearch")
-                        .header("Authorization", "Bearer " + validToken)
-                        .contentType("application/json")
-                        .content(mapper.writeValueAsString(ArtistDto.builder()
-                                .artistName("비비2")
-                                .build()
-                        )))
-                .andDo(print())
-                .andExpect(status().isOk());
-
-
+                .header("Authorization", "Bearer " + validToken)
+                .contentType("application/json")
+                .content(mapper.writeValueAsString(ArtistDto.builder()
+                    .artistName("비비2")
+                    .build()
+                )))
+            .andDo(print())
+            .andExpect(status().isOk());
     }
-    // 유효한 상태에서 잘 만들어지는지
 
     @Test
-    public void findWrongInfoTest() throws Exception {
-        List<MusicDna> DNA= Arrays.asList(new MusicDna("느긋한"),new MusicDna("신나는"),new MusicDna("조용한"),new MusicDna("청순한"));
-        for(int i=0;i<4;i++)
-        {
-            emotionRepository.save(DNA.get(i));
-        }
-
+    public void wrongInfoFindTest() throws Exception {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         Email email = emailRepository.save(Email.builder()
-                .email("4@example.com")
-                .verificationCode("12345678")
-                .verified(true)
-                .build());
+            .email("4@example.com")
+            .verificationCode("12345678")
+            .verified(true)
+            .build());
 
         User user=userRepository.save(User.builder()
-                .email(email)
-                .username("goodwill")
-                .password(encoder.encode("12345678"))
-                .profilePicture("base")
-                .signupDate(Instant.now())
-                .build());
-
-        DnaDto dnaDTO=new DnaDto();
-        dnaDTO.setKey(user.getUserId());
-        dnaDTO.setDna(Arrays.asList(new DnaDetail(1L),new DnaDetail(2L),new DnaDetail(3L),new DnaDetail(4L)));
-
-        mockMvc.perform(post("/api/dna/save")
-                .contentType("application/json")
-                .content(mapper.writeValueAsString(DnaDto.builder()
-                        .key(dnaDTO.getKey())
-                        .dna(dnaDTO.getDna())
-                        .build()
-                )));
-
+            .email(email)
+            .username("goodwill")
+            .password(encoder.encode("12345678"))
+            .profilePicture("base")
+            .signupDate(Instant.now())
+            .build());
         Instant now = Instant.now();
 
         Artist artist=artistRepository.save(Artist.builder()
-                .artistName("비비3")
-                .build());
+            .artistName("비비3")
+            .build());
 
         Album album=albumRepository.save(Album.builder()
-                .title("밤양갱3")
-                .cover("base")
-                .artist(artist)
-                .createdDate(now)
-                .genre("발라드")
-                .build());
-
-
+            .title("밤양갱3")
+            .cover("base")
+            .artist(artist)
+            .createdDate(now)
+            .genre("발라드")
+            .build());
         Track track=trackRepository.save(Track.builder()
-                .title("밤양갱3")
-                .album(album)
-                .Cover("base")
-                .artist(artist)
-                .createdDate(now)
-                .genre("발라드")
-                .build());
+            .title("밤양갱3")
+            .album(album)
+            .Cover("base")
+            .artist(artist)
+            .createdDate(now)
+            .genre("발라드")
+            .build());
 
         Playlist playlist=playlistRepository.save(Playlist.builder()
-                .createdDate(now)
-                .updatedDate(now)
-                .user(user)
-                .build());
+            .createdDate(now)
+            .updatedDate(now)
+            .user(user)
+            .build());
         UserLogin userLogin = UserLogin.builder()
-                .email("4@example.com")
-                .password("12345678")
-                .build();
+            .email("4@example.com")
+            .password("12345678")
+            .build();
 
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/auth/signin")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(userLogin)));
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsString(userLogin)));
 
         MvcResult result = resultActions.andReturn();
         String validToken = mapper.readValue(result.getResponse().getContentAsString(), UserLogin.class).getToken();
 
         mockMvc.perform(post("/api/playlist/Tracksearch")
-                        .header("Authorization", "Bearer " + validToken)
-                        .contentType("application/json")
-                        .content(mapper.writeValueAsString(TrackDto.builder()
-                                .trackName("hi")
-                                .build()
-                        )))
-                .andDo(print())
-                .andExpect(status().isNotFound());
+                .header("Authorization", "Bearer " + validToken)
+                .contentType("application/json")
+                .content(mapper.writeValueAsString(TrackDto.builder()
+                    .trackName("hi")
+                    .build()
+                )))
+            .andDo(print())
+            .andExpect(status().isNotFound());
 
         mockMvc.perform(post("/api/playlist/Artistsearch")
-                        .header("Authorization", "Bearer " + validToken)
-                        .contentType("application/json")
-                        .content(mapper.writeValueAsString(ArtistDto.builder()
-                                .artistName("아이")
-                                .build()
-                        )))
+                    .header("Authorization", "Bearer " + validToken)
+                    .contentType("application/json")
+                    .content(mapper.writeValueAsString(ArtistDto.builder()
+                        .artistName("아이")
+                        .build()
+                    )))
                 .andDo(print())
                 .andExpect(status().isNotFound());
             }

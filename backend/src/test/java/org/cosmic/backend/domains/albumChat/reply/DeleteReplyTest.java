@@ -9,13 +9,12 @@ import org.cosmic.backend.domain.albumChat.dtos.reply.AlbumChatReplyDto;
 import org.cosmic.backend.domain.albumChat.dtos.reply.AlbumChatReplyCreateReq;
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatRepository;
 import org.cosmic.backend.domain.auth.dtos.UserLogin;
-import org.cosmic.backend.domain.playList.domain.Album;
-import org.cosmic.backend.domain.playList.domain.Artist;
-import org.cosmic.backend.domain.playList.repository.AlbumRepository;
-import org.cosmic.backend.domain.playList.repository.ArtistRepository;
-import org.cosmic.backend.domain.playList.repository.TrackRepository;
+import org.cosmic.backend.domain.playList.domains.Album;
+import org.cosmic.backend.domain.playList.domains.Artist;
+import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
+import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
+import org.cosmic.backend.domain.playList.repositorys.TrackRepository;
 import org.cosmic.backend.domain.post.dto.Post.AlbumDto;
-import org.cosmic.backend.domain.user.domains.Email;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.EmailRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
@@ -25,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
@@ -62,7 +60,7 @@ public class DeleteReplyTest extends BaseSetting {
     private MvcResult result;
     @Test
     @Transactional
-    public void DeletereplyTest() throws Exception {
+    public void replyDeleteTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
         User user=getUser();
@@ -75,130 +73,130 @@ public class DeleteReplyTest extends BaseSetting {
         AlbumChat albumChat= saveAlbumChat("밤양갱", artist, album,now, "발라드");
 
         resultActions=mockMvc.perform(MockMvcRequestBuilders.post("/api/albumchat/open")
-                        .header("Authorization", "Bearer " + validToken)
-                        .contentType("application/json")
-                        .content(mapper.writeValueAsString(AlbumDto.builder()
-                                .albumId(album.getAlbumId())
-                                .build()
-                        )))
-                .andDo(print())
-                .andExpect(status().isOk());
+                .header("Authorization", "Bearer " + validToken)
+                .contentType("application/json")
+                .content(mapper.writeValueAsString(AlbumDto.builder()
+                    .albumId(album.getAlbumId())
+                    .build()
+                )))
+            .andDo(print())
+            .andExpect(status().isOk());
         result = resultActions.andReturn();
 
         String content = result.getResponse().getContentAsString();
-        AlbumChatResponse albumChatResponse = mapper.readValue(content, AlbumChatResponse.class); // 응답 JSON을 PostDto 객체로 변환
+        AlbumChatResponse albumChatResponse = mapper.readValue(content, AlbumChatResponse.class);
         Long albumChatId = albumChatResponse.getAlbumChatId();
 
         resultActions=mockMvc.perform(MockMvcRequestBuilders.post("/api/albumchat/comment/create")
-                .header("Authorization", "Bearer " + validToken)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(AlbumChatCommentCreateReq.builder()
-                        .userId(user.getUserId())
-                        .albumChatId(albumChatId)
-                        .content("안녕")
-                        .createTime(null)
-                        .build()
-                )));
+            .header("Authorization", "Bearer " + validToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsString(AlbumChatCommentCreateReq.builder()
+                .userId(user.getUserId())
+                .albumChatId(albumChatId)
+                .content("안녕")
+                .createTime(null)
+                .build()
+            )));
         result = resultActions.andReturn();
 
         content = result.getResponse().getContentAsString();
-        AlbumChatCommentDto albumChatCommentDto = mapper.readValue(content, AlbumChatCommentDto.class); // 응답 JSON을 PostDto 객체로 변환
+        AlbumChatCommentDto albumChatCommentDto = mapper.readValue(content, AlbumChatCommentDto.class);
         Long albumChatCommentId = albumChatCommentDto.getAlbumChatCommentId();
 
         resultActions=mockMvc.perform(MockMvcRequestBuilders.post("/api/albumchat/reply/create")
-                        .header("Authorization", "Bearer " + validToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(AlbumChatReplyCreateReq.builder()
-                                .albumChatCommentId(albumChatCommentId)
-                                .content("hello")
-                                .createTime(null)
-                                .userId(user.getUserId())
-                                .build()
-                        )));
+            .header("Authorization", "Bearer " + validToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsString(AlbumChatReplyCreateReq.builder()
+                .albumChatCommentId(albumChatCommentId)
+                .content("hello")
+                .createTime(null)
+                .userId(user.getUserId())
+                .build()
+            )));
 
         result = resultActions.andReturn();
 
         content = result.getResponse().getContentAsString();
-        AlbumChatReplyDto albumChatReplyDto = mapper.readValue(content, AlbumChatReplyDto.class); // 응답 JSON을 PostDto 객체로 변환
+        AlbumChatReplyDto albumChatReplyDto = mapper.readValue(content, AlbumChatReplyDto.class);
+        Long albumChatReplyId = albumChatReplyDto.getAlbumChatReplyId();
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/albumchat/reply/delete")
+            .header("Authorization", "Bearer " + validToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsString(AlbumChatReplyDto.builder()
+                .albumChatReplyId(albumChatReplyId)
+                .build()
+            ))).andDo(print())
+            .andExpect(status().isOk());
+    }
+    @Test
+    @Transactional
+    public void notMatchReplyDeleteTest() throws Exception {
+        UserLogin userLogin = loginUser("test@example.com","12345678");
+        String validToken=userLogin.getToken();
+        User user=getUser();
+        Instant now = Instant.now();
+
+        Artist artist=saveArtist("비비");
+
+        Album album=saveAlbum("밤양갱", artist, now, "발라드");
+
+        AlbumChat albumChat= saveAlbumChat("밤양갱", artist, album,now, "발라드");
+        resultActions=mockMvc.perform(MockMvcRequestBuilders.post("/api/albumchat/open")
+                .header("Authorization", "Bearer " + validToken)
+                .contentType("application/json")
+                .content(mapper.writeValueAsString(AlbumDto.builder()
+                    .albumId(album.getAlbumId())
+                    .build()
+                )))
+            .andDo(print())
+            .andExpect(status().isOk());
+        result = resultActions.andReturn();
+
+        String content = result.getResponse().getContentAsString();
+        AlbumChatResponse albumChatResponse = mapper.readValue(content, AlbumChatResponse.class);
+        Long albumChatId = albumChatResponse.getAlbumChatId();
+
+        resultActions=mockMvc.perform(MockMvcRequestBuilders.post("/api/albumchat/comment/create")
+            .header("Authorization", "Bearer " + validToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsString(AlbumChatCommentCreateReq.builder()
+                .userId(user.getUserId())
+                .albumChatId(albumChatId)
+                .content("안녕")
+                .createTime(null)
+                .build()
+            )));
+        result = resultActions.andReturn();
+
+        content = result.getResponse().getContentAsString();
+        AlbumChatCommentDto albumChatCommentDto = mapper.readValue(content, AlbumChatCommentDto.class);
+        Long albumChatCommentId = albumChatCommentDto.getAlbumChatCommentId();
+
+        resultActions=mockMvc.perform(MockMvcRequestBuilders.post("/api/albumchat/reply/create")
+            .header("Authorization", "Bearer " + validToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsString(AlbumChatReplyCreateReq.builder()
+                .albumChatCommentId(albumChatCommentId)
+                .content("hello")
+                .createTime(null)
+                .userId(user.getUserId())
+                .build()
+            )));
+
+        result = resultActions.andReturn();
+
+        content = result.getResponse().getContentAsString();
+        AlbumChatReplyDto albumChatReplyDto = mapper.readValue(content, AlbumChatReplyDto.class);
         Long albumChatReplyId = albumChatReplyDto.getAlbumChatReplyId();
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/albumchat/reply/delete")
                 .header("Authorization", "Bearer " + validToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(AlbumChatReplyDto.builder()
-                        .albumChatReplyId(albumChatReplyId)
-                        .build()
+                    .albumChatReplyId(100L)
+                    .build()
                 ))).andDo(print())
-                .andExpect(status().isOk());
-    }
-    @Test
-    @Transactional
-    public void DeleteNotMatchReplyTest() throws Exception {
-        UserLogin userLogin = loginUser("test@example.com","12345678");
-        String validToken=userLogin.getToken();
-        User user=getUser();
-        Instant now = Instant.now();
-
-        Artist artist=saveArtist("비비");
-
-        Album album=saveAlbum("밤양갱", artist, now, "발라드");
-
-        AlbumChat albumChat= saveAlbumChat("밤양갱", artist, album,now, "발라드");
-        resultActions=mockMvc.perform(MockMvcRequestBuilders.post("/api/albumchat/open")
-                        .header("Authorization", "Bearer " + validToken)
-                        .contentType("application/json")
-                        .content(mapper.writeValueAsString(AlbumDto.builder()
-                                .albumId(album.getAlbumId())
-                                .build()
-                        )))
-                .andDo(print())
-                .andExpect(status().isOk());
-        result = resultActions.andReturn();
-
-        String content = result.getResponse().getContentAsString();
-        AlbumChatResponse albumChatResponse = mapper.readValue(content, AlbumChatResponse.class); // 응답 JSON을 PostDto 객체로 변환
-        Long albumChatId = albumChatResponse.getAlbumChatId();
-
-        resultActions=mockMvc.perform(MockMvcRequestBuilders.post("/api/albumchat/comment/create")
-                .header("Authorization", "Bearer " + validToken)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(AlbumChatCommentCreateReq.builder()
-                        .userId(user.getUserId())
-                        .albumChatId(albumChatId)
-                        .content("안녕")
-                        .createTime(null)
-                        .build()
-                )));
-        result = resultActions.andReturn();
-
-        content = result.getResponse().getContentAsString();
-        AlbumChatCommentDto albumChatCommentDto = mapper.readValue(content, AlbumChatCommentDto.class); // 응답 JSON을 PostDto 객체로 변환
-        Long albumChatCommentId = albumChatCommentDto.getAlbumChatCommentId();
-
-        resultActions=mockMvc.perform(MockMvcRequestBuilders.post("/api/albumchat/reply/create")
-                .header("Authorization", "Bearer " + validToken)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(AlbumChatReplyCreateReq.builder()
-                        .albumChatCommentId(albumChatCommentId)
-                        .content("hello")
-                        .createTime(null)
-                        .userId(user.getUserId())
-                        .build()
-                )));
-
-        result = resultActions.andReturn();
-
-        content = result.getResponse().getContentAsString();
-        AlbumChatReplyDto albumChatReplyDto = mapper.readValue(content, AlbumChatReplyDto.class); // 응답 JSON을 PostDto 객체로 변환
-        Long albumChatReplyId = albumChatReplyDto.getAlbumChatReplyId();
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/albumchat/reply/delete")
-                        .header("Authorization", "Bearer " + validToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(AlbumChatReplyDto.builder()
-                                .albumChatReplyId(100L)
-                                .build()
-                        ))).andDo(print())
-                .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound());
     }
 }

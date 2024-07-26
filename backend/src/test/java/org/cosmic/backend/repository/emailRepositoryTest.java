@@ -17,13 +17,13 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @DataJpaTest
 @Testcontainers
 public class emailRepositoryTest extends RepositoryBaseTest {
-
     @Autowired
     private EmailRepository emailRepository;
     @Autowired
     private UsersRepository usersRepository;
     private User user;
     private Email email;
+
     @BeforeEach
     public void setUp(){
         email=new Email();
@@ -35,6 +35,7 @@ public class emailRepositoryTest extends RepositoryBaseTest {
         user.setUsername("junho");
         user.setPassword("1234");
     }
+
     @AfterEach
     public void clean(){
         usersRepository.deleteAll();
@@ -42,14 +43,12 @@ public class emailRepositoryTest extends RepositoryBaseTest {
     }
     @Test
     @DisplayName("이메일 코드 생성")
-    void saveEmail() {
+    void emailSave() {
         Email savedEmail=emailRepository.save(email);
-
-        Assertions.assertThat(email.getEmail()).isEqualTo(savedEmail.getEmail());//이메일이 일치하게 들어가야함
-        Assertions.assertThat(savedEmail.getVerified()).isNotNull();//무조건 false가 있어야함
-        Assertions.assertThat(email.getVerificationCode()).isEqualTo(savedEmail.getVerificationCode());//인증코드가 일치하게 들어가야함
-        Assertions.assertThat(savedEmail.getCreateTime()).isNotNull();//무조건 생성 시간이 존재해야함
-        Assertions.assertThat(emailRepository.count()).isEqualTo(1);//한개를 저장했으니 한개만 있어야함.
+        Assertions.assertThat(email.getEmail()).isEqualTo(savedEmail.getEmail());
+        Assertions.assertThat(savedEmail.getVerified()).isNotNull();
+        Assertions.assertThat(email.getVerificationCode()).isEqualTo(savedEmail.getVerificationCode());
+        Assertions.assertThat(savedEmail.getCreateTime()).isNotNull();
+        Assertions.assertThat(emailRepository.count()).isEqualTo(1);
     }
-
 }

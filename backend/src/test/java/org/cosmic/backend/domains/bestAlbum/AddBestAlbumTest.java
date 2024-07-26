@@ -2,11 +2,11 @@ package org.cosmic.backend.domains.bestAlbum;
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.auth.dtos.UserLogin;
 import org.cosmic.backend.domain.bestAlbum.dtos.BestAlbumDto;
-import org.cosmic.backend.domain.playList.domain.Album;
-import org.cosmic.backend.domain.playList.domain.Artist;
-import org.cosmic.backend.domain.playList.repository.AlbumRepository;
-import org.cosmic.backend.domain.playList.repository.ArtistRepository;
-import org.cosmic.backend.domain.playList.repository.TrackRepository;
+import org.cosmic.backend.domain.playList.domains.Album;
+import org.cosmic.backend.domain.playList.domains.Artist;
+import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
+import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
+import org.cosmic.backend.domain.playList.repositorys.TrackRepository;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.EmailRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
@@ -47,7 +47,7 @@ public class AddBestAlbumTest extends BaseSetting {
 
     @Test
     @Transactional
-    public void addAlbumTest() throws Exception {
+    public void albumAddTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         User user=getUser();
         String validToken=userLogin.getToken();
@@ -58,19 +58,19 @@ public class AddBestAlbumTest extends BaseSetting {
         Album album=saveAlbum("밤양갱", artist, now, "발라드");
 
         mockMvc.perform(post("/api/bestAlbum/add")
-                        .header("Authorization", "Bearer " + validToken)
-                        .contentType("application/json")
-                        .content(mapper.writeValueAsString(BestAlbumDto.builder()
-                                .userId(user.getUserId())
-                                .albumId(album.getAlbumId())
-                                .build()
-                        )))
-                .andDo(print())
-                .andExpect(status().isOk());
+                .header("Authorization", "Bearer " + validToken)
+                .contentType("application/json")
+                .content(mapper.writeValueAsString(BestAlbumDto.builder()
+                    .userId(user.getUserId())
+                    .albumId(album.getAlbumId())
+                    .build()
+                )))
+            .andDo(print())
+            .andExpect(status().isOk());
     }
     @Test
     @Transactional
-    public void addNotMatchAlbumTest() throws Exception {
+    public void notMatchAlbumAddTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         User user=getUser();
         String validToken=userLogin.getToken();
@@ -81,26 +81,24 @@ public class AddBestAlbumTest extends BaseSetting {
         Album album=saveAlbum("밤양갱", artist, now, "발라드");
 
         mockMvc.perform(post("/api/bestAlbum/add")
-                        .header("Authorization", "Bearer " + validToken)
-                        .contentType("application/json")
-                        .content(mapper.writeValueAsString(BestAlbumDto.builder()
-                                .userId(100L)
-                                .albumId(album.getAlbumId())
-                                .build()
-                        )))
-                .andDo(print())
-                .andExpect(status().isNotFound());
+                .header("Authorization", "Bearer " + validToken)
+                .contentType("application/json")
+                .content(mapper.writeValueAsString(BestAlbumDto.builder()
+                    .userId(100L)
+                    .albumId(album.getAlbumId())
+                    .build()
+                )))
+            .andDo(print())
+            .andExpect(status().isNotFound());
         mockMvc.perform(post("/api/bestAlbum/add")
-                        .header("Authorization", "Bearer " + validToken)
-                        .contentType("application/json")
-                        .content(mapper.writeValueAsString(BestAlbumDto.builder()
-                                .userId(user.getUserId())
-                                .albumId(100L)
-                                .build()
-                        )))
-                .andDo(print())
-                .andExpect(status().isNotFound());
+                .header("Authorization", "Bearer " + validToken)
+                .contentType("application/json")
+                .content(mapper.writeValueAsString(BestAlbumDto.builder()
+                    .userId(user.getUserId())
+                    .albumId(100L)
+                    .build()
+                )))
+            .andDo(print())
+            .andExpect(status().isNotFound());
     }
-    // 유효한 상태에서 잘 만들어지는지
-
 }

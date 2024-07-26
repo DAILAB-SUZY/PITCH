@@ -3,12 +3,13 @@ package org.cosmic.backend.domains.favoriteArtist;
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatRepository;
 import org.cosmic.backend.domain.auth.dtos.UserLogin;
-import org.cosmic.backend.domain.playList.domain.Album;
-import org.cosmic.backend.domain.playList.domain.Artist;
-import org.cosmic.backend.domain.playList.domain.Track;
-import org.cosmic.backend.domain.playList.repository.AlbumRepository;
-import org.cosmic.backend.domain.playList.repository.ArtistRepository;
-import org.cosmic.backend.domain.playList.repository.TrackRepository;
+import org.cosmic.backend.domain.favoriteArtist.dtos.FavoriteReq;
+import org.cosmic.backend.domain.playList.domains.Album;
+import org.cosmic.backend.domain.playList.domains.Artist;
+import org.cosmic.backend.domain.playList.domains.Track;
+import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
+import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
+import org.cosmic.backend.domain.playList.repositorys.TrackRepository;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.dtos.UserDto;
 import org.cosmic.backend.domain.user.repositorys.EmailRepository;
@@ -55,7 +56,7 @@ public class GiveFavoriteArtistTest extends BaseSetting {
 
     @Test
     @Transactional
-    public void giveFavoriteArtistTest() throws Exception {
+    public void favoriteArtistGiveTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com", "12345678");
         String validToken = userLogin.getToken();
         Instant now = Instant.now();
@@ -67,18 +68,30 @@ public class GiveFavoriteArtistTest extends BaseSetting {
         Track track = saveTrack("밤양갱", album, artist, now, "발라드");
 
         mockMvc.perform(post("/api/favoriteArtist/save")
-                        .header("Authorization", "Bearer " + validToken)
-                        .contentType("application/json")
-                        .content(mapper.writeValueAsString(UserDto.builder()
-                                .userId(user.getUserId())
-                                .build()
-                        )))
-                .andDo(print())
-                .andExpect(status().isOk());
+            .header("Authorization", "Bearer " + validToken)
+            .contentType("application/json")
+            .content(mapper.writeValueAsString(FavoriteReq.builder()
+                .albumId(album.getAlbumId())
+                .artistId(artist.getArtistId())
+                .cover(album.getCover())
+                .trackId(track.getTrackId())
+                .userId(user.getUserId())
+                .build()
+            )));
+
+        mockMvc.perform(post("/api/favoriteArtist/give")
+                .header("Authorization", "Bearer " + validToken)
+                .contentType("application/json")
+                .content(mapper.writeValueAsString(UserDto.builder()
+                    .userId(user.getUserId())
+                    .build()
+                )))
+            .andDo(print())
+            .andExpect(status().isOk());
     }
     @Test
     @Transactional
-    public void giveNotMatchFavoriteArtistTest() throws Exception {
+    public void notMatchFavoriteArtistGiveTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com", "12345678");
         String validToken = userLogin.getToken();
         Instant now = Instant.now();
@@ -90,13 +103,24 @@ public class GiveFavoriteArtistTest extends BaseSetting {
         Track track = saveTrack("밤양갱", album, artist, now, "발라드");
 
         mockMvc.perform(post("/api/favoriteArtist/save")
-                        .header("Authorization", "Bearer " + validToken)
-                        .contentType("application/json")
-                        .content(mapper.writeValueAsString(UserDto.builder()
-                                .userId(100L)
-                                .build()
-                        )))
-                .andDo(print())
-                .andExpect(status().isNotFound());
+            .header("Authorization", "Bearer " + validToken)
+            .contentType("application/json")
+            .content(mapper.writeValueAsString(FavoriteReq.builder()
+                .albumId(album.getAlbumId())
+                .artistId(artist.getArtistId())
+                .cover(album.getCover())
+                .trackId(track.getTrackId())
+                .userId(user.getUserId())
+                .build()
+            )));
+        mockMvc.perform(post("/api/favoriteArtist/give")
+                .header("Authorization", "Bearer " + validToken)
+                .contentType("application/json")
+                .content(mapper.writeValueAsString(UserDto.builder()
+                    .userId(100L)
+                    .build()
+                )))
+            .andDo(print())
+            .andExpect(status().isNotFound());
     }
 }

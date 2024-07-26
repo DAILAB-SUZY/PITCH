@@ -13,7 +13,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -29,20 +28,6 @@ public class verifyTest {
     private UsersRepository usersRepository;
     private Email email;
     private User user=new User();
-
-    /*@BeforeEach
-    void setUp() {
-        email=new Email();
-        email.setEmail("kimjunho1231@naver.com");
-        email.setVerificationCode("123456");
-        emailRepository.save(email);
-    }
-
-    @AfterEach
-    public void clean(){
-        usersRepository.deleteAll();
-        emailRepository.deleteAll();
-    }*/
 
     @Test
     @DisplayName("간단한 json데이터파싱")//*
@@ -71,9 +56,9 @@ public class verifyTest {
         user.setPassword(password);
         usersRepository.save(user);
 
-        Assertions.assertThat(user.getEmail().getEmail()).isEqualTo("kimjunho12315@naver.com");//이메일이 일치하게 들어가야함
-        Assertions.assertThat(user.getPassword()).isEqualTo("1234");//인증코드가 일치하게 들어가야함
-        Assertions.assertThat(user.getUsername()).isEqualTo("junho");//인증코드가 일치하게 들어가야함
+        Assertions.assertThat(user.getEmail().getEmail()).isEqualTo("kimjunho12315@naver.com");
+        Assertions.assertThat(user.getPassword()).isEqualTo("1234");
+        Assertions.assertThat(user.getUsername()).isEqualTo("junho");
 
     }
     @Test
@@ -85,24 +70,24 @@ public class verifyTest {
         emailRepository.save(email);
         String jsonString =
                 "{"
-                        +   "\"posts\": ["
-                        +       "{"
-                        +           "\"email\": \"kimjunho12316@naver.com\","
-                        +           "\"name\": \"junho\","
-                        +           "\"password\": \"1234\""
-                        +       "},"
-                        +       "{"
-                        +           "\"email\": \"kimjunho12317@google.co.kr\","
-                        +           "\"name\": \"suhyeon\","
-                        +           "\"password\": \"12345\""
-                        +       "},"
-                        +       "{"
-                        +           "\"email\": \"kimjunho12318@nate.com\","
-                        +           "\"name\": \"dongyul\","
-                        +           "\"password\": \"123456\""
-                        +       "},"
-                        +   "]"
-                        +"}";
+                    +   "\"posts\": ["
+                    +       "{"
+                    +           "\"email\": \"kimjunho12316@naver.com\","
+                    +           "\"name\": \"junho\","
+                    +           "\"password\": \"1234\""
+                    +       "},"
+                    +       "{"
+                    +           "\"email\": \"kimjunho12317@google.co.kr\","
+                    +           "\"name\": \"suhyeon\","
+                    +           "\"password\": \"12345\""
+                    +       "},"
+                    +       "{"
+                    +           "\"email\": \"kimjunho12318@nate.com\","
+                    +           "\"name\": \"dongyul\","
+                    +           "\"password\": \"123456\""
+                    +       "},"
+                    +   "]"
+                    +"}";
 
         email=new Email();
         email.setEmail("kimjunho12317@google.co.kr");
@@ -122,9 +107,6 @@ public class verifyTest {
             String emailID=obj.getString("email");
             String password=obj.getString("password");
             String name=obj.getString("name");
-            System.out.println(emailID);
-            System.out.println(password);
-            System.out.println(name);
             Email tempEmail= emailRepository.findByEmail(emailID).get();
             //findbyemail해서 repository에서 객체를 찾고 해당객체를 넣음
 
