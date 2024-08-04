@@ -9,7 +9,7 @@ import org.cosmic.backend.domain.playList.domains.Artist;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
 import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
 import org.cosmic.backend.domain.playList.repositorys.TrackRepository;
-import org.cosmic.backend.domain.post.dto.Post.AlbumDto;
+import org.cosmic.backend.domain.post.dtos.Post.AlbumDto;
 import org.cosmic.backend.domain.user.repositorys.EmailRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.cosmic.backend.domains.BaseSetting;

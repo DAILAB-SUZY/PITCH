@@ -4,9 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.cosmic.backend.domain.favoriteArtist.domains.FavoriteArtist;
 import org.cosmic.backend.domain.musicDna.domains.User_Dna;
-import org.cosmic.backend.domain.post.entity.Comment;
-import org.cosmic.backend.domain.post.entity.Like;
-import org.cosmic.backend.domain.post.entity.Post;
+import org.cosmic.backend.domain.post.entities.Comment;
+import org.cosmic.backend.domain.post.entities.Like;
+import org.cosmic.backend.domain.post.entities.Post;
 import org.cosmic.backend.domain.playList.domains.Playlist;
 
 import java.time.Instant;

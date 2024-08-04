@@ -9,7 +9,7 @@ import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatException
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatAlbumLikeRepository;
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatRepository;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
-import org.cosmic.backend.domain.post.exception.NotFoundLikeException;
+import org.cosmic.backend.domain.post.exceptions.NotFoundLikeException;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;

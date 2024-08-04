@@ -9,7 +9,7 @@ import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatCommentLikeRepos
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatCommentRepository;
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatRepository;
 
-import org.cosmic.backend.domain.post.dto.Post.AlbumDto;
+import org.cosmic.backend.domain.post.dtos.Post.AlbumDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
