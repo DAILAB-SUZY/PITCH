@@ -12,8 +12,6 @@ import org.cosmic.backend.domain.post.dtos.Comment.UpdateCommentReq;
 import org.cosmic.backend.domain.post.dtos.Post.PostDto;
 import org.cosmic.backend.domain.post.services.CommentService;
 import org.cosmic.backend.globals.dto.ErrorResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -61,14 +59,14 @@ public class CommentApi {
     }
 
 
-    @PostMapping("create")
+    @PostMapping("/create")
     @Transactional
     @ApiResponse(responseCode = "404", description = "Not Found User or Post")
     public CommentDto createComment(@RequestBody CreateCommentReq comment) {
         return commentService.createComment(comment);
     }
 
-    @PostMapping("update")
+    @PostMapping("/update")
     @Transactional
     @ApiResponse(responseCode = "404", description = "Not Found Post")
     public ResponseEntity<?> updateComment(@RequestBody UpdateCommentReq comment) {

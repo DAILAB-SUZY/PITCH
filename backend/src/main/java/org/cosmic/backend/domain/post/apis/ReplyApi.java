@@ -10,7 +10,7 @@ import org.cosmic.backend.domain.post.dtos.Reply.ReplyDto;
 import org.cosmic.backend.domain.post.dtos.Reply.UpdateReplyReq;
 import org.cosmic.backend.domain.post.services.ReplyService;
 import org.cosmic.backend.globals.dto.ErrorResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,98 +21,55 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/reply")
+@ApiResponses(value = {
+        @ApiResponse(responseCode = "200",
+                description = "Ok",
+                content = {
+                        @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                schema = @Schema(implementation = String.class))
+                }),
+        @ApiResponse(responseCode = "404",
+                description = "Not Found Comment",
+                content = {
+                        @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                schema = @Schema(implementation = ErrorResponse.class))
+                }
+        )
+}
+)
 public class ReplyApi {
-    @Autowired
-    private ReplyService replyService;
+    private final ReplyService replyService;
 
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200",
-                    description = "Ok",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = String.class))
-                    }),
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found Comment",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class))
-                    }
-            )
+    public ReplyApi(ReplyService replyService) {
+        this.replyService = replyService;
     }
-    )
+
     @PostMapping("/give")
+    @ApiResponse(responseCode = "404", description = "Not Found Comment")
     public List<UpdateReplyReq> getRepliesByCommentId(@RequestBody CommentDto comment) {
         return replyService.getRepliesByCommentId(comment.getCommentId());
     }
 
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200",
-                    description = "Ok",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = String.class))
-                    }),
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found Comment or User",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class))
-                    }
-            )
-    }
-    )
     @PostMapping("/create")
+    @ApiResponse(responseCode = "404", description = "Not Found Comment or User")
     public ReplyDto createReply(@RequestBody CreateReplyReq reply) {
         return replyService.createReply(reply);
     }
     //comment를 부모로하는 reply를 쭉 받고 시간 순으로 배치
-
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200",
-                    description = "Ok",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = String.class))
-                    }),
-            @ApiResponse(responseCode = "400",
-                    description = "Not Match User Or Comment",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = String.class))
-                    }),
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found Reply",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class))
-                    }
-            )
-    }
-    )
     @PostMapping("/update")
+    @ApiResponse(responseCode = "400", description = "Not Match User Or Comment",
+            content = {
+                    @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = String.class))
+            })
+    @ApiResponse(responseCode = "404", description = "Not Found Reply")
     public ResponseEntity<?> updateReply(@RequestBody UpdateReplyReq reply) {
         replyService.updateReply(reply);
         return ResponseEntity.ok("성공");
     }
 
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200",
-                    description = "Ok",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = String.class))
-                    }),
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found Reply",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class))
-                    }
-            )
-    }
-    )
     @PostMapping("/delete")
+    @ApiResponse(responseCode = "404", description = "Not Found Reply")
     public ResponseEntity<?> deleteReply(@RequestBody ReplyDto replydto) {
         replyService.deleteReply(replydto.getReplyId());
         return ResponseEntity.ok("성공");
