@@ -1,4 +1,4 @@
-package org.cosmic.backend.domains.albumChat.Reply;
+package org.cosmic.backend.domains.albumChat.reply;
 
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.albumChat.domains.AlbumChat;
@@ -70,8 +70,6 @@ public class UpdateReplyTest extends BaseSetting {
         Artist artist=saveArtist("비비");
 
         Album album=saveAlbum("밤양갱", artist, now, "발라드");
-
-        AlbumChat albumChat= saveAlbumChat("밤양갱", artist, album,now, "발라드");
 
         resultActions=mockMvc.perform(MockMvcRequestBuilders.post("/api/albumchat/open")
                 .header("Authorization", "Bearer " + validToken)
@@ -146,8 +144,6 @@ public class UpdateReplyTest extends BaseSetting {
 
         Album album=saveAlbum("밤양갱", artist, now, "발라드");
 
-        AlbumChat albumChat= saveAlbumChat("밤양갱", artist, album,now, "발라드");
-
         resultActions=mockMvc.perform(MockMvcRequestBuilders.post("/api/albumchat/open")
                 .header("Authorization", "Bearer " + validToken)
                 .contentType("application/json")
@@ -191,9 +187,6 @@ public class UpdateReplyTest extends BaseSetting {
             )));
 
         result = resultActions.andReturn();
-        content = result.getResponse().getContentAsString();
-        AlbumChatReplyDto reply = mapper.readValue(content, AlbumChatReplyDto.class);
-        Long replyId = reply.getAlbumChatReplyId();
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/albumchat/reply/update")
             .header("Authorization", "Bearer " + validToken)

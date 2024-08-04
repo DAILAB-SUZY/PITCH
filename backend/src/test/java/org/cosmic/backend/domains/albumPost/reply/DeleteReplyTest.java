@@ -1,4 +1,4 @@
-package org.cosmic.backend.domains.albumPost.Reply;
+package org.cosmic.backend.domains.albumPost.reply;
 
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.auth.dtos.UserLogin;

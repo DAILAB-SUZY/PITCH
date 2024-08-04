@@ -1,4 +1,4 @@
-package org.cosmic.backend.domains.albumChat.AlbumChat;
+package org.cosmic.backend.domains.albumChat.albumChat;
 
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.albumChat.domains.AlbumChat;

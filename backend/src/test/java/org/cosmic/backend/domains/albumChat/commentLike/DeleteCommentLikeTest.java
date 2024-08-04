@@ -1,4 +1,4 @@
-package org.cosmic.backend.domains.albumChat.CommentLike;
+package org.cosmic.backend.domains.albumChat.commentLike;
 
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.albumChat.domains.AlbumChat;

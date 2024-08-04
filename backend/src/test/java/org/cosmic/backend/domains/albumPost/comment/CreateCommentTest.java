@@ -1,4 +1,4 @@
-package org.cosmic.backend.domains.albumPost.Comment;
+package org.cosmic.backend.domains.albumPost.comment;
 
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.auth.dtos.UserLogin;
