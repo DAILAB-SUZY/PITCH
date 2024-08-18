@@ -37,20 +37,19 @@ public class PostService {
     public List<PostReq> getAllPosts(Long userId)
     { // 해당 유저의 post들을 모두 가져오는
         List<PostReq> posts = new ArrayList<>();
-        if(!userRepository.findById(userId).isPresent())
-        {
+        if(userRepository.findById(userId).isEmpty()) {
             throw new NotFoundUserException();
         }
         else{
             List<Post> postList = postRepository.findByUser_UserId(userId);
-            for (int i = 0; i < postList.size(); i++) {
+            for (Post value : postList) {
                 PostReq post = new PostReq(); // 각 iteration마다 새로운 객체 생성
-                post.setPostId(postList.get(i).getPostId());
-                post.setCover(postList.get(i).getCover());
-                post.setTitle(postList.get(i).getTitle());
-                post.setArtistName(postList.get(i).getArtistName());
-                post.setContent(postList.get(i).getContent());
-                post.setUpdateTime(postList.get(i).getUpdateTime());
+                post.setPostId(value.getPostId());
+                post.setCover(value.getCover());
+                post.setTitle(value.getTitle());
+                post.setArtistName(value.getArtistName());
+                post.setContent(value.getContent());
+                post.setUpdateTime(value.getUpdateTime());
                 posts.add(post);
             }
             return posts;
@@ -60,7 +59,7 @@ public class PostService {
     public PostReq getPostById(Long postId) {
         //해당 postId인 포스트만 가져온다.
         PostReq postreq = new PostReq();
-        if(!postRepository.findById(postId).isPresent())
+        if(postRepository.findById(postId).isEmpty())
         {
             throw new NotFoundPostException();
         }
@@ -80,15 +79,15 @@ public class PostService {
     public PostDto createPost(CreatePost post) {
         //post생성 버튼 눌렀을 때
         System.out.println("*******"+post);
-        if(!userRepository.findById(post.getUserId()).isPresent())
+        if(userRepository.findById(post.getUserId()).isEmpty())
         {
             throw new NotFoundUserException();
         }
-        else if(!albumRepository.findByTitleAndArtist_ArtistName(post.getTitle(),post.getArtistName()).isPresent()){
+        else if(albumRepository.findByTitleAndArtist_ArtistName(post.getTitle(),post.getArtistName()).isEmpty()){
             throw new NotMatchAlbumException();
         }
         else{
-            User user=userRepository.findByUserId(post.getUserId()).get();
+            User user=userRepository.findByUserId(post.getUserId()).orElseThrow();
             Post post1=new Post();
             post1.setTitle(post.getTitle());
             post1.setArtistName(post.getArtistName());
@@ -106,7 +105,7 @@ public class PostService {
     }
 
     public void updatePost(UpdatePost post) {
-        if(!postRepository.findById(post.getPostId()).isPresent())
+        if(postRepository.findById(post.getPostId()).isEmpty())
         {
             throw new NotFoundPostException();
         }
@@ -119,7 +118,7 @@ public class PostService {
      }
 
     public void deletePost(Long postId) {
-        if(!postRepository.findById(postId).isPresent())
+        if(postRepository.findById(postId).isEmpty())
         {
             throw new NotFoundPostException();
         }
@@ -129,17 +128,17 @@ public class PostService {
     public List<AlbumDto> searchAlbum(String albumName) {
         //사용자가 앨범 찾기 위해 앨범 이름을 검색할 때
         List<AlbumDto> albums = new ArrayList<>();
-        if(albumRepository.findAllByTitle(albumName).get().isEmpty())
+        if(albumRepository.findAllByTitle(albumName).orElseThrow().isEmpty())
         {
             throw new NotFoundAlbumException();
         }
         else {
-            List<Album> albumInfo = albumRepository.findAllByTitle(albumName).get();
-            for (int i = 0; i < albumInfo.size(); i++) {
+            List<Album> albumInfo = albumRepository.findAllByTitle(albumName).orElseThrow();
+            for (Album album : albumInfo) {
                 AlbumDto albumDto = new AlbumDto();
-                albumDto.setArtistName(albumInfo.get(i).getArtist().getArtistName());
-                albumDto.setAlbumName(albumInfo.get(i).getTitle());
-                albumDto.setAlbumId(albumInfo.get(i).getAlbumId());
+                albumDto.setArtistName(album.getArtist().getArtistName());
+                albumDto.setAlbumName(album.getTitle());
+                albumDto.setAlbumId(album.getAlbumId());
                 albums.add(albumDto);
             }
             return albums;
@@ -150,19 +149,18 @@ public class PostService {
         //사용자가 앨범 찾기 위해 아티스트 이름을 검색할 때
         List<AlbumDto> albums = new ArrayList<>();
         //해당 아티스트이름과 같은 앨범 정보들을 모두 가져와 담음
-        if(!artistRepository.findByArtistName(artistName).isPresent())
+        if(artistRepository.findByArtistName(artistName).isEmpty())
         {
             throw new NotFoundArtistException();
         }
         else{
             Artist artistInfo= artistRepository.findByArtistName(artistName).get();
             List<Album> album=albumRepository.findAllByArtist_ArtistId(artistInfo.getArtistId());//트랙들을 모두 가져옴
-            for(int i=0;i<album.size();i++)
-            {
+            for (Album value : album) {
                 AlbumDto albumDto = new AlbumDto();
                 albumDto.setArtistName(artistName);
-                albumDto.setAlbumName(album.get(i).getTitle());
-                albumDto.setAlbumId(album.get(i).getAlbumId());
+                albumDto.setAlbumName(value.getTitle());
+                albumDto.setAlbumId(value.getAlbumId());
                 albums.add(albumDto);
             }
             return albums;

@@ -42,7 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class UpdateReplyTest extends BaseSetting {
     @Autowired
     private MockMvc mockMvc;
-    ObjectMapper mapper = new ObjectMapper();
+    final ObjectMapper mapper = new ObjectMapper();
     @Autowired
     UsersRepository userRepository;
     @Autowired
@@ -61,14 +61,14 @@ public class UpdateReplyTest extends BaseSetting {
     @Test
     @Transactional
     public void replyUpdateTest() throws Exception {
-        UserLogin userLogin = loginUser("test@example.com","12345678");
+        UserLogin userLogin = loginUser("test@example.com");
         String validToken=userLogin.getToken();
         User user=getUser();
         Instant now = Instant.now();
 
         Artist artist=saveArtist("비비");
 
-        Album album=saveAlbum("밤양갱", artist, now, "발라드");
+        Album album=saveAlbum("밤양갱", artist, now);
 
         resultActions=mockMvc.perform(MockMvcRequestBuilders.post("/api/albumchat/open")
                 .header("Authorization", "Bearer " + validToken)
@@ -134,14 +134,14 @@ public class UpdateReplyTest extends BaseSetting {
     @Test
     @Transactional
     public void notMatchReplyUpdateTest() throws Exception {
-        UserLogin userLogin = loginUser("test@example.com","12345678");
+        UserLogin userLogin = loginUser("test@example.com");
         String validToken=userLogin.getToken();
         User user=getUser();
         Instant now = Instant.now();
 
         Artist artist=saveArtist("비비");
 
-        Album album=saveAlbum("밤양갱", artist, now, "발라드");
+        Album album=saveAlbum("밤양갱", artist, now);
 
         resultActions=mockMvc.perform(MockMvcRequestBuilders.post("/api/albumchat/open")
                 .header("Authorization", "Bearer " + validToken)

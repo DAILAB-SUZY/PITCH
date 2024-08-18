@@ -60,8 +60,7 @@ public class AlbumChatCommentLikeService {
         AlbumChatCommentLike like = new AlbumChatCommentLike(usersRepository.findByUserId(userId).get()
             ,albumChatCommentRepository.findById(albumChatCommentId).get());
         likeRepository.save(like);
-        AlbumChatCommentLikeIdResponse likeReq = new AlbumChatCommentLikeIdResponse(like.getAlbumChatCommentLikeId());
-        return likeReq;
+        return new AlbumChatCommentLikeIdResponse(like.getAlbumChatCommentLikeId());
     }
 
     public void albumChatCommentLikeDelete(Long likeId) {

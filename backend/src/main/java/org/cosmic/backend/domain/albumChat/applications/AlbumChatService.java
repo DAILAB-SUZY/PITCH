@@ -39,11 +39,10 @@ public class AlbumChatService {
             throw new NotFoundAlbumChatException();
         }
         AlbumChat albumChat=albumChatRepository.findByAlbum_AlbumId(album.getAlbumId()).get();
-        AlbumChatResponse albumChatResponse =new AlbumChatResponse(
+        return new AlbumChatResponse(
             albumChat.getAlbumChatId(),albumChat.getTitle(),
             albumChat.getCover(),albumChat.getGenre(),albumChat.getArtistName()
         );
-        return albumChatResponse;
     }
 
     @Transactional

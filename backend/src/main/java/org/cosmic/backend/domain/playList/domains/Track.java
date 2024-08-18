@@ -22,14 +22,14 @@ public class Track {//여기엔 모든 노래들이 담길 것임. 담길 때 �
     @Column(name="TrackId")
     private Long trackId ;
 
-    @Column(nullable=false,length=255)
+    @Column(nullable=false)
     private String genre;
 
-    @Column(nullable=false,length=255)
+    @Column(nullable=false)
     private String title;//곡 제목
 
     @Builder.Default
-    @Column(nullable=false,length=255)
+    @Column(nullable=false)
     private String Cover="base";//곡 제목
 
     @Builder.Default

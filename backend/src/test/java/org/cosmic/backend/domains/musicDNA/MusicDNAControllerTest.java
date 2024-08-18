@@ -38,8 +38,7 @@ public class MusicDNAControllerTest extends BaseSetting {
     @Autowired
     private MockMvc mockMvc;
 
-    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-    ObjectMapper mapper = new ObjectMapper();
+    final ObjectMapper mapper = new ObjectMapper();
     @Autowired
     private EmotionRepository emotionRepository;
 

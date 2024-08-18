@@ -14,7 +14,7 @@ import java.time.Instant;
 @Entity
 @Builder
 @Table(name="emails")
-@EqualsAndHashCode(exclude = {})
+@EqualsAndHashCode()
 public class Email {
 
     @Id

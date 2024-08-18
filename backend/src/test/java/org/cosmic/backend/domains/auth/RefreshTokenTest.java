@@ -38,8 +38,8 @@ public class RefreshTokenTest {
     @Autowired
     private UsersRepository usersRepository;
 
-    ObjectMapper mapper = new ObjectMapper();
-    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    final ObjectMapper mapper = new ObjectMapper();
+    final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
     @Qualifier("redisTemplate")
     @Autowired
     private RedisTemplate<String, String> redisTemplate;

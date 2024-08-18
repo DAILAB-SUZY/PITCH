@@ -46,20 +46,20 @@ public class SaveBestAlbumTest extends BaseSetting {
     AlbumRepository albumRepository;
     @Autowired
     ArtistRepository artistRepository;
-    ObjectMapper mapper = new ObjectMapper();
+    final ObjectMapper mapper = new ObjectMapper();
 
     @Test
     @Transactional
     public void bestAlbumSaveTest() throws Exception {
-        UserLogin userLogin = loginUser("test@example.com","12345678");
+        UserLogin userLogin = loginUser("test@example.com");
         String validToken=userLogin.getToken();
         Instant now = Instant.now();
         User user=getUser();
         Artist artist=saveArtist("비비");
         Artist artist2=saveArtist("아이유");
 
-        Album album=saveAlbum("밤양갱", artist, now, "발라드");
-        Album album2=saveAlbum("celebrity", artist2, now, "발라드");
+        Album album=saveAlbum("밤양갱", artist, now);
+        Album album2=saveAlbum("celebrity", artist2, now);
 
         BestAlbumListDto bestalbumListDTO=new BestAlbumListDto();
         bestalbumListDTO.setUserId(user.getUserId());
@@ -103,15 +103,15 @@ public class SaveBestAlbumTest extends BaseSetting {
     @Test
     @Transactional
     public void notMatchBestAlbumSaveTest() throws Exception {
-        UserLogin userLogin = loginUser("test@example.com","12345678");
+        UserLogin userLogin = loginUser("test@example.com");
         String validToken=userLogin.getToken();
         Instant now = Instant.now();
         User user=getUser();
         Artist artist=saveArtist("비비");
         Artist artist2=saveArtist("아이유");
 
-        Album album=saveAlbum("밤양갱", artist, now, "발라드");
-        Album album2=saveAlbum("celebrity", artist2, now, "발라드");
+        Album album=saveAlbum("밤양갱", artist, now);
+        Album album2=saveAlbum("celebrity", artist2, now);
 
         BestAlbumListDto bestalbumListDTO=new BestAlbumListDto();
         bestalbumListDTO.setUserId(user.getUserId());

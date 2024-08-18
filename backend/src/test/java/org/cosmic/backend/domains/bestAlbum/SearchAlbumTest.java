@@ -44,17 +44,17 @@ public class SearchAlbumTest extends BaseSetting {
     @Autowired
     ArtistRepository artistRepository;
 
-    ObjectMapper mapper = new ObjectMapper();
+    final ObjectMapper mapper = new ObjectMapper();
     @Test
     @Transactional
     public void albumNameSearchTest() throws Exception {
-        UserLogin userLogin = loginUser("test@example.com","12345678");
+        UserLogin userLogin = loginUser("test@example.com");
         String validToken=userLogin.getToken();
         Instant now = Instant.now();
 
         Artist artist=saveArtist("비비");
 
-        Album album=saveAlbum("밤양갱", artist, now, "발라드");
+        Album album=saveAlbum("밤양갱", artist, now);
 
         mockMvc.perform(post("/api/bestAlbum/Albumsearch")
                 .header("Authorization", "Bearer " + validToken)
@@ -70,13 +70,13 @@ public class SearchAlbumTest extends BaseSetting {
     @Test
     @Transactional
     public void artistNameSearchTest() throws Exception {
-        UserLogin userLogin = loginUser("test@example.com","12345678");
+        UserLogin userLogin = loginUser("test@example.com");
         String validToken=userLogin.getToken();
         Instant now = Instant.now();
 
         Artist artist=saveArtist("비비");
 
-        Album album=saveAlbum("밤양갱", artist, now, "발라드");
+        Album album=saveAlbum("밤양갱", artist, now);
 
         mockMvc.perform(post("/api/bestAlbum/Artistsearch")
                 .header("Authorization", "Bearer " + validToken)

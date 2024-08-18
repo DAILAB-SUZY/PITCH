@@ -45,9 +45,9 @@ public class PlaylistService {
             throw new NotFoundUserException();
         }
 
-        List<Playlist_Track>playlistTrack=usersRepository.findByUserId(userId).get().getPlaylist().getPlaylist_track();
+        List<Playlist_Track>playlistTrack=usersRepository.findByUserId(userId).orElseThrow().getPlaylist().getPlaylist_track();
 
-        User user = usersRepository.findByUserId(userId).get();
+        User user = usersRepository.findByUserId(userId).orElseThrow();
 
         Playlist newPlaylist = playlistRepository.findByuser(user);//user의 플레이리스트를 찾음
         newPlaylist.setUpdatedDate(Instant.now());
@@ -77,37 +77,39 @@ public class PlaylistService {
 
         Playlist newplaylist=newuser.getPlaylist();//플레이리스트를 가져오고
         List<Playlist_Track> playlist_track=newplaylist.getPlaylist_track();
-        for(int i=0;i<playlist_track.size();i++)
-        {
-            PlaylistGiveDto newplaylistGiveDto=new PlaylistGiveDto();
-
-            newplaylistGiveDto.setPlaylistId(newplaylist.getPlaylistId());
-            newplaylistGiveDto.setUserId(newplaylist.getUser().getUserId());
-            newplaylistGiveDto.setTrackId(playlist_track.get(i).getTrack().getTrackId());
-            newplaylistGiveDto.setTitle(playlist_track.get(i).getTrack().getTitle());
-            newplaylistGiveDto.setCover(playlist_track.get(i).getTrack().getCover());
-            newplaylistGiveDto.setArtistName(playlist_track.get(i).getTrack().getArtist().getArtistName());
+        for (Playlist_Track playlistTrack : playlist_track) {
+            PlaylistGiveDto newplaylistGiveDto = getPlaylistGiveDto(playlistTrack, newplaylist);
 
             playlistGiveDtos.add(newplaylistGiveDto);
         }
         return playlistGiveDtos;
         }
 
+    private static PlaylistGiveDto getPlaylistGiveDto(Playlist_Track playlistTrack, Playlist newplaylist) {
+        PlaylistGiveDto newplaylistGiveDto = new PlaylistGiveDto();
+
+        newplaylistGiveDto.setPlaylistId(newplaylist.getPlaylistId());
+        newplaylistGiveDto.setUserId(newplaylist.getUser().getUserId());
+        newplaylistGiveDto.setTrackId(playlistTrack.getTrack().getTrackId());
+        newplaylistGiveDto.setTitle(playlistTrack.getTrack().getTitle());
+        newplaylistGiveDto.setCover(playlistTrack.getTrack().getCover());
+        newplaylistGiveDto.setArtistName(playlistTrack.getTrack().getArtist().getArtistName());
+        return newplaylistGiveDto;
+    }
+
 
     @Transactional
     public List<TrackGiveDto> artistSearch (String artist) {
         List<TrackGiveDto>trackGiveDtos=new ArrayList<>();
-        if(artistRepository.findByArtistName(artist).isEmpty())
-        {
+        if(artistRepository.findByArtistName(artist).isEmpty()) {
             throw new NotFoundArtistException();
         }
         Artist artistInfo= artistRepository.findByArtistName(artist).get();
         List<Track> track=trackRepository.findByArtist_ArtistId(artistInfo.getArtistId());//트랙들을 모두 가져옴
-        for(int i=0;i<track.size();i++)
-        {
-            TrackGiveDto trackGiveDto=new TrackGiveDto();
+        for (Track value : track) {
+            TrackGiveDto trackGiveDto = new TrackGiveDto();
             trackGiveDto.setArtistName(artist);
-            trackGiveDto.setTitle(track.get(i).getTitle());
+            trackGiveDto.setTitle(value.getTitle());
             trackGiveDto.setCover("base");
             trackGiveDtos.add(trackGiveDto);
         }

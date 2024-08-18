@@ -59,8 +59,7 @@ public class AlbumChatAlbumLikeService {
         AlbumChat albumChat=albumChatRepository.findById(albumChatId).get();
         AlbumChatAlbumLike like = new AlbumChatAlbumLike(user,albumChat);
         likeRepository.save(like);
-        AlbumChatAlbumLikeReq likeReq = new AlbumChatAlbumLikeReq(like.getAlbumChatAlbumLikeId());
-        return likeReq;
+        return new AlbumChatAlbumLikeReq(like.getAlbumChatAlbumLikeId());
     }
 
     public void albumChatAlbumLikeDelete(Long likeId) {

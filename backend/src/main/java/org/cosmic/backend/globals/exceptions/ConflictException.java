@@ -2,9 +2,9 @@ package org.cosmic.backend.globals.exceptions;
 
 public class ConflictException extends RuntimeException{
 
-    protected static String existAlbumLikeError_Message="Exist AlbumLike Exception";
-    protected static String existCommentLikeError_Message="Exist CommentLike Exception";
-    protected static String existBestAlbumError_Message="Exist BestAlbum Exception";
+    protected static final String existAlbumLikeError_Message="Exist AlbumLike Exception";
+    protected static final String existCommentLikeError_Message="Exist CommentLike Exception";
+    protected static final String existBestAlbumError_Message="Exist BestAlbum Exception";
 
     public ConflictException(String errorMessage) {
         super(errorMessage);

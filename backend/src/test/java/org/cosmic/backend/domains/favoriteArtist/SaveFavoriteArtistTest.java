@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class SaveFavoriteArtistTest extends BaseSetting {
     @Autowired
     private MockMvc mockMvc;
-    ObjectMapper mapper = new ObjectMapper();
+    final ObjectMapper mapper = new ObjectMapper();
     @Autowired
     UsersRepository userRepository;
     @Autowired
@@ -56,15 +56,15 @@ public class SaveFavoriteArtistTest extends BaseSetting {
     @Test
     @Transactional
     public void favoriteArtistSaveTest() throws Exception {
-        UserLogin userLogin = loginUser("test@example.com", "12345678");
+        UserLogin userLogin = loginUser("test@example.com");
         String validToken = userLogin.getToken();
         Instant now = Instant.now();
         User user=getUser();
         Artist artist = saveArtist("비비");
 
-        Album album = saveAlbum("밤양갱", artist, now, "발라드");
+        Album album = saveAlbum("밤양갱", artist, now);
 
-        Track track = saveTrack("밤양갱", album, artist, now, "발라드");
+        Track track = saveTrack(album, artist, now);
 
         mockMvc.perform(post("/api/favoriteArtist/save")
                 .header("Authorization", "Bearer " + validToken)

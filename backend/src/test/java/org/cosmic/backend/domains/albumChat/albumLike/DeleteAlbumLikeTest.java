@@ -1,7 +1,6 @@
 package org.cosmic.backend.domains.albumChat.albumLike;
 
 import lombok.extern.log4j.Log4j2;
-import org.cosmic.backend.domain.albumChat.domains.AlbumChat;
 import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumChatResponse;
 import org.cosmic.backend.domain.albumChat.dtos.albumlike.AlbumChatAlbumLikeDto;
 import org.cosmic.backend.domain.albumChat.dtos.albumlike.AlbumChatAlbumLikeReq;
@@ -40,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class DeleteAlbumLikeTest extends BaseSetting {
     @Autowired
     private MockMvc mockMvc;
-    ObjectMapper mapper = new ObjectMapper();
+    final ObjectMapper mapper = new ObjectMapper();
     @Autowired
     UsersRepository userRepository;
     @Autowired
@@ -59,16 +58,16 @@ public class DeleteAlbumLikeTest extends BaseSetting {
     @Test
     @Transactional
     public void albumlikeDeleteTest() throws Exception {
-        UserLogin userLogin = loginUser("test@example.com","12345678");
+        UserLogin userLogin = loginUser("test@example.com");
         String validToken=userLogin.getToken();
         User user=getUser();
         Instant now = Instant.now();
 
         Artist artist=saveArtist("비비");
 
-        Album album=saveAlbum("밤양갱", artist, now, "발라드");
+        Album album=saveAlbum("밤양갱", artist, now);
 
-        AlbumChat albumChat= saveAlbumChat("밤양갱", artist, album,now, "발라드");
+        saveAlbumChat(artist, album, now);
         resultActions =mockMvc.perform(MockMvcRequestBuilders.post("/api/albumchat/open")
             .header("Authorization", "Bearer " + validToken)
             .contentType("application/json")
@@ -112,16 +111,16 @@ public class DeleteAlbumLikeTest extends BaseSetting {
     @Test
     @Transactional
     public void notMatchAlbumlikeDeleteTest() throws Exception {
-        UserLogin userLogin = loginUser("test@example.com","12345678");
+        UserLogin userLogin = loginUser("test@example.com");
         String validToken=userLogin.getToken();
         User user=getUser();
         Instant now = Instant.now();
 
         Artist artist=saveArtist("비비");
 
-        Album album=saveAlbum("밤양갱", artist, now, "발라드");
+        Album album=saveAlbum("밤양갱", artist, now);
 
-        AlbumChat albumChat= saveAlbumChat("밤양갱", artist, album,now, "발라드");
+        saveAlbumChat(artist, album, now);
         resultActions =mockMvc.perform(MockMvcRequestBuilders.post("/api/albumchat/open")
             .header("Authorization", "Bearer " + validToken)
             .contentType("application/json")
@@ -147,10 +146,6 @@ public class DeleteAlbumLikeTest extends BaseSetting {
             )));
 
         result = resultActions.andReturn();
-
-        content = result.getResponse().getContentAsString();
-        AlbumChatAlbumLikeReq albumChatAlbumLikeReq = mapper.readValue(content, AlbumChatAlbumLikeReq.class);
-        Long albumChatAlbumLikeId = albumChatAlbumLikeReq.getAlbumChatAlbumLikeId();
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/albumchat/albumlike/delete")
             .header("Authorization", "Bearer " + validToken)

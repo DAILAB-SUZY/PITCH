@@ -41,18 +41,18 @@ public class ServletFilterTest {
     @Autowired
     private UsersRepository usersRepository;
 
-    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-    ObjectMapper mapper = new ObjectMapper();
+    final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    final ObjectMapper mapper = new ObjectMapper();
     private String validToken;
-    private String invalidToken = "invalidToken";
     //유효한 jwt토큰이 제공됐을 때 인증이 성공적으로 수행되는지 확인
     @Test
-    public void Token_isValid() throws Exception {  Email email = emailRepository.save(Email.builder()
+    public void Token_isValid() throws Exception {
+        Email email = emailRepository.save(Email.builder()
             .email("testq1@example.com")
             .verificationCode("123456")
             .verified(true)
             .build());
-        User user = usersRepository.save(User.builder()
+        usersRepository.save(User.builder()
                 .email(email)
                 .username("goodwill")
                 .password(encoder.encode("123456"))
@@ -85,7 +85,7 @@ public class ServletFilterTest {
                 .verificationCode("123456")
                 .verified(true)
                 .build());
-        User user = usersRepository.save(User.builder()
+        usersRepository.save(User.builder()
                 .email(email)
                 .username("goodwill")
                 .password(encoder.encode("123456"))

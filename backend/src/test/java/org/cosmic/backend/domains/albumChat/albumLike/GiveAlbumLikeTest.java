@@ -1,7 +1,6 @@
 package org.cosmic.backend.domains.albumChat.albumLike;
 
 import lombok.extern.log4j.Log4j2;
-import org.cosmic.backend.domain.albumChat.domains.AlbumChat;
 import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumChatDto;
 import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumChatResponse;
 import org.cosmic.backend.domain.albumChat.dtos.albumlike.AlbumChatAlbumLikeDto;
@@ -42,7 +41,7 @@ public class GiveAlbumLikeTest extends BaseSetting {
 
     @Autowired
     private MockMvc mockMvc;
-    ObjectMapper mapper = new ObjectMapper();
+    final ObjectMapper mapper = new ObjectMapper();
     @Autowired
     UsersRepository userRepository;
     @Autowired
@@ -56,31 +55,29 @@ public class GiveAlbumLikeTest extends BaseSetting {
     @Autowired
     AlbumChatRepository albumChatRepository;
 
-    private ResultActions resultActions;
-    private MvcResult result;
-
     @Test
     @Transactional
     public void albumLikesGiveTest() throws Exception {
-        UserLogin userLogin = loginUser("test@example.com","12345678");
+        UserLogin userLogin = loginUser("test@example.com");
         String validToken=userLogin.getToken();
         User user=getUser();
         Instant now = Instant.now();
 
         Artist artist=saveArtist("비비");
 
-        Album album=saveAlbum("밤양갱", artist, now, "발라드");
+        Album album=saveAlbum("밤양갱", artist, now);
 
-        AlbumChat albumChat= saveAlbumChat("밤양갱", artist, album,now, "발라드");
-        resultActions =mockMvc.perform(MockMvcRequestBuilders.post("/api/albumchat/open")
-            .header("Authorization", "Bearer " + validToken)
-            .contentType("application/json")
-            .content(mapper.writeValueAsString(AlbumDto.builder()
-                .albumId(album.getAlbumId())
-                .build()
-            )));
+        saveAlbumChat(artist, album, now);
 
-        result = resultActions.andReturn();
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/api/albumchat/open")
+                .header("Authorization", "Bearer " + validToken)
+                .contentType("application/json")
+                .content(mapper.writeValueAsString(AlbumDto.builder()
+                        .albumId(album.getAlbumId())
+                        .build()
+                )));
+
+        MvcResult result = resultActions.andReturn();
 
         String content = result.getResponse().getContentAsString();
         AlbumChatResponse albumChatResponse = mapper.readValue(content, AlbumChatResponse.class);

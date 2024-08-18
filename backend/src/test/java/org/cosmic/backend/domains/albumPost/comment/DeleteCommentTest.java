@@ -41,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class DeleteCommentTest extends BaseSetting {
     @Autowired
     private MockMvc mockMvc;
-    ObjectMapper mapper = new ObjectMapper();
+    final ObjectMapper mapper = new ObjectMapper();
     @Autowired
     UsersRepository userRepository;
     @Autowired
@@ -58,15 +58,15 @@ public class DeleteCommentTest extends BaseSetting {
     @Test
     @Transactional
     public void deleteCommentTest() throws Exception {
-        UserLogin userLogin = loginUser("test@example.com","12345678");
+        UserLogin userLogin = loginUser("test@example.com");
         String validToken=userLogin.getToken();
         User user=getUser();
         Instant now = Instant.now();
 
         Artist artist=saveArtist("비비");
 
-        Album album=saveAlbum("밤양갱", artist, now, "발라드");
-        Track track=saveTrack("밤양갱",album,artist,now,"발라드");
+        Album album=saveAlbum("밤양갱", artist, now);
+        Track track=saveTrack(album,artist,now);
 
         resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/api/post/create")
                 .header("Authorization", "Bearer " + validToken)
@@ -114,15 +114,15 @@ public class DeleteCommentTest extends BaseSetting {
                 .andExpect(status().isOk());
     }
     public void deleteCommentReplyTest() throws Exception {
-        UserLogin userLogin = loginUser("test@example.com","12345678");
+        UserLogin userLogin = loginUser("test@example.com");
         String validToken=userLogin.getToken();
         User user=getUser();
         Instant now = Instant.now();
 
         Artist artist=saveArtist("비비");
 
-        Album album=saveAlbum("밤양갱", artist, now, "발라드");
-        Track track=saveTrack("밤양갱",album,artist,now,"발라드");
+        Album album=saveAlbum("밤양갱", artist, now);
+        Track track=saveTrack(album,artist,now);
 
         resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/api/post/create")
                 .header("Authorization", "Bearer " + validToken)

@@ -46,11 +46,11 @@ public class BestAlbumService {
             throw new NotFoundUserException();
         }
         User newuser = usersRepository.findById(userId).get();
-        List<AlbumUser> album_user = albumUserRepository.findByUser_UserId(userId).get();
+        List<AlbumUser> album_user = albumUserRepository.findByUser_UserId(userId).orElseThrow();
 
-        for (int i = 0; i < album_user.size(); i++) {
-            BestAlbumGiveDto newbestAlbumGiveDto = new BestAlbumGiveDto(album_user.get(i).getAlbum().getAlbumId(),
-                album_user.get(i).getAlbum().getTitle(),album_user.get(i).getAlbum().getCover());
+        for (AlbumUser albumUser : album_user) {
+            BestAlbumGiveDto newbestAlbumGiveDto = new BestAlbumGiveDto(albumUser.getAlbum().getAlbumId(),
+                    albumUser.getAlbum().getTitle(), albumUser.getAlbum().getCover());
             bestAlbumGiveDtos.add(newbestAlbumGiveDto);
         }
         return bestAlbumGiveDtos;
@@ -75,28 +75,25 @@ public class BestAlbumService {
 
     @Transactional
     public void save(long userId, List<BestAlbumDetail> bestalbumList) {
-        if(!usersRepository.findById(userId).isPresent()) {
+        if(usersRepository.findById(userId).isEmpty()) {
             throw new NotFoundUserException();
         }
-        List<AlbumUser> albumUsers=albumUserRepository.findByUser_UserId(userId).get();
+        List<AlbumUser> albumUsers=albumUserRepository.findByUser_UserId(userId).orElseThrow();
         albumUserRepository.deleteByUser_UserId(userId);
 
         Set<Long> albumUserIds = new HashSet<>();
         for (AlbumUser albumUser : albumUsers) {
             albumUserIds.add(albumUser.getAlbum().getAlbumId());
         }
-        for(int i=0;i<bestalbumList.size();i++)
-        {
-            if(albumRepository.findById(bestalbumList.get(i).getAlbumId()).isEmpty())
-            {
+        for (BestAlbumDetail bestAlbumDetail : bestalbumList) {
+            if (albumRepository.findById(bestAlbumDetail.getAlbumId()).isEmpty()) {
                 throw new NotFoundAlbumException();
             }
-            if(!albumUserIds.contains(bestalbumList.get(i).getAlbumId()))
-            {
+            if (!albumUserIds.contains(bestAlbumDetail.getAlbumId())) {
                 throw new NotMatchBestAlbumException();
             }
-            Album album= albumRepository.findById(bestalbumList.get(i).getAlbumId()).get();
-            AlbumUser album_User=new AlbumUser();
+            Album album = albumRepository.findById(bestAlbumDetail.getAlbumId()).get();
+            AlbumUser album_User = new AlbumUser();
             album_User.setAlbum(album);
             album_User.setUser(usersRepository.findById(userId).get());
             albumUserRepository.save(album_User);
@@ -112,9 +109,8 @@ public class BestAlbumService {
         }
         Artist artistInfo= artistRepository.findByArtistName(artist).get();
         List<Album> album=albumRepository.findAllByArtist_ArtistId(artistInfo.getArtistId());//트랙들을 모두 가져옴
-        for(int i=0;i<album.size();i++)
-        {
-            AlbumGiveDto albumGiveDto=new AlbumGiveDto(album.get(i).getTitle(),artist,album.get(i).getCover());
+        for (Album value : album) {
+            AlbumGiveDto albumGiveDto = new AlbumGiveDto(value.getTitle(), artist, value.getCover());
             albumGiveDtos.add(albumGiveDto);
         }
         return albumGiveDtos;
@@ -123,10 +119,10 @@ public class BestAlbumService {
     @Transactional
     public List<AlbumGiveDto> searchAlbum (String album) {//해당 앨범이름을 가진 모든 앨범들의 정보를 줌
         List<AlbumGiveDto>albumGiveDtos=new ArrayList<>();
-        if(albumRepository.findAllByTitle(album).get().isEmpty()) {
+        if(albumRepository.findAllByTitle(album).orElseThrow().isEmpty()) {
             throw new NotFoundAlbumException();
         }
-        List<Album> albumInfo= albumRepository.findAllByTitle(album).get();
+        List<Album> albumInfo= albumRepository.findAllByTitle(album).orElseThrow();
         for(Album albumInfo1:albumInfo){
             AlbumGiveDto albumGiveDto=new AlbumGiveDto(
                 albumInfo1.getTitle(),albumInfo1.getArtist().getArtistName(),albumInfo1.getCover());

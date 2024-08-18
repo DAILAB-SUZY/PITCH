@@ -16,12 +16,11 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 @DataJpaTest
 @Testcontainers
-public class emailRepositoryTest extends RepositoryBaseTest {
+public class EmailRepositoryTest extends RepositoryBaseTest {
     @Autowired
     private EmailRepository emailRepository;
     @Autowired
     private UsersRepository usersRepository;
-    private User user;
     private Email email;
 
     @BeforeEach
@@ -30,7 +29,7 @@ public class emailRepositoryTest extends RepositoryBaseTest {
         email.setEmail("kimjunho1231@naver.com");
         email.setVerificationCode("123456");
         emailRepository.save(email);
-        user=new User();
+        User user = new User();
         user.setEmail(email);
         user.setUsername("junho");
         user.setPassword("1234");

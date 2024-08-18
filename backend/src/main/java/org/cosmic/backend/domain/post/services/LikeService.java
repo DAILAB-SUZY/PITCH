@@ -31,7 +31,7 @@ public class LikeService {
     public List<LikeResponse> getLikesByPostId(Long postId) {
         List<LikeResponse> likes = new ArrayList<>();
         //postId를 통해 이 id의 좋아요한 사람의 정보 다 가져옴
-        if(!postRepository.findById(postId).isPresent()) {
+        if(postRepository.findById(postId).isEmpty()) {
             throw new NotFoundPostException();
         }
         else{
@@ -49,10 +49,10 @@ public class LikeService {
 
     public LikeReq createLike(Long userId, Long postId) {
         Like like = new Like();
-        if(!postRepository.findById(postId).isPresent()) {
+        if(postRepository.findById(postId).isEmpty()) {
             throw new NotFoundPostException();
         }
-        else if(!usersRepository.findByUserId(userId).isPresent()) {
+        else if(usersRepository.findByUserId(userId).isEmpty()) {
             throw new NotFoundUserException();
         }
         else if(likeRepository.findByPost_PostIdAndUser_UserId(postId, userId).isPresent())
@@ -71,7 +71,7 @@ public class LikeService {
     }
 
     public void deleteLike(Long likeId) {
-        if(!likeRepository.findById(likeId).isPresent()) {
+        if(likeRepository.findById(likeId).isEmpty()) {
             throw new NotFoundLikeException();
         }
         else{

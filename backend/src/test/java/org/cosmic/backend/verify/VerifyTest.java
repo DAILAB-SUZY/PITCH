@@ -17,14 +17,14 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @Testcontainers
 @SpringBootTest
-public class verifyTest {
+public class VerifyTest {
 
 @Autowired
     private EmailRepository emailRepository;
     @Autowired
     private UsersRepository usersRepository;
     private Email email;
-    private User user=new User();
+    private final User user=new User();
 
     @Test
     @DisplayName("간단한 json데이터파싱")//*
@@ -44,7 +44,7 @@ public class verifyTest {
         String name=jsonObject.getString("name");
 
         //만약 email테이블이 있다면 찾을 수 있겠지
-        Email tempEmail= emailRepository.findByEmail(emailID).get();
+        Email tempEmail= emailRepository.findByEmail(emailID).orElseThrow();
         //findbyemail해서 repository에서 객체를 찾고 해당객체를 넣음
 
         emailRepository.save(tempEmail);
@@ -104,7 +104,7 @@ public class verifyTest {
             String emailID=obj.getString("email");
             String password=obj.getString("password");
             String name=obj.getString("name");
-            Email tempEmail= emailRepository.findByEmail(emailID).get();
+            Email tempEmail= emailRepository.findByEmail(emailID).orElseThrow();
             //findbyemail해서 repository에서 객체를 찾고 해당객체를 넣음
 
             emailRepository.save(tempEmail);
@@ -152,27 +152,10 @@ public class verifyTest {
         email.setEmail("kimjunho1231@naver.com");
         email.setVerificationCode("123456");
         emailRepository.save(email);
-        String jsonString = "{\"email\": \"kimjunho1231@naver.com\","
-                + "\"password\": \"1234\","
-                + "\"checkpassword\": \"\","
-                + "\"name\": junho"
-                + "}";
-
         email.setVerified(true);
 
-        JSONObject jsonObject = new JSONObject(jsonString);
         //Email에 있는 email과 verified가 true인지
-        String emailID=jsonObject.getString("email");
-        if(!email.getEmail().equals(emailID) && email.getVerified()!=true)
-        {
-            //해당 이메일이 없거나 인증된게아니라면
-        }
-        String password = jsonObject.getString("password");
-        String checkPassword = jsonObject.getString("checkpassword");
-        if(!password.equals(checkPassword))
-        {
-            //확인한 비번과 다르다면
-        }
-        String name = jsonObject.getString("name");
+        //TODO 해당 이메일이 없거나 인증된게아니라면
+        //TODO 확인한 비번과 다르다면
     }
 }

@@ -51,7 +51,7 @@ public class FavoriteArtistService {
         {
             throw new NotFoundArtistException();
         }
-        List<Artist> artists=artistRepository.findAllByArtistName(artistName).get();
+        List<Artist> artists=artistRepository.findAllByArtistName(artistName).orElseThrow();
         for(Artist artist:artists) {
             List<Album> album=albumRepository.findAllByArtist_ArtistId(artist.getArtistId());
             for(Album album1:album) {
@@ -73,7 +73,7 @@ public class FavoriteArtistService {
         }
         albums= albumRepository.findByTitleAndArtist_ArtistId(albumName,artistId).get();
         List<Track> track=trackRepository.findByAlbum_AlbumIdAndArtist_ArtistId
-            (albums.getAlbumId(),albums.getArtist().getArtistId()).get();
+            (albums.getAlbumId(),albums.getArtist().getArtistId()).orElseThrow();
         for(Track track1:track) {
             AlbumData albumData=new AlbumData(track1.getAlbum().getAlbumId(),track1.getTitle());
             albumDataList.add(albumData);
@@ -104,13 +104,13 @@ public class FavoriteArtistService {
         {
             throw new NotFoundAlbumException();
         }
-        User user=usersRepository.findByUserId(favoriteArtist.getUserId()).get();
+        User user=usersRepository.findByUserId(favoriteArtist.getUserId()).orElseThrow();
         favoriteArtistRepository.deleteByUser_UserId(user.getUserId());
         System.out.println(favoriteArtistRepository.findByUser_UserId(user.getUserId()));
         FavoriteArtist favoriteArtist1=new FavoriteArtist(
-            artistRepository.findById(favoriteArtist.getArtistId()).get().getArtistName(),
-            albumRepository.findById(favoriteArtist.getAlbumId()).get().getTitle(),
-            trackRepository.findById(favoriteArtist.getTrackId()).get().getTitle(),
+            artistRepository.findById(favoriteArtist.getArtistId()).orElseThrow().getArtistName(),
+            albumRepository.findById(favoriteArtist.getAlbumId()).orElseThrow().getTitle(),
+            trackRepository.findById(favoriteArtist.getTrackId()).orElseThrow().getTitle(),
             favoriteArtist.getCover(),user);
         favoriteArtistRepository.save(favoriteArtist1);
     }

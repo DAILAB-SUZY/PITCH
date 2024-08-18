@@ -25,8 +25,6 @@ public class EmailService {
     private final EmailRepository emailRepository;
     private final UsersRepository usersRepository;
 
-    private final int WAIT_TIME = 30;
-
     private void emailExistCheck(String to){
         if(usersRepository.findByEmail_Email(to).isPresent()){
             throw new ExistEmailException();
@@ -34,6 +32,7 @@ public class EmailService {
     }
 
     private void durationValidCheck(Instant start, Instant end){
+        int WAIT_TIME = 30;
         if(Math.abs(Duration.between(start, end).toSeconds()) < WAIT_TIME){
             throw new IntervalNotEnoughException();
         }

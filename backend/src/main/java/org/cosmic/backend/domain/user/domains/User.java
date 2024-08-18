@@ -29,14 +29,14 @@ public class User {
     @JoinColumn(name="emails")
     private Email email;//fk
 
-    @Column(nullable=false,length=255)
+    @Column(nullable=false)
     private String username;
 
-    @Column(nullable=false,length=255)
+    @Column(nullable=false)
     private String password;
 
     @Builder.Default
-    @Column(length=255)
+    @Column()
     private String profilePicture="base";
 
     @Builder.Default

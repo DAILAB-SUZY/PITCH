@@ -18,18 +18,16 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
 @Service
 public class CommentService {
 
-    private final ReplyService replyService;
-    private final LikeService likeService;
     private final CommentRepository commentRepository;
     private final UsersRepository userRepository;
     private final PostRepository postRepository;
 
     public CommentService(ReplyService replyService, LikeService likeService, CommentRepository commentRepository, UsersRepository userRepository, PostRepository postRepository) {
-        this.replyService = replyService;
-        this.likeService = likeService;
         this.commentRepository = commentRepository;
         this.userRepository = userRepository;
         this.postRepository = postRepository;
@@ -37,7 +35,7 @@ public class CommentService {
 
     public List<CommentReq> getCommentsByPostId(Long postId) {
         List<CommentReq> comments = new ArrayList<>();
-        if(!postRepository.findById(postId).isPresent()) {
+        if(postRepository.findById(postId).isEmpty()) {
             throw new NotFoundPostException();
         }
         else {
@@ -57,17 +55,17 @@ public class CommentService {
     public CommentDto createComment(CreateCommentReq comment) {//누가 쓴 comment인지 나와야하기 때문에 userId필요
         Comment commentEntity=new Comment();
 
-        if(!postRepository.findById(comment.getPostId()).isPresent()) {
+        if(postRepository.findById(comment.getPostId()).isEmpty()) {
             throw new NotFoundPostException();
         }
-        else if(!userRepository.findById(comment.getUserId()).isPresent())
+        else if(userRepository.findById(comment.getUserId()).isEmpty())
         {
             throw new NotFoundUserException();
         }
         else{
             commentEntity.setContent(comment.getContent());
             commentEntity.setUpdateTime(Instant.now());
-            commentEntity.setUser(userRepository.findByUserId(comment.getUserId()).get());//누구의 post인지 알려줘야함.
+            commentEntity.setUser(userRepository.findByUserId(comment.getUserId()).orElseThrow());//누구의 post인지 알려줘야함.
             commentEntity.setReplies(null);
             commentEntity.setPost(postRepository.findByPostId(comment.getPostId()));
             commentRepository.save(commentEntity);
@@ -79,16 +77,16 @@ public class CommentService {
 
     public void updateComment(UpdateCommentReq comment) {
         //해당 commentId를 받고 commentId를 통해 comment내부 set
-        if(!commentRepository.findById(comment.getCommentId()).isPresent()) {
+        if(commentRepository.findById(comment.getCommentId()).isEmpty()) {
             throw new NotFoundCommentException();
         }
         else {
             Comment comment1 = commentRepository.findByCommentId(comment.getCommentId());
-            if(comment1.getUser().getUserId()!=comment.getUserId())
+            if(!Objects.equals(comment1.getUser().getUserId(), comment.getUserId()))
             {
                 throw new NotMatchUserException();
             }
-            else if(comment1.getPost().getPostId()!=comment.getPostId())
+            else if(!Objects.equals(comment1.getPost().getPostId(), comment.getPostId()))
             {
                 throw new NotMatchPostException();
             }
@@ -100,7 +98,7 @@ public class CommentService {
     }
 
     public void deleteComment(CommentDto commentdto) {
-        if(!commentRepository.findById(commentdto.getCommentId()).isPresent()) {
+        if(commentRepository.findById(commentdto.getCommentId()).isEmpty()) {
             throw new NotFoundCommentException();
         }
         else{

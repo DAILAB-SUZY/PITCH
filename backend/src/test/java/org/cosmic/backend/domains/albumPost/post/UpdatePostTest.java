@@ -1,4 +1,4 @@
-package org.cosmic.backend.domains.albumPost.Post;
+package org.cosmic.backend.domains.albumPost.post;
 
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.auth.dtos.UserLogin;
@@ -39,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class UpdatePostTest extends BaseSetting {
     @Autowired
     private MockMvc mockMvc;
-    ObjectMapper mapper = new ObjectMapper();
+    final ObjectMapper mapper = new ObjectMapper();
     @Autowired
     UsersRepository userRepository;
     @Autowired
@@ -50,25 +50,23 @@ public class UpdatePostTest extends BaseSetting {
     AlbumRepository albumRepository;
     @Autowired
     TrackRepository trackRepository;
-    //내용 잘 바뀌는지
-    private ResultActions resultActions;
-    private MvcResult result;
 
     @Test
     @Transactional
     public void updatePostTest() throws Exception {
 
-        UserLogin userLogin = loginUser("test@example.com","12345678");
+        UserLogin userLogin = loginUser("test@example.com");
         String validToken=userLogin.getToken();
         User user=getUser();
         Instant now = Instant.now();
 
         Artist artist=saveArtist("비비");
 
-        Album album=saveAlbum("밤양갱", artist, now, "발라드");
-        Track track=saveTrack("밤양갱",album,artist,now,"발라드");
+        Album album=saveAlbum("밤양갱", artist, now);
+        Track track=saveTrack(album,artist,now);
 
-        resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/api/post/create")
+        //내용 잘 바뀌는지
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/api/post/create")
                 .header("Authorization", "Bearer " + validToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(CreatePost.builder()
@@ -81,7 +79,7 @@ public class UpdatePostTest extends BaseSetting {
                         .build()
                 )));
 
-        result = resultActions.andReturn();
+        MvcResult result = resultActions.andReturn();
 
         String content = result.getResponse().getContentAsString();
         PostDto postDto = mapper.readValue(content, PostDto.class); // 응답 JSON을 PostDto 객체로 변환

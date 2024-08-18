@@ -17,6 +17,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.Objects;
+
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -36,8 +38,8 @@ class SignInTest {
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
-    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-    ObjectMapper mapper = new ObjectMapper();
+    final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    final ObjectMapper mapper = new ObjectMapper();
 
     @Test
     @Order(1)
@@ -63,7 +65,7 @@ class SignInTest {
                 ).andDo(print())
                 .andExpect(status().isOk());
         log.info(redisTemplate.opsForValue().get("test3@example.com"));
-        Assertions.assertFalse(redisTemplate.opsForValue().get("testboy9@example.com").isEmpty());
+        Assertions.assertFalse(Objects.requireNonNull(redisTemplate.opsForValue().get("testboy9@example.com")).isEmpty());
     }
 
     @Test

@@ -36,7 +36,7 @@ public class AlbumChatCommentService {
         if(albumChatRepository.findById(albumChatId).isEmpty()) {
             throw new NotFoundAlbumChatException();
         }
-        List<AlbumChatComment> commentList = commentRepository.findByAlbumChat_AlbumChatId(albumChatId).get();
+        List<AlbumChatComment> commentList = commentRepository.findByAlbumChat_AlbumChatId(albumChatId).orElseThrow();
         for (AlbumChatComment comment : commentList) {
             AlbumChatCommentResponse commentReq = new AlbumChatCommentResponse(
                 comment.getUser().getUserId(),comment.getAlbumChatCommentId(),
@@ -57,7 +57,7 @@ public class AlbumChatCommentService {
             throw new NotFoundUserException();
         }
         AlbumChatComment commentEntity=new AlbumChatComment(comment.getContent(),
-            Instant.now(),userRepository.findByUserId(comment.getUserId()).get(),
+            Instant.now(),userRepository.findByUserId(comment.getUserId()).orElseThrow(),
         null,albumChatRepository.findById(comment.getAlbumChatId()).get());
         commentRepository.save(commentEntity);
         AlbumChatCommentDto commentDto=new AlbumChatCommentDto();

@@ -36,7 +36,7 @@ public class AlbumChatReplyService {
         if(commentRepository.findById(commentId).isEmpty()) {
             throw new NotFoundCommentException();
         }
-        List<AlbumChatReply> replyList=replyRepository.findByAlbumChatComment_AlbumChatCommentId(commentId).get();
+        List<AlbumChatReply> replyList=replyRepository.findByAlbumChatComment_AlbumChatCommentId(commentId).orElseThrow();
         for (AlbumChatReply reply : replyList) {
             AlbumChatReplyResponse replyreq = new AlbumChatReplyResponse(
                 reply.getAlbumChatReplyId(),reply.getUser().getUserId(),reply.getContent(),reply.getUpdateTime()
@@ -58,8 +58,7 @@ public class AlbumChatReplyService {
             ,commentRepository.findByAlbumChatCommentId(reply.getAlbumChatCommentId())
                 ,userRepository.findById(reply.getUserId()).get());
         replyRepository.save(replyEntity);
-        AlbumChatReplyDto replyDto=new AlbumChatReplyDto(replyEntity.getAlbumChatReplyId());
-        return replyDto;
+        return new AlbumChatReplyDto(replyEntity.getAlbumChatReplyId());
     }
 
     public void albumChatReplyUpdate(AlbumChatReplyUpdateReq reply) {

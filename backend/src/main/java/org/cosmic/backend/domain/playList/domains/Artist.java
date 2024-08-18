@@ -21,7 +21,7 @@ public class Artist {//
     @Column(name="artistId")
     private Long artistId ;
 
-    @Column(length=255,name="artistName")
+    @Column(name="artistName")
     private String artistName;
 
     //아티스트 1 앨범 N

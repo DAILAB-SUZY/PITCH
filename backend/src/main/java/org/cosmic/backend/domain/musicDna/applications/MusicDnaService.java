@@ -89,7 +89,7 @@ public class MusicDnaService {
         {
             throw new NotFoundUserException();
         }
-        List<User_Dna>userDnas=dnaRepository.findByUser_UserId(user.getUserId()).get();
+        List<User_Dna>userDnas=dnaRepository.findByUser_UserId(user.getUserId()).orElseThrow();
         List<UserDnaResponse> listDNA=new ArrayList<>();
         for(User_Dna dna:userDnas)
         {

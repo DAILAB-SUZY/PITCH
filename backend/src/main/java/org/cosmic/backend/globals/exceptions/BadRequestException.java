@@ -2,12 +2,12 @@ package org.cosmic.backend.globals.exceptions;
 
 public class BadRequestException extends RuntimeException{
 
-    protected static String notMatchAlbumChatError_Message="Not Match AlbumChat Exception";
-    protected static String notMatchAlbumError_Message="Not Match Album Exception";
-    protected static String notMatchBestAlbumError_Message="Not Match BestAlbum Exception";
-    protected static String notMatchMusicDnaCountError_Message="Need 4 MusicDna";
-    protected static String notMatchConditionError_Message="Not met password condition";
-    protected static String notMatchPasswordError_Message="Not match password";
+    protected static final String notMatchAlbumChatError_Message="Not Match AlbumChat Exception";
+    protected static final String notMatchAlbumError_Message="Not Match Album Exception";
+    protected static final String notMatchBestAlbumError_Message="Not Match BestAlbum Exception";
+    protected static final String notMatchMusicDnaCountError_Message="Need 4 MusicDna";
+    protected static final String notMatchConditionError_Message="Not met password condition";
+    protected static final String notMatchPasswordError_Message="Not match password";
 
     public BadRequestException(String errorMessage) {
         super(errorMessage);

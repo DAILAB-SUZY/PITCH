@@ -33,7 +33,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.Instant;
-import java.util.Arrays;
+import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -45,7 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class CreatePlaylistTest extends BaseSetting {
     @Autowired
     private MockMvc mockMvc;
-    ObjectMapper mapper = new ObjectMapper();
+    final ObjectMapper mapper = new ObjectMapper();
     @Autowired
     EmotionRepository emotionRepository;
     @Autowired
@@ -119,7 +119,7 @@ public class CreatePlaylistTest extends BaseSetting {
 
         PlaylistDto playlistdto=new PlaylistDto();
         playlistdto.setId(user.getUserId());
-        playlistdto.setPlaylist(Arrays.asList(new PlaylistDetail(track.getTrackId())));
+        playlistdto.setPlaylist(List.of(new PlaylistDetail(track.getTrackId())));
 
         mockMvc.perform(post("/api/playlist/save")
                 .header("Authorization", "Bearer " + validToken)
