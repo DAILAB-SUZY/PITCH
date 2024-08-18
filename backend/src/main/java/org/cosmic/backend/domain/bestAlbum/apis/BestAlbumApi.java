@@ -1,15 +1,12 @@
 package org.cosmic.backend.domain.bestAlbum.apis;
 
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.transaction.Transactional;
 import org.cosmic.backend.domain.bestAlbum.applications.BestAlbumService;
 import org.cosmic.backend.domain.bestAlbum.dtos.*;
 import org.cosmic.backend.domain.playList.dtos.ArtistDto;
 import org.cosmic.backend.domain.user.dtos.UserDto;
-import org.cosmic.backend.globals.dto.ErrorResponse;
+import org.cosmic.backend.globals.annotations.ApiCommonResponses;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/bestAlbum")
+@ApiCommonResponses
 public class BestAlbumApi {
     private final BestAlbumService bestAlbumService;
 
@@ -27,135 +25,39 @@ public class BestAlbumApi {
         this.bestAlbumService = bestAlbumService;
     }
 
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200",
-            description = "Ok",
-            content = {
-                @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = String.class))
-            }),
-
-        @ApiResponse(responseCode = "404",
-            description = "Not Found User",
-            content = {
-                @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = ErrorResponse.class))
-            }
-        )
-    }
-    )
     @Transactional
     @PostMapping("/give")
+    @ApiResponse(responseCode = "404", description = "Not Found User")
     public List<BestAlbumGiveDto> bestAlbumGive(@RequestBody UserDto user) {
         return bestAlbumService.open(user.getUserId());
     }
 
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200",
-            description = "Ok",
-            content = {
-                @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = String.class))
-            }),
-
-        @ApiResponse(responseCode = "404",
-            description = "Not Found User or Album",
-            content = {
-                @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = ErrorResponse.class))
-            }
-        ),
-            @ApiResponse(responseCode = "409",
-                description = "Exist BestAlbum",
-                content = {
-                    @Content(mediaType = "application/json",
-                        schema = @Schema(implementation = ErrorResponse.class))
-                }
-            )
-    }
-    )
     @Transactional
     @PostMapping("/add")
+    @ApiResponse(responseCode = "404", description = "Not Found User or Album")
+    @ApiResponse(responseCode = "409", description = "Exist BestAlbum")
     public ResponseEntity<?> bestAlbumAdd(@RequestBody BestAlbumDto bestAlbumDto) {
         bestAlbumService.add(bestAlbumDto.getUserId(),bestAlbumDto.getAlbumId());
         return ResponseEntity.ok("성공");
     }
 
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200",
-            description = "Ok",
-            content = {
-                @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = String.class))
-            }),
-
-        @ApiResponse(responseCode = "400",
-            description = "Not Match BestAlbum",
-            content = {
-                @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = ErrorResponse.class))
-            }
-        ),
-
-        @ApiResponse(responseCode = "404",
-            description = "Not Found User or Album",
-            content = {
-                @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = ErrorResponse.class))
-            }
-        )
-    }
-    )
     @Transactional
     @PostMapping("/save")
+    @ApiResponse(responseCode = "400", description = "Not Match BestAlbum")
+    @ApiResponse(responseCode = "404", description = "Not Found User or Album")
     public ResponseEntity<?> bestAlbumSave(@RequestBody BestAlbumListDto bestAlbumlistDto) {
         bestAlbumService.save(bestAlbumlistDto.getUserId(),bestAlbumlistDto.getBestalbum());
         return ResponseEntity.ok("성공");
-
     }
-    //앨범 위치 조정
-
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200",
-            description = "Ok",
-            content = {
-                @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = String.class))
-            }),
-
-        @ApiResponse(responseCode = "404",
-            description = "Not Match Artist Name",
-            content = {
-                @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = ErrorResponse.class))
-            }
-        )
-    }
-    )
 
     @PostMapping("/Artistsearch")
+    @ApiResponse(responseCode = "404", description = "Not Match Artist Name")
     public List<AlbumGiveDto> artistSearch(@RequestBody ArtistDto artist) {
         return bestAlbumService.searchArtist(artist.getArtistName());
     }
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200",
-            description = "Ok",
-            content = {
-                @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = String.class))
-            }),
-
-        @ApiResponse(responseCode = "404",
-            description = "Not Match Album Title",
-            content = {
-                @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = ErrorResponse.class))
-            }
-        )
-    }
-    )
 
     @PostMapping("/Albumsearch")
+    @ApiResponse(responseCode = "404", description = "Not Match Album Title")
     public List<AlbumGiveDto> albumSearch(@RequestBody AlbumDto album) {
         return bestAlbumService.searchAlbum(album.getAlbumName());
     }

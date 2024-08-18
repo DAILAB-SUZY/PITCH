@@ -1,16 +1,12 @@
 package org.cosmic.backend.domain.post.apis;
 
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.transaction.Transactional;
 import org.cosmic.backend.domain.playList.dtos.ArtistDto;
 import org.cosmic.backend.domain.post.dtos.Post.*;
 import org.cosmic.backend.domain.post.services.PostService;
 import org.cosmic.backend.domain.user.dtos.UserDto;
-import org.cosmic.backend.globals.dto.ErrorResponse;
-import org.springframework.http.MediaType;
+import org.cosmic.backend.globals.annotations.ApiCommonResponses;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,22 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/post")
-@ApiResponses(value = {
-        @ApiResponse(responseCode = "200",
-                description = "Ok",
-                content = {
-                        @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                schema = @Schema(implementation = String.class))
-                }),
-
-        @ApiResponse(responseCode = "404",
-                content = {
-                        @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                schema = @Schema(implementation = ErrorResponse.class))
-                }
-        )
-}
-)
+@ApiCommonResponses
 public class PostApi {
     private final PostService postService;
 

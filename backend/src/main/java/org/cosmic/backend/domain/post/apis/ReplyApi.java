@@ -1,16 +1,12 @@
 package org.cosmic.backend.domain.post.apis;
 
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.cosmic.backend.domain.post.dtos.Comment.CommentDto;
 import org.cosmic.backend.domain.post.dtos.Reply.CreateReplyReq;
 import org.cosmic.backend.domain.post.dtos.Reply.ReplyDto;
 import org.cosmic.backend.domain.post.dtos.Reply.UpdateReplyReq;
 import org.cosmic.backend.domain.post.services.ReplyService;
-import org.cosmic.backend.globals.dto.ErrorResponse;
-import org.springframework.http.MediaType;
+import org.cosmic.backend.globals.annotations.ApiCommonResponses;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,22 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/reply")
-@ApiResponses(value = {
-        @ApiResponse(responseCode = "200",
-                description = "Ok",
-                content = {
-                        @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                schema = @Schema(implementation = String.class))
-                }),
-        @ApiResponse(responseCode = "404",
-                description = "Not Found Comment",
-                content = {
-                        @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                schema = @Schema(implementation = ErrorResponse.class))
-                }
-        )
-}
-)
+@ApiCommonResponses
 public class ReplyApi {
     private final ReplyService replyService;
 
@@ -57,11 +38,7 @@ public class ReplyApi {
     }
     //comment를 부모로하는 reply를 쭉 받고 시간 순으로 배치
     @PostMapping("/update")
-    @ApiResponse(responseCode = "400", description = "Not Match User Or Comment",
-            content = {
-                    @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = String.class))
-            })
+    @ApiResponse(responseCode = "400", description = "Not Match User Or Comment")
     @ApiResponse(responseCode = "404", description = "Not Found Reply")
     public ResponseEntity<?> updateReply(@RequestBody UpdateReplyReq reply) {
         replyService.updateReply(reply);
