@@ -1,10 +1,7 @@
-package org.cosmic.backend.domains.albumPost.Post;
+package org.cosmic.backend.domains.albumPost.post;
 
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.auth.dtos.UserLogin;
-import org.cosmic.backend.domain.playList.domains.Album;
-import org.cosmic.backend.domain.playList.domains.Artist;
-import org.cosmic.backend.domain.playList.domains.Track;
 import org.cosmic.backend.domain.playList.dtos.ArtistDto;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
 import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
@@ -29,8 +26,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.time.Instant;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -53,21 +48,11 @@ public class CreatePostTest extends BaseSetting {
     @Autowired
     TrackRepository trackRepository;
 
-    private ResultActions resultActions;
-    private MvcResult result;
-
     @Test
     @Transactional
     public void albumSearchTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
-        User user=getUser();
-        Instant now = Instant.now();
-
-        Artist artist=saveArtist("비비");
-
-        Album album=saveAlbum("밤양갱", artist, now, "발라드");
-        Track track=saveTrack("밤양갱",album,artist,now,"발라드");
 
         mockMvc.perform(post("/api/post/searchAlbum")
                         .header("Authorization", "Bearer " + validToken)
@@ -95,12 +80,6 @@ public class CreatePostTest extends BaseSetting {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
         User user=getUser();
-        Instant now = Instant.now();
-
-        Artist artist=saveArtist("비비");
-
-        Album album=saveAlbum("밤양갱", artist, now, "발라드");
-        Track track=saveTrack("밤양갱",album,artist,now,"발라드");
 
         mockMvc.perform(post("/api/post/create")
                 .header("Authorization", "Bearer " + validToken)
@@ -124,13 +103,8 @@ public class CreatePostTest extends BaseSetting {
         UserLogin userLogin = loginUser("test@example.com","12345678");
         String validToken=userLogin.getToken();
         User user=getUser();
-        Instant now = Instant.now();
 
-        Artist artist=saveArtist("비비");
-
-        Album album=saveAlbum("밤양갱", artist, now, "발라드");
-        Track track=saveTrack("밤양갱",album,artist,now,"발라드");
-        resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/api/post/create")
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/api/post/create")
                 .header("Authorization", "Bearer " + validToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(CreatePost.builder()
@@ -143,7 +117,7 @@ public class CreatePostTest extends BaseSetting {
                         .build()
                 )));
 
-        result = resultActions.andReturn();
+        MvcResult result = resultActions.andReturn();
 
         String content = result.getResponse().getContentAsString();
         PostDto postDto = mapper.readValue(content, PostDto.class); // 응답 JSON을 PostDto 객체로 변환

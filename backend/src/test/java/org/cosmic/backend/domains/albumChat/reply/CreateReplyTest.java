@@ -1,7 +1,6 @@
-package org.cosmic.backend.domains.albumChat.Reply;
+package org.cosmic.backend.domains.albumChat.reply;
 
 import lombok.extern.log4j.Log4j2;
-import org.cosmic.backend.domain.albumChat.domains.AlbumChat;
 import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumChatResponse;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentCreateReq;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDto;
@@ -70,8 +69,7 @@ public class CreateReplyTest extends BaseSetting {
 
         Album album=saveAlbum("밤양갱", artist, now, "발라드");
 
-        AlbumChat albumChat= saveAlbumChat("밤양갱", artist, album,now, "발라드");
-
+        saveAlbumChat("밤양갱", artist, album,now, "발라드");
         resultActions=mockMvc.perform(MockMvcRequestBuilders.post("/api/albumchat/open")
                 .header("Authorization", "Bearer " + validToken)
                 .contentType("application/json")
@@ -129,8 +127,7 @@ public class CreateReplyTest extends BaseSetting {
 
         Album album=saveAlbum("밤양갱", artist, now, "발라드");
 
-        AlbumChat albumChat= saveAlbumChat("밤양갱", artist, album,now, "발라드");
-
+        saveAlbumChat("밤양갱", artist, album,now, "발라드");
         resultActions=mockMvc.perform(MockMvcRequestBuilders.post("/api/albumchat/open")
                 .header("Authorization", "Bearer " + validToken)
                 .contentType("application/json")
@@ -157,10 +154,6 @@ public class CreateReplyTest extends BaseSetting {
                 .build()
             )));
         result = resultActions.andReturn();
-
-        content = result.getResponse().getContentAsString();
-        AlbumChatCommentDto albumChatCommentDto = mapper.readValue(content, AlbumChatCommentDto.class);
-        Long albumChatCommentId = albumChatCommentDto.getAlbumChatCommentId();
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/albumchat/reply/create")
                 .header("Authorization", "Bearer " + validToken)

@@ -1,7 +1,6 @@
 package org.cosmic.backend.domains.albumChat.albumLike;
 
 import lombok.extern.log4j.Log4j2;
-import org.cosmic.backend.domain.albumChat.domains.AlbumChat;
 import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumChatResponse;
 import org.cosmic.backend.domain.albumChat.dtos.albumlike.AlbumChatAlbumLikeDto;
 import org.cosmic.backend.domain.albumChat.dtos.albumlike.AlbumChatAlbumLikeReq;
@@ -68,7 +67,7 @@ public class DeleteAlbumLikeTest extends BaseSetting {
 
         Album album=saveAlbum("밤양갱", artist, now, "발라드");
 
-        AlbumChat albumChat= saveAlbumChat("밤양갱", artist, album,now, "발라드");
+        saveAlbumChat("밤양갱", artist, album, now, "발라드");
         resultActions =mockMvc.perform(MockMvcRequestBuilders.post("/api/albumchat/open")
             .header("Authorization", "Bearer " + validToken)
             .contentType("application/json")
@@ -121,7 +120,7 @@ public class DeleteAlbumLikeTest extends BaseSetting {
 
         Album album=saveAlbum("밤양갱", artist, now, "발라드");
 
-        AlbumChat albumChat= saveAlbumChat("밤양갱", artist, album,now, "발라드");
+        saveAlbumChat("밤양갱", artist, album, now, "발라드");
         resultActions =mockMvc.perform(MockMvcRequestBuilders.post("/api/albumchat/open")
             .header("Authorization", "Bearer " + validToken)
             .contentType("application/json")
@@ -147,10 +146,6 @@ public class DeleteAlbumLikeTest extends BaseSetting {
             )));
 
         result = resultActions.andReturn();
-
-        content = result.getResponse().getContentAsString();
-        AlbumChatAlbumLikeReq albumChatAlbumLikeReq = mapper.readValue(content, AlbumChatAlbumLikeReq.class);
-        Long albumChatAlbumLikeId = albumChatAlbumLikeReq.getAlbumChatAlbumLikeId();
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/albumchat/albumlike/delete")
             .header("Authorization", "Bearer " + validToken)

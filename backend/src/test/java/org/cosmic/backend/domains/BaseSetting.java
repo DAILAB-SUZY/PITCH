@@ -6,7 +6,6 @@ import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatRepository;
 import org.cosmic.backend.domain.auth.dtos.UserLogin;
 import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.playList.domains.Artist;
-import org.cosmic.backend.domain.playList.domains.Playlist;
 import org.cosmic.backend.domain.playList.domains.Track;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
 import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
@@ -52,7 +51,8 @@ public class BaseSetting {
 
     protected ObjectMapper mapper = new ObjectMapper();
     private User user;
-    private User user2;
+    //TODO user2에 대한 생성자가 있어야 할 듯. 사용하지 않을 것이면 삭제 요망.
+    private final User user2 = new User();
 
     protected UserLogin loginUser(String email, String password) throws Exception {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -62,12 +62,11 @@ public class BaseSetting {
                 .verified(true)
                 .build());
 
-        User savedUser = userRepository.save(User.builder()
+        user= userRepository.save(User.builder()
                 .email(savedEmail)
                 .username("goodwill")
                 .password(encoder.encode(password))
                 .build());
-        user=savedUser;
 
         UserLogin userLogin = UserLogin.builder()
                 .email(email)
@@ -83,39 +82,6 @@ public class BaseSetting {
 
         return UserLogin.builder()
                 .email(email)
-                .token(validToken)
-                .build();
-    }
-
-    protected UserLogin loginUser2(String email, String password) throws Exception {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        Email savedEmail2 = emailRepository.save(Email.builder()
-                .email("test@example.com")
-                .verificationCode("12345678")
-                .verified(true)
-                .build());
-
-        User savedUser2 = userRepository.save(User.builder()
-                .email(savedEmail2)
-                .username("goodwill")
-                .password(encoder.encode(password))
-                .build());
-        user2=savedUser2;
-
-        UserLogin userLogin = UserLogin.builder()
-                .email("test@example.com")
-                .password(password)
-                .build();
-
-        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/auth/signin")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(userLogin)));
-
-        MvcResult result = resultActions.andReturn();
-        String validToken = mapper.readValue(result.getResponse().getContentAsString(), UserLogin.class).getToken();
-
-        return UserLogin.builder()
-                .email("test@example.com")
                 .token(validToken)
                 .build();
     }
@@ -123,7 +89,7 @@ public class BaseSetting {
     protected User getUser() throws Exception {
         return user;
     }
-    protected User getUser2() throws Exception {
+    protected User getUser2() {
         return user2;
     }
 
@@ -146,11 +112,11 @@ public class BaseSetting {
     protected AlbumChat saveAlbumChat(String title, Artist artist, Album album,Instant createdDate, String genre) {
         return albumChatRepository.save(AlbumChat.builder()
                 .CreateTime(createdDate)
-                .genre("발라드")
+                .genre(genre)
                 .cover("base")
-                .title("밤양갱")
+                .title(title)
                 .album(album)
-                .artistName("비비")
+                .artistName(artist.getArtistName())
                 .build());
     }
 
@@ -162,13 +128,6 @@ public class BaseSetting {
                 .artist(artist)
                 .createdDate(createdDate)
                 .genre(genre)
-                .build());
-    }
-    protected Playlist savePlaylist(Instant createdDate,User user,Instant updatedDate) {
-        return playlistRepository.save(Playlist.builder()
-                .createdDate(createdDate)
-                .user(user)
-                .updatedDate(updatedDate)
                 .build());
     }
 }

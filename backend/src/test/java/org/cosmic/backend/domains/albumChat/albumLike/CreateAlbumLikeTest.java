@@ -1,7 +1,6 @@
 package org.cosmic.backend.domains.albumChat.albumLike;
 
 import lombok.extern.log4j.Log4j2;
-import org.cosmic.backend.domain.albumChat.domains.AlbumChat;
 import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumChatResponse;
 import org.cosmic.backend.domain.albumChat.dtos.albumlike.AlbumChatAlbumLikeDto;
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatRepository;
@@ -70,7 +69,7 @@ public class CreateAlbumLikeTest extends BaseSetting {
 
         Album album=saveAlbum("밤양갱", artist, now, "발라드");
 
-        AlbumChat albumChat= saveAlbumChat("밤양갱", artist, album,now, "발라드");
+        saveAlbumChat("밤양갱", artist, album, now, "발라드");
 
         resultActions =mockMvc.perform(MockMvcRequestBuilders.post("/api/albumchat/open")
             .header("Authorization", "Bearer " + validToken)
@@ -109,7 +108,7 @@ public class CreateAlbumLikeTest extends BaseSetting {
 
         Album album=saveAlbum("밤양갱", artist, now, "발라드");
 
-        AlbumChat albumChat= saveAlbumChat("밤양갱", artist, album,now, "발라드");
+        saveAlbumChat("밤양갱", artist, album, now, "발라드");
 
         resultActions =mockMvc.perform(MockMvcRequestBuilders.post("/api/albumchat/open")
             .header("Authorization", "Bearer " + validToken)
@@ -120,10 +119,6 @@ public class CreateAlbumLikeTest extends BaseSetting {
             )));
 
         result = resultActions.andReturn();
-
-        String content = result.getResponse().getContentAsString();
-        AlbumChatResponse albumChatResponse = mapper.readValue(content, AlbumChatResponse.class);
-        Long albumChatId = albumChatResponse.getAlbumChatId();
 
         mockMvc.perform(post("/api/albumchat/albumlike/create")
             .header("Authorization", "Bearer " + validToken)
@@ -147,7 +142,7 @@ public class CreateAlbumLikeTest extends BaseSetting {
 
         Album album=saveAlbum("밤양갱", artist, now, "발라드");
 
-        AlbumChat albumChat= saveAlbumChat("밤양갱", artist, album,now, "발라드");
+        saveAlbumChat("밤양갱", artist, album, now, "발라드");
 
         resultActions =mockMvc.perform(MockMvcRequestBuilders.post("/api/albumchat/open")
             .header("Authorization", "Bearer " + validToken)
