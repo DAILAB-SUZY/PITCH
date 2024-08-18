@@ -7,9 +7,6 @@ import org.cosmic.backend.domain.user.domains.User;
 
 import java.time.Instant;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-
 @Data
 @NoArgsConstructor
 @Entity

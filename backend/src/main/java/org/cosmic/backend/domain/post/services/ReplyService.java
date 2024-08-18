@@ -12,7 +12,6 @@ import org.cosmic.backend.domain.post.exceptions.NotMatchUserException;
 import org.cosmic.backend.domain.post.repositories.CommentRepository;
 import org.cosmic.backend.domain.post.repositories.ReplyRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -21,12 +20,15 @@ import java.util.List;
 
 @Service
 public class ReplyService {
-    @Autowired
-    private ReplyRepository replyRepository;
-    @Autowired
-    private UsersRepository userRepository;
-    @Autowired
-    private CommentRepository commentRepository;
+    private final ReplyRepository replyRepository;
+    private final UsersRepository userRepository;
+    private final CommentRepository commentRepository;
+
+    public ReplyService(ReplyRepository replyRepository, UsersRepository userRepository, CommentRepository commentRepository) {
+        this.replyRepository = replyRepository;
+        this.userRepository = userRepository;
+        this.commentRepository = commentRepository;
+    }
 
     public List<UpdateReplyReq> getRepliesByCommentId(Long commentId) {//해당 댓글에 있는 모든 reply가져오기
         List<UpdateReplyReq> replies = new ArrayList<>();

@@ -1,4 +1,5 @@
 package org.cosmic.backend.domain.user.applications;
+
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.auth.applications.TokenProvider;
 import org.cosmic.backend.domain.auth.dtos.UserLogin;
@@ -13,7 +14,6 @@ import org.cosmic.backend.domain.user.exceptions.NotMatchConditionException;
 import org.cosmic.backend.domain.user.exceptions.NotMatchPasswordException;
 import org.cosmic.backend.domain.user.repositorys.EmailRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,16 +24,19 @@ import java.util.Optional;
 @Log4j2
 @Service
 public class UserService {
-    @Autowired
-    private  TokenProvider tokenProvider;
-    @Autowired
-    private  UsersRepository usersRepository;
-    @Autowired
-    private  EmailRepository emailRepository;
-    @Autowired
-    private  RedisTemplate<String, String> redisTemplate;
-    @Autowired
-    private  PlaylistRepository playlistRepository;
+    private final TokenProvider tokenProvider;
+    private final UsersRepository usersRepository;
+    private final EmailRepository emailRepository;
+    private final RedisTemplate<String, String> redisTemplate;
+    private final PlaylistRepository playlistRepository;
+
+    public UserService(TokenProvider tokenProvider, UsersRepository usersRepository, EmailRepository emailRepository, RedisTemplate<String, String> redisTemplate, PlaylistRepository playlistRepository) {
+        this.tokenProvider = tokenProvider;
+        this.usersRepository = usersRepository;
+        this.emailRepository = emailRepository;
+        this.redisTemplate = redisTemplate;
+        this.playlistRepository = playlistRepository;
+    }
 
     public void userRegister(JoinRequest request){
         BCryptPasswordEncoder passwordEncoder=new BCryptPasswordEncoder();

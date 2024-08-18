@@ -10,7 +10,6 @@ import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatCommentLikeRepos
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatCommentRepository;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,12 +17,15 @@ import java.util.List;
 
 @Service
 public class AlbumChatCommentLikeService {
-    @Autowired
-    private AlbumChatCommentLikeRepository likeRepository;
-    @Autowired
-    private UsersRepository usersRepository;
-    @Autowired
-    private AlbumChatCommentRepository albumChatCommentRepository;
+    private final AlbumChatCommentLikeRepository likeRepository;
+    private final UsersRepository usersRepository;
+    private final AlbumChatCommentRepository albumChatCommentRepository;
+
+    public AlbumChatCommentLikeService(AlbumChatCommentLikeRepository likeRepository, UsersRepository usersRepository, AlbumChatCommentRepository albumChatCommentRepository) {
+        this.likeRepository = likeRepository;
+        this.usersRepository = usersRepository;
+        this.albumChatCommentRepository = albumChatCommentRepository;
+    }
 
     public List<AlbumChatCommentLikeResponse> getAlbumChatCommentLikeByAlbumChatCommentId(Long albumChatCommentId) {
         List<AlbumChatCommentLikeResponse> likes = new ArrayList<>();

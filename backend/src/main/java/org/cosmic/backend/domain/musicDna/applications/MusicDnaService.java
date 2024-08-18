@@ -1,17 +1,19 @@
 package org.cosmic.backend.domain.musicDna.applications;
 
 import jakarta.transaction.Transactional;
-import org.cosmic.backend.domain.musicDna.domains.*;
+import org.cosmic.backend.domain.musicDna.domains.MusicDna;
+import org.cosmic.backend.domain.musicDna.domains.User_Dna;
 import org.cosmic.backend.domain.musicDna.dtos.DnaDetail;
 import org.cosmic.backend.domain.musicDna.dtos.ListDna;
 import org.cosmic.backend.domain.musicDna.dtos.UserDnaResponse;
-import org.cosmic.backend.domain.musicDna.exceptions.*;
-import org.cosmic.backend.domain.musicDna.repositorys.*;
+import org.cosmic.backend.domain.musicDna.exceptions.NotFoundEmotionException;
+import org.cosmic.backend.domain.musicDna.exceptions.NotMatchMusicDnaCountException;
+import org.cosmic.backend.domain.musicDna.repositorys.DnaRepository;
+import org.cosmic.backend.domain.musicDna.repositorys.EmotionRepository;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.dtos.UserDto;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,12 +23,15 @@ import java.util.stream.Collectors;
 
 @Service
 public class MusicDnaService {
-    @Autowired
-    DnaRepository dnaRepository;
-    @Autowired
-    EmotionRepository emotionRepository;
-    @Autowired
-    UsersRepository usersRepository;
+    private final DnaRepository dnaRepository;
+    private final EmotionRepository emotionRepository;
+    private final UsersRepository usersRepository;
+
+    public MusicDnaService(DnaRepository dnaRepository, EmotionRepository emotionRepository, UsersRepository usersRepository) {
+        this.dnaRepository = dnaRepository;
+        this.emotionRepository = emotionRepository;
+        this.usersRepository = usersRepository;
+    }
 
     @Transactional
     public void saveDNA(Long key, List<DnaDetail>dna) {

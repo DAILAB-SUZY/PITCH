@@ -12,7 +12,6 @@ import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.post.exceptions.NotFoundLikeException;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,12 +19,15 @@ import java.util.List;
 
 @Service
 public class AlbumChatAlbumLikeService {
-    @Autowired
-    private AlbumChatAlbumLikeRepository likeRepository;
-    @Autowired
-    private UsersRepository usersRepository;
-    @Autowired
-    private AlbumChatRepository albumChatRepository;
+    private final AlbumChatAlbumLikeRepository likeRepository;
+    private final UsersRepository usersRepository;
+    private final AlbumChatRepository albumChatRepository;
+
+    public AlbumChatAlbumLikeService(AlbumChatAlbumLikeRepository likeRepository, UsersRepository usersRepository, AlbumChatRepository albumChatRepository) {
+        this.likeRepository = likeRepository;
+        this.usersRepository = usersRepository;
+        this.albumChatRepository = albumChatRepository;
+    }
 
     public List<AlbumChatAlbumLikeResponse> getAlbumChatAlbumLikeByAlbumChatId(Long albumChatId) {
         List<AlbumChatAlbumLikeResponse> likes = new ArrayList<>();

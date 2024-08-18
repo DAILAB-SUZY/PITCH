@@ -11,10 +11,12 @@ import org.cosmic.backend.domain.playList.dtos.TrackGiveDto;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundArtistException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundTrackException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
-import org.cosmic.backend.domain.playList.repositorys.*;
+import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
+import org.cosmic.backend.domain.playList.repositorys.PlaylistRepository;
+import org.cosmic.backend.domain.playList.repositorys.PlaylistTrackRepository;
+import org.cosmic.backend.domain.playList.repositorys.TrackRepository;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -23,17 +25,19 @@ import java.util.List;
 
 @Service
 public class PlaylistService {
+    private final PlaylistRepository playlistRepository;
+    private final UsersRepository usersRepository;
+    private final TrackRepository trackRepository;
+    private final PlaylistTrackRepository playlistTrackRepository;
+    private final ArtistRepository artistRepository;
 
-    @Autowired
-    private PlaylistRepository playlistRepository;
-    @Autowired
-    private UsersRepository usersRepository;
-    @Autowired
-    private TrackRepository trackRepository;
-    @Autowired
-    private PlaylistTrackRepository playlistTrackRepository;
-    @Autowired
-    private ArtistRepository artistRepository;
+    public PlaylistService(PlaylistRepository playlistRepository, UsersRepository usersRepository, TrackRepository trackRepository, PlaylistTrackRepository playlistTrackRepository, ArtistRepository artistRepository) {
+        this.playlistRepository = playlistRepository;
+        this.usersRepository = usersRepository;
+        this.trackRepository = trackRepository;
+        this.playlistTrackRepository = playlistTrackRepository;
+        this.artistRepository = artistRepository;
+    }
 
     @Transactional
     public void save(long userId, List<PlaylistDetail> playlist) {

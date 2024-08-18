@@ -3,19 +3,20 @@ package org.cosmic.backend.domain.bestAlbum.applications;
 import jakarta.transaction.Transactional;
 import org.cosmic.backend.domain.bestAlbum.domains.AlbumUser;
 import org.cosmic.backend.domain.bestAlbum.dtos.AlbumGiveDto;
+import org.cosmic.backend.domain.bestAlbum.dtos.BestAlbumDetail;
 import org.cosmic.backend.domain.bestAlbum.dtos.BestAlbumGiveDto;
 import org.cosmic.backend.domain.bestAlbum.exceptions.ExistBestAlbumException;
 import org.cosmic.backend.domain.bestAlbum.exceptions.NotMatchBestAlbumException;
 import org.cosmic.backend.domain.bestAlbum.repositorys.AlbumUserRepository;
-import org.cosmic.backend.domain.playList.domains.*;
-import org.cosmic.backend.domain.bestAlbum.dtos.*;
+import org.cosmic.backend.domain.playList.domains.Album;
+import org.cosmic.backend.domain.playList.domains.Artist;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundArtistException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
-import org.cosmic.backend.domain.playList.repositorys.*;
+import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
+import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
 import org.cosmic.backend.domain.post.exceptions.NotFoundAlbumException;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -25,15 +26,17 @@ import java.util.Set;
 
 @Service
 public class BestAlbumService {
+    private final UsersRepository usersRepository;
+    private final AlbumRepository albumRepository;
+    private final ArtistRepository artistRepository;
+    private final AlbumUserRepository albumUserRepository;
 
-    @Autowired
-    private UsersRepository usersRepository;
-    @Autowired
-    private AlbumRepository albumRepository;
-    @Autowired
-    private ArtistRepository artistRepository;
-    @Autowired
-    private AlbumUserRepository albumUserRepository;
+    public BestAlbumService(UsersRepository usersRepository, AlbumRepository albumRepository, ArtistRepository artistRepository, AlbumUserRepository albumUserRepository) {
+        this.usersRepository = usersRepository;
+        this.albumRepository = albumRepository;
+        this.artistRepository = artistRepository;
+        this.albumUserRepository = albumUserRepository;
+    }
 
     @Transactional
     public List<BestAlbumGiveDto> open(Long userId) {

@@ -15,24 +15,25 @@ import org.cosmic.backend.domain.playList.repositorys.TrackRepository;
 import org.cosmic.backend.domain.post.exceptions.NotFoundAlbumException;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 @Service
 public class FavoriteArtistService {
+    private final ArtistRepository artistRepository;
+    private final AlbumRepository albumRepository;
+    private final TrackRepository trackRepository;
+    private final UsersRepository usersRepository;
+    private final FavoriteArtistRepository favoriteArtistRepository;
 
-    @Autowired
-    private ArtistRepository artistRepository;
-    @Autowired
-    private AlbumRepository albumRepository;
-    @Autowired
-    private TrackRepository trackRepository;
-    @Autowired
-    private UsersRepository usersRepository;
-    @Autowired
-    private FavoriteArtistRepository favoriteArtistRepository;
+    public FavoriteArtistService(ArtistRepository artistRepository, AlbumRepository albumRepository, TrackRepository trackRepository, UsersRepository usersRepository, FavoriteArtistRepository favoriteArtistRepository) {
+        this.artistRepository = artistRepository;
+        this.albumRepository = albumRepository;
+        this.trackRepository = trackRepository;
+        this.usersRepository = usersRepository;
+        this.favoriteArtistRepository = favoriteArtistRepository;
+    }
 
 
     public FavoriteArtistDto favoriteArtistGiveData(Long userId) {

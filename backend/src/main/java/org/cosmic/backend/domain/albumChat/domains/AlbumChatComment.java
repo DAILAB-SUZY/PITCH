@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import org.cosmic.backend.domain.user.domains.User;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 
 @Data

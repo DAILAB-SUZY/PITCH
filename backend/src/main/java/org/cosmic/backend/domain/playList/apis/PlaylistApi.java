@@ -5,11 +5,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.transaction.Transactional;
-import org.cosmic.backend.domain.playList.dtos.*;
 import org.cosmic.backend.domain.playList.applications.PlaylistService;
+import org.cosmic.backend.domain.playList.dtos.*;
 import org.cosmic.backend.domain.user.dtos.UserDto;
 import org.cosmic.backend.globals.dto.ErrorResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,9 +20,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/playlist")
 public class PlaylistApi {
+    private final PlaylistService playlistService;
 
-    @Autowired
-    private PlaylistService playlistService;
+    public PlaylistApi(PlaylistService playlistService) {
+        this.playlistService = playlistService;
+    }
 
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200",

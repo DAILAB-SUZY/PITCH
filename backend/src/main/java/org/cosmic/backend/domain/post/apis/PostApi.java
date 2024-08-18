@@ -10,7 +10,6 @@ import org.cosmic.backend.domain.post.dtos.Post.*;
 import org.cosmic.backend.domain.post.services.PostService;
 import org.cosmic.backend.domain.user.dtos.UserDto;
 import org.cosmic.backend.globals.dto.ErrorResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,8 +38,11 @@ import java.util.List;
 }
 )
 public class PostApi {
-    @Autowired
-    private PostService postService;
+    private final PostService postService;
+
+    public PostApi(PostService postService) {
+        this.postService = postService;
+    }
 
     @Transactional
     @PostMapping("/give")

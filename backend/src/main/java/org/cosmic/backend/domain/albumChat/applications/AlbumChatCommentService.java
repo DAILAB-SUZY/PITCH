@@ -12,7 +12,6 @@ import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatCommentRepositor
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatRepository;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -22,12 +21,15 @@ import java.util.Map;
 
 @Service
 public class AlbumChatCommentService {
-    @Autowired
-    private AlbumChatRepository albumChatRepository;
-    @Autowired
-    private AlbumChatCommentRepository commentRepository;
-    @Autowired
-    private UsersRepository userRepository;
+    private final AlbumChatRepository albumChatRepository;
+    private final AlbumChatCommentRepository commentRepository;
+    private final UsersRepository userRepository;
+
+    public AlbumChatCommentService(AlbumChatRepository albumChatRepository, AlbumChatCommentRepository commentRepository, UsersRepository userRepository) {
+        this.albumChatRepository = albumChatRepository;
+        this.commentRepository = commentRepository;
+        this.userRepository = userRepository;
+    }
 
     public List<AlbumChatCommentResponse> getCommentsByAlbumChatId(Long albumChatId) {
         List<AlbumChatCommentResponse> comments = new ArrayList<>();

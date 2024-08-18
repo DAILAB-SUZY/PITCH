@@ -10,7 +10,6 @@ import org.cosmic.backend.domain.post.dtos.Like.LikeResponse;
 import org.cosmic.backend.domain.post.dtos.Post.PostDto;
 import org.cosmic.backend.domain.post.services.LikeService;
 import org.cosmic.backend.globals.dto.ErrorResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,8 +39,11 @@ import java.util.List;
 )
 public class LikeApi {
     //특정 post의 좋아요들임.
-    @Autowired
-    private LikeService likeService;
+    private final LikeService likeService;
+
+    public LikeApi(LikeService likeService) {
+        this.likeService = likeService;
+    }
 
 
     @PostMapping("/give")

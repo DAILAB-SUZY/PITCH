@@ -1,4 +1,5 @@
 package org.cosmic.backend.domain.albumChat.applications;
+
 import org.cosmic.backend.domain.albumChat.domains.AlbumChat;
 import org.cosmic.backend.domain.albumChat.domains.AlbumChatComment;
 import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumChatDto;
@@ -8,9 +9,7 @@ import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatException
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatCommentLikeRepository;
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatCommentRepository;
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatRepository;
-
 import org.cosmic.backend.domain.post.dtos.Post.AlbumDto;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,14 +20,17 @@ import java.util.stream.Collectors;
 
 @Service
 public class AlbumChatService {
-    @Autowired
-    private AlbumChatRepository albumChatRepository;
-    @Autowired
-    private AlbumChatCommentRepository albumChatCommentRepository;
-    @Autowired
-    private AlbumChatCommentLikeRepository albumChatCommentLikeRepository;
-    @Autowired
-    private AlbumChatCommentService albumChatCommentService;
+    private final AlbumChatRepository albumChatRepository;
+    private final AlbumChatCommentRepository albumChatCommentRepository;
+    private final AlbumChatCommentLikeRepository albumChatCommentLikeRepository;
+    private final AlbumChatCommentService albumChatCommentService;
+
+    public AlbumChatService(AlbumChatRepository albumChatRepository, AlbumChatCommentRepository albumChatCommentRepository, AlbumChatCommentLikeRepository albumChatCommentLikeRepository, AlbumChatCommentService albumChatCommentService) {
+        this.albumChatRepository = albumChatRepository;
+        this.albumChatCommentRepository = albumChatCommentRepository;
+        this.albumChatCommentLikeRepository = albumChatCommentLikeRepository;
+        this.albumChatCommentService = albumChatCommentService;
+    }
 
     @Transactional
     public AlbumChatResponse getAlbumChatById(AlbumDto album) {

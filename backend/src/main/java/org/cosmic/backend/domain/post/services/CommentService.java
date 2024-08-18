@@ -13,7 +13,6 @@ import org.cosmic.backend.domain.post.exceptions.NotMatchUserException;
 import org.cosmic.backend.domain.post.repositories.CommentRepository;
 import org.cosmic.backend.domain.post.repositories.PostRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -22,16 +21,19 @@ import java.util.List;
 @Service
 public class CommentService {
 
-    @Autowired
-    ReplyService replyService=new ReplyService();
-    @Autowired
-    LikeService likeService=new LikeService();
-    @Autowired
-    private CommentRepository commentRepository;
-    @Autowired
-    private UsersRepository userRepository;
-    @Autowired
-    private PostRepository postRepository;
+    private final ReplyService replyService;
+    private final LikeService likeService;
+    private final CommentRepository commentRepository;
+    private final UsersRepository userRepository;
+    private final PostRepository postRepository;
+
+    public CommentService(ReplyService replyService, LikeService likeService, CommentRepository commentRepository, UsersRepository userRepository, PostRepository postRepository) {
+        this.replyService = replyService;
+        this.likeService = likeService;
+        this.commentRepository = commentRepository;
+        this.userRepository = userRepository;
+        this.postRepository = postRepository;
+    }
 
     public List<CommentReq> getCommentsByPostId(Long postId) {
         List<CommentReq> comments = new ArrayList<>();

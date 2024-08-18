@@ -5,12 +5,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.transaction.Transactional;
-import org.cosmic.backend.domain.bestAlbum.dtos.*;
 import org.cosmic.backend.domain.bestAlbum.applications.BestAlbumService;
+import org.cosmic.backend.domain.bestAlbum.dtos.*;
 import org.cosmic.backend.domain.playList.dtos.ArtistDto;
 import org.cosmic.backend.domain.user.dtos.UserDto;
 import org.cosmic.backend.globals.dto.ErrorResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,8 +21,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/bestAlbum")
 public class BestAlbumApi {
-    @Autowired
-    private BestAlbumService bestAlbumService;
+    private final BestAlbumService bestAlbumService;
+
+    public BestAlbumApi(BestAlbumService bestAlbumService) {
+        this.bestAlbumService = bestAlbumService;
+    }
+
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200",
             description = "Ok",

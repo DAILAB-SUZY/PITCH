@@ -8,14 +8,12 @@ import org.cosmic.backend.domain.playList.exceptions.NotMatchAlbumException;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
 import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
 import org.cosmic.backend.domain.post.dtos.Post.*;
-
 import org.cosmic.backend.domain.post.entities.Post;
 import org.cosmic.backend.domain.post.exceptions.NotFoundAlbumException;
 import org.cosmic.backend.domain.post.exceptions.NotFoundPostException;
 import org.cosmic.backend.domain.post.repositories.PostRepository;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -24,15 +22,17 @@ import java.util.List;
 
 @Service
 public class PostService {
+    private final PostRepository postRepository;
+    private final UsersRepository userRepository;
+    private final ArtistRepository artistRepository;
+    private final AlbumRepository albumRepository;
 
-    @Autowired
-    private PostRepository postRepository;
-    @Autowired
-    private UsersRepository userRepository;
-    @Autowired
-    private ArtistRepository artistRepository;
-    @Autowired
-    private AlbumRepository albumRepository;
+    public PostService(PostRepository postRepository, UsersRepository userRepository, ArtistRepository artistRepository, AlbumRepository albumRepository) {
+        this.postRepository = postRepository;
+        this.userRepository = userRepository;
+        this.artistRepository = artistRepository;
+        this.albumRepository = albumRepository;
+    }
 
     public List<PostReq> getAllPosts(Long userId)
     { // 해당 유저의 post들을 모두 가져오는

@@ -9,7 +9,6 @@ import org.cosmic.backend.domain.favoriteArtist.applications.FavoriteArtistServi
 import org.cosmic.backend.domain.favoriteArtist.dtos.*;
 import org.cosmic.backend.domain.playList.dtos.ArtistDto;
 import org.cosmic.backend.domain.user.dtos.UserDto;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,8 +22,11 @@ import java.util.List;
 @RequestMapping("/api/favoriteArtist")
 
 public class FavoriteApi {
-    @Autowired
-    private FavoriteArtistService favoriteartistService;
+    private final FavoriteArtistService favoriteartistService;
+
+    public FavoriteApi(FavoriteArtistService favoriteartistService) {
+        this.favoriteartistService = favoriteartistService;
+    }
 
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200",

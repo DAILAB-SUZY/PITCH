@@ -11,7 +11,6 @@ import org.cosmic.backend.domain.musicDna.dtos.ListDna;
 import org.cosmic.backend.domain.musicDna.dtos.UserDnaResponse;
 import org.cosmic.backend.domain.user.dtos.UserDto;
 import org.cosmic.backend.globals.dto.ErrorResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,8 +22,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/dna")
 public class MusicDnaApi {
-    @Autowired
-    private MusicDnaService musicDnaService;
+    private final MusicDnaService musicDnaService;
+
+    public MusicDnaApi(MusicDnaService musicDnaService) {
+        this.musicDnaService = musicDnaService;
+    }
 
     @Transactional
     @PostMapping("/give")

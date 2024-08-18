@@ -1,4 +1,5 @@
 package org.cosmic.backend.domain.albumChat.applications;
+
 import org.cosmic.backend.domain.albumChat.domains.AlbumChatReply;
 import org.cosmic.backend.domain.albumChat.dtos.reply.AlbumChatReplyCreateReq;
 import org.cosmic.backend.domain.albumChat.dtos.reply.AlbumChatReplyDto;
@@ -12,7 +13,6 @@ import org.cosmic.backend.domain.post.exceptions.NotFoundReplyException;
 import org.cosmic.backend.domain.post.exceptions.NotMatchCommentException;
 import org.cosmic.backend.domain.post.exceptions.NotMatchUserException;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -21,12 +21,15 @@ import java.util.List;
 
 @Service
 public class AlbumChatReplyService {
-    @Autowired
-    private AlbumChatReplyRepository replyRepository;
-    @Autowired
-    private UsersRepository userRepository;
-    @Autowired
-    private AlbumChatCommentRepository commentRepository;
+    private final AlbumChatReplyRepository replyRepository;
+    private final UsersRepository userRepository;
+    private final AlbumChatCommentRepository commentRepository;
+
+    public AlbumChatReplyService(AlbumChatReplyRepository replyRepository, UsersRepository userRepository, AlbumChatCommentRepository commentRepository) {
+        this.replyRepository = replyRepository;
+        this.userRepository = userRepository;
+        this.commentRepository = commentRepository;
+    }
 
     public List<AlbumChatReplyResponse> albumChatRepliesGetByCommentId(Long commentId) {
         List<AlbumChatReplyResponse> replies = new ArrayList<>();

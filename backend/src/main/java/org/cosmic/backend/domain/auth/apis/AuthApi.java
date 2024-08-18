@@ -8,7 +8,6 @@ import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.auth.dtos.UserLogin;
 import org.cosmic.backend.domain.user.applications.UserService;
 import org.cosmic.backend.globals.dto.ErrorResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,9 +30,11 @@ import org.springframework.web.bind.annotation.*;
         )
 })
 public class AuthApi {
+    private final UserService userService;
 
-    @Autowired
-    private UserService userService;
+    public AuthApi(UserService userService) {
+        this.userService = userService;
+    }
 
     @PostMapping("/signin")
     @ApiResponse(responseCode = "401",

@@ -11,7 +11,6 @@ import org.cosmic.backend.domain.post.exceptions.NotFoundPostException;
 import org.cosmic.backend.domain.post.repositories.LikeRepository;
 import org.cosmic.backend.domain.post.repositories.PostRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,12 +18,15 @@ import java.util.List;
 
 @Service
 public class LikeService {
-@Autowired
-private LikeRepository likeRepository;
-    @Autowired
-    private UsersRepository usersRepository;
-    @Autowired
-    private PostRepository postRepository;
+    private final LikeRepository likeRepository;
+    private final UsersRepository usersRepository;
+    private final PostRepository postRepository;
+
+    public LikeService(LikeRepository likeRepository, UsersRepository usersRepository, PostRepository postRepository) {
+        this.likeRepository = likeRepository;
+        this.usersRepository = usersRepository;
+        this.postRepository = postRepository;
+    }
 
     public List<LikeResponse> getLikesByPostId(Long postId) {
         List<LikeResponse> likes = new ArrayList<>();

@@ -4,12 +4,11 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.cosmic.backend.domain.albumChat.applications.AlbumChatCommentLikeService;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDto;
 import org.cosmic.backend.domain.albumChat.dtos.commentlike.AlbumChatCommentLikeDto;
 import org.cosmic.backend.domain.albumChat.dtos.commentlike.AlbumChatCommentLikeIdResponse;
 import org.cosmic.backend.domain.albumChat.dtos.commentlike.AlbumChatCommentLikeResponse;
-import org.cosmic.backend.domain.albumChat.applications.AlbumChatCommentLikeService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,9 +21,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/albumchat/commentlike")
 public class AlbumChatCommentLikeApi {//댓글 마다의 좋아요
+    private final AlbumChatCommentLikeService likeService;
 
-    @Autowired
-    private AlbumChatCommentLikeService likeService;
+    public AlbumChatCommentLikeApi(AlbumChatCommentLikeService likeService) {
+        this.likeService = likeService;
+    }
 
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200",

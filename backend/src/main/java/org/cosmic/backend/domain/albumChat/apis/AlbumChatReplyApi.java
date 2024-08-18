@@ -4,14 +4,13 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.cosmic.backend.domain.albumChat.applications.AlbumChatReplyService;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDto;
 import org.cosmic.backend.domain.albumChat.dtos.reply.AlbumChatReplyCreateReq;
 import org.cosmic.backend.domain.albumChat.dtos.reply.AlbumChatReplyDto;
 import org.cosmic.backend.domain.albumChat.dtos.reply.AlbumChatReplyResponse;
 import org.cosmic.backend.domain.albumChat.dtos.reply.AlbumChatReplyUpdateReq;
-import org.cosmic.backend.domain.albumChat.applications.AlbumChatReplyService;
 import org.cosmic.backend.globals.dto.ErrorResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,8 +22,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/albumchat/reply")
 public class AlbumChatReplyApi {
-    @Autowired
-    private AlbumChatReplyService replyService;
+    private final AlbumChatReplyService replyService;
+
+    public AlbumChatReplyApi(AlbumChatReplyService replyService) {
+        this.replyService = replyService;
+    }
 
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200",
