@@ -4,6 +4,7 @@ import logo from "../../img/logo.png";
 import BottomNav from "../components/BottomNav";
 import PlaylistCircle from "../components/PlaylistCircle";
 import AlbumPost from "../components/AlbumPost";
+import Visxtest from "../components/VisxTest";
 import { useRef, useState } from "react";
 
 const Container = styled.div`
@@ -134,6 +135,7 @@ function HomePage() {
         <img src={logo} width="80px" height="80px"></img>
         <Title fontSize={"25px"}>김준호님 안녕하세요!</Title>
       </HeaderContainer>
+      <Visxtest width={350} height={300}></Visxtest>
       <LeftAlignContainer>
         <Title fontSize={"25px"}>Friend's Playlist</Title>
       </LeftAlignContainer>
@@ -145,7 +147,7 @@ function HomePage() {
       </LeftAlignContainer>
       <AlbumPostContainer>
         <AlbumPost postClick={changeBlur} song={"cover1"}></AlbumPost>
-        <AlbumPost postClick={changeBlur} song={songname2}></AlbumPost>
+        {/* <AlbumPost postClick={changeBlur} song={songname2}></AlbumPost> */}
       </AlbumPostContainer>
       <BottomNavContainer>
         <BottomNav></BottomNav>
