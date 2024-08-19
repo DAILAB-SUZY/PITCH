@@ -7,6 +7,7 @@ import HomePage from "./stories/pages/HomePage";
 import PlayListPage from "./stories/pages/PlayListPage";
 import AlbumChatPage from "./stories/pages/AlbumChatPage";
 import AlbumChatPostPage from "./stories/pages/AlbumChatPostPage";
+import MusicProfilePage from "./stories/pages/MusicProfilePage";
 import "./styles/reset.css";
 
 type titleType = {
@@ -37,6 +38,7 @@ function App() {
         <Route path="/PlayListPage" element={<PlayListPage />} />
         <Route path="/AlbumChatPage" element={<AlbumChatPage />} />
         <Route path="/AlbumChatPostPage" element={<AlbumChatPostPage />} />
+        <Route path="/MusicProfile" element={<MusicProfilePage />} />
       </Routes>
     </BrowserRouter>
   );
