@@ -2,6 +2,9 @@ package org.cosmic.backend.domainsTest.albumPost.post;
 
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.auth.dtos.UserLogin;
+import org.cosmic.backend.domain.playList.domains.Album;
+import org.cosmic.backend.domain.playList.domains.Artist;
+import org.cosmic.backend.domain.playList.domains.Track;
 import org.cosmic.backend.domain.playList.dtos.ArtistDto;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
 import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
@@ -25,6 +28,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.time.Instant;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -53,7 +58,13 @@ public class CreatePostTest extends BaseSetting {
     public void albumSearchTest() throws Exception {
         UserLogin userLogin = loginUser("test@example.com");
         String validToken=userLogin.getToken();
+        User user=getUser();
+        Instant now = Instant.now();
 
+        Artist artist=saveArtist("비비");
+
+        Album album=saveAlbum("밤양갱", artist, now);
+        Track track=saveTrack(album,artist,now);
         mockMvc.perform(post("/api/post/searchAlbum")
                         .header("Authorization", "Bearer " + validToken)
                         .contentType("application/json")
@@ -80,6 +91,12 @@ public class CreatePostTest extends BaseSetting {
         UserLogin userLogin = loginUser("test@example.com");
         String validToken=userLogin.getToken();
         User user=getUser();
+        Instant now = Instant.now();
+
+        Artist artist=saveArtist("비비");
+
+        Album album=saveAlbum("밤양갱", artist, now);
+        Track track=saveTrack(album,artist,now);
 
         mockMvc.perform(post("/api/post/create")
                 .header("Authorization", "Bearer " + validToken)
@@ -103,6 +120,12 @@ public class CreatePostTest extends BaseSetting {
         UserLogin userLogin = loginUser("test@example.com");
         String validToken=userLogin.getToken();
         User user=getUser();
+        Instant now = Instant.now();
+
+        Artist artist=saveArtist("비비");
+
+        Album album=saveAlbum("밤양갱", artist, now);
+        Track track=saveTrack(album,artist,now);
 
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/api/post/create")
                 .header("Authorization", "Bearer " + validToken)

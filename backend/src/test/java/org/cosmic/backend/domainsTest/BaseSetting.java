@@ -52,7 +52,7 @@ public class BaseSetting {
     protected final ObjectMapper mapper = new ObjectMapper();
     private User user;
     //TODO user2에 대한 생성자가 있어야 할 듯. 사용하지 않을 것이면 삭제 요망.
-    private final User user2 = new User();
+    private User user2 ;
 
     protected UserLogin loginUser(String email) throws Exception {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -64,6 +64,18 @@ public class BaseSetting {
 
         user= userRepository.save(User.builder()
                 .email(savedEmail)
+                .username("goodwill")
+                .password(encoder.encode("12345678"))
+                .build());
+
+        Email savedEmail2 = emailRepository.save(Email.builder()
+                .email("test@naver.com")
+                .verificationCode("12345678")
+                .verified(true)
+                .build());
+
+        user2= userRepository.save(User.builder()
+                .email(savedEmail2)
                 .username("goodwill")
                 .password(encoder.encode("12345678"))
                 .build());

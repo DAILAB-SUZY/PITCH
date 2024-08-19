@@ -57,6 +57,7 @@ public class OpenAlbumChatTest extends BaseSetting {
 
         Album album=saveAlbum("밤양갱", artist, now);
 
+        saveAlbumChat(artist, album,now);
         mockMvc.perform(post("/api/albumchat/open")
                 .header("Authorization", "Bearer " + validToken)
                 .contentType("application/json")

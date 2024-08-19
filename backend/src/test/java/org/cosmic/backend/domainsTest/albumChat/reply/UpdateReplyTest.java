@@ -70,6 +70,8 @@ public class UpdateReplyTest extends BaseSetting {
 
         Album album=saveAlbum("밤양갱", artist, now);
 
+        saveAlbumChat(artist, album, now);
+
         resultActions=mockMvc.perform(MockMvcRequestBuilders.post("/api/albumchat/open")
                 .header("Authorization", "Bearer " + validToken)
                 .contentType("application/json")
@@ -143,6 +145,7 @@ public class UpdateReplyTest extends BaseSetting {
 
         Album album=saveAlbum("밤양갱", artist, now);
 
+        saveAlbumChat(artist, album, now);
         resultActions=mockMvc.perform(MockMvcRequestBuilders.post("/api/albumchat/open")
                 .header("Authorization", "Bearer " + validToken)
                 .contentType("application/json")
