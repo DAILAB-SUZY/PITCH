@@ -12,8 +12,8 @@ import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AlbumChatCommentLikeService {
@@ -28,21 +28,13 @@ public class AlbumChatCommentLikeService {
     }
 
     public List<AlbumChatCommentLikeResponse> getAlbumChatCommentLikeByAlbumChatCommentId(Long albumChatCommentId) {
-        List<AlbumChatCommentLikeResponse> likes = new ArrayList<>();
         if(albumChatCommentRepository.findById(albumChatCommentId).isEmpty()) {
             throw new NotFoundAlbumChatCommentException();
         }
-        List<AlbumChatCommentLike>likeList=likeRepository.findByAlbumChatComment_AlbumChatCommentId(albumChatCommentId);
-        for(AlbumChatCommentLike like:likeList) {
-            Long userId=like.getUser().getUserId();
-            String userName=like.getUser().getUsername();
-            String profilePicture=like.getUser().getProfilePicture();
-            AlbumChatCommentLikeResponse likeresponse = new AlbumChatCommentLikeResponse(
-                userId,userName,profilePicture
-            );
-            likes.add(likeresponse);
-        }
-        return likes;
+        return likeRepository.findByAlbumChatComment_AlbumChatCommentId(albumChatCommentId)
+                .stream()
+                .map(AlbumChatCommentLikeResponse::new)
+                .collect(Collectors.toList());
     }
 
     public AlbumChatCommentLikeIdResponse albumChatCommentLikeCreate(Long userId, Long albumChatCommentId) {
@@ -52,15 +44,12 @@ public class AlbumChatCommentLikeService {
         if(usersRepository.findByUserId(userId).isEmpty()) {
             throw new NotFoundUserException();
         }
-        if(likeRepository.findByAlbumChatComment_AlbumChatCommentIdAndUser_UserId(
-            albumChatCommentId, userId).isPresent())
-        {
+        if(likeRepository.findByAlbumChatComment_AlbumChatCommentIdAndUser_UserId(albumChatCommentId, userId).isPresent()) {
             throw new ExistCommentLikeException();
         }
         AlbumChatCommentLike like = new AlbumChatCommentLike(usersRepository.findByUserId(userId).get()
             ,albumChatCommentRepository.findById(albumChatCommentId).get());
-        likeRepository.save(like);
-        return new AlbumChatCommentLikeIdResponse(like.getAlbumChatCommentLikeId());
+        return new AlbumChatCommentLikeIdResponse(likeRepository.save(like).getAlbumChatCommentLikeId());
     }
 
     public void albumChatCommentLikeDelete(Long likeId) {
