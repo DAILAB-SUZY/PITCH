@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.cosmic.backend.domain.albumChat.domains.AlbumChatComment;
 
 @Data
 @AllArgsConstructor
@@ -14,6 +15,11 @@ import lombok.NoArgsConstructor;
 @JsonDeserialize(builder = AlbumChatCommentDto.AlbumChatCommentDtoBuilder.class)
 public class AlbumChatCommentDto {
     private Long albumChatCommentId;
+
+    public AlbumChatCommentDto(AlbumChatComment commentEntity) {
+        this.albumChatCommentId = commentEntity.getAlbumChatCommentId();
+    }
+
     @JsonPOJOBuilder(withPrefix = "")
     public static class AlbumChatCommentDtoBuilder {
     }
