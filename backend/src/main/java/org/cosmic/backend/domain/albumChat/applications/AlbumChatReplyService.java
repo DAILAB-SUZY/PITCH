@@ -16,8 +16,9 @@ import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AlbumChatReplyService {
@@ -32,50 +33,45 @@ public class AlbumChatReplyService {
     }
 
     public List<AlbumChatReplyResponse> albumChatRepliesGetByCommentId(Long commentId) {
-        List<AlbumChatReplyResponse> replies = new ArrayList<>();
         if(commentRepository.findById(commentId).isEmpty()) {
             throw new NotFoundCommentException();
         }
-        List<AlbumChatReply> replyList=replyRepository.findByAlbumChatComment_AlbumChatCommentId(commentId).orElseThrow();
-        for (AlbumChatReply reply : replyList) {
-            AlbumChatReplyResponse replyreq = new AlbumChatReplyResponse(
-                reply.getAlbumChatReplyId(),reply.getUser().getUserId(),reply.getContent(),reply.getUpdateTime()
-            );
-            replies.add(replyreq);
-        }
-        return replies;
+        return replyRepository.findByAlbumChatComment_AlbumChatCommentId(commentId)
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(AlbumChatReplyResponse::new)
+                .collect(Collectors.toList());
     }
 
     public AlbumChatReplyDto albumChatReplyCreate(AlbumChatReplyCreateReq reply) {
         if(userRepository.findById(reply.getUserId()).isEmpty()) {
             throw new NotFoundUserException();
         }
-        if(commentRepository.findById(reply.getAlbumChatCommentId()).isEmpty())
-        {
+        if(commentRepository.findById(reply.getAlbumChatCommentId()).isEmpty()) {
             throw new NotFoundCommentException();
         }
-        AlbumChatReply replyEntity=new AlbumChatReply(reply.getContent(),Instant.now()
-            ,commentRepository.findByAlbumChatCommentId(reply.getAlbumChatCommentId())
+        AlbumChatReply replyEntity=new AlbumChatReply(
+                reply.getContent()
+                ,Instant.now()
+                ,commentRepository.findById(reply.getAlbumChatCommentId()).get()
                 ,userRepository.findById(reply.getUserId()).get());
-        replyRepository.save(replyEntity);
-        return new AlbumChatReplyDto(replyEntity.getAlbumChatReplyId());
+        return new AlbumChatReplyDto(replyRepository.save(replyEntity).getAlbumChatReplyId());
     }
 
     public void albumChatReplyUpdate(AlbumChatReplyUpdateReq reply) {
         if(replyRepository.findById(reply.getAlbumChatReplyId()).isEmpty()) {
             throw new NotFoundReplyException();
         }
-        AlbumChatReply reply1=replyRepository.findByAlbumChatReplyId(reply.getAlbumChatReplyId());
-        if(!reply1.getAlbumChatComment().getAlbumChatCommentId().equals(reply.getAlbumChatCommentId())) {
+        AlbumChatReply updatedReply=replyRepository.findByAlbumChatReplyId(reply.getAlbumChatReplyId());
+        if(!updatedReply.getAlbumChatComment().getAlbumChatCommentId().equals(reply.getAlbumChatCommentId())) {
             throw new NotMatchCommentException();
         }
-        if(!reply1.getUser().getUserId().equals(reply.getUserId()))
-        {
+        if(!updatedReply.getUser().getUserId().equals(reply.getUserId())) {
             throw new NotMatchUserException();
         }
-        reply1.setContent(reply.getContent());
-        reply1.setUpdateTime(Instant.now());
-        replyRepository.save(reply1);
+        updatedReply.setContent(reply.getContent());
+        updatedReply.setUpdateTime(Instant.now());
+        replyRepository.save(updatedReply);
     }
 
     public void albumChatReplyDelete(Long replyId) {
