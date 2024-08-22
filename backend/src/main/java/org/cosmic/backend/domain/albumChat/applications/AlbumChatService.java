@@ -34,15 +34,10 @@ public class AlbumChatService {
 
     @Transactional
     public AlbumChatResponse getAlbumChatById(AlbumDto album) {
-        if(albumChatRepository.findByAlbum_AlbumId(album.getAlbumId()).isEmpty())
-        {
+        if(albumChatRepository.findByAlbum_AlbumId(album.getAlbumId()).isEmpty()) {
             throw new NotFoundAlbumChatException();
         }
-        AlbumChat albumChat=albumChatRepository.findByAlbum_AlbumId(album.getAlbumId()).get();
-        return new AlbumChatResponse(
-            albumChat.getAlbumChatId(),albumChat.getTitle(),
-            albumChat.getCover(),albumChat.getGenre(),albumChat.getArtistName()
-        );
+        return new AlbumChatResponse(albumChatRepository.findByAlbum_AlbumId(album.getAlbumId()).get());
     }
 
     @Transactional
