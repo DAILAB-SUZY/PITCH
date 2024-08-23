@@ -3,8 +3,7 @@ import { colors } from "../../styles/color";
 import logo from "../../img/logo.png";
 import BottomNav from "../components/BottomNav";
 import PlaylistCircle from "../components/PlaylistCircle";
-import AlbumPost from "../components/AlbumPost";
-import Visxtest from "../components/VisxTest";
+import AlbumPostCard from "../components/AlbumPostCard";
 import { useRef, useState } from "react";
 
 const Container = styled.div`
@@ -19,7 +18,7 @@ const Container = styled.div`
   color: black;
 `;
 
-const HeaderContainer = styled.div`
+const Header = styled.div`
   width: 100vw;
   height: 400px;
   margin-bottom: 20px;
@@ -29,7 +28,7 @@ const HeaderContainer = styled.div`
   flex-direction: column;
 `;
 
-const LeftAlignContainer = styled.div`
+const LeftAlignArea = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
@@ -39,14 +38,14 @@ const LeftAlignContainer = styled.div`
   padding: 0;
 `;
 
-const PlaylistContainer = styled.div`
+const PlaylistArea = styled.div`
   width: 100vw;
   height: 10vh;
   display: flex;
   justify-content: center;
 `;
 
-const AlbumPostContainer = styled.div`
+const AlbumPostArea = styled.div`
   width: 100vw;
   height: auto;
   display: flex;
@@ -56,7 +55,7 @@ const AlbumPostContainer = styled.div`
   background-color: white;
 `;
 
-const BottomNavContainer = styled.div`
+const BottomNavArea = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -107,9 +106,7 @@ function HomePage() {
   const [blur, setBlur] = useState(false);
   const changeBlur = () => {
     setBlur(!blur);
-    const blurRefStyle = window.getComputedStyle(
-      blurRef.current as HTMLDivElement
-    );
+    const blurRefStyle = window.getComputedStyle(blurRef.current as HTMLDivElement);
     if (blurRefStyle.getPropertyValue("background-color") === normalBG) {
       blurRef.current?.style.setProperty("background-color", blurBG);
     } else if (blurRefStyle.getPropertyValue("background-color") === blurBG) {
@@ -128,32 +125,33 @@ function HomePage() {
   };
   const songname1 = "cover1";
   const songname2 = "cover2";
+  // TODO: 더보기 클릭시 배경 블러처리
   return (
     <Container>
       <BackgroundBlur ref={blurRef} onClick={changeBlur}></BackgroundBlur>
-      <HeaderContainer>
+      <Header>
         <img src={logo} width="80px" height="80px"></img>
         <Title fontSize={"25px"}>김준호님 안녕하세요!</Title>
-      </HeaderContainer>
-      <Visxtest width={350} height={300}></Visxtest>
-      <LeftAlignContainer>
+      </Header>
+      <LeftAlignArea>
         <Title fontSize={"25px"}>Friend's Playlist</Title>
-      </LeftAlignContainer>
-      <PlaylistContainer>
+      </LeftAlignArea>
+      <PlaylistArea>
         <PlaylistCircle></PlaylistCircle>
-      </PlaylistContainer>
-      <LeftAlignContainer>
+      </PlaylistArea>
+      <LeftAlignArea>
         <Title fontSize={"25px"}>Album Post +</Title>
-      </LeftAlignContainer>
-      <AlbumPostContainer>
-        <AlbumPost postClick={changeBlur} song={"cover1"}></AlbumPost>
+      </LeftAlignArea>
+      <AlbumPostArea>
+        <AlbumPostCard postClick={changeBlur} song={"cover1"}></AlbumPostCard>
         {/* <AlbumPost postClick={changeBlur} song={songname2}></AlbumPost> */}
-      </AlbumPostContainer>
-      <BottomNavContainer>
+      </AlbumPostArea>{" "}
+      <BottomNavArea>
         <BottomNav></BottomNav>
-      </BottomNavContainer>
+      </BottomNavArea>
       <BottonNavBlankSpace></BottonNavBlankSpace>
     </Container>
+    // NOTE: 노래 이름 가져오기 아직 안됨
   );
 }
 

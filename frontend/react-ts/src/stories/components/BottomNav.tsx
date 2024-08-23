@@ -7,7 +7,7 @@ interface NavProps {
   onClick?: () => void;
 }
 
-const Container = styled.div`
+const BottomNavContainer = styled.div`
   width: 100vw;
   height: 60px;
   display: flex;
@@ -43,7 +43,7 @@ const BottomNav = ({ onClick }: NavProps) => {
   const [activeNav, setActiveNav] = useState(2);
 
   return (
-    <Container>
+    <BottomNavContainer>
       <Button
         onClick={() => {
           setActiveNav(1);
@@ -91,7 +91,7 @@ const BottomNav = ({ onClick }: NavProps) => {
         </svg>
         <Title color={activeNav === 3 ? "black" : "grey"}>프로필</Title>
       </Button>
-    </Container>
+    </BottomNavContainer>
   );
 };
 

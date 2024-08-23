@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import img from "../../img/yanggang.webp";
 
-const Container = styled.div`
+const PlayListCardContainer = styled.div`
   width: 90vw;
   height: 60vh;
   border-radius: 3%;
@@ -14,7 +14,7 @@ const Container = styled.div`
   overflow-y: auto;
 `;
 
-const ListBox = styled.div`
+const SongArea = styled.div`
   width: 85vw;
   height: 20vh;
   display: flex;
@@ -32,7 +32,7 @@ const AlbumCover = styled.div`
   overflow: hidden;
 `;
 
-const TextBox = styled.div`
+const SongTextArea = styled.div`
   height: 80%;
   display: flex;
   align-items: start;
@@ -47,7 +47,7 @@ const Title = styled.div<{ fontSize: string; margin: string }>`
   color: white;
 `;
 
-const BtnBox = styled.div`
+const BtnArea = styled.div`
   width: 40vw;
   height: 5vh;
   display: flex;
@@ -74,27 +74,21 @@ const PlayListBox = () => {
   const items = Array.from({ length: 10 }, (_, index) => `Item ${index + 1}`);
 
   return (
-    <Container>
+    <PlayListCardContainer>
       {items.map((item, index) => (
-        <ListBox>
+        <SongArea>
           <AlbumCover>
             <img src={img} width="100%" height="100%"></img>
           </AlbumCover>
-          <TextBox>
+          <SongTextArea>
             <Title fontSize={"20px"}>밤양갱</Title>
             <Title fontSize={"15px"}>비비</Title>
-          </TextBox>
-        </ListBox>
+          </SongTextArea>
+        </SongArea>
       ))}
-      <BtnBox>
+      <BtnArea>
         <CircleBtn>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="25"
-            height="25"
-            fill="red"
-            viewBox="0 0 16 16"
-          >
+          <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="red" viewBox="0 0 16 16">
             <path
               fill-rule="evenodd"
               d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"
@@ -102,13 +96,7 @@ const PlayListBox = () => {
           </svg>
         </CircleBtn>
         <CircleBtn>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="25"
-            height="25"
-            fill="lightblue"
-            viewBox="0 0 16 16"
-          >
+          <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="lightblue" viewBox="0 0 16 16">
             <path d="M2 2v13.5a.5.5 0 0 0 .74.439L8 13.069l5.26 2.87A.5.5 0 0 0 14 15.5V2a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2" />
           </svg>
         </CircleBtn>
@@ -123,8 +111,8 @@ const PlayListBox = () => {
             <path d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5" />
           </svg>
         </CircleBtn>
-      </BtnBox>
-    </Container>
+      </BtnArea>
+    </PlayListCardContainer>
   );
 };
 

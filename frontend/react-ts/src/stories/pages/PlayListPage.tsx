@@ -3,7 +3,7 @@ import { colors } from "../../styles/color";
 import logo from "../../img/logo.png";
 import BottomNav from "../components/BottomNav";
 import PlaylistCircle from "../components/PlaylistCircle";
-import PlayListBox from "../components/PlayListBox";
+import PlayListCard from "../components/PlayListCard";
 import profile from "../../img/cat.webp";
 
 const Container = styled.div`
@@ -18,7 +18,7 @@ const Container = styled.div`
   margin-bottom: 10vh;
 `;
 
-const HeaderContainer = styled.div`
+const Header = styled.div`
   width: 100vw;
   height: 250px;
   display: flex;
@@ -27,7 +27,7 @@ const HeaderContainer = styled.div`
   flex-direction: column;
 `;
 
-const RowContainer = styled.div`
+const RowAlignArea = styled.div`
   width: 80vw;
   margin-right: 20vw;
   display: flex;
@@ -36,7 +36,7 @@ const RowContainer = styled.div`
   flex-direction: row;
 `;
 
-const RightAlignContainer = styled.div`
+const RightAlignArea = styled.div`
   width: 90vw;
   height: 4vh;
   display: flex;
@@ -73,7 +73,7 @@ const ModBtn = styled.div`
   flex-direction: row;
 `;
 
-const BottomNavContainer = styled.div`
+const BottomNavArea = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -84,7 +84,7 @@ const BottomNavContainer = styled.div`
   background-color: white;
 `;
 
-const PlayList = styled.div`
+const PlayListArea = styled.div`
   width: 90vw;
   height: 60vh;
 `;
@@ -92,15 +92,15 @@ const PlayList = styled.div`
 function PlayListPage() {
   return (
     <Container>
-      <HeaderContainer>
+      <Header>
         <img src={logo} width="80px" height="80px"></img>
-        <RowContainer>
+        <RowAlignArea>
           <Circle>
             <img src={profile} width="100%" height="100%"></img>
           </Circle>
           <Title fontSize={"25px"}>이준석's Playlist</Title>
-        </RowContainer>
-        <RightAlignContainer>
+        </RowAlignArea>
+        <RightAlignArea>
           <ModBtn>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -117,14 +117,14 @@ function PlayListPage() {
             </svg>
             <Title fontSize={"16px"}>수정</Title>
           </ModBtn>
-        </RightAlignContainer>
-      </HeaderContainer>
-      <PlayList>
-        <PlayListBox></PlayListBox>
-      </PlayList>
-      <BottomNavContainer>
+        </RightAlignArea>
+      </Header>
+      <PlayListArea>
+        <PlayListCard></PlayListCard>
+      </PlayListArea>
+      <BottomNavArea>
         <BottomNav></BottomNav>
-      </BottomNavContainer>
+      </BottomNavArea>
     </Container>
   );
 }

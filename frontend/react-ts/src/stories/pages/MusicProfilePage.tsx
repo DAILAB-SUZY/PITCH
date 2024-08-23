@@ -26,7 +26,7 @@ const Text = styled.div<{
   margin-right: 15px;
 `;
 
-const CharacteristicContainer = styled.div`
+const CharacteristicArea = styled.div`
   display: flex;
   height: 20px;
 `;
@@ -38,7 +38,7 @@ function MusicProfilePage() {
       <Text fontFamily="Mon" fontSize="40px">
         MUSIC PROFILE
       </Text>
-      <CharacteristicContainer></CharacteristicContainer>
+      <CharacteristicArea></CharacteristicArea>
       <Visxtest width={350} height={200}></Visxtest>
       <Visxtest2 width={350} height={200}></Visxtest2>
       <Visxtest3 width={350} height={200}></Visxtest3>

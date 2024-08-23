@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-const ChatBox = styled.div`
+const ChatCardContainer = styled.div`
   width: 100%;
   height: 100%;
   margin-bottom: 20px;
@@ -11,7 +11,7 @@ const ChatBox = styled.div`
   align-items: center;
 `;
 
-const ChatBoxHeader = styled.div`
+const ChatCardHeader = styled.div`
   margin-top: 10px;
   width: 90%;
   display: flex;
@@ -19,7 +19,7 @@ const ChatBoxHeader = styled.div`
   justify-content: space-between;
 `;
 
-const ChatBoxContent = styled.div`
+const ChatCardBody = styled.div`
   margin-top: 10px;
   width: 90%;
   display: flex;
@@ -27,7 +27,7 @@ const ChatBoxContent = styled.div`
   justify-content: space-between;
 `;
 
-const ReactBox = styled.div`
+const ReactsArea = styled.div`
   margin-top: 10px;
   width: 90%;
   display: flex;
@@ -36,7 +36,7 @@ const ReactBox = styled.div`
   justify-content: end;
 `;
 
-const Reacts = styled.div`
+const ReactsBody = styled.div`
   margin-top: 10px;
   width: 45%;
   display: flex;
@@ -45,7 +45,7 @@ const Reacts = styled.div`
   justify-content: space-between;
 `;
 
-const BoxHeader = styled.div`
+const CardHeader = styled.div`
   width: 40%;
   display: flex;
   flex-direction: row;
@@ -53,7 +53,7 @@ const BoxHeader = styled.div`
   justify-content: space-between;
 `;
 
-const Circle = styled.div`
+const ProfileCircle = styled.div`
   width: 30px;
   height: 30px;
   background-color: black;
@@ -68,13 +68,13 @@ const Text = styled.div<{ fontSize: string; margin: string }>`
 
 const AlbumChatBox = () => {
   return (
-    <ChatBox>
-      <ChatBoxHeader>
-        <BoxHeader>
-          <Circle></Circle>
+    <ChatCardContainer>
+      <ChatCardHeader>
+        <CardHeader>
+          <ProfileCircle></ProfileCircle>
           <Text fontSize="20px">준호</Text>
           <Text fontSize="15px">1시간 전</Text>
-        </BoxHeader>
+        </CardHeader>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="25"
@@ -84,12 +84,12 @@ const AlbumChatBox = () => {
         >
           <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3" />
         </svg>
-      </ChatBoxHeader>
-      <ChatBoxContent>
+      </ChatCardHeader>
+      <ChatCardBody>
         <Text fontSize="20px">운동할 때 듣기 좋음</Text>
-      </ChatBoxContent>
-      <ReactBox>
-        <Reacts>
+      </ChatCardBody>
+      <ReactsArea>
+        <ReactsBody>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="16"
@@ -114,9 +114,9 @@ const AlbumChatBox = () => {
             <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6m0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5" />
           </svg>
           <Text fontSize="10px">답글 3개</Text>
-        </Reacts>
-      </ReactBox>
-    </ChatBox>
+        </ReactsBody>
+      </ReactsArea>
+    </ChatCardContainer>
   );
 };
 

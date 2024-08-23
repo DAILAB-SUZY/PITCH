@@ -1,12 +1,13 @@
 import styled from "styled-components";
+import { colors } from "../../styles/color";
+import { useRef, useEffect, useState } from "react";
 import cover1 from "../../img/newjeans.png";
 import cover2 from "../../img/aespa.webp";
-import { colors } from "../../styles/color";
 
-const AlbumPostBG = styled.div`
-  width: 90vw;
+const AlbumPostContainer = styled.div`
+  width: 320px;
   margin: 20px 0px;
-  height: 55vh;
+  height: auto;
   background-color: ${colors.BG_grey};
   border-radius: 20px;
   /* overflow: hidden; */
@@ -17,7 +18,7 @@ const AlbumPostBG = styled.div`
   /* transition: all ease-out 3s; */
 `;
 
-const AlbumTitleContainer = styled.div`
+const AlbumTitleArea = styled.div`
   position: relative;
   width: 100%;
   height: 200px;
@@ -31,14 +32,14 @@ const AlbumTitleContainer = styled.div`
   box-sizing: border-box;
 `;
 
-const ImageContainer = styled.div`
+const ImageArea = styled.div`
   position: absolute;
   top: 0px;
   left: 0px;
   overflow: hidden;
-  width: 90vw;
+  width: 320px;
   height: 200px;
-  object-fit: cover;
+  /* object-fit: cover; */
   z-index: 1;
   border-radius: 20px 20px 0px 0px;
 `;
@@ -55,15 +56,11 @@ const GradientBG = styled.div`
   align-items: center;
   justify-content: center;
   border-radius: 20px 20px 0px 0px;
-  background: linear-gradient(
-    0deg,
-    rgba(0, 0, 0, 0.8) 0%,
-    rgba(0, 0, 0, 0) 100%
-  );
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
   backdrop-filter: blur(0px);
 `;
 
-const TextContainer = styled.div`
+const TitleTextArea = styled.div`
   /* position: absolute;
   bottom: 10px;
   left: 10px; */
@@ -88,7 +85,7 @@ const Text = styled.div<{
   margin-right: 15px;
 `;
 
-const PostContainer = styled.div<{ height: string }>`
+const PostArea = styled.div<{ height: string }>`
   display: flex;
   border-radius: 0 0 20px 20px;
   width: 320px;
@@ -104,7 +101,7 @@ const PostContainer = styled.div<{ height: string }>`
   transition: max-height linear 1s;
 `;
 
-const ProfileContainer = styled.div`
+const ProfileArea = styled.div`
   display: flex;
   width: 100%;
   justify-content: flex-start;
@@ -118,7 +115,7 @@ const PostUploadTime = styled.div`
   margin-left: 10px;
   color: ${colors.Font_grey};
 `;
-const ProfileTextContainer = styled.div`
+const ProfileTextArea = styled.div`
   display: flex;
   justify-content: flex-start;
   align-items: flex-end;
@@ -139,7 +136,7 @@ const ProfileImage = styled.div`
   background-color: ${colors.Main_Pink};
 `;
 
-const PostContent = styled.div`
+const PostContentArea = styled.div`
   display: flex;
   width: 320px;
   height: 36px;
@@ -159,7 +156,7 @@ const PostContent = styled.div`
   transition: height ease 0.7s;
 `;
 
-const ButtonContainer = styled.div`
+const ButtonArea = styled.div`
   width: 100%;
   display: flex;
   align-items: center;
@@ -184,18 +181,44 @@ const GradientText = styled.div`
   top: 0px;
   height: 100%;
   width: 100%;
-  background: linear-gradient(
-    0deg,
-    rgba(238, 238, 238, 0.5) 0%,
-    rgba(238, 238, 238, 0) 100%
-  );
+  background: linear-gradient(0deg, rgba(238, 238, 238, 0.5) 0%, rgba(238, 238, 238, 0) 100%);
 `;
 
-const AlbumPostBox = () => {
+interface AlbumPostProps {
+  postClick: () => void;
+  song: string;
+}
+
+const AlbumPost = (props: AlbumPostProps) => {
+  const contentHeight = useRef<HTMLDivElement>(null);
+  const textHeight = useRef<HTMLDivElement>(null);
+
+  const { postClick, song } = props;
+  // const [songname, setSongname] = useState("");
+  // setSongname(song);
+  const getCover = (name: string) => {
+    try {
+      return require(`../../img/${name}.png`); // 확장자에 맞게 변경
+    } catch (error) {}
+  };
+  console.log("song:" + song);
+
+  const changeViewMore = () => {
+    const contentHeightStyle = window.getComputedStyle(contentHeight.current as HTMLDivElement);
+    const textHeightStyle = window.getComputedStyle(textHeight.current as HTMLDivElement);
+
+    if (contentHeightStyle.getPropertyValue("height") === "36px") {
+      contentHeight.current?.style.setProperty("height", textHeightStyle.getPropertyValue("height"));
+    } else if (contentHeightStyle.getPropertyValue("height") === textHeightStyle.getPropertyValue("height"))
+      contentHeight.current?.style.setProperty("height", "36px");
+    postClick();
+    console.log("id:" + song);
+  };
+
   return (
-    <AlbumPostBG>
-      <AlbumTitleContainer>
-        <ImageContainer>
+    <AlbumPostContainer>
+      <AlbumTitleArea>
+        <ImageArea>
           <img
             src={cover1}
             width="320px"
@@ -203,31 +226,52 @@ const AlbumPostBox = () => {
             object-fit="cover"
             // z-index="1"
           ></img>
-        </ImageContainer>
+        </ImageArea>
         <GradientBG> </GradientBG>
-        <TextContainer>
+        <TitleTextArea>
           <Text fontFamily="Bd" fontSize="30px">
             Get Up
           </Text>
           <Text fontFamily="Rg" fontSize="15px">
             NewJeans
           </Text>
-        </TextContainer>
-      </AlbumTitleContainer>
-      <PostContainer>
-        <ProfileContainer>
+        </TitleTextArea>
+      </AlbumTitleArea>
+      <PostArea>
+        <ProfileArea>
           <ProfileImage></ProfileImage>
-          <ProfileTextContainer>
+          <ProfileTextArea>
             <ProfileName>김준호</ProfileName>
             <PostUploadTime> 1시간 전</PostUploadTime>
-          </ProfileTextContainer>
-        </ProfileContainer>
-        <PostContent>
-          <p> 글을 입력해주세요.</p>
-        </PostContent>
-      </PostContainer>
-    </AlbumPostBG>
+          </ProfileTextArea>
+        </ProfileArea>
+        <PostContentArea ref={contentHeight}>
+          <p ref={textHeight}>
+            {" "}
+            뉴진스의 "Get Up" 앨범은 그들의 음악적 성장과 변화를 잘 보여주는 작품입니다.
+            <br />
+            <br />
+            앨범 전반에 걸쳐 뉴진스만의 청량하고 에너제틱한 매력이 잘 드러나며, 듣는 이에게 긍정적인 에너지를
+            전달합니다.
+            <br />
+            <br />
+            각 곡마다 멤버들의 개성과 실력이 돋보이며, K-pop 팬들에게 새로운 즐거움을 선사합니다.
+            <br />
+            <br />
+            앞으로 뉴진스가 어떤 음악을 선보일지 기대하게 만드는, 매력 넘치는 앨범입니다. <br />
+            <br />
+            뉴진스 화이팅🔥
+          </p>
+        </PostContentArea>
+
+        <ButtonArea>
+          <Text fontFamily="Rg" fontSize="14px" color="grey" onClick={changeViewMore}>
+            더보기
+          </Text>
+        </ButtonArea>
+      </PostArea>
+    </AlbumPostContainer>
   );
 };
 
-export default AlbumPostBox;
+export default AlbumPost;
