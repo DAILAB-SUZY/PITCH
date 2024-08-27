@@ -9,7 +9,6 @@ import org.cosmic.backend.domain.bestAlbum.exceptions.ExistBestAlbumException;
 import org.cosmic.backend.domain.bestAlbum.exceptions.NotMatchBestAlbumException;
 import org.cosmic.backend.domain.bestAlbum.repositorys.AlbumUserRepository;
 import org.cosmic.backend.domain.playList.domains.Album;
-import org.cosmic.backend.domain.playList.domains.Artist;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundArtistException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
@@ -19,10 +18,9 @@ import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class BestAlbumService {
@@ -40,20 +38,14 @@ public class BestAlbumService {
 
     @Transactional
     public List<BestAlbumGiveDto> open(Long userId) {
-
-        List<BestAlbumGiveDto> bestAlbumGiveDtos=new ArrayList<>();
         if(usersRepository.findById(userId).isEmpty()) {
             throw new NotFoundUserException();
         }
-        User newuser = usersRepository.findById(userId).get();
-        List<AlbumUser> album_user = albumUserRepository.findByUser_UserId(userId).orElseThrow();
-
-        for (AlbumUser albumUser : album_user) {
-            BestAlbumGiveDto newbestAlbumGiveDto = new BestAlbumGiveDto(albumUser.getAlbum().getAlbumId(),
-                    albumUser.getAlbum().getTitle(), albumUser.getAlbum().getCover());
-            bestAlbumGiveDtos.add(newbestAlbumGiveDto);
-        }
-        return bestAlbumGiveDtos;
+        return albumUserRepository.findByUser_UserId(userId)
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(BestAlbumGiveDto::new)
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -74,60 +66,50 @@ public class BestAlbumService {
     }
 
     @Transactional
-    public void save(long userId, List<BestAlbumDetail> bestalbumList) {
+    public void save(long userId, List<BestAlbumDetail> bestAlbumList) {
+        //TODO NotMatchBestAlbum 예외처리 관련 최적화 필요
         if(usersRepository.findById(userId).isEmpty()) {
             throw new NotFoundUserException();
         }
-        List<AlbumUser> albumUsers=albumUserRepository.findByUser_UserId(userId).orElseThrow();
+        User user = usersRepository.findById(userId).get();
+        List<Long> existingBestAlbumsIds = albumRepository.findAlbumByUserId(userId)
+                        .stream()
+                        .map(Album::getAlbumId)
+                        .toList();
         albumUserRepository.deleteByUser_UserId(userId);
-
-        Set<Long> albumUserIds = new HashSet<>();
-        for (AlbumUser albumUser : albumUsers) {
-            albumUserIds.add(albumUser.getAlbum().getAlbumId());
-        }
-        for (BestAlbumDetail bestAlbumDetail : bestalbumList) {
-            if (albumRepository.findById(bestAlbumDetail.getAlbumId()).isEmpty()) {
-                throw new NotFoundAlbumException();
-            }
-            if (!albumUserIds.contains(bestAlbumDetail.getAlbumId())) {
-                throw new NotMatchBestAlbumException();
-            }
-            Album album = albumRepository.findById(bestAlbumDetail.getAlbumId()).get();
-            AlbumUser album_User = new AlbumUser();
-            album_User.setAlbum(album);
-            album_User.setUser(usersRepository.findById(userId).get());
-            albumUserRepository.save(album_User);
-        }
-
+        albumUserRepository.saveAll(bestAlbumList
+                .stream()
+                .map(bestAlbumDetail -> {
+                    if (albumRepository.findById(bestAlbumDetail.getAlbumId()).isEmpty()) {
+                        throw new NotFoundAlbumException();
+                    }
+                    if (!existingBestAlbumsIds.contains(bestAlbumDetail.getAlbumId())) {
+                        throw new NotMatchBestAlbumException();
+                    }
+                    return new AlbumUser(albumRepository.findById(bestAlbumDetail.getAlbumId()).get(), user);
+                })
+                .toList()
+        );
     }
     @Transactional
-    public List<AlbumGiveDto> searchArtist (String artist) {//해당 아티스트가 가지고 있는 모든 앨범들의 정보를 줌
-        List<AlbumGiveDto>albumGiveDtos=new ArrayList<>();
-
-        if(artistRepository.findByArtistName(artist).isEmpty()) {
+    public List<AlbumGiveDto> searchArtist (String artistName) {//해당 아티스트가 가지고 있는 모든 앨범들의 정보를 줌
+        if(artistRepository.findByArtistName(artistName).isEmpty()) {
             throw new NotFoundArtistException();
         }
-        Artist artistInfo= artistRepository.findByArtistName(artist).get();
-        List<Album> album=albumRepository.findAllByArtist_ArtistId(artistInfo.getArtistId());//트랙들을 모두 가져옴
-        for (Album value : album) {
-            AlbumGiveDto albumGiveDto = new AlbumGiveDto(value.getTitle(), artist, value.getCover());
-            albumGiveDtos.add(albumGiveDto);
-        }
-        return albumGiveDtos;
+        return albumRepository.findAllByArtist_ArtistName(artistName)
+                .stream()
+                .map(AlbumGiveDto::new)
+                .toList();//트랙들을 모두 가져옴
     }
 
     @Transactional
-    public List<AlbumGiveDto> searchAlbum (String album) {//해당 앨범이름을 가진 모든 앨범들의 정보를 줌
-        List<AlbumGiveDto>albumGiveDtos=new ArrayList<>();
-        if(albumRepository.findAllByTitle(album).orElseThrow().isEmpty()) {
+    public List<AlbumGiveDto> searchAlbum (String albumTitle) {//해당 앨범이름을 가진 모든 앨범들의 정보를 줌
+        if(albumRepository.findAllByTitle(albumTitle).isEmpty()) {
             throw new NotFoundAlbumException();
         }
-        List<Album> albumInfo= albumRepository.findAllByTitle(album).orElseThrow();
-        for(Album albumInfo1:albumInfo){
-            AlbumGiveDto albumGiveDto=new AlbumGiveDto(
-                albumInfo1.getTitle(),albumInfo1.getArtist().getArtistName(),albumInfo1.getCover());
-            albumGiveDtos.add(albumGiveDto);
-        }
-        return albumGiveDtos;
+        return albumRepository.findAllByTitle(albumTitle)
+                .stream()
+                .map(AlbumGiveDto::new)
+                .toList();
     }
 }
