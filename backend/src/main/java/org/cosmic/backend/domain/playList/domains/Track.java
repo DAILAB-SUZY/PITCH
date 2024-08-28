@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.cosmic.backend.domain.playList.dtos.TrackGiveDto;
 
 import java.time.Instant;
 import java.util.List;
@@ -57,5 +58,13 @@ public class Track {//여기엔 모든 노래들이 담길 것임. 담길 때 �
         this.Cover=cover;
         this.createdDate = createdDate;
         this.album = album;
+    }
+
+    public static TrackGiveDto toTrackGiveDto(Track track) {
+        return TrackGiveDto.builder()
+                .title(track.getTitle())
+                .artistName(track.getArtist().getArtistName())
+                .cover(track.getCover())
+                .build();
     }
 }

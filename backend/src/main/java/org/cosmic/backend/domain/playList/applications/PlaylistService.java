@@ -1,7 +1,6 @@
 package org.cosmic.backend.domain.playList.applications;
 
 import jakarta.transaction.Transactional;
-import org.cosmic.backend.domain.playList.domains.Artist;
 import org.cosmic.backend.domain.playList.domains.Playlist;
 import org.cosmic.backend.domain.playList.domains.Playlist_Track;
 import org.cosmic.backend.domain.playList.domains.Track;
@@ -15,12 +14,10 @@ import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
 import org.cosmic.backend.domain.playList.repositorys.PlaylistRepository;
 import org.cosmic.backend.domain.playList.repositorys.PlaylistTrackRepository;
 import org.cosmic.backend.domain.playList.repositorys.TrackRepository;
-import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -40,96 +37,42 @@ public class PlaylistService {
     }
 
     @Transactional
-    public void save(long userId, List<PlaylistDetail> playlist) {
+    public void save(long userId, List<PlaylistDetail> newPlayList) {
         if(usersRepository.findById(userId).isEmpty()) {
             throw new NotFoundUserException();
         }
-
-        List<Playlist_Track>playlistTrack=usersRepository.findByUserId(userId).orElseThrow().getPlaylist().getPlaylist_track();
-
-        User user = usersRepository.findByUserId(userId).orElseThrow();
-
-        Playlist newPlaylist = playlistRepository.findByuser(user);//user의 플레이리스트를 찾음
-        newPlaylist.setUpdatedDate(Instant.now());
-        playlistTrackRepository.deleteByPlaylist_PlaylistId(playlistRepository.findByuser(user).getPlaylistId());
-
-        for (PlaylistDetail playlistdetail : playlist) {
-            if(trackRepository.findById(playlistdetail.getTrackId()).isEmpty()) {
-                throw new NotFoundTrackException();
-            }
-            Track track= trackRepository.findBytrackId(playlistdetail.getTrackId());
-            Playlist_Track playlist_track=new Playlist_Track();
-            playlist_track.setTrack(track);
-            playlist_track.setPlaylist(newPlaylist);
-            playlistTrackRepository.save(playlist_track);
-        }
-
+        Playlist playList = playlistRepository.findByUser_UserId(userId).get();//user의 플레이리스트를 찾음
+        playList.setUpdatedDate(Instant.now());
+        playlistTrackRepository.deleteByPlaylist_PlaylistId(playList.getPlaylistId());
+        playlistTrackRepository.saveAll(newPlayList.stream()
+                .map(track -> trackRepository.findById(track.getTrackId()).orElseThrow(NotFoundTrackException::new))
+                .map(track -> new Playlist_Track(track, playList))
+                .toList());
     }
     //플레이리스트 생성 또는 수정시 저장
 
     @Transactional
     public List<PlaylistGiveDto> open(Long userId) {
-        List<PlaylistGiveDto> playlistGiveDtos=new ArrayList<>();
         if(usersRepository.findById(userId).isEmpty()) {
             throw new NotFoundUserException();
         }
-        User newuser=usersRepository.findById(userId).get();
-
-        Playlist newplaylist=newuser.getPlaylist();//플레이리스트를 가져오고
-        List<Playlist_Track> playlist_track=newplaylist.getPlaylist_track();
-        for (Playlist_Track playlistTrack : playlist_track) {
-            PlaylistGiveDto newplaylistGiveDto = getPlaylistGiveDto(playlistTrack, newplaylist);
-
-            playlistGiveDtos.add(newplaylistGiveDto);
-        }
-        return playlistGiveDtos;
-        }
-
-    private static PlaylistGiveDto getPlaylistGiveDto(Playlist_Track playlistTrack, Playlist newplaylist) {
-        PlaylistGiveDto newplaylistGiveDto = new PlaylistGiveDto();
-
-        newplaylistGiveDto.setPlaylistId(newplaylist.getPlaylistId());
-        newplaylistGiveDto.setUserId(newplaylist.getUser().getUserId());
-        newplaylistGiveDto.setTrackId(playlistTrack.getTrack().getTrackId());
-        newplaylistGiveDto.setTitle(playlistTrack.getTrack().getTitle());
-        newplaylistGiveDto.setCover(playlistTrack.getTrack().getCover());
-        newplaylistGiveDto.setArtistName(playlistTrack.getTrack().getArtist().getArtistName());
-        return newplaylistGiveDto;
+        return usersRepository.findById(userId).get().getPlaylist().getPlaylist_track().stream().map(Playlist_Track::toGiveDto).toList();
     }
 
-
     @Transactional
-    public List<TrackGiveDto> artistSearch (String artist) {
-        List<TrackGiveDto>trackGiveDtos=new ArrayList<>();
-        if(artistRepository.findByArtistName(artist).isEmpty()) {
+    public List<TrackGiveDto> artistSearch (String artistName) {
+        if(artistRepository.findByArtistName(artistName).isEmpty()) {
             throw new NotFoundArtistException();
         }
-        Artist artistInfo= artistRepository.findByArtistName(artist).get();
-        List<Track> track=trackRepository.findByArtist_ArtistId(artistInfo.getArtistId());//트랙들을 모두 가져옴
-        for (Track value : track) {
-            TrackGiveDto trackGiveDto = new TrackGiveDto();
-            trackGiveDto.setArtistName(artist);
-            trackGiveDto.setTitle(value.getTitle());
-            trackGiveDto.setCover("base");
-            trackGiveDtos.add(trackGiveDto);
-        }
-        return trackGiveDtos;
+        return trackRepository.findByArtist_ArtistName(artistName).stream().map(Track::toTrackGiveDto).toList();//트랙들을 모두 가져옴
     }
 
     @Transactional
     public List<TrackGiveDto> trackSearch (String track) {
-        List<TrackGiveDto>trackGiveDtos=new ArrayList<>();
-        if(trackRepository.findByTitle(track).isEmpty())
-        {
+        //TODO 여기에서는 equal 보다는 like가 맞지 않나?
+        if(trackRepository.findByTitle(track).isEmpty()) {
             throw new NotFoundTrackException();
         }
-        Track trackInfo= trackRepository.findByTitle(track).get();
-
-        TrackGiveDto trackGiveDto=new TrackGiveDto();
-        trackGiveDto.setArtistName(trackInfo.getArtist().getArtistName());
-        trackGiveDto.setTitle(trackInfo.getTitle());
-        trackGiveDto.setCover("base");
-        trackGiveDtos.add(trackGiveDto);
-        return trackGiveDtos;
+        return List.of(Track.toTrackGiveDto(trackRepository.findByTitle(track).get()));
     }
 }
