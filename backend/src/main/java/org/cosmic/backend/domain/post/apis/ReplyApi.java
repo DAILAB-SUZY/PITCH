@@ -1,11 +1,11 @@
 package org.cosmic.backend.domain.post.apis;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import org.cosmic.backend.domain.post.applications.ReplyService;
 import org.cosmic.backend.domain.post.dtos.Comment.CommentDto;
 import org.cosmic.backend.domain.post.dtos.Reply.CreateReplyReq;
 import org.cosmic.backend.domain.post.dtos.Reply.ReplyDto;
 import org.cosmic.backend.domain.post.dtos.Reply.UpdateReplyReq;
-import org.cosmic.backend.domain.post.services.ReplyService;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

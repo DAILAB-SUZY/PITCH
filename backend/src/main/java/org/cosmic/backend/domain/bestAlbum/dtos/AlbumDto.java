@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class AlbumDto {
-    String albumName;
+    private String albumName;
 }

@@ -34,14 +34,14 @@ public class AlbumChatCommentApi {
         return commentService.getCommentsByAlbumChatId(albumchat.getAlbumChatId());
     }
 
-    @PostMapping("create")
+    @PostMapping("/create")
     @Transactional
     @ApiResponse(responseCode = "404", description = "Not Found User or AlbumChat")
     public AlbumChatCommentDto albumChatCommentCreate(@RequestBody AlbumChatCommentCreateReq comment) {
         return commentService.albumChatCommentCreate(comment);
     }
 
-    @PostMapping("update")
+    @PostMapping("/update")
     @Transactional
     @ApiResponse(responseCode = "400", description = "Not Match AlbumChat")
     @ApiResponse(responseCode = "404", description = "Not Found AlbumChatComment Or User")

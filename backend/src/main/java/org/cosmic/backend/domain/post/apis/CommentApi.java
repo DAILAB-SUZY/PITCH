@@ -2,12 +2,12 @@ package org.cosmic.backend.domain.post.apis;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.transaction.Transactional;
+import org.cosmic.backend.domain.post.applications.CommentService;
 import org.cosmic.backend.domain.post.dtos.Comment.CommentDto;
 import org.cosmic.backend.domain.post.dtos.Comment.CommentReq;
 import org.cosmic.backend.domain.post.dtos.Comment.CreateCommentReq;
 import org.cosmic.backend.domain.post.dtos.Comment.UpdateCommentReq;
 import org.cosmic.backend.domain.post.dtos.Post.PostDto;
-import org.cosmic.backend.domain.post.services.CommentService;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
