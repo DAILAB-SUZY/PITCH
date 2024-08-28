@@ -1,6 +1,7 @@
 package org.cosmic.backend.domain.musicDna.domains;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.cosmic.backend.domain.user.domains.User;
@@ -8,6 +9,7 @@ import org.cosmic.backend.domain.user.domains.User;
 @Entity
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class User_Dna {//user와 dna를 연결하는 domain
 
     @Id
@@ -27,9 +29,5 @@ public class User_Dna {//user와 dna를 연결하는 domain
                 "id=" + id +
                 ", emotion=" + (emotion != null ? emotion.getEmotionId() : "null") +
                 '}';
-    }
-    public User_Dna(User user, MusicDna emotion) {
-        this.user = user;
-        this.emotion = emotion;
     }
 }

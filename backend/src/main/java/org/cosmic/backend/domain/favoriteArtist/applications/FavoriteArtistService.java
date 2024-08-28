@@ -64,7 +64,6 @@ public class FavoriteArtistService {
     }
 
     public void favoriteArtistSaveData(FavoriteReq favoriteArtist) {
-        //TODO 수정 해야 함
         if(usersRepository.findById(favoriteArtist.getUserId()).isEmpty()) {
             throw new NotFoundUserException();
         }
@@ -78,12 +77,10 @@ public class FavoriteArtistService {
         }
         User user=usersRepository.findByUserId(favoriteArtist.getUserId()).orElseThrow();
         favoriteArtistRepository.deleteByUser_UserId(user.getUserId());
-        System.out.println(favoriteArtistRepository.findByUser_UserId(user.getUserId()));
-        FavoriteArtist favoriteArtist1=new FavoriteArtist(
-            artistRepository.findById(favoriteArtist.getArtistId()).orElseThrow().getArtistName(),
-            albumRepository.findById(favoriteArtist.getAlbumId()).orElseThrow().getTitle(),
-            trackRepository.findById(favoriteArtist.getTrackId()).orElseThrow().getTitle(),
-            favoriteArtist.getCover(),user);
-        favoriteArtistRepository.save(favoriteArtist1);
+        favoriteArtistRepository.save(new FavoriteArtist(
+                artistRepository.findById(favoriteArtist.getArtistId()).orElseThrow().getArtistName(),
+                albumRepository.findById(favoriteArtist.getAlbumId()).orElseThrow().getTitle(),
+                trackRepository.findById(favoriteArtist.getTrackId()).orElseThrow().getTitle(),
+                favoriteArtist.getCover(),user));
     }
 }
