@@ -13,24 +13,24 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Builder
-@Table(name="`playlist`")
+@Table(name="playlist")
 @EqualsAndHashCode(exclude = {"user", "playlist_track"})
 public class Playlist {//트랙은 플레이리스트는 N:M관계임
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name="playlistId")
+    @Column(name="playlist_id")
     private Long playlistId ;
 
     @Builder.Default
-    @Column(nullable=false)
+    @Column(nullable=false,name="created_date")
     private Instant createdDate=Instant.now();//생성 날짜
 
     @Builder.Default
-    @Column(nullable=false)
+    @Column(nullable=false,name="updated_date")
     private Instant updatedDate=Instant.now();//최신 업데이트 날짜
 
     @OneToOne
-    @JoinColumn(name="userId")
+    @JoinColumn(name="user_id")
     private User user;
     //user id로 플레이리스트의 주인을 찾음
 

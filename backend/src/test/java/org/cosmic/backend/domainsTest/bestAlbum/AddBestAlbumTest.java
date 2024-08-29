@@ -7,6 +7,7 @@ import org.cosmic.backend.domain.playList.domains.Artist;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
 import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
 import org.cosmic.backend.domain.playList.repositorys.TrackRepository;
+import org.cosmic.backend.domain.user.domains.Email;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.EmailRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
@@ -15,6 +16,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
@@ -42,63 +45,37 @@ public class AddBestAlbumTest extends BaseSetting {
     AlbumRepository albumRepository;
     @Autowired
     ArtistRepository artistRepository;
+    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     final ObjectMapper mapper = new ObjectMapper();
 
     @Test
     @Transactional
+    @Sql("/data/albumPost.sql")
     public void albumAddTest() throws Exception {
-        UserLogin userLogin = loginUser("test@example.com");
-        User user=getUser();
-        String validToken=userLogin.getToken();
-        Instant now = Instant.now();
+        User user=userRepository.findByEmail_Email("test1@example.com").get();
+        user.setPassword(encoder.encode(user.getPassword()));
+        UserLogin userLogin = loginUser("test1@example.com");
+        Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
 
-        Artist artist=saveArtist("비비");
-
-        Album album=saveAlbum("밤양갱", artist, now);
-
-        mockMvc.perform(post("/api/bestAlbum/add")
-                .header("Authorization", "Bearer " + validToken)
-                .contentType("application/json")
-                .content(mapper.writeValueAsString(BestAlbumDto.builder()
-                    .userId(user.getUserId())
-                    .albumId(album.getAlbumId())
-                    .build()
-                )))
-            .andDo(print())
+        BestAlbumDto bestAlbumDto=BestAlbumDto.createBestAlbumDto(user.getUserId(),album.getAlbumId());
+        mockMvcHelper("/api/bestAlbum/add",bestAlbumDto)
             .andExpect(status().isOk());
     }
     @Test
     @Transactional
+    @Sql("/data/albumPost.sql")
     public void notMatchAlbumAddTest() throws Exception {
-        UserLogin userLogin = loginUser("test@example.com");
-        User user=getUser();
-        String validToken=userLogin.getToken();
-        Instant now = Instant.now();
+        User user=userRepository.findByEmail_Email("test1@example.com").get();
+        user.setPassword(encoder.encode(user.getPassword()));
+        UserLogin userLogin = loginUser("test1@example.com");
+        Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
 
-        Artist artist=saveArtist("비비");
-
-        Album album=saveAlbum("밤양갱", artist, now);
-
-        mockMvc.perform(post("/api/bestAlbum/add")
-                .header("Authorization", "Bearer " + validToken)
-                .contentType("application/json")
-                .content(mapper.writeValueAsString(BestAlbumDto.builder()
-                    .userId(100L)
-                    .albumId(album.getAlbumId())
-                    .build()
-                )))
-            .andDo(print())
-            .andExpect(status().isNotFound());
-        mockMvc.perform(post("/api/bestAlbum/add")
-                .header("Authorization", "Bearer " + validToken)
-                .contentType("application/json")
-                .content(mapper.writeValueAsString(BestAlbumDto.builder()
-                    .userId(user.getUserId())
-                    .albumId(100L)
-                    .build()
-                )))
-            .andDo(print())
-            .andExpect(status().isNotFound());
+        BestAlbumDto bestAlbumDto=BestAlbumDto.createBestAlbumDto(100L,album.getAlbumId());
+        mockMvcHelper("/api/bestAlbum/add",bestAlbumDto)
+                .andExpect(status().isNotFound());
+        bestAlbumDto=BestAlbumDto.createBestAlbumDto(user.getUserId(),100L);
+        mockMvcHelper("/api/bestAlbum/add",bestAlbumDto)
+                .andExpect(status().isNotFound());
     }
 }

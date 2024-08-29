@@ -13,13 +13,12 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Builder
-@Table(name="`DNA`")
+@Table(name="music_Dna")
 public class MusicDna {//dna들을 담고 있는 테이블.
-
     //primary key id로 설정 후 user와 연결하는 테이블만들기.
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name="emotionId")
+    @Column(name="emotion_id")
     private Long emotionId;//emotion key
 
     @Builder.Default

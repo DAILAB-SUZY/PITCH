@@ -14,6 +14,7 @@ import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.springframework.stereotype.Service;
 
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,6 +40,12 @@ public class AlbumChatAlbumLikeService {
                 .map(AlbumChatAlbumLikeResponse::new)
                 .collect(Collectors.toList());
     }
+
+    /**
+     * @param userId
+     * @param albumChatId
+     * @return AlbumChatAlbumLikeReq
+     */
 
     public AlbumChatAlbumLikeReq albumChatAlbumLikeCreate(Long userId, Long albumChatId) {
         if(albumChatRepository.findById(albumChatId).isEmpty()) {

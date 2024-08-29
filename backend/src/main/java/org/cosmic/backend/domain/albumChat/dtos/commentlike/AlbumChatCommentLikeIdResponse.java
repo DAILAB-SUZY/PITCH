@@ -13,4 +13,10 @@ public class AlbumChatCommentLikeIdResponse {
     public AlbumChatCommentLikeIdResponse(Long albumChatCommentLikeId) {
         this.albumChatCommentLikeId = albumChatCommentLikeId;
     }
+
+    public static AlbumChatCommentLikeIdResponse createAlbumChatCommentLikeIdResponse(Long albumChatCommentLikeId) {
+        return  AlbumChatCommentLikeIdResponse.builder()
+                .albumChatCommentLikeId(albumChatCommentLikeId)
+                .build();
+    }
 }

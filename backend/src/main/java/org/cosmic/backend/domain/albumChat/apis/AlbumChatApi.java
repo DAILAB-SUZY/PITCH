@@ -15,6 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * Albumchat 클래스는 앨범챗 페이지 관련 기능을 제공합니다.
+ * 앨범챗 오픈, 좋아요 많은 순 정렬, 친구 댓글 정렬을 수행할 수 있습니다.
+ */
 @RestController
 @RequestMapping("/api/albumchat")
 @ApiCommonResponses
@@ -24,6 +28,13 @@ public class AlbumChatApi {
     public AlbumChatApi(AlbumChatService albumChatService) {
         this.albumChatService = albumChatService;
     }
+
+    /**
+     * @param album
+     * @return
+     * @throws ExceptionName
+     * @see 다른 클래스나 메서드에 대한 참조 링크
+     */
 
     @Transactional
     @PostMapping("/open")

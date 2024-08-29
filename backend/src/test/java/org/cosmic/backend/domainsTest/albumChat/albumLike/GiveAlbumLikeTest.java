@@ -7,7 +7,6 @@ import org.cosmic.backend.domain.albumChat.dtos.albumlike.AlbumChatAlbumLikeDto;
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatRepository;
 import org.cosmic.backend.domain.auth.dtos.UserLogin;
 import org.cosmic.backend.domain.playList.domains.Album;
-import org.cosmic.backend.domain.playList.domains.Artist;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
 import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
 import org.cosmic.backend.domain.playList.repositorys.TrackRepository;
@@ -20,27 +19,19 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.time.Instant;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @Log4j2
 public class GiveAlbumLikeTest extends BaseSetting {
-
-    @Autowired
-    private MockMvc mockMvc;
     final ObjectMapper mapper = new ObjectMapper();
     @Autowired
     UsersRepository userRepository;
@@ -55,51 +46,30 @@ public class GiveAlbumLikeTest extends BaseSetting {
     @Autowired
     AlbumChatRepository albumChatRepository;
 
+    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
     @Test
     @Transactional
+    @Sql("/data/albumChat.sql")
     public void albumLikesGiveTest() throws Exception {
-        UserLogin userLogin = loginUser("test@example.com");
-        String validToken=userLogin.getToken();
-        User user=getUser();
-        Instant now = Instant.now();
+        User user=userRepository.findByEmail_Email("test1@example.com").get();
+        user.setPassword(encoder.encode(user.getPassword()));
+        UserLogin userLogin = loginUser("test1@example.com");
+        Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
 
-        Artist artist=saveArtist("비비");
-
-        Album album=saveAlbum("밤양갱", artist, now);
-
-        saveAlbumChat(artist, album, now);
-
-        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/api/albumchat/open")
-                .header("Authorization", "Bearer " + validToken)
-                .contentType("application/json")
-                .content(mapper.writeValueAsString(AlbumDto.builder()
-                        .albumId(album.getAlbumId())
-                        .build()
-                )));
-
+        AlbumDto albumDto = AlbumDto.createAlbumDto(album.getAlbumId());
+        ResultActions resultActions =mockMvcHelper("/api/albumchat/open",albumDto);
         MvcResult result = resultActions.andReturn();
-
         String content = result.getResponse().getContentAsString();
         AlbumChatResponse albumChatResponse = mapper.readValue(content, AlbumChatResponse.class);
         Long albumChatId = albumChatResponse.getAlbumChatId();
-        System.out.println("albumChatId:"+albumChatId);
 
-        mockMvc.perform(post("/api/albumchat/albumlike/create")
-            .header("Authorization", "Bearer " + validToken)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(mapper.writeValueAsString(AlbumChatAlbumLikeDto.builder()
-                .userId(user.getUserId())
-                .albumChatId(albumChatId)
-                .build()
-            )));
+        AlbumChatAlbumLikeDto albumChatAlbumLikeDto=AlbumChatAlbumLikeDto.createAlbumChatAlbumLikeDto
+            (user.getUserId(),albumChatId);
+        mockMvcHelper("/api/albumchat/albumlike/create",albumChatAlbumLikeDto);
+        AlbumChatDto albumChatDto=AlbumChatDto.createAlbumChatDto(albumChatId);
 
-        mockMvc.perform(post("/api/albumchat/albumlike/give")
-                .header("Authorization", "Bearer " + validToken)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(AlbumChatDto.builder()
-                    .albumChatId(albumChatId)
-                    .build()
-                ))).andDo(print())
+        mockMvcHelper("/api/albumchat/albumlike/give",albumChatDto)
             .andExpect(status().isOk());
     }
 }

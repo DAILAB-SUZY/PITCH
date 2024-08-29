@@ -32,9 +32,9 @@ public class AlbumChatCommentLikeService {
             throw new NotFoundAlbumChatCommentException();
         }
         return likeRepository.findByAlbumChatComment_AlbumChatCommentId(albumChatCommentId)
-                .stream()
-                .map(AlbumChatCommentLikeResponse::new)
-                .collect(Collectors.toList());
+            .stream()
+            .map(AlbumChatCommentLikeResponse::new)
+            .collect(Collectors.toList());
     }
 
     public AlbumChatCommentLikeIdResponse albumChatCommentLikeCreate(Long userId, Long albumChatCommentId) {

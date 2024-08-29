@@ -12,4 +12,9 @@ public class AlbumChatAlbumLikeReq{
     public AlbumChatAlbumLikeReq(Long albumChatAlbumLikeId) {
         this.albumChatAlbumLikeId = albumChatAlbumLikeId;
     }
+    public static AlbumChatAlbumLikeReq createAlbumChatAlbumLikeReq(Long albumChatAlbumLikeId){
+        return  AlbumChatAlbumLikeReq.builder()
+                .albumChatAlbumLikeId(albumChatAlbumLikeId)
+                .build();
+    }
 }

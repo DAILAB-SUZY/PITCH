@@ -12,4 +12,9 @@ import lombok.NoArgsConstructor;
 public class ArtistDto {
     //artistId도 필요해보임
     private String artistName;
+    public static ArtistDto createArtistDto(String artistName) {
+        return  ArtistDto.builder()
+                .artistName(artistName)
+                .build();
+    }
 }

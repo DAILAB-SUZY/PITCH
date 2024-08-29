@@ -18,7 +18,7 @@ import java.util.List;
 @Entity
 @AllArgsConstructor
 @Builder
-@Table(name="`user`")
+@Table(name="users")  // 테이블 이름이 'user'인 경우
 @EqualsAndHashCode(exclude = {"email", "playlist", "userDnas", "posts", "comments", "likes"})
 public class User {
     @Id
@@ -26,8 +26,8 @@ public class User {
     private Long userId;
 
     @OneToOne
-    @JoinColumn(name="emails")
-    private Email email;//fk
+    @JoinColumn(name="email")  // 외래 키 컬럼명은 emails 테이블의 'email' 컬럼과 일치
+    private Email email; // FK
 
     @Column(nullable=false)
     private String username;

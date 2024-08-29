@@ -11,4 +11,10 @@ import lombok.NoArgsConstructor;
 @Builder
 public class PostDto {
     private Long postId;
+
+    public static PostDto createPostDto(Long postId) {
+        return  PostDto.builder()
+                .postId(postId)
+                .build();
+    }
 }

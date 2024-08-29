@@ -14,13 +14,13 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Builder
-@Table(name="`Album`")
+@Table(name="Album")
 @EqualsAndHashCode(exclude = {"albumchat"})
 public class Album {//앨범과 트랙은 1:N관계이며 앨범과 아티스트는 더 생각 필요
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name="albumId")
+    @Column(name="album_id")
     private Long albumId;
 
     @Column(nullable=false)
@@ -38,7 +38,7 @@ public class Album {//앨범과 트랙은 1:N관계이며 앨범과 아티스트
 
     //아티스트와 1:N 관계
     @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="artistId")
+    @JoinColumn(name="artist_id")
     private Artist artist;
 
     @OneToMany(mappedBy = "album")

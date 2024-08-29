@@ -12,4 +12,9 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ReplyDto {
     private Long replyId;
+    public static ReplyDto createReplyDto(Long replyId) {
+        return  ReplyDto.builder()
+                .replyId(replyId)
+                .build();
+    }
 }

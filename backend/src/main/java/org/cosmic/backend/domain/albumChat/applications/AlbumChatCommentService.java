@@ -36,10 +36,10 @@ public class AlbumChatCommentService {
             throw new NotFoundAlbumChatException();
         }
         return commentRepository.findByAlbumChat_AlbumChatId(albumChatId)
-                .orElse(Collections.emptyList())
-                .stream()
-                .map(AlbumChatCommentResponse::new)
-                .collect(Collectors.toList());
+            .orElse(Collections.emptyList())
+            .stream()
+            .map(AlbumChatCommentResponse::new)
+            .collect(Collectors.toList());
     }
 
     public AlbumChatCommentDto albumChatCommentCreate(AlbumChatCommentCreateReq comment) {

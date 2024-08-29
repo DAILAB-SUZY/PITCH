@@ -12,4 +12,10 @@ import lombok.NoArgsConstructor;
 public class LikeDto {
     private Long userId;
     private Long postId;
+    public static LikeDto createLikeDto(Long userId,Long postId) {
+        return  LikeDto.builder()
+                .userId(userId)
+                .postId(postId)
+                .build();
+    }
 }

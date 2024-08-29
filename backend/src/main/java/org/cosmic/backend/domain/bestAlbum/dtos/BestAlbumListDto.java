@@ -13,4 +13,13 @@ import java.util.List;
 public class BestAlbumListDto {
     private Long userId;
     private List<BestAlbumDetail> bestalbum;
+    public BestAlbumListDto(Long userId) {
+        this.userId = userId;
+    }
+    public static BestAlbumListDto createBestAlbumListDto(Long userId,List<BestAlbumDetail> bestalbum) {
+        return  BestAlbumListDto.builder()
+                .userId(userId)
+                .bestalbum(bestalbum)
+                .build();
+    }
 }

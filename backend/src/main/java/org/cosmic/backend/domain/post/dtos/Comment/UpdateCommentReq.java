@@ -17,4 +17,14 @@ public class UpdateCommentReq {
     private Long commentId;
     private String content;
     private Instant createTime;
+
+    public static UpdateCommentReq createUpdateCommentReq(Long userId,Instant createTime,Long postId,Long commentId,String content) {
+        return  UpdateCommentReq.builder()
+                .userId(userId)
+                .createTime(createTime)
+                .postId(postId)
+                .commentId(commentId)
+                .content(content)
+                .build();
+    }
 }

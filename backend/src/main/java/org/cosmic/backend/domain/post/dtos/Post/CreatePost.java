@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.time.Instant;
 
 @Data
@@ -18,4 +17,15 @@ public class CreatePost {
     private String content;
     private String title;
     private Instant updateTime;
+
+    public static CreatePost createCreatePost(Long userId, String cover, String artistName, String content, String title, Instant updateTime) {
+        return  CreatePost.builder()
+                .userId(userId)
+                .cover(cover)
+                .artistName(artistName)
+                .content(content)
+                .title(title)
+                .updateTime(updateTime)
+                .build();
+    }
 }

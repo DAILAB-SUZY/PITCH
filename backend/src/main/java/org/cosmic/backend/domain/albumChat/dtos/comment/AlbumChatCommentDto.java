@@ -7,6 +7,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.cosmic.backend.domain.albumChat.domains.AlbumChatComment;
+import org.cosmic.backend.domain.albumChat.dtos.reply.AlbumChatReplyCreateReq;
+
+import java.time.Instant;
 
 @Data
 @AllArgsConstructor
@@ -18,6 +21,12 @@ public class AlbumChatCommentDto {
 
     public AlbumChatCommentDto(AlbumChatComment commentEntity) {
         this.albumChatCommentId = commentEntity.getAlbumChatCommentId();
+    }
+
+    public static AlbumChatCommentDto createAlbumChatCommentDto(Long albumChatCommentId) {
+        return  AlbumChatCommentDto.builder()
+                .albumChatCommentId(albumChatCommentId)
+                .build();
     }
 
     @JsonPOJOBuilder(withPrefix = "")

@@ -11,4 +11,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CommentDto {
     private Long commentId;
+
+    public static CommentDto createCommentDto(Long commentId) {
+        return CommentDto.builder().commentId(commentId).build();
+    }
 }

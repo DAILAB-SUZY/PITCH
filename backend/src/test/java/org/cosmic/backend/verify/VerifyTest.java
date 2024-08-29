@@ -7,25 +7,33 @@ import org.cosmic.backend.domain.user.repositorys.EmailRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @Testcontainers
 @SpringBootTest
+@Sql("/data/user.sql")
 public class VerifyTest {
 
-@Autowired
+    @Autowired
     private EmailRepository emailRepository;
     @Autowired
     private UsersRepository usersRepository;
     private Email email;
     private final User user=new User();
 
+    @AfterEach
+    void tearDown() {
+        usersRepository.deleteAll();
+        emailRepository.deleteAll();
+    }
     @Test
     @DisplayName("간단한 json데이터파싱")//*
     void simpleDataParsing() {
@@ -33,6 +41,7 @@ public class VerifyTest {
         email.setEmail("kimjunho12315@naver.com");
         email.setVerificationCode("123456");
         emailRepository.save(email);
+
         String jsonString = "{\"email\": \"kimjunho12315@naver.com\","
                 + "\"password\": \"1234\","
                 + "\"name\": junho"

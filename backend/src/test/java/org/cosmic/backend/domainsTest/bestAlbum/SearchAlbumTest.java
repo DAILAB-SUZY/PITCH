@@ -3,12 +3,11 @@ package org.cosmic.backend.domainsTest.bestAlbum;
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.auth.dtos.UserLogin;
 import org.cosmic.backend.domain.bestAlbum.dtos.AlbumDto;
-import org.cosmic.backend.domain.playList.domains.Album;
-import org.cosmic.backend.domain.playList.domains.Artist;
 import org.cosmic.backend.domain.playList.dtos.ArtistDto;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
 import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
 import org.cosmic.backend.domain.playList.repositorys.TrackRepository;
+import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.EmailRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.cosmic.backend.domainsTest.BaseSetting;
@@ -16,14 +15,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.time.Instant;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -31,8 +25,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Log4j2
 public class SearchAlbumTest extends BaseSetting {
-    @Autowired
-    private MockMvc mockMvc;
     @Autowired
     EmailRepository emailRepository;
     @Autowired
@@ -43,49 +35,29 @@ public class SearchAlbumTest extends BaseSetting {
     AlbumRepository albumRepository;
     @Autowired
     ArtistRepository artistRepository;
+    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    final ObjectMapper mapper = new ObjectMapper();
     @Test
     @Transactional
+    @Sql("/data/albumPost.sql")
     public void albumNameSearchTest() throws Exception {
-        UserLogin userLogin = loginUser("test@example.com");
-        String validToken=userLogin.getToken();
-        Instant now = Instant.now();
+        User user=userRepository.findByEmail_Email("test1@example.com").get();
+        user.setPassword(encoder.encode(user.getPassword()));
+        UserLogin userLogin = loginUser("test1@example.com");
 
-        Artist artist=saveArtist("비비");
-
-        Album album=saveAlbum("밤양갱", artist, now);
-
-        mockMvc.perform(post("/api/bestAlbum/Albumsearch")
-                .header("Authorization", "Bearer " + validToken)
-                .contentType("application/json")
-                .content(mapper.writeValueAsString(AlbumDto.builder()
-                    .albumName("밤양갱")
-                    .build()
-                )))
-            .andDo(print())
-            .andExpect(status().isOk());
+        AlbumDto albumDto=AlbumDto.createAlbumDto("bam");
+        mockMvcHelper("/api/bestAlbum/Albumsearch",albumDto).andExpect(status().isOk());
     }
 
     @Test
     @Transactional
+    @Sql("/data/albumPost.sql")
     public void artistNameSearchTest() throws Exception {
-        UserLogin userLogin = loginUser("test@example.com");
-        String validToken=userLogin.getToken();
-        Instant now = Instant.now();
+        User user=userRepository.findByEmail_Email("test1@example.com").get();
+        user.setPassword(encoder.encode(user.getPassword()));
+        UserLogin userLogin = loginUser("test1@example.com");
 
-        Artist artist=saveArtist("비비");
-
-        Album album=saveAlbum("밤양갱", artist, now);
-
-        mockMvc.perform(post("/api/bestAlbum/Artistsearch")
-                .header("Authorization", "Bearer " + validToken)
-                .contentType("application/json")
-                .content(mapper.writeValueAsString(ArtistDto.builder()
-                    .artistName("비비")
-                    .build()
-                )))
-            .andDo(print())
-            .andExpect(status().isOk());
+        ArtistDto artistDto=ArtistDto.createArtistDto("bibi");
+        mockMvcHelper("/api/bestAlbum/Artistsearch",artistDto).andExpect(status().isOk());
     }
 }

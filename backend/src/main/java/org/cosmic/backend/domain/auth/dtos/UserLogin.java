@@ -15,4 +15,10 @@ public class UserLogin {
     private String email;
     private String password;
     private Long id;
+    public static UserLogin createUserLogin(String email, String password) {
+        return  UserLogin.builder()
+                .email(email)
+                .password(password)
+                .build();
+    }
 }

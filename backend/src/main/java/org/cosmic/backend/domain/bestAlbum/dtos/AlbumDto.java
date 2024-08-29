@@ -11,4 +11,9 @@ import lombok.NoArgsConstructor;
 @Builder
 public class AlbumDto {
     private String albumName;
+    public static AlbumDto createAlbumDto(String albumName) {
+        return  AlbumDto.builder()
+                .albumName(albumName)
+                .build();
+    }
 }

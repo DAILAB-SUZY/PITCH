@@ -16,4 +16,13 @@ public class CreateReplyReq {
     private Long commentId;
     private String content;
     private Instant createTime;
+
+    public static CreateReplyReq createCreateReplyReq(Long userId, Long commentId, String content, Instant createTime) {
+        return  CreateReplyReq.builder()
+                .userId(userId)
+                .commentId(commentId)
+                .content(content)
+                .createTime(createTime)
+                .build();
+    }
 }

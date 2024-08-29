@@ -26,7 +26,6 @@ public class UserRepositoryTest {
     @Test
     @DisplayName("유저 저장 확인")
     public void userSaveTest() {
-
         email=new Email();
         email.setEmail("kimjunho1231@naver.com");
         email.setVerificationCode("123456");
@@ -38,18 +37,12 @@ public class UserRepositoryTest {
         user.setPassword("1234");
 
         User savedUser=usersRepository.save(user);
-
-
         Assertions.assertThat(savedUser.getEmail()).isNotNull();//NOT NULL확인
         Assertions.assertThat(user.getEmail()).isEqualTo(savedUser.getEmail());
-
         Assertions.assertThat(savedUser.getPassword()).isNotNull();//NOT NULL확인
         Assertions.assertThat(user.getPassword()).isEqualTo(savedUser.getPassword());
-
         Assertions.assertThat(user.getProfilePicture()).isEqualTo(savedUser.getProfilePicture());
-
         Assertions.assertThat(user.getSignupDate()).isEqualTo(savedUser.getSignupDate());
-
     }
 
     @Test
@@ -137,6 +130,7 @@ public class UserRepositoryTest {
         user2.setEmail(email1);
         user2.setUsername("junho");
         user2.setPassword("123");
+
         usersRepository.save(user);
         usersRepository.save(user2);
 

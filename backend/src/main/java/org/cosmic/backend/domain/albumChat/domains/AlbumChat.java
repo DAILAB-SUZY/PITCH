@@ -10,7 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Builder
-@Table(name = "albumChat") // 테이블 이름 수정
+    @Table(name = "album_chat") // 테이블 이름 수정
 @EqualsAndHashCode(exclude = {"album"})
 public class AlbumChat {
     @Id
@@ -18,15 +18,25 @@ public class AlbumChat {
     @Column(name = "albumChat_id") // 컬럼 이름 명시
     private Long albumChatId;
 
+    @Column(nullable=false)
     private String cover;
+
+    @Column(nullable=false)
     private String title;
+
+    @Column(nullable=false)
     private String genre;
+
+    @Column(nullable=false,name="artist_name")
     private String artistName;
-    private Instant CreateTime;
+
+    @Builder.Default
+    @Column(nullable=false,name="create_time")
+    private Instant CreateTime=Instant.now();
 
     //앨범이랑 연관져야할듯
     @OneToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="albumId")
+    @JoinColumn(name="album_id")
     private Album album;
 
     @OneToMany(mappedBy = "albumChat")

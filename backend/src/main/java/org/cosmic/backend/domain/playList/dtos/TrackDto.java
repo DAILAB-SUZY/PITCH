@@ -11,4 +11,9 @@ import lombok.NoArgsConstructor;
 @Builder
 public class TrackDto {
    private String trackName;
+   public static TrackDto createTrackDto(String trackName) {
+      return  TrackDto.builder()
+              .trackName(trackName)
+              .build();
+   }
 }

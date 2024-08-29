@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.cosmic.backend.domain.post.dtos.Like.LikeReq;
 
 import java.time.Instant;
 
@@ -14,5 +15,11 @@ import java.time.Instant;
 public class UpdatePost {
     private Long postId;
     private String content;
-    private Instant updateTime;
+    public static UpdatePost createUpdatePost(Long postId, String content) {
+        return  UpdatePost.builder()
+                .postId(postId)
+                .content(content)
+                .build();
+    }
 }
+

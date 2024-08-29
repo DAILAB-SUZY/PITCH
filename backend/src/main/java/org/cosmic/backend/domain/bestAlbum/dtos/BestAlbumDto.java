@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -12,4 +11,10 @@ import lombok.NoArgsConstructor;
 public class BestAlbumDto {
     Long userId;
     Long albumId;
+    public static BestAlbumDto createBestAlbumDto(Long userId,Long albumId) {
+        return  BestAlbumDto.builder()
+                .userId(userId)
+                .albumId(albumId)
+                .build();
+    }
 }

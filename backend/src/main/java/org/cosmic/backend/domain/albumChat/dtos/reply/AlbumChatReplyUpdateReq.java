@@ -16,4 +16,14 @@ public class AlbumChatReplyUpdateReq {
     private Long albumChatCommentId;
     private String content;
     private Instant createTime;
+
+    public static AlbumChatReplyUpdateReq createAlbumChatReplyUpdateReq(Long userId, Long albumChatCommentId, Long albumChatReplyId, String content, Instant createTime) {
+        return  AlbumChatReplyUpdateReq.builder()
+                .userId(userId)
+                .albumChatCommentId(albumChatCommentId)
+                .albumChatReplyId(albumChatReplyId)
+                .content(content)
+                .createTime(createTime)
+                .build();
+    }
 }

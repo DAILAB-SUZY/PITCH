@@ -14,14 +14,14 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Builder
-@Table(name="`Artist`")
+@Table(name="Artist")
 public class Artist {//
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name="artistId")
+    @Column(name="artist_id")
     private Long artistId ;
 
-    @Column(name="artistName")
+    @Column(name="artist_name")
     private String artistName;
 
     //아티스트 1 앨범 N
