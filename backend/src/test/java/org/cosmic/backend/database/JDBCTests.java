@@ -1,10 +1,10 @@
 package org.cosmic.backend.database;
 
+import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 
-import lombok.extern.log4j.Log4j2;
-
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -22,7 +22,8 @@ public class JDBCTests {
 
     @Test
     public void testConnection() {
-        try (Connection con = DriverManager.getConnection("jdbc:postgresql://localhost:9000/pitch", "myuser", "secret")) {
+        try (Connection con = DriverManager.getConnection("jdbc:postgresql://localhost:9000/pitch",
+            "myuser", "secret")) {
             log.info(con);
         } catch (Exception e) {
             fail(e.getMessage());

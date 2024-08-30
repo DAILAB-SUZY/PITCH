@@ -8,6 +8,6 @@ public class NotMatchPasswordException extends BadRequestException {
     }
 
     public NotMatchPasswordException(){
-        this("Not match password");
+        this(getNotMatchPasswordError());
     }
 }

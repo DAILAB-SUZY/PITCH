@@ -2,7 +2,6 @@ package org.cosmic.backend.globals.configs;
 
 import org.cosmic.backend.domain.auth.applications.JwtAuthenticationFilter;
 import org.cosmic.backend.globals.exceptions.ExceptionHandlerFilter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -20,10 +19,13 @@ import java.util.List;
 @Configuration
 public class SecurityConfig{
 
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
-    @Autowired
-    private ExceptionHandlerFilter exceptionHandlerFilter;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final ExceptionHandlerFilter exceptionHandlerFilter;
+
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, ExceptionHandlerFilter exceptionHandlerFilter) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.exceptionHandlerFilter = exceptionHandlerFilter;
+    }
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {

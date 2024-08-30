@@ -8,6 +8,6 @@ public class NotMatchConditionException extends BadRequestException {
     }
 
     public NotMatchConditionException(){
-        this("Not met password condition");
+        this(getNotMatchConditionError());
     }
 }

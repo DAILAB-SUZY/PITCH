@@ -1,0 +1,24 @@
+package org.cosmic.backend.domain.auth.dtos;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserLogin {
+    private String refreshToken;
+    private String token;
+    private String email;
+    private String password;
+    private Long id;
+    public static UserLogin createUserLogin(String email, String password) {
+        return  UserLogin.builder()
+                .email(email)
+                .password(password)
+                .build();
+    }
+}
