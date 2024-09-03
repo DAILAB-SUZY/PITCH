@@ -16,6 +16,6 @@ public class UserDnaResponse {
 
     public UserDnaResponse(User_Dna userDna) {
         this.userId = userDna.getUser().getUserId();
-        this.emotion = userDna.getEmotion().getEmotion();
+        this.emotion = userDna.getEmotion().getName();
     }
 }

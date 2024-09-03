@@ -2,7 +2,7 @@ package org.cosmic.backend.domainsTest.playlist;
 
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.auth.dtos.UserLogin;
-import org.cosmic.backend.domain.musicDna.repositorys.EmotionRepository;
+import org.cosmic.backend.domain.musicDna.repositorys.MusicDnaRepository;
 import org.cosmic.backend.domain.playList.domains.Track;
 import org.cosmic.backend.domain.playList.dtos.PlaylistDetail;
 import org.cosmic.backend.domain.playList.dtos.PlaylistDto;
@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Log4j2
 public class CreatePlaylistTest extends BaseSetting {
     @Autowired
-    EmotionRepository emotionRepository;
+    MusicDnaRepository musicDnaRepository;
     @Autowired
     UsersRepository userRepository;
     @Autowired

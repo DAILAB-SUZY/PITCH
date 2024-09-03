@@ -11,7 +11,7 @@ VALUES (
            CURRENT_TIMESTAMP
        );
 
-INSERT INTO music_Dna (emotion) VALUES ('lazy');
-INSERT INTO music_Dna (emotion) VALUES ('funny');
-INSERT INTO music_Dna (emotion) VALUES ('quiet');
-INSERT INTO music_Dna (emotion) VALUES ('beautiful');
+INSERT INTO music_Dna (name) VALUES ('lazy');
+INSERT INTO music_Dna (name) VALUES ('funny');
+INSERT INTO music_Dna (name) VALUES ('quiet');
+INSERT INTO music_Dna (name) VALUES ('beautiful');

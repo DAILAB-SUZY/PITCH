@@ -4,7 +4,7 @@ import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.musicDna.domains.MusicDna;
 import org.cosmic.backend.domain.musicDna.dtos.DnaDetail;
 import org.cosmic.backend.domain.musicDna.dtos.DnaDto;
-import org.cosmic.backend.domain.musicDna.repositorys.EmotionRepository;
+import org.cosmic.backend.domain.musicDna.repositorys.MusicDnaRepository;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.cosmic.backend.domainsTest.BaseSetting;
@@ -33,14 +33,14 @@ public class MusicDNAControllerTest extends BaseSetting {
 
     final ObjectMapper mapper = new ObjectMapper();
     @Autowired
-    private EmotionRepository emotionRepository;
+    private MusicDnaRepository musicDnaRepository;
 
     //DNA데이터 잘 주는지
     @Test
     @Transactional
     @Sql("/data/musicDna.sql")
     public void dnaRequestTest() throws Exception {
-        List<MusicDna> DNA= emotionRepository.findAll();
+        List<MusicDna> DNA= musicDnaRepository.findAll();
         mockMvc.perform(post("/api/dna/give")
         .contentType("application/json")
         .content(mapper.writeValueAsString(DNA)))

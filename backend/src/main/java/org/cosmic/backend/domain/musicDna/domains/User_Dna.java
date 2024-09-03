@@ -21,13 +21,13 @@ public class User_Dna {//user와 dna를 연결하는 domain
     private User user;
 
     @ManyToOne
-    @JoinColumn(name="emotion_id")
+    @JoinColumn(name="dna_id")
     private MusicDna emotion;
     @Override
     public String toString() {
         return "User_Dna{" +
                 "id=" + id +
-                ", emotion=" + (emotion != null ? emotion.getEmotionId() : "null") +
+                ", emotion=" + (emotion != null ? emotion.getDnaId() : "null") +
                 '}';
     }
 }
