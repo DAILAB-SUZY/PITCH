@@ -23,8 +23,8 @@ public class Track {//여기엔 모든 노래들이 담길 것임. 담길 때 �
     @Column(name="track_id")
     private Long trackId ;
 
-    @Column(nullable=false)
-    private String genre;
+    @OneToOne(fetch = FetchType.EAGER)
+    private Genre genre;
 
     @Column(nullable=false)
     private String title;//곡 제목
@@ -51,7 +51,7 @@ public class Track {//여기엔 모든 노래들이 담길 것임. 담길 때 �
     @JoinColumn(name="artist_id")
     private Artist artist;
 
-    public Track(String genre, String title,String cover, Artist artist, Instant createdDate,Album album){
+    public Track(Genre genre, String title, String cover, Artist artist, Instant createdDate, Album album){
         this.genre = genre;
         this.title = title;
         this.artist = artist;

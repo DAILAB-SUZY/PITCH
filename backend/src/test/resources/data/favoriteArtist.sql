@@ -22,11 +22,10 @@ VALUES(
           CURRENT_TIMESTAMP
       );
 
-INSERT INTO Track(title,cover,genre,created_date,album_id,artist_id)
+INSERT INTO Track(title,cover,created_date,album_id,artist_id)
 VALUES(
           'bam',
           'base',
-          'balad',
           CURRENT_TIMESTAMP,
           (SELECT Album.album_id FROM Album WHERE title='bam'),
           (SELECT Artist.artist_id FROM Artist WHERE Artist.artist_name='bibi')
