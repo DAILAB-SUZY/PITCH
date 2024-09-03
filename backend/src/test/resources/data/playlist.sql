@@ -13,12 +13,11 @@ VALUES (
        );
 INSERT INTO Artist(artist_name)VALUES('bibi');
 
-INSERT INTO Album(title,cover,artist_id,genre,created_date)
+INSERT INTO Album(title,cover,artist_id,created_date)
 VALUES(
           'bam',
           'base',
           (SELECT Artist.artist_id FROM Artist WHERE artist_name='bibi'),
-          'balad',
           CURRENT_TIMESTAMP
       );
 

@@ -8,6 +8,7 @@ import org.cosmic.backend.domain.post.dtos.Post.AlbumDto;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -29,8 +30,8 @@ public class Album {//앨범과 트랙은 1:N관계이며 앨범과 아티스트
     @Column(nullable=false)
     private String cover;
 
-    @Column(nullable=false)
-    private String genre;
+    @ManyToMany(fetch = FetchType.LAZY)
+    private Set<Genre> genre;
 
     @Builder.Default
     @Column(nullable=false)
@@ -48,13 +49,6 @@ public class Album {//앨범과 트랙은 1:N관계이며 앨범과 아티스트
     @OneToOne(mappedBy = "album")
     private AlbumChat albumchat;
 
-    public Album(String genre, String title,String cover, Artist artist, Instant createdDate){
-        this.genre = genre;
-        this.title = title;
-        this.artist = artist;
-        this.createdDate = createdDate;
-        this.cover = cover;
-    }
     @Override
     public String toString() {
         return "Album{" +
