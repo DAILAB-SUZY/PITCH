@@ -15,11 +15,4 @@ public class FavoriteArtistDto {
     private String albumName;
     private String trackName;
     private String cover;
-
-    public FavoriteArtistDto(FavoriteArtist favoriteArtist) {
-        this.artistName = favoriteArtist.getArtistName();
-        this.albumName = favoriteArtist.getAlbumName();
-        this.trackName = favoriteArtist.getTrackName();
-        this.cover = favoriteArtist.getCover();
-    }
 }
