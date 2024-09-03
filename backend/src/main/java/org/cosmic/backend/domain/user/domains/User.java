@@ -41,7 +41,7 @@ public class User {
 
     @Builder.Default
     @Column(nullable=false)
-    private Instant signupDate=Instant.now();
+    private Instant create_time =Instant.now();
 
     @OneToMany(mappedBy = "user")
     @Builder.Default
@@ -72,7 +72,7 @@ public class User {
                 ", email=" + (email != null ? email.getEmail() : "null") +
                 ", username='" + username + '\'' +
                 ", profilePicture='" + profilePicture + '\'' +
-                ", signupDate=" + signupDate +
+                ", signupDate=" + create_time +
                 '}';
     }
     public User(Email email, String username, String password){
