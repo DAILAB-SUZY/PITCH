@@ -74,7 +74,8 @@ public class UserService {
         }
         User newUser = new User(emailOpt.get(), request.getName(), passwordEncoder.encode(request.getPassword()));
         usersRepository.save(newUser);
-        Playlist playlist = new Playlist(Instant.now(), Instant.now(), newUser);
+        Playlist playlist = Playlist.builder()
+                .user(newUser).build();
         playlistRepository.save(playlist);
     }
 

@@ -22,10 +22,6 @@ public class Playlist {//트랙은 플레이리스트는 N:M관계임
     private Long playlistId ;
 
     @Builder.Default
-    @Column(nullable=false,name="created_date")
-    private Instant createdDate=Instant.now();//생성 날짜
-
-    @Builder.Default
     @Column(nullable=false,name="updated_date")
     private Instant updatedDate=Instant.now();//최신 업데이트 날짜
 
@@ -38,9 +34,4 @@ public class Playlist {//트랙은 플레이리스트는 N:M관계임
     @Builder.Default
     private List<Playlist_Track>playlist_track=new ArrayList<>();
 
-    public Playlist(Instant createdDate, Instant updatedDate, User user){
-        this.createdDate = createdDate;
-        this.updatedDate = updatedDate;
-        this.user = user;
-    }
 }

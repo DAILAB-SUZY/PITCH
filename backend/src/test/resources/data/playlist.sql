@@ -27,9 +27,8 @@ VALUES(
           (SELECT Album.album_id FROM Album WHERE title='bam'),
           (SELECT Artist.artist_id FROM Artist WHERE Artist.artist_name='bibi')
       );
-INSERT INTO Playlist(user_id,updated_date,created_date)
+INSERT INTO Playlist(user_id,updated_date)
 VALUES(
           (SELECT users.user_id FROM users WHERE users.email='test1@example.com'),
-          CURRENT_TIMESTAMP,
           CURRENT_TIMESTAMP
       );
