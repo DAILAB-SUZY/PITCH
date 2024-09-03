@@ -4,6 +4,7 @@ import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.post.dtos.Like.LikeReq;
 import org.cosmic.backend.domain.post.dtos.Like.LikeResponse;
 import org.cosmic.backend.domain.post.entities.PostLike;
+import org.cosmic.backend.domain.post.entities.PostLikePK;
 import org.cosmic.backend.domain.post.exceptions.ExistLikeException;
 import org.cosmic.backend.domain.post.exceptions.NotFoundLikeException;
 import org.cosmic.backend.domain.post.exceptions.NotFoundPostException;
@@ -85,14 +86,15 @@ public class LikeService {
     /**
      * 좋아요를 삭제합니다.
      *
-     * @param likeId 삭제할 좋아요의 ID
+     * @param user_id 삭제할 좋아요의 user ID
+     * @param post_id 삭제할 좋아요의 post ID
      *
      * @throws NotFoundLikeException 좋아요가 존재하지 않을 경우 발생합니다.
      */
-    public void deleteLike(Long likeId) {
-        if (postLikeRepository.findById(likeId).isEmpty()) {
+    public void deleteLike(Long user_id, Long post_id) {
+        if (postLikeRepository.findByPost_PostIdAndUser_UserId(post_id, user_id).isEmpty()) {
             throw new NotFoundLikeException();
         }
-        postLikeRepository.deleteById(likeId);
+        postLikeRepository.deleteById(PostLikePK.builder().user(user_id).post(post_id).build());
     }
 }

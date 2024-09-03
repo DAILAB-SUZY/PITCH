@@ -89,7 +89,7 @@ public class LikeApi {
     @PostMapping("/delete")
     @ApiResponse(responseCode = "404", description = "Not Found Like")
     public ResponseEntity<?> deleteLike(@RequestBody LikeReq likedto) {
-        likeService.deleteLike(likedto.getLikeId());
+        likeService.deleteLike(likedto.getUser_id(), likedto.getPost_id());
         return ResponseEntity.ok("성공");
     }
 }

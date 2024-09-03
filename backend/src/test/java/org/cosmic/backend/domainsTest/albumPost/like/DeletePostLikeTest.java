@@ -63,9 +63,8 @@ public class DeletePostLikeTest extends BaseSetting {
         result = resultActions.andReturn();
         content = result.getResponse().getContentAsString();
         LikeReq likeReq = mapper.readValue(content, LikeReq.class); // 응답 JSON을 PostDto 객체로 변환
-        Long likeId = likeReq.getLikeId();
 
-        LikeReq likereq1=LikeReq.createLikeReq(likeId);
+        LikeReq likereq1=LikeReq.createLikeReq(user.getUserId(), postDto.getPostId());
         mockMvcHelper("/api/like/delete",likereq1).andExpect(status().isOk());
     }
 }

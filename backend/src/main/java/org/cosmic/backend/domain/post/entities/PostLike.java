@@ -15,15 +15,15 @@ import org.cosmic.backend.domain.user.domains.User;
 @Entity
 @Table(name="`post_like`")
 @Builder
+@IdClass(PostLikePK.class)
 public class PostLike {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long likeId;
 
+    @Id
     @ManyToOne
     @JoinColumn(name = "post_id")
     private Post post;
 
+    @Id
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -38,7 +38,8 @@ public class PostLike {
 
     public static LikeReq toLikeReq(PostLike postLike) {
         return LikeReq.builder()
-                .likeId(postLike.likeId)
+                .user_id(postLike.user.getUserId())
+                .post_id(postLike.post.getPostId())
                 .build();
     }
 }
