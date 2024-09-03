@@ -4,9 +4,11 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.cosmic.backend.domain.albumChat.domains.AlbumChat;
 import org.cosmic.backend.domain.post.dtos.Post.AlbumDto;
+import org.cosmic.backend.domain.post.entities.Post;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -36,6 +38,10 @@ public class Album {//앨범과 트랙은 1:N관계이며 앨범과 아티스트
     @Builder.Default
     @Column(nullable=false)
     private Instant createdDate=Instant.now();//발매 일
+
+    @OneToMany(mappedBy = "album")
+    @Builder.Default
+    private Set<Post> posts = new HashSet<>();
 
     //아티스트와 1:N 관계
     @ManyToOne(fetch=FetchType.LAZY)

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.post.dtos.Post.PostDto;
 import org.cosmic.backend.domain.post.dtos.Post.PostReq;
 import org.cosmic.backend.domain.user.domains.User;
@@ -26,10 +27,16 @@ public class Post {
 
     private String content; // 내용
     private Instant update_time;
+    @Builder.Default
+    private Instant create_time=Instant.now();
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "album_id")
+    private Album album;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments;
