@@ -22,8 +22,8 @@ public class Playlist {//트랙은 플레이리스트는 N:M관계임
     private Long playlistId ;
 
     @Builder.Default
-    @Column(nullable=false,name="updated_date")
-    private Instant updatedDate=Instant.now();//최신 업데이트 날짜
+    @Column(nullable=false,name="update_time")
+    private Instant update_time =Instant.now();//최신 업데이트 날짜
 
     @OneToOne
     @JoinColumn(name="user_id")
