@@ -42,7 +42,7 @@ public class Post {
     private List<Comment> comments;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Like> likes;
+    private List<PostLike> postLikes;
 
     public static PostReq toPostReq(Post post) {
         return PostReq.builder()

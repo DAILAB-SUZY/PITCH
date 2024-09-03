@@ -13,9 +13,9 @@ import org.cosmic.backend.domain.user.domains.User;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name="`like`")
+@Table(name="`post_like`")
 @Builder
-public class Like {
+public class PostLike {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long likeId;
@@ -28,17 +28,17 @@ public class Like {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public static LikeResponse toLikeResponse(Like like) {
+    public static LikeResponse toLikeResponse(PostLike postLike) {
         return LikeResponse.builder()
-                .userId(like.getUser().getUserId())
-                .userName(like.getUser().getUsername())
-                .profilePicture(like.getUser().getProfilePicture())
+                .userId(postLike.getUser().getUserId())
+                .userName(postLike.getUser().getUsername())
+                .profilePicture(postLike.getUser().getProfilePicture())
                 .build();
     }
 
-    public static LikeReq toLikeReq(Like like) {
+    public static LikeReq toLikeReq(PostLike postLike) {
         return LikeReq.builder()
-                .likeId(like.likeId)
+                .likeId(postLike.likeId)
                 .build();
     }
 }

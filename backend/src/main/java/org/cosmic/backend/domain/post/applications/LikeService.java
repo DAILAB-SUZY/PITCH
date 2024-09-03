@@ -3,11 +3,11 @@ package org.cosmic.backend.domain.post.applications;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.post.dtos.Like.LikeReq;
 import org.cosmic.backend.domain.post.dtos.Like.LikeResponse;
-import org.cosmic.backend.domain.post.entities.Like;
+import org.cosmic.backend.domain.post.entities.PostLike;
 import org.cosmic.backend.domain.post.exceptions.ExistLikeException;
 import org.cosmic.backend.domain.post.exceptions.NotFoundLikeException;
 import org.cosmic.backend.domain.post.exceptions.NotFoundPostException;
-import org.cosmic.backend.domain.post.repositories.LikeRepository;
+import org.cosmic.backend.domain.post.repositories.PostLikeRepository;
 import org.cosmic.backend.domain.post.repositories.PostRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.springframework.stereotype.Service;
@@ -20,19 +20,19 @@ import java.util.List;
  */
 @Service
 public class LikeService {
-    private final LikeRepository likeRepository;
+    private final PostLikeRepository postLikeRepository;
     private final UsersRepository usersRepository;
     private final PostRepository postRepository;
 
     /**
      * LikeService의 생성자입니다.
      *
-     * @param likeRepository 좋아요 데이터를 처리하는 리포지토리
+     * @param postLikeRepository 좋아요 데이터를 처리하는 리포지토리
      * @param usersRepository 사용자 데이터를 처리하는 리포지토리
      * @param postRepository 게시글 데이터를 처리하는 리포지토리
      */
-    public LikeService(LikeRepository likeRepository, UsersRepository usersRepository, PostRepository postRepository) {
-        this.likeRepository = likeRepository;
+    public LikeService(PostLikeRepository postLikeRepository, UsersRepository usersRepository, PostRepository postRepository) {
+        this.postLikeRepository = postLikeRepository;
         this.usersRepository = usersRepository;
         this.postRepository = postRepository;
     }
@@ -49,9 +49,9 @@ public class LikeService {
         if (postRepository.findById(postId).isEmpty()) {
             throw new NotFoundPostException();
         }
-        return likeRepository.findByPost_PostId(postId)
+        return postLikeRepository.findByPost_PostId(postId)
                 .stream()
-                .map(Like::toLikeResponse)
+                .map(PostLike::toLikeResponse)
                 .toList();
     }
 
@@ -73,10 +73,10 @@ public class LikeService {
         if (usersRepository.findById(userId).isEmpty()) {
             throw new NotFoundUserException();
         }
-        if (likeRepository.findByPost_PostIdAndUser_UserId(postId, userId).isPresent()) {
+        if (postLikeRepository.findByPost_PostIdAndUser_UserId(postId, userId).isPresent()) {
             throw new ExistLikeException(); // 409 Conflict
         }
-        return Like.toLikeReq(likeRepository.save(Like.builder()
+        return PostLike.toLikeReq(postLikeRepository.save(PostLike.builder()
                 .user(usersRepository.findById(userId).get())
                 .post(postRepository.findById(postId).get())
                 .build()));
@@ -90,9 +90,9 @@ public class LikeService {
      * @throws NotFoundLikeException 좋아요가 존재하지 않을 경우 발생합니다.
      */
     public void deleteLike(Long likeId) {
-        if (likeRepository.findById(likeId).isEmpty()) {
+        if (postLikeRepository.findById(likeId).isEmpty()) {
             throw new NotFoundLikeException();
         }
-        likeRepository.deleteById(likeId);
+        postLikeRepository.deleteById(likeId);
     }
 }

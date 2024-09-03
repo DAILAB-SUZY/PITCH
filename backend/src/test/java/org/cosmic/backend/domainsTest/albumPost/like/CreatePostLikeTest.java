@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @Log4j2
-public class CreateLikeTest extends BaseSetting {
+public class CreatePostLikeTest extends BaseSetting {
     final ObjectMapper mapper = new ObjectMapper();
     @Autowired
     UsersRepository userRepository;

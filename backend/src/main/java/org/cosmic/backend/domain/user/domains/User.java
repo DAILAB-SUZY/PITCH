@@ -6,7 +6,7 @@ import org.cosmic.backend.domain.favoriteArtist.domains.FavoriteArtist;
 import org.cosmic.backend.domain.musicDna.domains.User_Dna;
 import org.cosmic.backend.domain.playList.domains.Playlist;
 import org.cosmic.backend.domain.post.entities.Comment;
-import org.cosmic.backend.domain.post.entities.Like;
+import org.cosmic.backend.domain.post.entities.PostLike;
 import org.cosmic.backend.domain.post.entities.Post;
 
 import java.time.Instant;
@@ -19,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Table(name="users")  // 테이블 이름이 'user'인 경우
-@EqualsAndHashCode(exclude = {"email", "playlist", "userDnas", "posts", "comments", "likes"})
+@EqualsAndHashCode(exclude = {"email", "playlist", "userDnas", "posts", "comments", "postLikes"})
 public class User {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -63,7 +63,7 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<Like> likes=new ArrayList<>();
+    private List<PostLike> postLikes =new ArrayList<>();
 
     @Override
     public String toString() {
