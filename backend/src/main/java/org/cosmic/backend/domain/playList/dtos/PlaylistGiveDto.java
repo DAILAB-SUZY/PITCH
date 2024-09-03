@@ -17,5 +17,4 @@ public class PlaylistGiveDto {
     Long userId;
     String title;
     String artistName;
-    String cover;
 }

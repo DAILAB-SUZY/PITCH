@@ -12,5 +12,4 @@ import lombok.NoArgsConstructor;
 public class TrackGiveDto {
     String title;
     String artistName;
-    String cover;
 }
