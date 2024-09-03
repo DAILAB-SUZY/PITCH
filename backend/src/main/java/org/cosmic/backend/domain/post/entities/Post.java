@@ -24,11 +24,8 @@ public class Post {
     @Column(name = "post_id") // 컬럼 이름 명시
     private Long postId;
 
-    private String cover; // 앨범커버
-    private String title; // 앨범제목
     private String content; // 내용
-    private String artistName;
-    private Instant updateTime;
+    private Instant update_time;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -43,11 +40,8 @@ public class Post {
     public static PostReq toPostReq(Post post) {
         return PostReq.builder()
                 .postId(post.getPostId())
-                .cover(post.getCover())
-                .title(post.getTitle())
                 .content(post.getContent())
-                .artistName(post.getArtistName())
-                .updateTime(post.getUpdateTime())
+                .update_time(post.getUpdate_time())
                 .build();
     }
 

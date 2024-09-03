@@ -13,9 +13,6 @@ import java.time.Instant;
 @Builder
 public class PostReq {
     private Long postId;
-    private String cover;
-    private String artistName;
     private String content;
-    private String title;
-    private Instant updateTime;
+    private Instant update_time;
 }

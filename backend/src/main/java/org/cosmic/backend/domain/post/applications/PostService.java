@@ -93,12 +93,9 @@ public class PostService {
             throw new NotMatchAlbumException();
         }
         return Post.toPostDto(postRepository.save(Post.builder()
-                .title(postInfo.getTitle())
-                .artistName(postInfo.getArtistName())
                 .content(postInfo.getContent())
-                .updateTime(Instant.now())
+                .update_time(Instant.now())
                 .user(userRepository.findById(postInfo.getUserId()).get())
-                .cover(postInfo.getCover())
                 .build()));
     }
 
@@ -115,7 +112,7 @@ public class PostService {
         }
         Post updatedPost = postRepository.findByPostId(postInfo.getPostId());
         updatedPost.setContent(postInfo.getContent());
-        updatedPost.setUpdateTime(Instant.now());
+        updatedPost.setUpdate_time(Instant.now());
         postRepository.save(updatedPost);
     }
 
