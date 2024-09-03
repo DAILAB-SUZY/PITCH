@@ -68,7 +68,7 @@ public class PlaylistService {
         playlistTrackRepository.deleteByPlaylist_PlaylistId(playList.getPlaylistId());
         playlistTrackRepository.saveAll(newPlayList.stream()
                 .map(track -> trackRepository.findById(track.getTrackId()).orElseThrow(NotFoundTrackException::new))
-                .map(track -> new Playlist_Track(track, playList))
+                .map(track -> Playlist_Track.builder().track(track).playlist(playList).build())
                 .toList());
     }
 
