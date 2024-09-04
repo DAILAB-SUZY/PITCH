@@ -14,16 +14,15 @@ import org.cosmic.backend.domain.user.domains.User;
 @Entity
 @Builder
 @Table(name="user_bestalbum")
+@IdClass(UserBestAlbumPK.class)
 public class UserBestAlbum {
-    @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name="Id")
-    private Long id;
 
+    @Id
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="userId")
     private User user;
 
+    @Id
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="AlbumId")
     private Album album;
