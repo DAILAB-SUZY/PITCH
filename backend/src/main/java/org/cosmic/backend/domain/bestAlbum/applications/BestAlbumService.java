@@ -1,7 +1,7 @@
 package org.cosmic.backend.domain.bestAlbum.applications;
 
 import jakarta.transaction.Transactional;
-import org.cosmic.backend.domain.bestAlbum.domains.AlbumUser;
+import org.cosmic.backend.domain.bestAlbum.domains.UserBestAlbum;
 import org.cosmic.backend.domain.bestAlbum.dtos.AlbumGiveDto;
 import org.cosmic.backend.domain.bestAlbum.dtos.BestAlbumDetail;
 import org.cosmic.backend.domain.bestAlbum.dtos.BestAlbumGiveDto;
@@ -83,8 +83,8 @@ public class BestAlbumService {
         }
         User newuser = usersRepository.findById(userId).get();
         Album album=albumRepository.findById(albumId).get();
-        AlbumUser albumUser=new AlbumUser(album,newuser);
-        albumUserRepository.save(albumUser);
+        UserBestAlbum userBestAlbum =UserBestAlbum.builder().album(album).user(newuser).build();
+        albumUserRepository.save(userBestAlbum);
     }
 
     /**
@@ -118,7 +118,7 @@ public class BestAlbumService {
                     if (!existingBestAlbumsIds.contains(bestAlbumDetail.getAlbumId())) {
                         throw new NotMatchBestAlbumException();
                     }
-                    return new AlbumUser(albumRepository.findById(bestAlbumDetail.getAlbumId()).get(), user);
+                    return UserBestAlbum.builder().album(albumRepository.findById(bestAlbumDetail.getAlbumId()).get()).user(user).build();
                 })
                 .toList()
         );

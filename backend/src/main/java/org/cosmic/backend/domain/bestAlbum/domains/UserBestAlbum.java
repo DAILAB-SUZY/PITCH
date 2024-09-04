@@ -13,8 +13,8 @@ import org.cosmic.backend.domain.user.domains.User;
 @AllArgsConstructor
 @Entity
 @Builder
-@Table(name="`AlbumUser`")
-public class AlbumUser {
+@Table(name="user_bestalbum")
+public class UserBestAlbum {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name="Id")
@@ -27,9 +27,4 @@ public class AlbumUser {
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="AlbumId")
     private Album album;
-
-    public AlbumUser(Album album, User user) {
-        this.album = album;
-        this.user = user;
-    }
 }
