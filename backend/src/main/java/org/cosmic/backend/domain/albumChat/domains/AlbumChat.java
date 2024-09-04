@@ -43,7 +43,7 @@ public class AlbumChat {
     private List<AlbumChatComment> albumChatComments;
 
     @OneToMany(mappedBy = "albumChat")
-    private List<AlbumChatAlbumLike> albumChatAlbumLikes;
+    private List<AlbumLike> albumLikes;
     @Override
     public String toString() {
         return "AlbumChat{" +

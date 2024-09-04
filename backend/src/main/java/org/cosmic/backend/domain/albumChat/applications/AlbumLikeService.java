@@ -1,7 +1,7 @@
 package org.cosmic.backend.domain.albumChat.applications;
 
 import org.cosmic.backend.domain.albumChat.domains.AlbumChat;
-import org.cosmic.backend.domain.albumChat.domains.AlbumChatAlbumLike;
+import org.cosmic.backend.domain.albumChat.domains.AlbumLike;
 import org.cosmic.backend.domain.albumChat.dtos.albumlike.AlbumChatAlbumLikeReq;
 import org.cosmic.backend.domain.albumChat.dtos.albumlike.AlbumChatAlbumLikeResponse;
 import org.cosmic.backend.domain.albumChat.exceptions.ExistAlbumLikeException;
@@ -18,21 +18,21 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 /**
- * AlbumChatAlbumLikeService 클래스는 앨범 챗의 좋아요 기능과 관련된 비즈니스 로직을 처리합니다.
+ * AlbumLikeService 클래스는 앨범 챗의 좋아요 기능과 관련된 비즈니스 로직을 처리합니다.
  */
 @Service
-public class AlbumChatAlbumLikeService {
+public class AlbumLikeService {
     private final AlbumChatAlbumLikeRepository likeRepository;
     private final UsersRepository usersRepository;
     private final AlbumChatRepository albumChatRepository;
     /**
-     * AlbumChatAlbumLikeService 생성자.
+     * AlbumLikeService 생성자.
      *
      * @param likeRepository AlbumChatAlbumLikeRepository 주입
      * @param usersRepository UsersRepository 주입
      * @param albumChatRepository AlbumChatRepository 주입
      */
-    public AlbumChatAlbumLikeService(AlbumChatAlbumLikeRepository likeRepository, UsersRepository usersRepository, AlbumChatRepository albumChatRepository) {
+    public AlbumLikeService(AlbumChatAlbumLikeRepository likeRepository, UsersRepository usersRepository, AlbumChatRepository albumChatRepository) {
         this.likeRepository = likeRepository;
         this.usersRepository = usersRepository;
         this.albumChatRepository = albumChatRepository;
@@ -77,7 +77,7 @@ public class AlbumChatAlbumLikeService {
         }
         User user=usersRepository.findByUserId(userId).get();
         AlbumChat albumChat=albumChatRepository.findById(albumChatId).get();
-        AlbumChatAlbumLike like = likeRepository.save(new AlbumChatAlbumLike(user,albumChat));
+        AlbumLike like = likeRepository.save(AlbumLike.builder().user(user).albumChat(albumChat).build());
         return new AlbumChatAlbumLikeReq(likeRepository.save(like).getAlbumChatAlbumLikeId());
     }
     /**

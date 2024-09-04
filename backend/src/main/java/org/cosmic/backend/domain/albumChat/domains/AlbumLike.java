@@ -2,6 +2,7 @@ package org.cosmic.backend.domain.albumChat.domains;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.cosmic.backend.domain.user.domains.User;
@@ -10,8 +11,9 @@ import org.cosmic.backend.domain.user.domains.User;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name="`albumChatAlbumLike`")
-public class AlbumChatAlbumLike {
+@Builder
+@Table(name="`album_like`")
+public class AlbumLike {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long albumChatAlbumLikeId;
@@ -23,9 +25,4 @@ public class AlbumChatAlbumLike {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-
-    public AlbumChatAlbumLike(final User user,final AlbumChat albumChat) {
-        this.albumChat = albumChat;
-        this.user = user;
-    }
 }

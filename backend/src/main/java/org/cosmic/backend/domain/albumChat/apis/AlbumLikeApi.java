@@ -1,7 +1,7 @@
 package org.cosmic.backend.domain.albumChat.apis;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import org.cosmic.backend.domain.albumChat.applications.AlbumChatAlbumLikeService;
+import org.cosmic.backend.domain.albumChat.applications.AlbumLikeService;
 import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumChatDto;
 import org.cosmic.backend.domain.albumChat.dtos.albumlike.AlbumChatAlbumLikeDto;
 import org.cosmic.backend.domain.albumChat.dtos.albumlike.AlbumChatAlbumLikeReq;
@@ -19,19 +19,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 /**
- * AlbumChatAlbumLikeApi 클래스는 앨범 챗에 대한 좋아요 기능을 처리하는 API를 제공합니다.
+ * AlbumLikeApi 클래스는 앨범 챗에 대한 좋아요 기능을 처리하는 API를 제공합니다.
  */
 @RestController
 @RequestMapping("/api/albumchat/albumlike")
 @ApiCommonResponses
-public class AlbumChatAlbumLikeApi {//각 앨범의 총 좋아요
-    private final AlbumChatAlbumLikeService likeService;
+public class AlbumLikeApi {//각 앨범의 총 좋아요
+    private final AlbumLikeService likeService;
     /**
-     * AlbumChatAlbumLikeApi 생성자.
+     * AlbumLikeApi 생성자.
      *
-     * @param likeService AlbumChatAlbumLikeService 주입
+     * @param likeService AlbumLikeService 주입
      */
-    public AlbumChatAlbumLikeApi(AlbumChatAlbumLikeService likeService) {
+    public AlbumLikeApi(AlbumLikeService likeService) {
         this.likeService = likeService;
     }
 

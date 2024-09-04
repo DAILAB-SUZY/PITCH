@@ -2,7 +2,7 @@ package org.cosmic.backend.domain.albumChat.dtos.albumlike;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.cosmic.backend.domain.albumChat.domains.AlbumChatAlbumLike;
+import org.cosmic.backend.domain.albumChat.domains.AlbumLike;
 
 @Data
 @NoArgsConstructor
@@ -12,10 +12,10 @@ public class AlbumChatAlbumLikeResponse {
     private String userName;
     private String profilePicture;
 
-    public AlbumChatAlbumLikeResponse(AlbumChatAlbumLike albumChatAlbumLike) {
-        this.userId = albumChatAlbumLike.getUser().getUserId();
-        this.userName = albumChatAlbumLike.getUser().getUsername();
-        this.profilePicture = albumChatAlbumLike.getUser().getProfilePicture();
+    public AlbumChatAlbumLikeResponse(AlbumLike albumLike) {
+        this.userId = albumLike.getUser().getUserId();
+        this.userName = albumLike.getUser().getUsername();
+        this.profilePicture = albumLike.getUser().getProfilePicture();
     }
 }
 
