@@ -5,17 +5,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class AlbumChatAlbumLikeDto {
-    private Long userId;
+public class AlbumLikeReq {
     private Long albumId;
+    private Long userId;
 
-    public static AlbumChatAlbumLikeDto createAlbumChatAlbumLikeDto(Long userId, Long albumId){
-        return  AlbumChatAlbumLikeDto.builder()
-                .userId(userId)
+    public static AlbumLikeReq createAlbumChatAlbumLikeReq(Long albumId, Long userId){
+        return  AlbumLikeReq.builder()
                 .albumId(albumId)
+                .userId(userId)
                 .build();
     }
 }

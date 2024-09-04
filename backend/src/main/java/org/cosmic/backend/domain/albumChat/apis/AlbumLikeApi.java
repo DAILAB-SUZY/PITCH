@@ -2,9 +2,8 @@ package org.cosmic.backend.domain.albumChat.apis;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.cosmic.backend.domain.albumChat.applications.AlbumLikeService;
-import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumChatDto;
 import org.cosmic.backend.domain.albumChat.dtos.albumlike.AlbumChatAlbumLikeDto;
-import org.cosmic.backend.domain.albumChat.dtos.albumlike.AlbumChatAlbumLikeReq;
+import org.cosmic.backend.domain.albumChat.dtos.albumlike.AlbumLikeReq;
 import org.cosmic.backend.domain.albumChat.dtos.albumlike.AlbumChatAlbumLikeResponse;
 import org.cosmic.backend.domain.albumChat.exceptions.ExistAlbumLikeException;
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatException;
@@ -53,7 +52,7 @@ public class AlbumLikeApi {//각 앨범의 총 좋아요
      * 앨범 챗에 새로운 좋아요를 생성합니다.
      *
      * @param like 생성할 좋아요에 대한 정보가 담긴 AlbumChatAlbumLikeDto 객체
-     * @return AlbumChatAlbumLikeReq 생성된 좋아요의 ID를 포함한 객체
+     * @return AlbumLikeReq 생성된 좋아요의 ID를 포함한 객체
      * @throws NotFoundUserException 특정 사용자를 찾을 수 없는 경우 발생
      * @throws NotFoundAlbumChatException 특정 앨범 챗을 찾을 수 없는 경우 발생
      * @throws ExistAlbumLikeException 이미 좋아요가 존재하는 경우 발생
@@ -61,21 +60,21 @@ public class AlbumLikeApi {//각 앨범의 총 좋아요
     @PostMapping("/create")
     @ApiResponse(responseCode = "404", description = "Not Found User or AlbumChat")
     @ApiResponse(responseCode = "409", description = "Like Already Exists")
-    public AlbumChatAlbumLikeReq albumChatAlbumLikeCreate(@RequestBody AlbumChatAlbumLikeDto like) {
+    public AlbumLikeReq albumChatAlbumLikeCreate(@RequestBody AlbumChatAlbumLikeDto like) {
         return likeService.albumChatAlbumLikeCreate(like.getUserId(),like.getAlbumId());
     }
 
     /**
      * 주어진 좋아요 ID에 해당하는 좋아요를 삭제합니다.
      *
-     * @param likedto 삭제할 좋아요의 ID를 포함한 AlbumChatAlbumLikeReq 객체
+     * @param likedto 삭제할 좋아요의 ID를 포함한 AlbumLikeReq 객체
      * @return ResponseEntity<?> 삭제 성공 시 성공 메시지 반환
      * @throws NotFoundLikeException 특정 좋아요를 찾을 수 없는 경우 발생
      */
     @PostMapping("/delete")
     @ApiResponse(responseCode = "404", description = "Not Found Like")
-    public ResponseEntity<?> albumChatAlbumLikeDelete(@RequestBody AlbumChatAlbumLikeReq likedto) {
-        likeService.albumChatAlbumLikeDelete(likedto.getAlbumChatAlbumLikeId());
+    public ResponseEntity<?> albumChatAlbumLikeDelete(@RequestBody AlbumLikeReq likedto) {
+        likeService.albumChatAlbumLikeDelete(likedto.getAlbumId(), likedto.getUserId());
         return ResponseEntity.ok("성공");
     }
 }

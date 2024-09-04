@@ -42,8 +42,6 @@ public class AlbumChat {
     /*@OneToMany(mappedBy = "albumChat")
     private List<AlbumChatComment> albumChatComments;*/
 
-    @OneToMany(mappedBy = "albumChat")
-    private List<AlbumLike> albumLikes;
     @Override
     public String toString() {
         return "AlbumChat{" +

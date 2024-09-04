@@ -1,14 +1,14 @@
 package org.cosmic.backend.domain.albumChat.applications;
 
-import org.cosmic.backend.domain.albumChat.domains.AlbumChat;
 import org.cosmic.backend.domain.albumChat.domains.AlbumLike;
-import org.cosmic.backend.domain.albumChat.dtos.albumlike.AlbumChatAlbumLikeReq;
+import org.cosmic.backend.domain.albumChat.dtos.albumlike.AlbumLikeReq;
 import org.cosmic.backend.domain.albumChat.dtos.albumlike.AlbumChatAlbumLikeResponse;
 import org.cosmic.backend.domain.albumChat.exceptions.ExistAlbumLikeException;
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatException;
-import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatAlbumLikeRepository;
-import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatRepository;
+import org.cosmic.backend.domain.albumChat.repositorys.AlbumLikeRepository;
+import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
+import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
 import org.cosmic.backend.domain.post.exceptions.NotFoundLikeException;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
@@ -22,34 +22,34 @@ import java.util.stream.Collectors;
  */
 @Service
 public class AlbumLikeService {
-    private final AlbumChatAlbumLikeRepository likeRepository;
+    private final AlbumLikeRepository likeRepository;
     private final UsersRepository usersRepository;
-    private final AlbumChatRepository albumChatRepository;
+    private final AlbumRepository albumRepository;
     /**
      * AlbumLikeService 생성자.
      *
-     * @param likeRepository AlbumChatAlbumLikeRepository 주입
+     * @param likeRepository AlbumLikeRepository 주입
      * @param usersRepository UsersRepository 주입
-     * @param albumChatRepository AlbumChatRepository 주입
+     * @param albumRepository AlbumRepository 주입
      */
-    public AlbumLikeService(AlbumChatAlbumLikeRepository likeRepository, UsersRepository usersRepository, AlbumChatRepository albumChatRepository) {
+    public AlbumLikeService(AlbumLikeRepository likeRepository, UsersRepository usersRepository, AlbumRepository albumRepository) {
         this.likeRepository = likeRepository;
         this.usersRepository = usersRepository;
-        this.albumChatRepository = albumChatRepository;
+        this.albumRepository = albumRepository;
     }
     /**
      * 주어진 앨범 챗 ID에 해당하는 앨범 챗의 좋아요 목록을 반환합니다.
      *
-     * @param albumChatId 조회할 앨범 챗의 Id
+     * @param albumId 조회할 앨범 Id
      * @return List<AlbumChatAlbumLikeResponse> 앨범 챗의 좋아요 누른 인물 정보 목록
      * @throws NotFoundAlbumChatException 특정 앨범 챗을 찾을 수 없는 경우 발생
      */
-    public List<AlbumChatAlbumLikeResponse> getAlbumChatAlbumLikeByAlbumChatId(Long albumChatId) {
-        if(albumChatRepository.findById(albumChatId).isEmpty()) {
+    public List<AlbumChatAlbumLikeResponse> getAlbumChatAlbumLikeByAlbumChatId(Long albumId) {
+        if(albumRepository.findById(albumId).isEmpty()) {
             throw new NotFoundAlbumChatException();
         }
 
-        return likeRepository.findByAlbumChat_AlbumChatId(albumChatId)
+        return likeRepository.findByAlbum_AlbumId(albumId)
                 .stream()
                 .map(AlbumChatAlbumLikeResponse::new)
                 .collect(Collectors.toList());
@@ -59,37 +59,38 @@ public class AlbumLikeService {
      * 앨범 챗에 좋아요를 생성합니다.
      *
      * @param userId 좋아요를 남길 사용자의 ID
-     * @param albumChatId 좋아요를 남길 앨범 챗의 ID
-     * @return AlbumChatAlbumLikeReq 생성된 좋아요의 ID를 포함한 객체
+     * @param albumId 좋아요를 남길 앨범 챗의 ID
+     * @return AlbumLikeReq 생성된 좋아요의 ID를 포함한 객체
      * @throws NotFoundAlbumChatException 특정 앨범 챗을 찾을 수 없는 경우 발생
      * @throws NotFoundUserException 특정 사용자를 찾을 수 없는 경우 발생
      * @throws ExistAlbumLikeException 해당 앨범 챗에 이미 좋아요를 남긴 경우 발생
      */
-    public AlbumChatAlbumLikeReq albumChatAlbumLikeCreate(Long userId, Long albumChatId) {
-        if(albumChatRepository.findById(albumChatId).isEmpty()) {
+    public AlbumLikeReq albumChatAlbumLikeCreate(Long userId, Long albumId) {
+        if(albumRepository.findById(albumId).isEmpty()) {
             throw new NotFoundAlbumChatException();
         }
         if(usersRepository.findByUserId(userId).isEmpty()) {
             throw new NotFoundUserException();
         }
-        if(likeRepository.findByAlbumChat_AlbumChatIdAndUser_UserId(albumChatId, userId).isPresent()) {
+        if(likeRepository.findByAlbum_AlbumIdAndUser_UserId(albumId, userId).isPresent()) {
             throw new ExistAlbumLikeException();
         }
         User user=usersRepository.findByUserId(userId).get();
-        AlbumChat albumChat=albumChatRepository.findById(albumChatId).get();
-        AlbumLike like = likeRepository.save(AlbumLike.builder().user(user).albumChat(albumChat).build());
-        return new AlbumChatAlbumLikeReq(likeRepository.save(like).getAlbumChatAlbumLikeId());
+        Album album= albumRepository.findById(albumId).get();
+        AlbumLike like = likeRepository.save(AlbumLike.builder().user(user).album(album).build());
+
+        return AlbumLike.toLikeReq(like);
     }
     /**
      * 주어진 좋아요 ID에 해당하는 좋아요를 삭제합니다.
      *
-     * @param likeId 삭제할 좋아요의 ID
+     * @param albumId 삭제할 좋아요의 ID
      * @throws NotFoundLikeException 특정 좋아요를 찾을 수 없는 경우 발생
      */
-    public void albumChatAlbumLikeDelete(Long likeId) {
-        if(likeRepository.findById(likeId).isEmpty()) {
+    public void albumChatAlbumLikeDelete(Long albumId, Long userId) {
+        if(likeRepository.findByAlbum_AlbumIdAndUser_UserId(albumId, userId).isEmpty()) {
             throw new NotFoundLikeException();
         }
-        likeRepository.deleteById(likeId);
+        likeRepository.deleteByAlbum_AlbumIdAndUser_UserId(albumId, userId);
     }
 }

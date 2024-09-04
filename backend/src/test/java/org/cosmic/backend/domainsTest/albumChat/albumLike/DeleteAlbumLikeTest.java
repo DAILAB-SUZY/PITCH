@@ -3,7 +3,7 @@ package org.cosmic.backend.domainsTest.albumChat.albumLike;
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumChatResponse;
 import org.cosmic.backend.domain.albumChat.dtos.albumlike.AlbumChatAlbumLikeDto;
-import org.cosmic.backend.domain.albumChat.dtos.albumlike.AlbumChatAlbumLikeReq;
+import org.cosmic.backend.domain.albumChat.dtos.albumlike.AlbumLikeReq;
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatRepository;
 import org.cosmic.backend.domain.auth.dtos.UserLogin;
 import org.cosmic.backend.domain.playList.domains.Album;
@@ -68,12 +68,8 @@ public class DeleteAlbumLikeTest extends BaseSetting {
         resultActions =mockMvcHelper("/api/albumchat/albumlike/create",albumChatAlbumLikeDto);
         result = resultActions.andReturn();
         content = result.getResponse().getContentAsString();
-        AlbumChatAlbumLikeReq albumChatAlbumLikeReq = mapper.readValue(content, AlbumChatAlbumLikeReq.class);
-        Long albumChatAlbumLikeId = albumChatAlbumLikeReq.getAlbumChatAlbumLikeId();
-
-        AlbumChatAlbumLikeReq albumChatAlbumLikereq=AlbumChatAlbumLikeReq.createAlbumChatAlbumLikeReq
-            (albumChatAlbumLikeId);
-        mockMvcHelper("/api/albumchat/albumlike/delete",albumChatAlbumLikereq)
+        AlbumLikeReq albumLikeReq = mapper.readValue(content, AlbumLikeReq.class);
+        mockMvcHelper("/api/albumchat/albumlike/delete", albumLikeReq)
             .andExpect(status().isOk());
     }
 
@@ -97,9 +93,9 @@ public class DeleteAlbumLikeTest extends BaseSetting {
             (user.getUserId(),albumChatId);
         mockMvcHelper("/api/albumchat/albumlike/create",albumChatAlbumLikeDto);
 
-        AlbumChatAlbumLikeReq albumChatAlbumLikereq=AlbumChatAlbumLikeReq.createAlbumChatAlbumLikeReq
-            (100L);
-        mockMvcHelper("/api/albumchat/albumlike/delete",albumChatAlbumLikereq)
+        AlbumLikeReq albumLikereq = AlbumLikeReq.createAlbumChatAlbumLikeReq
+            (100L, user.getUserId());
+        mockMvcHelper("/api/albumchat/albumlike/delete", albumLikereq)
             .andExpect(status().isNotFound());
     }
 }
