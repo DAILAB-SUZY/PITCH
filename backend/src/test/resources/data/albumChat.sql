@@ -35,13 +35,3 @@ VALUES(
           (SELECT Artist.artist_id FROM Artist WHERE artist_name='bibi'),
           CURRENT_TIMESTAMP
       );
-
-INSERT INTO album_chat(title,cover,genre,create_time,album_id,artist_name)
-VALUES(
-          'bam',
-          'base',
-          'balad',
-          CURRENT_TIMESTAMP,
-          (SELECT Album.album_id FROM Album WHERE title='bam'),
-          'bibi'
-      );

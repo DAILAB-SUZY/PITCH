@@ -27,11 +27,14 @@ public class AlbumChatComment {
 
     private String content;
 
+    @Column(name = "parent_albumChatCommentId")
+    private Long parentAlbumChatCommentId;
+
+    @Column(name = "create_time")
+    private Instant createTime;
+
     @Column(name = "update_time")
     private Instant updateTime;
-
-    @OneToMany(mappedBy = "albumChatComment", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<AlbumChatReply> albumChatReplies;
 
     @OneToMany(mappedBy = "albumChatComment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AlbumChatCommentLike> albumChatCommentLikes;
@@ -40,12 +43,11 @@ public class AlbumChatComment {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public AlbumChatComment(String content, Instant updateTime, User user,List<AlbumChatReply> albumChatReply,Album album) {
+    public AlbumChatComment(String content, Instant updateTime, User user,Album album) {
         this.album = album;
         this.content = content;
         this.updateTime = updateTime;
         this.user=user;
-        this.albumChatReplies = albumChatReply;
     }
 
     @Override

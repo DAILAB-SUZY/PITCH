@@ -1,9 +1,7 @@
 package org.cosmic.backend.domainsTest.albumChat.comment;
 
 import lombok.extern.log4j.Log4j2;
-import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumChatResponse;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentCreateReq;
-import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatRepository;
 import org.cosmic.backend.domain.auth.dtos.UserLogin;
 import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
@@ -42,8 +40,6 @@ public class CreatePostCommentTest extends BaseSetting {
     AlbumRepository albumRepository;
     @Autowired
     TrackRepository trackRepository;
-    @Autowired
-    AlbumChatRepository albumChatRepository;
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @Test
@@ -55,15 +51,9 @@ public class CreatePostCommentTest extends BaseSetting {
         UserLogin userLogin = loginUser("test1@example.com");
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
 
-        AlbumDto albumDto = AlbumDto.createAlbumDto(album.getAlbumId());
-        ResultActions resultActions =mockMvcHelper("/api/albumchat/open",albumDto);
-        MvcResult result = resultActions.andReturn();
-        String content = result.getResponse().getContentAsString();
-        AlbumChatResponse albumChatResponse = mapper.readValue(content, AlbumChatResponse.class);
-        Long albumChatId = albumChatResponse.getAlbumChatId();
 
         AlbumChatCommentCreateReq albumChatCommentCreateReq=AlbumChatCommentCreateReq.createAlbumChatCommentCreateReq(
-            user.getUserId(),albumChatId,"안녕",null);
+            user.getUserId(),album.getAlbumId(),"안녕",null);
         mockMvcHelper("/api/albumchat/comment/create",albumChatCommentCreateReq)
             .andExpect(status().isOk());
     }
@@ -75,9 +65,6 @@ public class CreatePostCommentTest extends BaseSetting {
         user.setPassword(encoder.encode(user.getPassword()));
         UserLogin userLogin = loginUser("test1@example.com");
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
-
-        AlbumDto albumDto = AlbumDto.createAlbumDto(album.getAlbumId());
-        mockMvcHelper("/api/albumchat/open",albumDto);
 
         AlbumChatCommentCreateReq albumChatCommentCreateReq=AlbumChatCommentCreateReq.createAlbumChatCommentCreateReq(
             user.getUserId(),100L,"안녕",null);

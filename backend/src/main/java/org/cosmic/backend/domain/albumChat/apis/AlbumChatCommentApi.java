@@ -51,9 +51,9 @@ public class AlbumChatCommentApi {
      */
     @PostMapping("/give")
     @Transactional
-    @ApiResponse(responseCode = "404", description = "Not Found AlbumChat")
+    @ApiResponse(responseCode = "404", description = "Not Found Album")
     public List<AlbumChatCommentResponse> getCommentByAlbumChatId(@RequestBody AlbumDto album) {
-        return commentService.getCommentsByAlbumChatId(album.getAlbumId());
+        return commentService.getCommentsByAlbumId(album.getAlbumId());
     }
 
     /**
@@ -66,7 +66,7 @@ public class AlbumChatCommentApi {
      */
     @PostMapping("/create")
     @Transactional
-    @ApiResponse(responseCode = "404", description = "Not Found User or AlbumChat")
+    @ApiResponse(responseCode = "404", description = "Not Found User or Album")
     public AlbumChatCommentDto albumChatCommentCreate(@RequestBody AlbumChatCommentCreateReq comment) {
         return commentService.albumChatCommentCreate(comment);
     }
@@ -83,7 +83,7 @@ public class AlbumChatCommentApi {
      */
     @PostMapping("/update")
     @Transactional
-    @ApiResponse(responseCode = "400", description = "Not Match AlbumChat or User")
+    @ApiResponse(responseCode = "400", description = "Not Match Album or User")
     @ApiResponse(responseCode = "404", description = "Not Found AlbumChatComment Or User")
     public ResponseEntity<?> albumChatCommentUpdate(@RequestBody AlbumChatCommentUpdateReq comment) {
         commentService.albumChatCommentUpdate(comment);

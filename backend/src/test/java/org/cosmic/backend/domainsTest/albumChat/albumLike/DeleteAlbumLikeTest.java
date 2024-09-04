@@ -1,16 +1,13 @@
 package org.cosmic.backend.domainsTest.albumChat.albumLike;
 
 import lombok.extern.log4j.Log4j2;
-import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumChatResponse;
 import org.cosmic.backend.domain.albumChat.dtos.albumlike.AlbumChatAlbumLikeDto;
 import org.cosmic.backend.domain.albumChat.dtos.albumlike.AlbumLikeReq;
-import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatRepository;
 import org.cosmic.backend.domain.auth.dtos.UserLogin;
 import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
 import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
 import org.cosmic.backend.domain.playList.repositorys.TrackRepository;
-import org.cosmic.backend.domain.post.dtos.Post.AlbumDto;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.EmailRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
@@ -42,8 +39,6 @@ public class DeleteAlbumLikeTest extends BaseSetting {
     AlbumRepository albumRepository;
     @Autowired
     TrackRepository trackRepository;
-    @Autowired
-    AlbumChatRepository albumChatRepository;
 
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
@@ -56,18 +51,11 @@ public class DeleteAlbumLikeTest extends BaseSetting {
         UserLogin userLogin = loginUser("test1@example.com");
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
 
-        AlbumDto albumDto = AlbumDto.createAlbumDto(album.getAlbumId());
-        ResultActions resultActions =mockMvcHelper("/api/albumchat/open",albumDto);
+        AlbumChatAlbumLikeDto albumChatAlbumLikeDto=AlbumChatAlbumLikeDto.createAlbumChatAlbumLikeDto
+            (user.getUserId(),album.getAlbumId());
+        ResultActions resultActions =mockMvcHelper("/api/albumchat/albumlike/create",albumChatAlbumLikeDto);
         MvcResult result = resultActions.andReturn();
         String content = result.getResponse().getContentAsString();
-        AlbumChatResponse albumChatResponse = mapper.readValue(content, AlbumChatResponse.class);
-        Long albumChatId = albumChatResponse.getAlbumChatId();
-
-        AlbumChatAlbumLikeDto albumChatAlbumLikeDto=AlbumChatAlbumLikeDto.createAlbumChatAlbumLikeDto
-            (user.getUserId(),albumChatId);
-        resultActions =mockMvcHelper("/api/albumchat/albumlike/create",albumChatAlbumLikeDto);
-        result = resultActions.andReturn();
-        content = result.getResponse().getContentAsString();
         AlbumLikeReq albumLikeReq = mapper.readValue(content, AlbumLikeReq.class);
         mockMvcHelper("/api/albumchat/albumlike/delete", albumLikeReq)
             .andExpect(status().isOk());
@@ -82,15 +70,8 @@ public class DeleteAlbumLikeTest extends BaseSetting {
         UserLogin userLogin = loginUser("test1@example.com");
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
 
-        AlbumDto albumDto = AlbumDto.createAlbumDto(album.getAlbumId());
-        ResultActions resultActions =mockMvcHelper("/api/albumchat/open",albumDto);
-        MvcResult result = resultActions.andReturn();
-        String content = result.getResponse().getContentAsString();
-        AlbumChatResponse albumChatResponse = mapper.readValue(content, AlbumChatResponse.class);
-        Long albumChatId = albumChatResponse.getAlbumChatId();
-
         AlbumChatAlbumLikeDto albumChatAlbumLikeDto=AlbumChatAlbumLikeDto.createAlbumChatAlbumLikeDto
-            (user.getUserId(),albumChatId);
+            (user.getUserId(),album.getAlbumId());
         mockMvcHelper("/api/albumchat/albumlike/create",albumChatAlbumLikeDto);
 
         AlbumLikeReq albumLikereq = AlbumLikeReq.createAlbumChatAlbumLikeReq

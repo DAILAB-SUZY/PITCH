@@ -2,9 +2,7 @@ package org.cosmic.backend.domain.playList.domains;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.cosmic.backend.domain.albumChat.domains.AlbumChat;
 import org.cosmic.backend.domain.albumChat.domains.AlbumChatComment;
-import org.cosmic.backend.domain.albumChat.domains.AlbumLike;
 import org.cosmic.backend.domain.post.dtos.Post.AlbumDto;
 import org.cosmic.backend.domain.post.entities.Post;
 

@@ -5,7 +5,6 @@ import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumChatResponse;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentCreateReq;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDto;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentUpdateReq;
-import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatRepository;
 import org.cosmic.backend.domain.auth.dtos.UserLogin;
 import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
@@ -43,8 +42,6 @@ public class UpdatePostCommentTest extends BaseSetting {
     AlbumRepository albumRepository;
     @Autowired
     TrackRepository trackRepository;
-    @Autowired
-    AlbumChatRepository albumChatRepository;
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @Test
@@ -56,23 +53,16 @@ public class UpdatePostCommentTest extends BaseSetting {
         UserLogin userLogin = loginUser("test1@example.com");
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
 
-        AlbumDto albumDto = AlbumDto.createAlbumDto(album.getAlbumId());
-        ResultActions resultActions =mockMvcHelper("/api/albumchat/open",albumDto);
+        AlbumChatCommentCreateReq albumChatCommentCreateReq=AlbumChatCommentCreateReq.createAlbumChatCommentCreateReq(
+            user.getUserId(),album.getAlbumId(),"안녕",null);
+        ResultActions resultActions=mockMvcHelper("/api/albumchat/comment/create",albumChatCommentCreateReq);
         MvcResult result = resultActions.andReturn();
         String content = result.getResponse().getContentAsString();
-        AlbumChatResponse albumChatResponse = mapper.readValue(content, AlbumChatResponse.class);
-        Long albumChatId = albumChatResponse.getAlbumChatId();
-
-        AlbumChatCommentCreateReq albumChatCommentCreateReq=AlbumChatCommentCreateReq.createAlbumChatCommentCreateReq(
-            user.getUserId(),albumChatId,"안녕",null);
-        resultActions=mockMvcHelper("/api/albumchat/comment/create",albumChatCommentCreateReq);
-        result = resultActions.andReturn();
-        content = result.getResponse().getContentAsString();
         AlbumChatCommentDto albumChatCommentDto = mapper.readValue(content, AlbumChatCommentDto.class);
         Long albumChatCommentId = albumChatCommentDto.getAlbumChatCommentId();
 
         AlbumChatCommentUpdateReq albumChatCommentUpdateReq=AlbumChatCommentUpdateReq.createAlbumChatCommentUpdateReq(
-            user.getUserId(),albumChatId,albumChatCommentId,"hi",null);
+            user.getUserId(),album.getAlbumId(),albumChatCommentId,"hi",null);
         mockMvcHelper("/api/albumchat/comment/update",albumChatCommentUpdateReq).andExpect(status().isOk());
     }
 
@@ -85,19 +75,12 @@ public class UpdatePostCommentTest extends BaseSetting {
         UserLogin userLogin = loginUser("test1@example.com");
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
 
-        AlbumDto albumDto = AlbumDto.createAlbumDto(album.getAlbumId());
-        ResultActions resultActions =mockMvcHelper("/api/albumchat/open",albumDto);
-        MvcResult result = resultActions.andReturn();
-        String content = result.getResponse().getContentAsString();
-        AlbumChatResponse albumChatResponse = mapper.readValue(content, AlbumChatResponse.class);
-        Long albumChatId = albumChatResponse.getAlbumChatId();
-
         AlbumChatCommentCreateReq albumChatCommentCreateReq=AlbumChatCommentCreateReq.createAlbumChatCommentCreateReq(
-                user.getUserId(),albumChatId,"안녕",null);
+                user.getUserId(),album.getAlbumId(),"안녕",null);
         mockMvcHelper("/api/albumchat/comment/create",albumChatCommentCreateReq);
 
         AlbumChatCommentUpdateReq albumChatCommentUpdateReq=AlbumChatCommentUpdateReq.createAlbumChatCommentUpdateReq(
-            user.getUserId(),albumChatId,100L,"hi",null);
+            user.getUserId(),album.getAlbumId(),100L,"hi",null);
         mockMvcHelper("/api/albumchat/comment/update",albumChatCommentUpdateReq)
             .andExpect(status().isNotFound());
     }

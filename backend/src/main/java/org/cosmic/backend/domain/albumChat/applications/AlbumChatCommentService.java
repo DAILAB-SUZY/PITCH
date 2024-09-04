@@ -9,7 +9,6 @@ import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatCommentEx
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatException;
 import org.cosmic.backend.domain.albumChat.exceptions.NotMatchAlbumChatException;
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatCommentRepository;
-import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatRepository;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
 import org.cosmic.backend.domain.post.exceptions.NotMatchUserException;
@@ -53,7 +52,7 @@ public class AlbumChatCommentService {
      * @return List<AlbumChatCommentResponse> 조회된 댓글 목록
      * @throws NotFoundAlbumChatException 앨범 챗이 존재하지 않을 경우 발생
      */
-    public List<AlbumChatCommentResponse> getCommentsByAlbumChatId(Long albumChatId) {
+    public List<AlbumChatCommentResponse> getCommentsByAlbumId(Long albumChatId) {
         if(albumRepository.findById(albumChatId).isEmpty()) {
             throw new NotFoundAlbumChatException();
         }
@@ -84,7 +83,6 @@ public class AlbumChatCommentService {
                     comment.getContent()
                     ,Instant.now()
                     ,userRepository.findById(comment.getUserId()).get()
-                    ,null
                     ,albumRepository.findById(comment.getAlbumId()).get()));
         return new AlbumChatCommentDto(commentEntity);
     }
