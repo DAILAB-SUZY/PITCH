@@ -57,7 +57,7 @@ public class MusicDnaService {
         if (usersRepository.findById(userId).isEmpty()) {
             throw new NotFoundUserException();
         }
-        if (dna.size() != MAX_DNA_SIZE) {
+        if (dna.size() > MAX_DNA_SIZE) {
             throw new NotMatchMusicDnaCountException();
         }
         User user = usersRepository.findById(userId).get();

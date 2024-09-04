@@ -3,7 +3,7 @@ package org.cosmic.backend.domain.user.domains;
 import jakarta.persistence.*;
 import lombok.*;
 import org.cosmic.backend.domain.favoriteArtist.domains.FavoriteArtist;
-import org.cosmic.backend.domain.musicDna.domains.User_Dna;
+import org.cosmic.backend.domain.musicDna.domains.MusicDna;
 import org.cosmic.backend.domain.playList.domains.Playlist;
 import org.cosmic.backend.domain.post.entities.Comment;
 import org.cosmic.backend.domain.post.entities.PostLike;
@@ -19,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Table(name="users")  // 테이블 이름이 'user'인 경우
-@EqualsAndHashCode(exclude = {"email", "playlist", "userDnas", "posts", "comments", "postLikes"})
+@EqualsAndHashCode(exclude = {"email", "playlist", "posts", "comments", "postLikes"})
 public class User {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -43,9 +43,21 @@ public class User {
     @Column(nullable=false)
     private Instant create_time =Instant.now();
 
-    @OneToMany(mappedBy = "user")
-    @Builder.Default
-    private List<User_Dna>userDnas=new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name="dna1_id")
+    private MusicDna dna1;
+
+    @ManyToOne
+    @JoinColumn(name="dna2_id")
+    private MusicDna dna2;
+
+    @ManyToOne
+    @JoinColumn(name="dna3_id")
+    private MusicDna dna3;
+
+    @ManyToOne
+    @JoinColumn(name="dna4_id")
+    private MusicDna dna4;
 
     @OneToOne(mappedBy = "user")
     private Playlist playlist;
