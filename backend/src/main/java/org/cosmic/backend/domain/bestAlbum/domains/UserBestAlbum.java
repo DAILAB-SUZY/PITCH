@@ -27,4 +27,8 @@ public class UserBestAlbum {
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="AlbumId")
     private Album album;
+
+    @Builder.Default
+    @Column(name="`order`")
+    private Integer order = 0;
 }
