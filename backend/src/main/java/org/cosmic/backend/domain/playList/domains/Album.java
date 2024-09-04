@@ -3,6 +3,7 @@ package org.cosmic.backend.domain.playList.domains;
 import jakarta.persistence.*;
 import lombok.*;
 import org.cosmic.backend.domain.albumChat.domains.AlbumChat;
+import org.cosmic.backend.domain.albumChat.domains.AlbumChatComment;
 import org.cosmic.backend.domain.post.dtos.Post.AlbumDto;
 import org.cosmic.backend.domain.post.entities.Post;
 
@@ -54,6 +55,9 @@ public class Album {//앨범과 트랙은 1:N관계이며 앨범과 아티스트
 
     @OneToOne(mappedBy = "album")
     private AlbumChat albumchat;
+
+    @OneToMany(mappedBy = "album")
+    private List<AlbumChatComment> albumChatComments;
 
     @Override
     public String toString() {

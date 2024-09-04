@@ -52,14 +52,14 @@ public class AlbumChatApi {
     /**
      * 앨범 챗 ID를 기반으로 해당 앨범 챗의 댓글을 좋아요 수 순서대로 정렬하여 반환합니다.
      *
-             * @param albumchat 조회할 앨범 챗의 ID를 포함한 AlbumChatDto 객체
+             * @param album 조회할 앨범 챗의 ID를 포함한 AlbumChatDto 객체
      * @return List<AlbumChatCommentResponse> 좋아요 수 순서로 정렬된 앨범 챗 댓글 목록
      * @throws NotFoundAlbumChatException 특정 앨범의 앨범 챗을 찾을 수 없는 경우 발생
      */
     @Transactional
     @PostMapping("/manylike")
     @ApiResponse(responseCode = "404", description = "Not Found AlbumChat")
-    public List<AlbumChatCommentResponse> getAlbumChatCommentByManyLikeId(@RequestBody AlbumChatDto albumchat) {
-        return albumChatService.getAlbumChatCommentByManyLikeId(albumchat);
+    public List<AlbumChatCommentResponse> getAlbumChatCommentByManyLikeId(@RequestBody AlbumDto album) {
+        return albumChatService.getAlbumChatCommentByManyLikeId(album);
     }
 }

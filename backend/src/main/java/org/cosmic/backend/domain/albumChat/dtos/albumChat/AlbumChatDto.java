@@ -11,11 +11,11 @@ import org.cosmic.backend.domain.albumChat.dtos.commentlike.AlbumChatCommentLike
 @NoArgsConstructor
 @Builder
 public class AlbumChatDto {
-    private Long albumChatId;
+    private Long albumId;
 
-    public static AlbumChatDto createAlbumChatDto(Long albumChatId) {
+    public static AlbumChatDto createAlbumChatDto(Long albumId) {
         return  AlbumChatDto.builder()
-                .albumChatId(albumChatId)
+                .albumId(albumId)
                 .build();
     }
 }

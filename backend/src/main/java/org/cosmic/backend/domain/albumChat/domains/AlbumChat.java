@@ -39,8 +39,8 @@ public class AlbumChat {
     @JoinColumn(name="album_id")
     private Album album;
 
-    @OneToMany(mappedBy = "albumChat")
-    private List<AlbumChatComment> albumChatComments;
+    /*@OneToMany(mappedBy = "albumChat")
+    private List<AlbumChatComment> albumChatComments;*/
 
     @OneToMany(mappedBy = "albumChat")
     private List<AlbumLike> albumLikes;

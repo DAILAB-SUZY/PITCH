@@ -61,18 +61,11 @@ public class ManyLikeAlbumChatPostCommentTest extends BaseSetting {
         UserLogin userLogin = loginUser("test1@example.com");
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
 
-        AlbumDto albumDto = AlbumDto.createAlbumDto(album.getAlbumId());
-        ResultActions resultActions =mockMvcHelper("/api/albumchat/open",albumDto);
+        AlbumChatCommentCreateReq albumChatCommentCreateReq=AlbumChatCommentCreateReq.createAlbumChatCommentCreateReq
+            (user.getUserId(),album.getAlbumId(),"안녕",null);
+        ResultActions resultActions =mockMvcHelper("/api/albumchat/comment/create",albumChatCommentCreateReq);
         MvcResult result = resultActions.andReturn();
         String content = result.getResponse().getContentAsString();
-        AlbumChatResponse albumChatResponse = mapper.readValue(content, AlbumChatResponse.class);
-        Long albumChatId = albumChatResponse.getAlbumChatId();
-
-        AlbumChatCommentCreateReq albumChatCommentCreateReq=AlbumChatCommentCreateReq.createAlbumChatCommentCreateReq
-            (user.getUserId(),albumChatId,"안녕",null);
-        resultActions =mockMvcHelper("/api/albumchat/comment/create",albumChatCommentCreateReq);
-        result = resultActions.andReturn();
-        content = result.getResponse().getContentAsString();
         AlbumChatCommentDto albumChatCommentDto2 = mapper.readValue(content, AlbumChatCommentDto.class);
         Long albumChatCommentId2 = albumChatCommentDto2.getAlbumChatCommentId();
 
@@ -81,13 +74,12 @@ public class ManyLikeAlbumChatPostCommentTest extends BaseSetting {
         mockMvcHelper("/api/albumchat/commentlike/create",albumChatCommentLikeDto);
 
         AlbumChatCommentCreateReq albumChatCommentCreateReq1=AlbumChatCommentCreateReq.createAlbumChatCommentCreateReq
-            (user2.getUserId(),albumChatId,"안녕",null);
+            (user2.getUserId(),album.getAlbumId(),"안녕",null);
         resultActions=mockMvcHelper("/api/albumchat/comment/create",albumChatCommentCreateReq1);
         result = resultActions.andReturn();
         content = result.getResponse().getContentAsString();
-        AlbumChatCommentDto albumChatCommentDto = mapper.readValue(content, AlbumChatCommentDto.class); // 응답 JSON을 PostDto 객체로 변환
+        AlbumChatCommentDto albumChatCommentDto = mapper.readValue(content, AlbumChatCommentDto.class);
         Long albumChatCommentId = albumChatCommentDto.getAlbumChatCommentId();
-
         albumChatCommentLikeDto=AlbumChatCommentLikeDto.createAlbumChatCommentLikeDto
             (user.getUserId(),albumChatCommentId);
         mockMvcHelper("/api/albumchat/commentlike/create",albumChatCommentLikeDto);
@@ -95,7 +87,7 @@ public class ManyLikeAlbumChatPostCommentTest extends BaseSetting {
             (user2.getUserId(),albumChatCommentId);
         mockMvcHelper("/api/albumchat/commentlike/create",albumChatCommentLikeDto);
 
-        AlbumChatDto albumChatDto=AlbumChatDto.createAlbumChatDto(albumChatId);
+        AlbumChatDto albumChatDto=AlbumChatDto.createAlbumChatDto(album.getAlbumId());
         mockMvcHelper("/api/albumchat/manylike",albumChatDto)
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].albumChatCommentId", is(2)))

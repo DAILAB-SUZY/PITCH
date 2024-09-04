@@ -9,11 +9,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AlbumDto {
-    private Long albumId;
-    public static AlbumDto createAlbumDto(Long albumId) {
-        return  AlbumDto.builder()
-                .albumId(albumId)
+public class AlbumNameDto {
+    private String albumName;
+    public static AlbumNameDto createAlbumNameDto(String albumName) {
+        return  AlbumNameDto.builder()
+                .albumName(albumName)
                 .build();
     }
 }

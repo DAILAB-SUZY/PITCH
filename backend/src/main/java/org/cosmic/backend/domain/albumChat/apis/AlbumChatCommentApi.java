@@ -8,6 +8,7 @@ import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentCreateRe
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDto;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentResponse;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentUpdateReq;
+import org.cosmic.backend.domain.bestAlbum.dtos.AlbumDto;
 import org.cosmic.backend.domain.post.exceptions.NotMatchUserException;
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatCommentException;
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatException;
@@ -44,15 +45,15 @@ public class AlbumChatCommentApi {
     /**
      * 특정 앨범 챗 ID로 댓글 목록을 조회하는 API.
      *
-     * @param albumchat 조회할 앨범 챗 ID를 포함한 DTO
+     * @param album 조회할 앨범 챗 ID를 포함한 DTO
      * @return List<AlbumChatCommentResponse> 조회된 댓글 목록
      * @throws NotFoundAlbumChatException 앨범 챗이 존재하지 않을 경우 발생
      */
     @PostMapping("/give")
     @Transactional
     @ApiResponse(responseCode = "404", description = "Not Found AlbumChat")
-    public List<AlbumChatCommentResponse> getCommentByAlbumChatId(@RequestBody AlbumChatDto albumchat) {
-        return commentService.getCommentsByAlbumChatId(albumchat.getAlbumChatId());
+    public List<AlbumChatCommentResponse> getCommentByAlbumChatId(@RequestBody AlbumDto album) {
+        return commentService.getCommentsByAlbumChatId(album.getAlbumId());
     }
 
     /**

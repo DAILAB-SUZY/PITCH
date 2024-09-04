@@ -10,12 +10,12 @@ import lombok.NoArgsConstructor;
 @Builder
 public class AlbumChatAlbumLikeDto {
     private Long userId;
-    private Long albumChatId;
+    private Long albumId;
 
     public static AlbumChatAlbumLikeDto createAlbumChatAlbumLikeDto(Long userId, Long albumchatId){
         return  AlbumChatAlbumLikeDto.builder()
                 .userId(userId)
-                .albumChatId(albumchatId)
+                .albumId(albumchatId)
                 .build();
     }
 }

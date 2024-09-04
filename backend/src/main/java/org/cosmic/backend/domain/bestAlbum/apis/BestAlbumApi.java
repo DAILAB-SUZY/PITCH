@@ -108,7 +108,7 @@ public class BestAlbumApi {
      */
     @PostMapping("/Albumsearch")
     @ApiResponse(responseCode = "404", description = "Not Match Album Title")
-    public List<AlbumGiveDto> albumSearch(@RequestBody AlbumDto album) {
+    public List<AlbumGiveDto> albumSearch(@RequestBody AlbumNameDto album) {
         return bestAlbumService.searchAlbum(album.getAlbumName());
     }
     //앨범 찾기 앨범이름
