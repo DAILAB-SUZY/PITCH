@@ -5,7 +5,7 @@ import lombok.*;
 import org.cosmic.backend.domain.favoriteArtist.domains.FavoriteArtist;
 import org.cosmic.backend.domain.musicDna.domains.MusicDna;
 import org.cosmic.backend.domain.playList.domains.Playlist;
-import org.cosmic.backend.domain.post.entities.Comment;
+import org.cosmic.backend.domain.post.entities.PostComment;
 import org.cosmic.backend.domain.post.entities.PostLike;
 import org.cosmic.backend.domain.post.entities.Post;
 
@@ -19,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Table(name="users")  // 테이블 이름이 'user'인 경우
-@EqualsAndHashCode(exclude = {"email", "playlist", "posts", "comments", "postLikes"})
+@EqualsAndHashCode(exclude = {"email", "playlist", "posts", "postComments", "postLikes"})
 public class User {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -71,7 +71,7 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<Comment> comments=new ArrayList<>();
+    private List<PostComment> postComments =new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default

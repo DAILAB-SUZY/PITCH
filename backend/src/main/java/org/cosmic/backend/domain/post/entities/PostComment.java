@@ -16,40 +16,47 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "comment") // 테이블 이름 수정
+@Table(name = "post_comment") // 테이블 이름 수정
 @Builder
-public class Comment {
+public class PostComment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_id") // 컬럼 이름 명시
     private Long commentId;
+
+    private Long parent_comment_id;
 
     @ManyToOne
     @JoinColumn(name = "post_id")
     private Post post;
 
     private String content;
+
+    @Column(name = "create_time")
+    private Instant createTime;
+
+    @Column(name = "update_time")
     private Instant updateTime;
 
-    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "postComment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reply> replies;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    public static CommentReq toCommentReq(Comment comment) {
+    public static CommentReq toCommentReq(PostComment postComment) {
         return CommentReq.builder()
-                .userId(comment.getUser().getUserId())
-                .commentId(comment.getCommentId())
-                .content(comment.getContent())
-                .createTime(comment.getUpdateTime())
+                .userId(postComment.getUser().getUserId())
+                .commentId(postComment.getCommentId())
+                .content(postComment.getContent())
+                .createTime(postComment.getUpdateTime())
                 .build();
     }
 
-    public static CommentDto toCommentDto(Comment comment) {
+    public static CommentDto toCommentDto(PostComment postComment) {
         return CommentDto.builder()
-                .commentId(comment.getCommentId())
+                .commentId(postComment.getCommentId())
                 .build();
     }
 }

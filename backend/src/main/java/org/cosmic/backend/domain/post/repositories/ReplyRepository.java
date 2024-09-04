@@ -7,6 +7,6 @@ import java.util.List;
 
 
 public interface ReplyRepository extends JpaRepository<Reply,Long> {
-    List<Reply> findByComment_CommentId(Long commentId);//key로 찾기
+    List<Reply> findByPostComment_CommentId(Long CommentId);//key로 찾기
     Reply findByReplyId(Long replyId);
 }

@@ -1,8 +1,10 @@
-package org.cosmic.backend.domainsTest.albumChat.comment;
+package org.cosmic.backend.domainsTest.albumChat.commentLike;
 
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumChatResponse;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentCreateReq;
+import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDto;
+import org.cosmic.backend.domain.albumChat.dtos.commentlike.AlbumChatCommentLikeDto;
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatRepository;
 import org.cosmic.backend.domain.auth.dtos.UserLogin;
 import org.cosmic.backend.domain.playList.domains.Album;
@@ -20,7 +22,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @Log4j2
-public class CreateCommentTest extends BaseSetting {
+public class GivePostCommentLikeTest extends BaseSetting {
     final ObjectMapper mapper = new ObjectMapper();
     @Autowired
     UsersRepository userRepository;
@@ -49,7 +50,7 @@ public class CreateCommentTest extends BaseSetting {
     @Test
     @Transactional
     @Sql("/data/albumChat.sql")
-    public void commentCreateTest() throws Exception {
+    public void commentLikesGiveTest() throws Exception {
         User user=userRepository.findByEmail_Email("test1@example.com").get();
         user.setPassword(encoder.encode(user.getPassword()));
         UserLogin userLogin = loginUser("test1@example.com");
@@ -63,25 +64,18 @@ public class CreateCommentTest extends BaseSetting {
         Long albumChatId = albumChatResponse.getAlbumChatId();
 
         AlbumChatCommentCreateReq albumChatCommentCreateReq=AlbumChatCommentCreateReq.createAlbumChatCommentCreateReq(
-            user.getUserId(),albumChatId,"안녕",null);
-        mockMvcHelper("/api/albumchat/comment/create",albumChatCommentCreateReq)
-            .andExpect(status().isOk());
-    }
-    @Test
-    @Transactional
-    @Sql("/data/albumChat.sql")
-    public void notMatchCommentCreateTest() throws Exception {
-        User user=userRepository.findByEmail_Email("test1@example.com").get();
-        user.setPassword(encoder.encode(user.getPassword()));
-        UserLogin userLogin = loginUser("test1@example.com");
-        Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
+                user.getUserId(),albumChatId,"안녕",null);
+        resultActions=mockMvcHelper("/api/albumchat/comment/create",albumChatCommentCreateReq);
+        result = resultActions.andReturn();
+        content = result.getResponse().getContentAsString();
+        AlbumChatCommentDto albumChatCommentDto = mapper.readValue(content, AlbumChatCommentDto.class);
+        Long albumChatCommentId = albumChatCommentDto.getAlbumChatCommentId();
 
-        AlbumDto albumDto = AlbumDto.createAlbumDto(album.getAlbumId());
-        mockMvcHelper("/api/albumchat/open",albumDto);
+        AlbumChatCommentLikeDto albumChatCommentLikeDto=AlbumChatCommentLikeDto.createAlbumChatCommentLikeDto(
+            user.getUserId(),albumChatCommentId);
+        mockMvcHelper("/api/albumchat/commentlike/create",albumChatCommentLikeDto).andExpect(status().isOk());
 
-        AlbumChatCommentCreateReq albumChatCommentCreateReq=AlbumChatCommentCreateReq.createAlbumChatCommentCreateReq(
-            user.getUserId(),100L,"안녕",null);
-        mockMvcHelper("/api/albumchat/comment/create",albumChatCommentCreateReq)
-                .andExpect(status().isNotFound());
+        albumChatCommentDto=AlbumChatCommentDto.createAlbumChatCommentDto(albumChatCommentId);
+        mockMvcHelper("/api/albumchat/commentlike/give",albumChatCommentDto).andExpect(status().isOk());
     }
 }

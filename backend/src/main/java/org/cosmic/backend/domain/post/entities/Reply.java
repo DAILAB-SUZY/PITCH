@@ -24,7 +24,7 @@ public class Reply {
 
     @ManyToOne
     @JoinColumn(name = "comment_id")
-    private Comment comment;
+    private PostComment postComment;
 
     private String content;
     private Instant updateTime;
@@ -39,7 +39,7 @@ public class Reply {
                 .content(reply.getContent())
                 .createTime(reply.getUpdateTime())
                 .userId(reply.getUser().getUserId())
-                .commentId(reply.getComment().getCommentId())
+                .commentId(reply.getPostComment().getCommentId())
                 .build();
     }
 
