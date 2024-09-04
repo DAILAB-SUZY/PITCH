@@ -7,10 +7,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.cosmic.backend.domain.post.dtos.Comment.CommentDto;
 import org.cosmic.backend.domain.post.dtos.Comment.CommentReq;
+import org.cosmic.backend.domain.post.dtos.Reply.ReplyDto;
+import org.cosmic.backend.domain.post.dtos.Reply.UpdateReplyReq;
 import org.cosmic.backend.domain.user.domains.User;
 
 import java.time.Instant;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -24,7 +25,8 @@ public class PostComment {
     @Column(name = "comment_id") // 컬럼 이름 명시
     private Long commentId;
 
-    private Long parent_comment_id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private PostComment parentComment;
 
     @ManyToOne
     @JoinColumn(name = "post_id")
@@ -33,13 +35,11 @@ public class PostComment {
     private String content;
 
     @Column(name = "create_time")
-    private Instant createTime;
+    @Builder.Default
+    private Instant createTime = Instant.now();
 
     @Column(name = "update_time")
     private Instant updateTime;
-
-    @OneToMany(mappedBy = "postComment", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Reply> replies;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -57,6 +57,22 @@ public class PostComment {
     public static CommentDto toCommentDto(PostComment postComment) {
         return CommentDto.builder()
                 .commentId(postComment.getCommentId())
+                .build();
+    }
+
+    public static UpdateReplyReq toUpdateReplyReq(PostComment postComment) {
+        return UpdateReplyReq.builder()
+                .replyId(postComment.getCommentId())
+                .commentId(postComment.getParentComment().getCommentId())
+                .content(postComment.getContent())
+                .userId(postComment.getUser().getUserId())
+                .content(postComment.getContent())
+                .build();
+    }
+
+    public static ReplyDto toReplyDto(PostComment postComment) {
+        return ReplyDto.builder()
+                .replyId(postComment.commentId)
                 .build();
     }
 }
