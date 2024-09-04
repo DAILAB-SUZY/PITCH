@@ -87,6 +87,27 @@ public class User {
                 ", signupDate=" + create_time +
                 '}';
     }
+
+    public void setDNAs(MusicDna dna1, MusicDna dna2, MusicDna dna3, MusicDna dna4) {
+        this.dna1 = dna1;
+        this.dna2 = dna2;
+        this.dna3 = dna3;
+        this.dna4 = dna4;
+    }
+
+    public void setDNAs(List<MusicDna> dnaList) {
+        setDNAs(dnaList.get(0), dnaList.get(1), dnaList.get(2), dnaList.get(3));
+    }
+
+    public List<MusicDna> getDNAs() {
+        List<MusicDna> dnaList = new ArrayList<>();
+        dnaList.add(dna1);
+        dnaList.add(dna2);
+        dnaList.add(dna3);
+        dnaList.add(dna4);
+        return dnaList;
+    }
+
     public User(Email email, String username, String password){
         this.email=email;
         this.username=username;
