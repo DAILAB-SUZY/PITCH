@@ -63,7 +63,7 @@ public class User {
     private Playlist playlist;
 
     @OneToOne(mappedBy = "user")
-    private FavoriteArtist favoriteAlbum;
+    private FavoriteArtist favoriteArtist;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
