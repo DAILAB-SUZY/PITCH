@@ -2,12 +2,12 @@ package org.cosmic.backend.domain.albumChat.apis;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.cosmic.backend.domain.albumChat.applications.AlbumChatAlbumLikeService;
-import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumChatDto;
 import org.cosmic.backend.domain.albumChat.dtos.albumlike.AlbumChatAlbumLikeDto;
 import org.cosmic.backend.domain.albumChat.dtos.albumlike.AlbumChatAlbumLikeReq;
 import org.cosmic.backend.domain.albumChat.dtos.albumlike.AlbumChatAlbumLikeResponse;
 import org.cosmic.backend.domain.albumChat.exceptions.ExistAlbumLikeException;
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatException;
+import org.cosmic.backend.domain.bestAlbum.dtos.AlbumDto;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.post.exceptions.NotFoundLikeException;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
@@ -38,14 +38,14 @@ public class AlbumChatAlbumLikeApi {//각 앨범의 총 좋아요
     /**
      * 앨범 챗 ID를 사용하여 해당 앨범 챗의 좋아요 목록을 조회합니다.
      *
-     * @param albumChat 조회할 앨범 챗의 ID를 포함한 AlbumChatDto 객체
+     * @param album 조회할 앨범 챗의 ID를 포함한 AlbumChatDto 객체
      * @return List<AlbumChatAlbumLikeResponse> 조회된 좋아요 목록
      * @throws NotFoundAlbumChatException 특정 앨범 챗을 찾을 수 없는 경우 발생
      */
     @PostMapping("/give")
     @ApiResponse(responseCode = "404", description = "Not Found AlbumChat")
-    public List<AlbumChatAlbumLikeResponse> searchAlbumChatAlbumLikeByAlbumChatId(@RequestBody AlbumChatDto albumChat){
-        return likeService.getAlbumChatAlbumLikeByAlbumChatId(albumChat.getAlbumChatId());
+    public List<AlbumChatAlbumLikeResponse> searchAlbumChatAlbumLikeByAlbumId(@RequestBody AlbumDto album){
+        return likeService.getAlbumChatAlbumLikeByAlbumChatId(album.getAlbumId());
     }
 
     /**
@@ -61,7 +61,7 @@ public class AlbumChatAlbumLikeApi {//각 앨범의 총 좋아요
     @ApiResponse(responseCode = "404", description = "Not Found User or AlbumChat")
     @ApiResponse(responseCode = "409", description = "Like Already Exists")
     public AlbumChatAlbumLikeReq albumChatAlbumLikeCreate(@RequestBody AlbumChatAlbumLikeDto like) {
-        return likeService.albumChatAlbumLikeCreate(like.getUserId(),like.getAlbumChatId());
+        return likeService.albumChatAlbumLikeCreate(like.getUserId(),like.getAlbumId());
     }
 
     /**

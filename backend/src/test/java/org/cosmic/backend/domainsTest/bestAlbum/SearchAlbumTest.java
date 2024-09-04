@@ -3,6 +3,7 @@ package org.cosmic.backend.domainsTest.bestAlbum;
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.auth.dtos.UserLogin;
 import org.cosmic.backend.domain.bestAlbum.dtos.AlbumDto;
+import org.cosmic.backend.domain.bestAlbum.dtos.AlbumNameDto;
 import org.cosmic.backend.domain.playList.dtos.ArtistDto;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
 import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
@@ -44,9 +45,10 @@ public class SearchAlbumTest extends BaseSetting {
         User user=userRepository.findByEmail_Email("test1@example.com").get();
         user.setPassword(encoder.encode(user.getPassword()));
         UserLogin userLogin = loginUser("test1@example.com");
+        //TODO 앨범추가
 
-        AlbumDto albumDto=AlbumDto.createAlbumDto("bam");
-        mockMvcHelper("/api/bestAlbum/Albumsearch",albumDto).andExpect(status().isOk());
+        AlbumNameDto albumNameDto=AlbumNameDto.createAlbumNameDto("bam");
+        mockMvcHelper("/api/bestAlbum/Albumsearch",albumNameDto).andExpect(status().isOk());
     }
 
     @Test

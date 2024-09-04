@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.user.domains.User;
 
 @Data
@@ -17,15 +18,15 @@ public class AlbumChatAlbumLike {
     private Long albumChatAlbumLikeId;
 
     @ManyToOne
-    @JoinColumn(name = "albumChat_id")
-    private AlbumChat albumChat;
+    @JoinColumn(name = "album_id")
+    private Album album;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    public AlbumChatAlbumLike(final User user,final AlbumChat albumChat) {
-        this.albumChat = albumChat;
+    public AlbumChatAlbumLike(final User user,final Album album) {
+        this.album = album;
         this.user = user;
     }
 }
