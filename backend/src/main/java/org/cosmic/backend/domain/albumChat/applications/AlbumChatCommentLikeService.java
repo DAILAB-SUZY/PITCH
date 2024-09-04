@@ -20,19 +20,19 @@ import java.util.stream.Collectors;
  */
 @Service
 public class AlbumChatCommentLikeService {
-    private final AlbumChatCommentLikeRepository likeRepository;
+    private final AlbumChatCommentLikeRepository albumChatCommentlikeRepository;
     private final UsersRepository usersRepository;
     private final AlbumChatCommentRepository albumChatCommentRepository;
 
     /**
      * AlbumChatCommentLikeService 생성자.
      *
-     * @param likeRepository 앨범 챗 댓글 좋아요 리포지토리 주입
+     * @param albumChatCommentlikeRepository 앨범 챗 댓글 좋아요 리포지토리 주입
      * @param usersRepository 사용자 리포지토리 주입
      * @param albumChatCommentRepository 앨범 챗 댓글 리포지토리 주입
      */
-    public AlbumChatCommentLikeService(AlbumChatCommentLikeRepository likeRepository, UsersRepository usersRepository, AlbumChatCommentRepository albumChatCommentRepository) {
-        this.likeRepository = likeRepository;
+    public AlbumChatCommentLikeService(AlbumChatCommentLikeRepository albumChatCommentlikeRepository, UsersRepository usersRepository, AlbumChatCommentRepository albumChatCommentRepository) {
+        this.albumChatCommentlikeRepository = albumChatCommentlikeRepository;
         this.usersRepository = usersRepository;
         this.albumChatCommentRepository = albumChatCommentRepository;
     }
@@ -48,7 +48,7 @@ public class AlbumChatCommentLikeService {
         if(albumChatCommentRepository.findById(albumChatCommentId).isEmpty()) {
             throw new NotFoundAlbumChatCommentException();
         }
-        return likeRepository.findByAlbumChatComment_AlbumChatCommentId(albumChatCommentId)
+        return albumChatCommentlikeRepository.findByAlbumChatComment_AlbumChatCommentId(albumChatCommentId)
             .stream()
             .map(AlbumChatCommentLikeResponse::new)
             .collect(Collectors.toList());
@@ -71,12 +71,14 @@ public class AlbumChatCommentLikeService {
         if(usersRepository.findByUserId(userId).isEmpty()) {
             throw new NotFoundUserException();
         }
-        if(likeRepository.findByAlbumChatComment_AlbumChatCommentIdAndUser_UserId(albumChatCommentId, userId).isPresent()) {
+        if(albumChatCommentlikeRepository.findByAlbumChatComment_AlbumChatCommentIdAndUser_UserId(albumChatCommentId, userId).isPresent()) {
             throw new ExistCommentLikeException();
         }
-        AlbumChatCommentLike like = new AlbumChatCommentLike(usersRepository.findByUserId(userId).get()
-            ,albumChatCommentRepository.findById(albumChatCommentId).get());
-        return new AlbumChatCommentLikeIdResponse(likeRepository.save(like).getAlbumChatCommentLikeId());
+        AlbumChatCommentLike like = AlbumChatCommentLike.builder()
+                .user(usersRepository.findByUserId(userId).get())
+                .albumChatComment(albumChatCommentRepository.findById(albumChatCommentId).get())
+                .build();
+        return AlbumChatCommentLike.toIdResponse(albumChatCommentlikeRepository.save(like));
     }
 
     /**
@@ -85,10 +87,10 @@ public class AlbumChatCommentLikeService {
      * @param likeId 삭제할 좋아요 ID
      * @throws NotFoundCommentLikeException 좋아요가 존재하지 않을 경우 발생
      */
-    public void albumChatCommentLikeDelete(Long likeId) {
-        if(likeRepository.findById(likeId).isEmpty()) {
+    public void albumChatCommentLikeDelete(Long albumChatCommentId, Long userId) {
+        if(albumChatCommentlikeRepository.findByAlbumChatComment_AlbumChatCommentIdAndUser_UserId(albumChatCommentId, userId).isEmpty()) {
             throw new NotFoundCommentLikeException();
         }
-        likeRepository.deleteById(likeId);
+        albumChatCommentlikeRepository.deleteByAlbumChatComment_AlbumChatCommentIdAndUser_UserId(albumChatCommentId, userId);
     }
 }

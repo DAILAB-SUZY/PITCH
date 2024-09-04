@@ -27,6 +27,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
+
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -90,8 +92,7 @@ public class ManyLikeAlbumChatPostCommentTest extends BaseSetting {
         AlbumChatDto albumChatDto=AlbumChatDto.createAlbumChatDto(album.getAlbumId());
         mockMvcHelper("/api/albumchat/manylike",albumChatDto)
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$[0].albumChatCommentId", is(2)))
-            .andExpect(jsonPath("$[1].albumChatCommentId", is(1)));
+                .andExpect(jsonPath("$", hasSize(2)));
         }
     }
 

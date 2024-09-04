@@ -23,7 +23,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,10 +78,10 @@ public class DeletePostCommentLikeTest extends BaseSetting {
         result = resultActions.andReturn();
         content = result.getResponse().getContentAsString();
         AlbumChatCommentLikeIdResponse commentLikeReq = mapper.readValue(content, AlbumChatCommentLikeIdResponse.class);
-        Long albumChatCommentLikeId = commentLikeReq.getAlbumChatCommentLikeId();
+        Long albumChatCommentLikeId = commentLikeReq.getAlbumChatCommentId();
 
-        AlbumChatCommentLikeIdResponse albumChatCommentLikeIdResponse=AlbumChatCommentLikeIdResponse.createAlbumChatCommentLikeIdResponse(
-            albumChatCommentLikeId);
+        AlbumChatCommentLikeIdResponse albumChatCommentLikeIdResponse=AlbumChatCommentLikeIdResponse.builder().albumChatCommentId(
+            albumChatCommentLikeId).userId(user.getUserId()).build();
         mockMvcHelper("/api/albumchat/commentlike/delete",albumChatCommentLikeIdResponse)
             .andExpect(status().isOk());
     }
