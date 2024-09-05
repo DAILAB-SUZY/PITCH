@@ -47,17 +47,17 @@ public class AlbumChatService {
     /**
      * 주어진 앨범 채팅 ID에 해당하는 댓글을 좋아요 순으로 정렬하여 반환합니다.
      *
-     * @param album AlbumChatDto객체로, 조회하려는 앨범 채팅Id를 포함합니다.
+     * @param albumId  앨범 Id
      * @return 좋아요 순으로 정렬된 AlbumChatCommentResponse 객체의 리스트
      * @throws NotFoundAlbumChatException 앨범 채팅을 찾을 수 없는 경우 발생
      */
     @Transactional
-    public List<AlbumChatCommentResponse> getAlbumChatCommentByManyLikeId(AlbumDto album) {
-        if(albumRepository.findById(album.getAlbumId()).isEmpty()) {
+    public List<AlbumChatCommentResponse> getAlbumChatCommentByManyLikeId(Long albumId) {
+        if(albumRepository.findById(albumId).isEmpty()) {
             throw new NotFoundAlbumChatException();
         }
 
-        return albumChatCommentRepository.findByAlbumIdOrderByCountAlbumChatCommentLikes(album.getAlbumId())
+        return albumChatCommentRepository.findByAlbumIdOrderByCountAlbumChatCommentLikes(albumId)
                 .orElse(Collections.emptyList())
                 .stream()
                 .map(AlbumChatCommentResponse::new)

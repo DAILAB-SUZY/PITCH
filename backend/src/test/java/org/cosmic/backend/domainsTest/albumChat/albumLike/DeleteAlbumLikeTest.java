@@ -53,11 +53,11 @@ public class DeleteAlbumLikeTest extends BaseSetting {
 
         AlbumChatAlbumLikeDto albumChatAlbumLikeDto=AlbumChatAlbumLikeDto.createAlbumChatAlbumLikeDto
             (user.getUserId(),album.getAlbumId());
-        ResultActions resultActions =mockMvcHelper("/api/albumchat/albumlike/create",albumChatAlbumLikeDto);
+        ResultActions resultActions =mockMvcHelper("/api/albumchat/albumlike/create/{albumId}",album.getAlbumId(),albumChatAlbumLikeDto);
         MvcResult result = resultActions.andReturn();
         String content = result.getResponse().getContentAsString();
         AlbumLikeReq albumLikeReq = mapper.readValue(content, AlbumLikeReq.class);
-        mockMvcHelper("/api/albumchat/albumlike/delete", albumLikeReq)
+        mockMvcDeleteHelper("/api/albumchat/albumlike/delete/{albumId}",album.getAlbumId(), albumLikeReq)
             .andExpect(status().isOk());
     }
 
@@ -72,11 +72,11 @@ public class DeleteAlbumLikeTest extends BaseSetting {
 
         AlbumChatAlbumLikeDto albumChatAlbumLikeDto=AlbumChatAlbumLikeDto.createAlbumChatAlbumLikeDto
             (user.getUserId(),album.getAlbumId());
-        mockMvcHelper("/api/albumchat/albumlike/create",albumChatAlbumLikeDto);
+        mockMvcHelper("/api/albumchat/albumlike/create/{albumId}",album.getAlbumId(),albumChatAlbumLikeDto);
 
         AlbumLikeReq albumLikereq = AlbumLikeReq.createAlbumChatAlbumLikeReq
             (100L, user.getUserId());
-        mockMvcHelper("/api/albumchat/albumlike/delete", albumLikereq)
+        mockMvcDeleteHelper("/api/albumchat/albumlike/delete/{albumId}",100L, albumLikereq)
             .andExpect(status().isNotFound());
     }
 }

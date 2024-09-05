@@ -64,10 +64,8 @@ public class CreatePlaylistTest extends BaseSetting {
         User user=userRepository.findByEmail_Email("test1@example.com").get();
         user.setPassword(encoder.encode(user.getPassword()));
         UserLogin userLogin = loginUser("test1@example.com");
-        Track track=trackRepository.findByTitle("bam").get();
 
-        TrackDto trackDto=TrackDto.createTrackDto(track.getTitle());
-        mockMvcHelper("/api/playlist/Tracksearch",trackDto).andExpect(status().isOk());
+        mockMvcGetHelper("/api/playlist/Tracksearch/{trackName}","bam").andExpect(status().isOk());
     }
 
     @Test
@@ -77,8 +75,6 @@ public class CreatePlaylistTest extends BaseSetting {
         User user=userRepository.findByEmail_Email("test1@example.com").get();
         user.setPassword(encoder.encode(user.getPassword()));
         UserLogin userLogin = loginUser("test1@example.com");
-
-        TrackDto trackDto=TrackDto.createTrackDto("id");
-        mockMvcHelper("/api/playlist/Tracksearch",trackDto).andExpect(status().isNotFound());
+        mockMvcGetHelper("/api/playlist/Tracksearch/{trackName}","id").andExpect(status().isNotFound());
     }
 }

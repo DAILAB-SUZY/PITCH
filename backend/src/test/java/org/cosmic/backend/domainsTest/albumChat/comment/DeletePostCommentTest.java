@@ -23,7 +23,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
@@ -52,14 +51,15 @@ public class DeletePostCommentTest extends BaseSetting {
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
 
         AlbumChatCommentCreateReq albumChatCommentCreateReq=AlbumChatCommentCreateReq.createAlbumChatCommentCreateReq(
-            user.getUserId(),album.getAlbumId(),"안녕",null);
-        ResultActions resultActions=mockMvcHelper("/api/albumchat/comment/create",albumChatCommentCreateReq);
+            user.getUserId(),"안녕",null);
+        ResultActions resultActions=mockMvcHelper("/api/albumchat/comment/create/{albumId}",
+            album.getAlbumId(),albumChatCommentCreateReq);
         MvcResult result = resultActions.andReturn();
         String content = result.getResponse().getContentAsString();
         AlbumChatCommentDto albumChatCommentDto = mapper.readValue(content, AlbumChatCommentDto.class);
 
-        mockMvcHelper("/api/albumchat/comment/delete",albumChatCommentDto)
-            .andExpect(status().isOk());
+        mockMvcDeleteHelper("/api/albumchat/comment/delete/{albumChatCommentId}"
+            ,albumChatCommentDto.getAlbumChatCommentId()).andExpect(status().isOk());
     }
 
     @Test
@@ -72,15 +72,11 @@ public class DeletePostCommentTest extends BaseSetting {
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
 
         AlbumChatCommentCreateReq albumChatCommentCreateReq=AlbumChatCommentCreateReq.createAlbumChatCommentCreateReq(
-            user.getUserId(),album.getAlbumId(),"안녕",null);
-        ResultActions resultActions=mockMvcHelper("/api/albumchat/comment/create",albumChatCommentCreateReq);
-        MvcResult result = resultActions.andReturn();
-        String content = result.getResponse().getContentAsString();
-        AlbumChatCommentDto albumChatCommentDto = mapper.readValue(content, AlbumChatCommentDto.class);
-        albumChatCommentDto.setAlbumChatCommentId(100L);
+            user.getUserId(),"안녕",null);
+        mockMvcHelper("/api/albumchat/comment/create",albumChatCommentCreateReq);
 
-        mockMvcHelper("/api/albumchat/comment/delete",albumChatCommentDto)
-                .andExpect(status().isNotFound());
+        mockMvcDeleteHelper("/api/albumchat/comment/delete/{albumChatCommentId}"
+        ,100L).andExpect(status().isNotFound());
     }
     @Test
     @Transactional
@@ -92,8 +88,9 @@ public class DeletePostCommentTest extends BaseSetting {
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
 
         AlbumChatCommentCreateReq albumChatCommentCreateReq=AlbumChatCommentCreateReq.createAlbumChatCommentCreateReq(
-            user.getUserId(),album.getAlbumId(),"안녕",null);
-        ResultActions resultActions=mockMvcHelper("/api/albumchat/comment/create",albumChatCommentCreateReq);
+            user.getUserId(),"안녕",null);
+        ResultActions resultActions=mockMvcHelper("/api/albumchat/comment/create/{albumId}",
+            album.getAlbumId(),albumChatCommentCreateReq);
         MvcResult result = resultActions.andReturn();
         String content = result.getResponse().getContentAsString();
         AlbumChatCommentDto albumChatCommentDto = mapper.readValue(content, AlbumChatCommentDto.class);
@@ -105,8 +102,10 @@ public class DeletePostCommentTest extends BaseSetting {
 
         mockMvcHelper("/api/albumchat/comment/delete",albumChatCommentDto);
 
+        mockMvcDeleteHelper("/api/albumchat/comment/delete/{albumChatCommentId}"
+            ,albumChatCommentDto.getAlbumChatCommentId());
+
         mockMvcHelper("/api/albumchat/commentlike/give",albumChatCommentDto)
-            .andDo(print())
             .andExpect(status().isNotFound());
     }
 }

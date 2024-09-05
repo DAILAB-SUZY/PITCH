@@ -55,8 +55,8 @@ public class DeletePostCommentLikeTest extends BaseSetting {
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
 
         AlbumChatCommentCreateReq albumChatCommentCreateReq=AlbumChatCommentCreateReq.createAlbumChatCommentCreateReq(
-            user.getUserId(),album.getAlbumId(),"안녕",null);
-        ResultActions resultActions=mockMvcHelper("/api/albumchat/comment/create",albumChatCommentCreateReq);
+            user.getUserId(),"안녕",null);
+        ResultActions resultActions=mockMvcHelper("/api/albumchat/comment/create/{albumId}",album.getAlbumId(),albumChatCommentCreateReq);
         MvcResult result = resultActions.andReturn();
         String content = result.getResponse().getContentAsString();
         AlbumChatCommentDto albumChatCommentDto = mapper.readValue(content, AlbumChatCommentDto.class);
@@ -64,15 +64,16 @@ public class DeletePostCommentLikeTest extends BaseSetting {
 
         AlbumChatCommentLikeDto albumChatCommentLikeDto=AlbumChatCommentLikeDto.createAlbumChatCommentLikeDto(
             user.getUserId(),albumChatCommentId);
-        resultActions=mockMvcHelper("/api/albumchat/commentlike/create",albumChatCommentLikeDto);
+        resultActions=mockMvcHelper("/api/albumchat/commentlike/create/{albumChatCommentId}",
+            albumChatCommentId,albumChatCommentLikeDto);
         result = resultActions.andReturn();
         content = result.getResponse().getContentAsString();
         AlbumChatCommentLikeIdResponse commentLikeReq = mapper.readValue(content, AlbumChatCommentLikeIdResponse.class);
         Long albumChatCommentLikeId = commentLikeReq.getAlbumChatCommentId();
-
         AlbumChatCommentLikeIdResponse albumChatCommentLikeIdResponse=AlbumChatCommentLikeIdResponse.builder().albumChatCommentId(
-            albumChatCommentLikeId).userId(user.getUserId()).build();
-        mockMvcHelper("/api/albumchat/commentlike/delete",albumChatCommentLikeIdResponse)
+                albumChatCommentLikeId).userId(user.getUserId()).build();
+        mockMvcDeleteHelper("/api/albumchat/commentlike/delete/{albumChatCommentLikeId}"
+            ,albumChatCommentLikeId,albumChatCommentLikeIdResponse)
             .andExpect(status().isOk());
     }
 
@@ -86,8 +87,8 @@ public class DeletePostCommentLikeTest extends BaseSetting {
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
 
         AlbumChatCommentCreateReq albumChatCommentCreateReq=AlbumChatCommentCreateReq.createAlbumChatCommentCreateReq(
-            user.getUserId(),album.getAlbumId(),"안녕",null);
-        ResultActions resultActions=mockMvcHelper("/api/albumchat/comment/create",albumChatCommentCreateReq);
+            user.getUserId(),"안녕",null);
+        ResultActions resultActions=mockMvcHelper("/api/albumchat/comment/create/{albumId}",album.getAlbumId(),albumChatCommentCreateReq);
         MvcResult result = resultActions.andReturn();
         String content = result.getResponse().getContentAsString();
         AlbumChatCommentDto albumChatCommentDto = mapper.readValue(content, AlbumChatCommentDto.class);
@@ -96,9 +97,10 @@ public class DeletePostCommentLikeTest extends BaseSetting {
         AlbumChatCommentLikeDto albumChatCommentLikeDto=AlbumChatCommentLikeDto.createAlbumChatCommentLikeDto(
             user.getUserId(),albumChatCommentId);
 
-        mockMvcHelper("/api/albumchat/commentlike/create",albumChatCommentLikeDto);
-        AlbumChatCommentLikeIdResponse albumChatCommentLikeIdResponse=AlbumChatCommentLikeIdResponse.createAlbumChatCommentLikeIdResponse(100L);
-        mockMvcHelper("/api/albumchat/commentlike/delete",albumChatCommentLikeIdResponse)
+        mockMvcHelper("/api/albumchat/commentlike/create/{albumChatCommentId}",albumChatCommentId,albumChatCommentLikeDto);
+        AlbumChatCommentLikeIdResponse albumChatCommentLikeIdResponse=AlbumChatCommentLikeIdResponse
+            .createAlbumChatCommentLikeIdResponse(100L);
+        mockMvcDeleteHelper("/api/albumchat/commentlike/delete/{albumChatCommentLikeId}",100L,albumChatCommentLikeIdResponse)
             .andExpect(status().isNotFound());
     }
 }

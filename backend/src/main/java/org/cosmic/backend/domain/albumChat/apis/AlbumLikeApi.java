@@ -12,10 +12,7 @@ import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.post.exceptions.NotFoundLikeException;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 /**
@@ -38,14 +35,14 @@ public class AlbumLikeApi {//각 앨범의 총 좋아요
     /**
      * 앨범 챗 ID를 사용하여 해당 앨범 챗의 좋아요 목록을 조회합니다.
      *
-     * @param album 조회할 앨범 챗의 ID를 포함한 AlbumChatDto 객체
+     * @param albumId 조회할 앨범 챗의 ID를 포함한 AlbumChatDto 객체
      * @return List<AlbumChatAlbumLikeResponse> 조회된 좋아요 목록
      * @throws NotFoundAlbumChatException 특정 앨범 챗을 찾을 수 없는 경우 발생
      */
-    @PostMapping("/give")
+    @GetMapping("/give/{albumId}")
     @ApiResponse(responseCode = "404", description = "Not Found AlbumChat")
-    public List<AlbumChatAlbumLikeResponse> searchAlbumChatAlbumLikeByAlbumId(@RequestBody AlbumDto album){
-        return likeService.getAlbumChatAlbumLikeByAlbumChatId(album.getAlbumId());
+    public List<AlbumChatAlbumLikeResponse> searchAlbumChatAlbumLikeByAlbumId(@PathVariable Long albumId){
+        return likeService.getAlbumChatAlbumLikeByAlbumChatId(albumId);
     }
 
     /**
@@ -57,11 +54,11 @@ public class AlbumLikeApi {//각 앨범의 총 좋아요
      * @throws NotFoundAlbumChatException 특정 앨범 챗을 찾을 수 없는 경우 발생
      * @throws ExistAlbumLikeException 이미 좋아요가 존재하는 경우 발생
      */
-    @PostMapping("/create")
+    @PostMapping("/create/{albumId}")
     @ApiResponse(responseCode = "404", description = "Not Found User or AlbumChat")
     @ApiResponse(responseCode = "409", description = "Like Already Exists")
-    public AlbumLikeReq albumChatAlbumLikeCreate(@RequestBody AlbumChatAlbumLikeDto like) {
-        return likeService.albumChatAlbumLikeCreate(like.getUserId(),like.getAlbumId());
+    public AlbumLikeReq albumChatAlbumLikeCreate(@PathVariable Long albumId,@RequestBody AlbumChatAlbumLikeDto like) {
+        return likeService.albumChatAlbumLikeCreate(like.getUserId(),albumId);
     }
 
     /**
@@ -71,10 +68,10 @@ public class AlbumLikeApi {//각 앨범의 총 좋아요
      * @return ResponseEntity<?> 삭제 성공 시 성공 메시지 반환
      * @throws NotFoundLikeException 특정 좋아요를 찾을 수 없는 경우 발생
      */
-    @PostMapping("/delete")
+    @DeleteMapping("/delete/{albumId}")
     @ApiResponse(responseCode = "404", description = "Not Found Like")
-    public ResponseEntity<?> albumChatAlbumLikeDelete(@RequestBody AlbumLikeReq likedto) {
-        likeService.albumChatAlbumLikeDelete(likedto.getAlbumId(), likedto.getUserId());
+    public ResponseEntity<?> albumChatAlbumLikeDelete(@PathVariable Long albumId,@RequestBody AlbumLikeReq likedto) {
+        likeService.albumChatAlbumLikeDelete(albumId, likedto.getUserId());
         return ResponseEntity.ok("성공");
     }
 }

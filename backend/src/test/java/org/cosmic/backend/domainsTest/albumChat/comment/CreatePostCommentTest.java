@@ -51,12 +51,12 @@ public class CreatePostCommentTest extends BaseSetting {
         UserLogin userLogin = loginUser("test1@example.com");
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
 
-
         AlbumChatCommentCreateReq albumChatCommentCreateReq=AlbumChatCommentCreateReq.createAlbumChatCommentCreateReq(
-            user.getUserId(),album.getAlbumId(),"안녕",null);
-        mockMvcHelper("/api/albumchat/comment/create",albumChatCommentCreateReq)
+            user.getUserId(),"안녕",null);
+        mockMvcHelper("/api/albumchat/comment/create/{albumId}",album.getAlbumId(),albumChatCommentCreateReq)
             .andExpect(status().isOk());
     }
+
     @Test
     @Transactional
     @Sql("/data/albumChat.sql")
@@ -64,11 +64,10 @@ public class CreatePostCommentTest extends BaseSetting {
         User user=userRepository.findByEmail_Email("test1@example.com").get();
         user.setPassword(encoder.encode(user.getPassword()));
         UserLogin userLogin = loginUser("test1@example.com");
-        Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
 
         AlbumChatCommentCreateReq albumChatCommentCreateReq=AlbumChatCommentCreateReq.createAlbumChatCommentCreateReq(
-            user.getUserId(),100L,"안녕",null);
-        mockMvcHelper("/api/albumchat/comment/create",albumChatCommentCreateReq)
+                user.getUserId(),"안녕",null);
+        mockMvcHelper("/api/albumchat/comment/create/{albumId}",100L,albumChatCommentCreateReq)
                 .andExpect(status().isNotFound());
     }
 }

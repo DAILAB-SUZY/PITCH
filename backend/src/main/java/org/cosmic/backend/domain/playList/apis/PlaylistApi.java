@@ -9,10 +9,7 @@ import org.cosmic.backend.domain.playList.exceptions.NotFoundTrackException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.user.dtos.UserDto;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -37,16 +34,16 @@ public class PlaylistApi {
     /**
      * 사용자 ID로 플레이리스트 데이터를 조회합니다.
      *
-     * @param user 사용자 정보를 포함한 DTO 객체
+     * @param userId 사용자 정보를 포함한 DTO 객체
      * @return 플레이리스트 데이터를 포함한 DTO 객체 리스트
      *
      * @throws NotFoundUserException 사용자를 찾을 수 없을 때 발생합니다.
      */
     @Transactional
-    @PostMapping("/give")
+    @GetMapping("/give/{userId}")
     @ApiResponse(responseCode = "404", description = "Not Found User")
-    public List<PlaylistGiveDto> dataGive(@RequestBody UserDto user) {
-        return playlistService.open(user.getUserId());
+    public List<PlaylistGiveDto> dataGive(@PathVariable Long userId) {
+        return playlistService.open(userId);
     }
 
     /**
@@ -70,30 +67,30 @@ public class PlaylistApi {
     /**
      * 아티스트 이름으로 트랙을 검색합니다.
      *
-     * @param artist 검색할 아티스트 정보를 포함한 DTO 객체
+     * @param artistName 검색할 아티스트 정보를 포함한 DTO 객체
      * @return 해당 아티스트의 트랙 데이터를 포함한 DTO 객체 리스트
      *
      * @throws NotFoundArtistException 아티스트 이름이 일치하지 않을 때 발생합니다.
      */
-    @PostMapping("/Artistsearch")
+    @GetMapping("/Artistsearch/{artistName}")
     @Transactional
     @ApiResponse(responseCode = "400", description = "Not Match Artist Name")
-    public List<TrackGiveDto> artistSearch(@RequestBody ArtistDto artist) {
-        return playlistService.artistSearch(artist.getArtistName());
+    public List<TrackGiveDto> artistSearch(@PathVariable String artistName) {
+        return playlistService.artistSearch(artistName);
     }
 
     /**
      * 트랙 제목으로 트랙을 검색합니다.
      *
-     * @param track 검색할 트랙 정보를 포함한 DTO 객체
+     * @param trackName 검색할 트랙 정보를 포함한 DTO 객체
      * @return 해당 트랙 데이터를 포함한 DTO 객체 리스트
      *
      * @throws NotFoundTrackException 트랙 제목이 일치하지 않을 때 발생합니다.
      */
-    @PostMapping("/Tracksearch")
+    @GetMapping("/Tracksearch/{trackName}")
     @Transactional
     @ApiResponse(responseCode = "404", description = "Not Match Track Title")
-    public List<TrackGiveDto> trackSearch(@RequestBody TrackDto track) {
-        return playlistService.trackSearch(track.getTrackName());
+    public List<TrackGiveDto> trackSearch(@PathVariable String trackName) {
+        return playlistService.trackSearch(trackName);
     }
 }

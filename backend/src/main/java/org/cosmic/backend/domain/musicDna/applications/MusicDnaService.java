@@ -73,17 +73,17 @@ public class MusicDnaService {
     /**
      * 주어진 사용자 ID로 사용자 DNA 데이터를 조회합니다.
      *
-     * @param user 사용자 정보를 포함한 DTO 객체
+     * @param userId 사용자 정보를 포함한 DTO 객체
      * @return 사용자 DNA 데이터를 포함한 응답 리스트
      *
      * @throws NotFoundUserException 사용자가 존재하지 않을 경우 발생합니다.
      */
     @Transactional
-    public List<UserDnaResponse> getUserDna(UserDto user) {
-        if (usersRepository.findById(user.getUserId()).isEmpty()) {
+    public List<UserDnaResponse> getUserDna(Long userId) {
+        if (usersRepository.findById(userId).isEmpty()) {
             throw new NotFoundUserException();
         }
-        return usersRepository.findById(user.getUserId()).get().getDNAs()
+        return usersRepository.findById(userId).get().getDNAs()
                 .stream()
                 .map(UserDnaResponse::new)
                 .collect(Collectors.toList());

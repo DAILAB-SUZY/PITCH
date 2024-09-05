@@ -84,7 +84,7 @@ public class AlbumChatCommentLikeService {
     /**
      * 특정 좋아요 ID로 좋아요를 삭제하는 메서드.
      *
-     * @param likeId 삭제할 좋아요 ID
+     * @param albumChatCommentId 삭제할 좋아요 ID
      * @throws NotFoundCommentLikeException 좋아요가 존재하지 않을 경우 발생
      */
     public void albumChatCommentLikeDelete(Long albumChatCommentId, Long userId) {

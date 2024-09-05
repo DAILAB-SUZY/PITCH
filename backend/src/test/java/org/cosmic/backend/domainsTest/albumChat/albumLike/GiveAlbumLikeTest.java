@@ -54,10 +54,10 @@ public class GiveAlbumLikeTest extends BaseSetting {
 
         AlbumChatAlbumLikeDto albumChatAlbumLikeDto=AlbumChatAlbumLikeDto.createAlbumChatAlbumLikeDto
             (user.getUserId(),album.getAlbumId());
-        mockMvcHelper("/api/albumchat/albumlike/create",albumChatAlbumLikeDto);
+        mockMvcHelper("/api/albumchat/albumlike/create/{albumId}",album.getAlbumId(),albumChatAlbumLikeDto);
         AlbumChatDto albumChatDto=AlbumChatDto.createAlbumChatDto(album.getAlbumId());
 
-        mockMvcHelper("/api/albumchat/albumlike/give",albumChatDto)
+        mockMvcGetHelper("/api/albumchat/albumlike/give/{albumId}",album.getAlbumId())
             .andExpect(status().isOk());
     }
 }

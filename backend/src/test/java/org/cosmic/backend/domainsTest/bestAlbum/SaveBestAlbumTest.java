@@ -55,18 +55,17 @@ public class SaveBestAlbumTest extends BaseSetting {
             new BestAlbumDetail(album2.getAlbumId())));
 
         BestAlbumDto bestAlbumDto=BestAlbumDto.createBestAlbumDto(user.getUserId(),album1.getAlbumId());
-        mockMvcHelper("/api/bestAlbum/add",bestAlbumDto)
+        mockMvcHelper("/api/bestAlbum/add/{albumId}",album1.getAlbumId(),bestAlbumDto)
                 .andExpect(status().isOk());
         bestAlbumDto=BestAlbumDto.createBestAlbumDto(user.getUserId(),album2.getAlbumId());
-        mockMvcHelper("/api/bestAlbum/add",bestAlbumDto)
+        mockMvcHelper("/api/bestAlbum/add/{albumId}",album2.getAlbumId(),bestAlbumDto)
                 .andExpect(status().isOk());
 
         BestAlbumListDto bestAlbumListDto=BestAlbumListDto.createBestAlbumListDto
             (bestalbumListDTO.getUserId(),bestalbumListDTO.getBestalbum());
         mockMvcHelper("/api/bestAlbum/save",bestAlbumListDto);
 
-        UserDto userDto=UserDto.createUserDto(user.getUserId());
-        mockMvcHelper("/api/bestAlbum/give",userDto).andExpect(status().isOk());
+        mockMvcGetHelper("/api/bestAlbum/give/{userId}",user.getUserId()).andExpect(status().isOk());
 }
 
     @Test
@@ -85,7 +84,7 @@ public class SaveBestAlbumTest extends BaseSetting {
                 new BestAlbumDetail(album2.getAlbumId())));
 
         BestAlbumDto bestAlbumDto=BestAlbumDto.createBestAlbumDto(user.getUserId(),album1.getAlbumId());
-        mockMvcHelper("/api/bestAlbum/add",bestAlbumDto)
+        mockMvcHelper("/api/bestAlbum/add/{albumId}",album1.getAlbumId(),bestAlbumDto)
                 .andExpect(status().isOk());
 
         BestAlbumListDto bestAlbumListDto=BestAlbumListDto.createBestAlbumListDto

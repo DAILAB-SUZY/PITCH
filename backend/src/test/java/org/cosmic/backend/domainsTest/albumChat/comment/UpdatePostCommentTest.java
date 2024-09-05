@@ -54,16 +54,18 @@ public class UpdatePostCommentTest extends BaseSetting {
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
 
         AlbumChatCommentCreateReq albumChatCommentCreateReq=AlbumChatCommentCreateReq.createAlbumChatCommentCreateReq(
-            user.getUserId(),album.getAlbumId(),"안녕",null);
-        ResultActions resultActions=mockMvcHelper("/api/albumchat/comment/create",albumChatCommentCreateReq);
+            user.getUserId(),"안녕",null);
+        ResultActions resultActions=mockMvcHelper("/api/albumchat/comment/create/{albumId}",
+            album.getAlbumId(),albumChatCommentCreateReq);
         MvcResult result = resultActions.andReturn();
         String content = result.getResponse().getContentAsString();
         AlbumChatCommentDto albumChatCommentDto = mapper.readValue(content, AlbumChatCommentDto.class);
         Long albumChatCommentId = albumChatCommentDto.getAlbumChatCommentId();
 
         AlbumChatCommentUpdateReq albumChatCommentUpdateReq=AlbumChatCommentUpdateReq.createAlbumChatCommentUpdateReq(
-            user.getUserId(),album.getAlbumId(),albumChatCommentId,"hi",null);
-        mockMvcHelper("/api/albumchat/comment/update",albumChatCommentUpdateReq).andExpect(status().isOk());
+            user.getUserId(),album.getAlbumId(),"hi",null);
+        mockMvcHelper("/api/albumchat/comment/update/{albumChatCommentId}"
+            ,albumChatCommentId,albumChatCommentUpdateReq).andExpect(status().isOk());
     }
 
     @Test
@@ -76,12 +78,13 @@ public class UpdatePostCommentTest extends BaseSetting {
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
 
         AlbumChatCommentCreateReq albumChatCommentCreateReq=AlbumChatCommentCreateReq.createAlbumChatCommentCreateReq(
-                user.getUserId(),album.getAlbumId(),"안녕",null);
-        mockMvcHelper("/api/albumchat/comment/create",albumChatCommentCreateReq);
+                user.getUserId(),"안녕",null);
+        mockMvcHelper("/api/albumchat/comment/create/{albumId}",album.getAlbumId(),albumChatCommentCreateReq);
 
         AlbumChatCommentUpdateReq albumChatCommentUpdateReq=AlbumChatCommentUpdateReq.createAlbumChatCommentUpdateReq(
-            user.getUserId(),album.getAlbumId(),100L,"hi",null);
-        mockMvcHelper("/api/albumchat/comment/update",albumChatCommentUpdateReq)
-            .andExpect(status().isNotFound());
+            user.getUserId(),album.getAlbumId(),"hi",null);
+
+        mockMvcHelper("/api/albumchat/comment/update",100L,albumChatCommentUpdateReq)
+                .andExpect(status().isNotFound());
     }
 }

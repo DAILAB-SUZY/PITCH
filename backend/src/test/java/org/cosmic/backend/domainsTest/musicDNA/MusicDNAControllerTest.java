@@ -18,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Arrays;
 import java.util.List;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -41,7 +43,7 @@ public class MusicDNAControllerTest extends BaseSetting {
     @Sql("/data/musicDna.sql")
     public void dnaRequestTest() throws Exception {
         List<MusicDna> DNA= musicDnaRepository.findAll();
-        mockMvc.perform(post("/api/dna/give")
+        mockMvc.perform(get("/api/dna/give")
         .contentType("application/json")
         .content(mapper.writeValueAsString(DNA)))
         .andExpect(status().isOk())

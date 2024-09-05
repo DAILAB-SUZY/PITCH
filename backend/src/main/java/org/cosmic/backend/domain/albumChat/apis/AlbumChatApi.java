@@ -9,10 +9,7 @@ import org.cosmic.backend.domain.post.dtos.Post.AlbumDto;
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatException;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -37,14 +34,15 @@ public class AlbumChatApi {
     /**
      * 앨범 챗 ID를 기반으로 해당 앨범 챗의 댓글을 좋아요 수 순서대로 정렬하여 반환합니다.
      *
-             * @param album 조회할 앨범 챗의 ID를 포함한 AlbumChatDto 객체
+     * @param albumId 조회할 앨범 챗의 ID를 포함한 AlbumChatDto 객체
      * @return List<AlbumChatCommentResponse> 좋아요 수 순서로 정렬된 앨범 챗 댓글 목록
      * @throws NotFoundAlbumChatException 특정 앨범의 앨범 챗을 찾을 수 없는 경우 발생
      */
     @Transactional
-    @PostMapping("/manylike")
+    @GetMapping("/manylike/{albumId}")
     @ApiResponse(responseCode = "404", description = "Not Found Album")
-    public List<AlbumChatCommentResponse> getAlbumChatCommentByManyLikeId(@RequestBody AlbumDto album) {
-        return albumChatService.getAlbumChatCommentByManyLikeId(album);
+    public List<AlbumChatCommentResponse> getAlbumChatCommentByManyLikeId(@PathVariable("albumId")Long albumId) {
+        return albumChatService.getAlbumChatCommentByManyLikeId(albumId);
     }
+
 }

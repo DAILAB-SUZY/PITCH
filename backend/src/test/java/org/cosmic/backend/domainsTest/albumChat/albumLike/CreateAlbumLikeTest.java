@@ -59,7 +59,7 @@ public class CreateAlbumLikeTest extends BaseSetting {
 
         AlbumChatAlbumLikeDto albumChatAlbumLikeDto=AlbumChatAlbumLikeDto.createAlbumChatAlbumLikeDto
             (user.getUserId(),album.getAlbumId());
-        mockMvcHelper("/api/albumchat/albumlike/create",albumChatAlbumLikeDto)
+        mockMvcHelper("/api/albumchat/albumlike/create/{albumId}",album.getAlbumId(),albumChatAlbumLikeDto)
             .andExpect(status().isOk());
     }
 
@@ -74,7 +74,7 @@ public class CreateAlbumLikeTest extends BaseSetting {
 
         AlbumChatAlbumLikeDto albumChatAlbumLikeDto=AlbumChatAlbumLikeDto.createAlbumChatAlbumLikeDto
             (user.getUserId(),100L);
-        mockMvcHelper("/api/albumchat/albumlike/create",albumChatAlbumLikeDto)
+        mockMvcHelper("/api/albumchat/albumlike/create/{albumId}",100L,albumChatAlbumLikeDto)
             .andExpect(status().isNotFound());
     }
 
@@ -85,17 +85,12 @@ public class CreateAlbumLikeTest extends BaseSetting {
         User user=userRepository.findByEmail_Email("test1@example.com").get();
         user.setPassword(encoder.encode(user.getPassword()));
         UserLogin userLogin = loginUser("test1@example.com");
-        String validToken=userLogin.getToken();
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
 
         AlbumChatAlbumLikeDto albumChatAlbumLikeDto=AlbumChatAlbumLikeDto.createAlbumChatAlbumLikeDto
             (user.getUserId(),album.getAlbumId());
-        mockMvcHelper("/api/albumchat/albumlike/create",albumChatAlbumLikeDto);
-
-        mockMvc.perform(post("/api/albumchat/albumlike/create")
-                .header("Authorization", "Bearer " + validToken)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(albumChatAlbumLikeDto))).andDo(print())
+        mockMvcHelper("/api/albumchat/albumlike/create/{albumId}",album.getAlbumId(),albumChatAlbumLikeDto);
+        mockMvcHelper("/api/albumchat/albumlike/create/{albumId}",album.getAlbumId(),albumChatAlbumLikeDto)
             .andExpect(status().isConflict());
     }
 }

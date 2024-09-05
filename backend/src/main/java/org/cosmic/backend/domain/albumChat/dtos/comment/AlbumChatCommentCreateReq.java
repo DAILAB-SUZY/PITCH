@@ -13,14 +13,12 @@ import java.time.Instant;
 @Builder
 public class AlbumChatCommentCreateReq {
     private Long userId;
-    private Long albumId;
     private String content;
     private Instant createTime;
 
-    public static AlbumChatCommentCreateReq createAlbumChatCommentCreateReq(Long userId, Long albumId,String content,Instant createTime) {
+    public static AlbumChatCommentCreateReq createAlbumChatCommentCreateReq(Long userId, String content,Instant createTime) {
         return  AlbumChatCommentCreateReq.builder()
                 .userId(userId)
-                .albumId(albumId)
                 .content(content)
                 .createTime(createTime)
                 .build();

@@ -11,10 +11,7 @@ import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.user.dtos.UserDto;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -43,7 +40,7 @@ public class MusicDnaApi {
      * @return 모든 DNA 데이터를 포함하는 리스트
      */
     @Transactional
-    @PostMapping("/give")
+    @GetMapping("/give")
     public List<ListDna> DnaGiveData() {
         return musicDnaService.getAllDna();
     }
@@ -68,15 +65,15 @@ public class MusicDnaApi {
     /**
      * 사용자의 DNA 데이터를 조회합니다.
      *
-     * @param user 사용자 정보를 포함한 DTO 객체
+     * @param userId 사용자 정보를 포함한 DTO 객체
      * @return 사용자 DNA 데이터를 포함한 응답 리스트
      *
      * @throws NotFoundUserException 사용자를 찾을 수 없을 때 발생합니다.
      */
-    @PostMapping("/info")
+    @PostMapping("/info/{userId}")
     @Transactional
     @ApiResponse(responseCode = "404", description = "Not Found User")
-    public List<UserDnaResponse> userDnaGive(@RequestBody UserDto user) {
-        return musicDnaService.getUserDna(user);
+    public List<UserDnaResponse> userDnaGive(@PathVariable Long userId) {
+        return musicDnaService.getUserDna(userId);
     }
 }

@@ -16,10 +16,7 @@ import org.cosmic.backend.domain.albumChat.exceptions.NotMatchAlbumChatException
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -45,15 +42,15 @@ public class AlbumChatCommentApi {
     /**
      * 특정 앨범 챗 ID로 댓글 목록을 조회하는 API.
      *
-     * @param album 조회할 앨범 챗 ID를 포함한 DTO
+     * @param albumId 조회할 앨범 챗 ID를 포함한 DTO
      * @return List<AlbumChatCommentResponse> 조회된 댓글 목록
      * @throws NotFoundAlbumChatException 앨범 챗이 존재하지 않을 경우 발생
      */
-    @PostMapping("/give")
+    @GetMapping("/give/{albumId}")
     @Transactional
     @ApiResponse(responseCode = "404", description = "Not Found Album")
-    public List<AlbumChatCommentResponse> getCommentByAlbumChatId(@RequestBody AlbumDto album) {
-        return commentService.getCommentsByAlbumId(album.getAlbumId());
+    public List<AlbumChatCommentResponse> getCommentByAlbumChatId(@PathVariable Long albumId) {
+        return commentService.getCommentsByAlbumId(albumId);
     }
 
     /**
@@ -64,11 +61,12 @@ public class AlbumChatCommentApi {
      * @throws NotFoundAlbumChatException 앨범 챗이 존재하지 않을 경우 발생
      * @throws NotFoundUserException 사용자가 존재하지 않을 경우 발생
      */
-    @PostMapping("/create")
+    @PostMapping("/create/{albumId}")
     @Transactional
     @ApiResponse(responseCode = "404", description = "Not Found User or Album")
-    public AlbumChatCommentDto albumChatCommentCreate(@RequestBody AlbumChatCommentCreateReq comment) {
-        return commentService.albumChatCommentCreate(comment);
+    public AlbumChatCommentDto albumChatCommentCreate(@PathVariable Long albumId,
+        @RequestBody AlbumChatCommentCreateReq comment) {
+        return commentService.albumChatCommentCreate(albumId,comment);
     }
 
     /**
@@ -81,28 +79,28 @@ public class AlbumChatCommentApi {
      * @throws NotFoundAlbumChatCommentException 댓글이 존재하지 않을 경우 발생
      * @throws NotFoundUserException 사용자가 존재하지 않을 경우 발생
      */
-    @PostMapping("/update")
+    @PostMapping("/update/{albumChatCommentId}")
     @Transactional
     @ApiResponse(responseCode = "400", description = "Not Match Album or User")
     @ApiResponse(responseCode = "404", description = "Not Found AlbumChatComment Or User")
-    public ResponseEntity<?> albumChatCommentUpdate(@RequestBody AlbumChatCommentUpdateReq comment) {
-        commentService.albumChatCommentUpdate(comment);
+    public ResponseEntity<?> albumChatCommentUpdate(@PathVariable Long albumChatCommentId,@RequestBody AlbumChatCommentUpdateReq comment) {
+        commentService.albumChatCommentUpdate(albumChatCommentId,comment);
         return ResponseEntity.ok("성공");
     }
 
     /**
      * 앨범 챗 댓글을 삭제하는 API
      *
-     * @param commentdto 삭제할 댓글 정보가 담긴 DTO
+     * @param albumChatCommentId 삭제할 댓글 정보가 담긴 DTO
      * @return ResponseEntity<?> 성공 메시지 반환
      * @throws NotFoundAlbumChatCommentException 댓글이 존재하지 않을 경우 발생
      */
-    @PostMapping("/delete")
+    @DeleteMapping("/delete/{albumChatCommentId}")
     @Transactional
     @ApiResponse(responseCode = "404", description = "Not Found AlbumChatComment")
     //TODO NOTMATCHUSER오류 추가
-    public ResponseEntity<?> albumChatCommentDelete(@RequestBody AlbumChatCommentDto commentdto) {
-        commentService.albumChatCommentDelete(commentdto);
+    public ResponseEntity<?> albumChatCommentDelete(@PathVariable Long albumChatCommentId) {
+        commentService.albumChatCommentDelete(albumChatCommentId);
         return ResponseEntity.ok("성공");
     }
 }
