@@ -17,21 +17,22 @@ import org.cosmic.backend.domain.user.domains.User;
 @Entity
 @Builder
 @Table(name="`FavoriteArtist`")
+@IdClass(FavoriteArtistPK.class)
 public class FavoriteArtist {
+
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name="favoriteArtistId")
-    private Long favoriteArtistId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "artist_id")
+    private Artist artist;
+
+    @Id
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Track track;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Artist artist;
-
-    @OneToOne
-    @JoinColumn(name="userId")
-    private User user;
 
     public static FavoriteArtistDto toFavoriteArtistDto(FavoriteArtist favoriteArtist){
         return FavoriteArtistDto.builder()

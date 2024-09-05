@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.cosmic.backend.domain.favoriteArtist.domains.FavoriteArtist;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,9 @@ public class Artist {//
     @OneToMany(mappedBy = "artist")
     @Builder.Default
     private List<Album>album=new ArrayList<>();
+
+    @OneToOne(mappedBy = "artist")
+    private FavoriteArtist favoriteArtist;
 
     //아티스트 1 트랙 N
     @OneToMany(mappedBy = "artist")
