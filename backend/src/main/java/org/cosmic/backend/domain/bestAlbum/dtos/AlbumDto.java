@@ -10,10 +10,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class AlbumDto {
-    private String albumName;
-    public static AlbumDto createAlbumDto(String albumName) {
+    private Long albumId;
+    public static AlbumDto createAlbumDto(Long albumId) {
         return  AlbumDto.builder()
-                .albumName(albumName)
+                .albumId(albumId)
                 .build();
     }
 }

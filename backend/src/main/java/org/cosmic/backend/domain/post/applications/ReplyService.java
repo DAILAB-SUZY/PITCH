@@ -4,17 +4,15 @@ import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.post.dtos.Reply.CreateReplyReq;
 import org.cosmic.backend.domain.post.dtos.Reply.ReplyDto;
 import org.cosmic.backend.domain.post.dtos.Reply.UpdateReplyReq;
-import org.cosmic.backend.domain.post.entities.Reply;
+import org.cosmic.backend.domain.post.entities.PostComment;
 import org.cosmic.backend.domain.post.exceptions.NotFoundCommentException;
 import org.cosmic.backend.domain.post.exceptions.NotFoundReplyException;
 import org.cosmic.backend.domain.post.exceptions.NotMatchCommentException;
 import org.cosmic.backend.domain.post.exceptions.NotMatchUserException;
-import org.cosmic.backend.domain.post.repositories.CommentRepository;
-import org.cosmic.backend.domain.post.repositories.ReplyRepository;
+import org.cosmic.backend.domain.post.repositories.PostCommentRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,21 +22,18 @@ import java.util.Objects;
  */
 @Service
 public class ReplyService {
-    private final ReplyRepository replyRepository;
     private final UsersRepository userRepository;
-    private final CommentRepository commentRepository;
+    private final PostCommentRepository postCommentRepository;
 
     /**
      * ReplyService의 생성자입니다.
      *
-     * @param replyRepository 대댓글 데이터를 처리하는 리포지토리
      * @param userRepository 사용자 데이터를 처리하는 리포지토리
-     * @param commentRepository 댓글 데이터를 처리하는 리포지토리
+     * @param postCommentRepository 댓글 데이터를 처리하는 리포지토리
      */
-    public ReplyService(ReplyRepository replyRepository, UsersRepository userRepository, CommentRepository commentRepository) {
-        this.replyRepository = replyRepository;
+    public ReplyService(UsersRepository userRepository, PostCommentRepository postCommentRepository) {
         this.userRepository = userRepository;
-        this.commentRepository = commentRepository;
+        this.postCommentRepository = postCommentRepository;
     }
 
     /**
@@ -50,12 +45,12 @@ public class ReplyService {
      * @throws NotFoundCommentException 댓글을 찾을 수 없을 때 발생합니다.
      */
     public List<UpdateReplyReq> getRepliesByCommentId(Long commentId) {
-        if (commentRepository.findById(commentId).isEmpty()) {
+        if (postCommentRepository.findById(commentId).isEmpty()) {
             throw new NotFoundCommentException();
         }
-        return replyRepository.findByComment_CommentId(commentId)
+        return postCommentRepository.findAllByParentComment_CommentId(commentId)
                 .stream()
-                .map(Reply::toUpdateReplyReq)
+                .map(PostComment::toUpdateReplyReq)
                 .toList();
     }
 
@@ -72,14 +67,13 @@ public class ReplyService {
         if (userRepository.findById(reply.getUserId()).isEmpty()) {
             throw new NotFoundUserException();
         }
-        if (commentRepository.findById(reply.getCommentId()).isEmpty()) {
+        if (postCommentRepository.findById(reply.getCommentId()).isEmpty()) {
             throw new NotFoundCommentException();
         }
-        return Reply.toReplyDto(replyRepository.save(Reply.builder()
+        return PostComment.toReplyDto(postCommentRepository.save(PostComment.builder()
                 .content(reply.getContent())
-                .updateTime(Instant.now())
                 .user(userRepository.findByUserId(reply.getUserId()).orElseThrow())
-                .comment(commentRepository.findByCommentId(reply.getCommentId()))
+                .parentComment(postCommentRepository.findById(reply.getCommentId()).orElseThrow())
                 .build()));
     }
 
@@ -93,18 +87,18 @@ public class ReplyService {
      * @throws NotMatchUserException 대댓글 작성자와 요청된 사용자가 일치하지 않을 때 발생합니다.
      */
     public void updateReply(UpdateReplyReq replyReq) {
-        if (replyRepository.findById(replyReq.getReplyId()).isEmpty()) {
+        if (postCommentRepository.findById(replyReq.getReplyId()).isEmpty()) {
             throw new NotFoundReplyException();
         }
-        Reply updatedReply = replyRepository.findByReplyId(replyReq.getReplyId());
-        if (!Objects.equals(updatedReply.getComment().getCommentId(), replyReq.getCommentId())) {
+        PostComment updatedReply = postCommentRepository.findById(replyReq.getReplyId()).get();
+        if (!Objects.equals(updatedReply.getParentComment().getCommentId(), replyReq.getCommentId())) {
             throw new NotMatchCommentException();
         }
         if (!Objects.equals(updatedReply.getUser().getUserId(), replyReq.getUserId())) {
             throw new NotMatchUserException();
         }
         updatedReply.setContent(replyReq.getContent());
-        replyRepository.save(updatedReply);
+        postCommentRepository.save(updatedReply);
     }
 
     /**
@@ -115,9 +109,9 @@ public class ReplyService {
      * @throws NotFoundReplyException 대댓글을 찾을 수 없을 때 발생합니다.
      */
     public void deleteReply(Long replyId) {
-        if (replyRepository.findById(replyId).isEmpty()) {
+        if (postCommentRepository.findById(replyId).isEmpty()) {
             throw new NotFoundReplyException();
         }
-        replyRepository.deleteById(replyId);
+        postCommentRepository.deleteById(replyId);
     }
 }

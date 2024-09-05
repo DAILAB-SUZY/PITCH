@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.user.domains.User;
 
 import java.time.Instant;
@@ -21,14 +22,19 @@ public class AlbumChatComment {
     private Long albumChatCommentId;
 
     @ManyToOne
-    @JoinColumn(name = "albumChat_id")
-    private AlbumChat albumChat;
+    @JoinColumn(name = "album_id")
+    private Album album;
 
     private String content;
-    private Instant updateTime;
 
-    @OneToMany(mappedBy = "albumChatComment", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<AlbumChatReply> albumChatReplies;
+    @Column(name = "parent_albumChatCommentId")
+    private Long parentAlbumChatCommentId;
+
+    @Column(name = "create_time")
+    private Instant createTime;
+
+    @Column(name = "update_time")
+    private Instant updateTime;
 
     @OneToMany(mappedBy = "albumChatComment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AlbumChatCommentLike> albumChatCommentLikes;
@@ -37,12 +43,11 @@ public class AlbumChatComment {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public AlbumChatComment(String content, Instant updateTime, User user,List<AlbumChatReply> albumChatReply,AlbumChat albumChat) {
-        this.albumChat = albumChat;
+    public AlbumChatComment(String content, Instant updateTime, User user,Album album) {
+        this.album = album;
         this.content = content;
         this.updateTime = updateTime;
         this.user=user;
-        this.albumChatReplies = albumChatReply;
     }
 
     @Override

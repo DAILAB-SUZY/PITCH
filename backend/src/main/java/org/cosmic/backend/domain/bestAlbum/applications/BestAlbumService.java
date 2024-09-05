@@ -1,11 +1,11 @@
 package org.cosmic.backend.domain.bestAlbum.applications;
 
 import jakarta.transaction.Transactional;
-import org.cosmic.backend.domain.bestAlbum.domains.AlbumUser;
+import org.cosmic.backend.domain.bestAlbum.domains.UserBestAlbum;
 import org.cosmic.backend.domain.bestAlbum.dtos.AlbumGiveDto;
 import org.cosmic.backend.domain.bestAlbum.dtos.BestAlbumDetail;
 import org.cosmic.backend.domain.bestAlbum.dtos.BestAlbumGiveDto;
-import org.cosmic.backend.domain.bestAlbum.repositorys.AlbumUserRepository;
+import org.cosmic.backend.domain.bestAlbum.repositorys.UserBestAlbumRepository;
 import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundArtistException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
@@ -33,13 +33,13 @@ public class BestAlbumService {
     private final UsersRepository usersRepository;
     private final AlbumRepository albumRepository;
     private final ArtistRepository artistRepository;
-    private final AlbumUserRepository albumUserRepository;
+    private final UserBestAlbumRepository userBestAlbumRepository;
 
-    public BestAlbumService(UsersRepository usersRepository, AlbumRepository albumRepository, ArtistRepository artistRepository, AlbumUserRepository albumUserRepository) {
+    public BestAlbumService(UsersRepository usersRepository, AlbumRepository albumRepository, ArtistRepository artistRepository, UserBestAlbumRepository userBestAlbumRepository) {
         this.usersRepository = usersRepository;
         this.albumRepository = albumRepository;
         this.artistRepository = artistRepository;
-        this.albumUserRepository = albumUserRepository;
+        this.userBestAlbumRepository = userBestAlbumRepository;
     }
 
     /**
@@ -54,7 +54,7 @@ public class BestAlbumService {
         if(usersRepository.findById(userId).isEmpty()) {
             throw new NotFoundUserException();
         }
-        return albumUserRepository.findByUser_UserId(userId)
+        return userBestAlbumRepository.findByUser_UserId(userId)
                 .orElse(Collections.emptyList())
                 .stream()
                 .map(BestAlbumGiveDto::new)
@@ -78,13 +78,13 @@ public class BestAlbumService {
         if(albumRepository.findById(albumId).isEmpty()) {
             throw new NotFoundAlbumException();
         }
-        if(albumUserRepository.findByAlbum_AlbumIdAndUser_UserId(albumId,userId).isPresent()) {
+        if(userBestAlbumRepository.findByAlbum_AlbumIdAndUser_UserId(albumId,userId).isPresent()) {
             throw new ExistBestAlbumException();
         }
         User newuser = usersRepository.findById(userId).get();
         Album album=albumRepository.findById(albumId).get();
-        AlbumUser albumUser=new AlbumUser(album,newuser);
-        albumUserRepository.save(albumUser);
+        UserBestAlbum userBestAlbum =UserBestAlbum.builder().album(album).user(newuser).build();
+        userBestAlbumRepository.save(userBestAlbum);
     }
 
     /**
@@ -108,8 +108,8 @@ public class BestAlbumService {
                         .stream()
                         .map(Album::getAlbumId)
                         .toList();
-        albumUserRepository.deleteByUser_UserId(userId);
-        albumUserRepository.saveAll(bestAlbumList
+        userBestAlbumRepository.deleteByUser_UserId(userId);
+        userBestAlbumRepository.saveAll(bestAlbumList
                 .stream()
                 .map(bestAlbumDetail -> {
                     if (albumRepository.findById(bestAlbumDetail.getAlbumId()).isEmpty()) {
@@ -118,7 +118,7 @@ public class BestAlbumService {
                     if (!existingBestAlbumsIds.contains(bestAlbumDetail.getAlbumId())) {
                         throw new NotMatchBestAlbumException();
                     }
-                    return new AlbumUser(albumRepository.findById(bestAlbumDetail.getAlbumId()).get(), user);
+                    return UserBestAlbum.builder().album(albumRepository.findById(bestAlbumDetail.getAlbumId()).get()).user(user).build();
                 })
                 .toList()
         );

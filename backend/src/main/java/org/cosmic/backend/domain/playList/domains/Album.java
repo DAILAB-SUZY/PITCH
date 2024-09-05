@@ -2,12 +2,15 @@ package org.cosmic.backend.domain.playList.domains;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.cosmic.backend.domain.albumChat.domains.AlbumChat;
+import org.cosmic.backend.domain.albumChat.domains.AlbumChatComment;
 import org.cosmic.backend.domain.post.dtos.Post.AlbumDto;
+import org.cosmic.backend.domain.post.entities.Post;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -15,7 +18,7 @@ import java.util.List;
 @Entity
 @Builder
 @Table(name="Album")
-@EqualsAndHashCode(exclude = {"albumchat"})
+@EqualsAndHashCode
 public class Album {//앨범과 트랙은 1:N관계이며 앨범과 아티스트는 더 생각 필요
 
     @Id
@@ -29,12 +32,16 @@ public class Album {//앨범과 트랙은 1:N관계이며 앨범과 아티스트
     @Column(nullable=false)
     private String cover;
 
-    @Column(nullable=false)
-    private String genre;
+    @ManyToMany(fetch = FetchType.LAZY)
+    private Set<Genre> genre;
 
     @Builder.Default
     @Column(nullable=false)
     private Instant createdDate=Instant.now();//발매 일
+
+    @OneToMany(mappedBy = "album")
+    @Builder.Default
+    private Set<Post> posts = new HashSet<>();
 
     //아티스트와 1:N 관계
     @ManyToOne(fetch=FetchType.LAZY)
@@ -45,16 +52,9 @@ public class Album {//앨범과 트랙은 1:N관계이며 앨범과 아티스트
     @Builder.Default
     private List<Track> tracks=new ArrayList<>();
 
-    @OneToOne(mappedBy = "album")
-    private AlbumChat albumchat;
+    @OneToMany(mappedBy = "album")
+    private List<AlbumChatComment> albumChatComments;
 
-    public Album(String genre, String title,String cover, Artist artist, Instant createdDate){
-        this.genre = genre;
-        this.title = title;
-        this.artist = artist;
-        this.createdDate = createdDate;
-        this.cover = cover;
-    }
     @Override
     public String toString() {
         return "Album{" +

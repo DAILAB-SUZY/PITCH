@@ -28,10 +28,10 @@ public class Playlist_Track {//N:M을 이어줄 연결다리
     @JoinColumn(name="trackId")
     private Track track;
 
-    public Playlist_Track(Track track, Playlist playlist) {
-        this.track = track;
-        this.playlist = playlist;
-    }
+    //TODO: order 관련 서비스를 다시 만들어야 함
+    @Builder.Default
+    @Column(name="`order`")
+    private Integer order = 0;
 
     public static PlaylistGiveDto toGiveDto(Playlist_Track playlist_track) {
         return PlaylistGiveDto.builder()
@@ -40,7 +40,6 @@ public class Playlist_Track {//N:M을 이어줄 연결다리
                 .userId(playlist_track.getPlaylist().getUser().getUserId())
                 .title(playlist_track.getTrack().getTitle())
                 .artistName(playlist_track.getTrack().getArtist().getArtistName())
-                .cover(playlist_track.getTrack().getCover())
                 .build();
     }
 }

@@ -1,39 +1,45 @@
 package org.cosmic.backend.domain.favoriteArtist.domains;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.cosmic.backend.domain.favoriteArtist.dtos.FavoriteArtistDto;
+import org.cosmic.backend.domain.playList.domains.Artist;
+import org.cosmic.backend.domain.playList.domains.Track;
 import org.cosmic.backend.domain.user.domains.User;
 
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
+@Builder
 @Table(name="`FavoriteArtist`")
+@IdClass(FavoriteArtistPK.class)
 public class FavoriteArtist {
+
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name="favoriteArtistId")
-    private Long favoriteArtistId ;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "artist_id")
+    private Artist artist;
 
-    private String artistName;
-
-    private String albumName;
-
-    private String cover;
-
-    private String trackName;
-
+    @Id
     @OneToOne
-    @JoinColumn(name="userId")
+    @JoinColumn(name = "user_id")
     private User user;
 
-    public FavoriteArtist(String artistName, String albumName,  String trackName,String cover, User user) {
-        this.artistName = artistName;
-        this.albumName = albumName;
-        this.cover = cover;
-        this.trackName = trackName;
-        this.user = user;
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Track track;
 
+
+    public static FavoriteArtistDto toFavoriteArtistDto(FavoriteArtist favoriteArtist){
+        return FavoriteArtistDto.builder()
+                .artistName(favoriteArtist.artist.getArtistName())
+                .cover(favoriteArtist.track.getAlbum().getCover())
+                .albumName(favoriteArtist.track.getAlbum().getTitle())
+                .trackName(favoriteArtist.track.getTitle())
+                .build();
+    }
 }

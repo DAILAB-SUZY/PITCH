@@ -49,7 +49,7 @@ public class FavoriteArtistService {
         if(usersRepository.findById(userId).isEmpty()||favoriteArtistRepository.findByUser_UserId(userId).isEmpty()) {
             throw new NotFoundUserException();
         }
-        return new FavoriteArtistDto(favoriteArtistRepository.findByUser_UserId(userId).get());
+        return FavoriteArtist.toFavoriteArtistDto(favoriteArtistRepository.findByUser_UserId(userId).get());
     }
 
     /**
@@ -121,10 +121,10 @@ public class FavoriteArtistService {
         }
         User user=usersRepository.findByUserId(favoriteArtist.getUserId()).orElseThrow();
         favoriteArtistRepository.deleteByUser_UserId(user.getUserId());
-        favoriteArtistRepository.save(new FavoriteArtist(
-                artistRepository.findById(favoriteArtist.getArtistId()).orElseThrow().getArtistName(),
-                albumRepository.findById(favoriteArtist.getAlbumId()).orElseThrow().getTitle(),
-                trackRepository.findById(favoriteArtist.getTrackId()).orElseThrow().getTitle(),
-                favoriteArtist.getCover(),user));
+        favoriteArtistRepository.save(FavoriteArtist.builder()
+                        .artist(artistRepository.findById(favoriteArtist.getArtistId()).orElseThrow())
+                        .track(trackRepository.findById(favoriteArtist.getTrackId()).orElseThrow())
+                        .user(user)
+                                .build());
     }
 }

@@ -1,28 +1,36 @@
 package org.cosmic.backend.domain.albumChat.domains;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.cosmic.backend.domain.albumChat.dtos.commentlike.AlbumChatCommentLikeIdResponse;
 import org.cosmic.backend.domain.user.domains.User;
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name="`albumChatCommentLike`")
+@Builder
+@IdClass(AlbumChatCommentLikePK.class)
 public class AlbumChatCommentLike {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long albumChatCommentLikeId;
 
+    @Id
     @ManyToOne
     @JoinColumn(name = "albumChatComment_id")
     private AlbumChatComment albumChatComment;
 
+    @Id
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    public AlbumChatCommentLike(final User user,final AlbumChatComment albumChatComment) {
-        this.albumChatComment = albumChatComment;
-        this.user = user;
+    public static AlbumChatCommentLikeIdResponse toIdResponse(AlbumChatCommentLike save) {
+        return AlbumChatCommentLikeIdResponse.builder()
+                .albumChatCommentId(save.albumChatComment.getAlbumChatCommentId())
+                .userId(save.user.getUserId())
+                .build();
+
     }
 }

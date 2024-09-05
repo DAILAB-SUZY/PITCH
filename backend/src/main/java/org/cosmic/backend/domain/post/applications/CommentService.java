@@ -5,12 +5,12 @@ import org.cosmic.backend.domain.post.dtos.Comment.CommentDto;
 import org.cosmic.backend.domain.post.dtos.Comment.CommentReq;
 import org.cosmic.backend.domain.post.dtos.Comment.CreateCommentReq;
 import org.cosmic.backend.domain.post.dtos.Comment.UpdateCommentReq;
-import org.cosmic.backend.domain.post.entities.Comment;
+import org.cosmic.backend.domain.post.entities.PostComment;
 import org.cosmic.backend.domain.post.exceptions.NotFoundCommentException;
 import org.cosmic.backend.domain.post.exceptions.NotFoundPostException;
 import org.cosmic.backend.domain.post.exceptions.NotMatchPostException;
 import org.cosmic.backend.domain.post.exceptions.NotMatchUserException;
-import org.cosmic.backend.domain.post.repositories.CommentRepository;
+import org.cosmic.backend.domain.post.repositories.PostCommentRepository;
 import org.cosmic.backend.domain.post.repositories.PostRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.springframework.stereotype.Service;
@@ -26,19 +26,19 @@ import java.util.Objects;
 @Service
 public class CommentService {
 
-    private final CommentRepository commentRepository;
+    private final PostCommentRepository postCommentRepository;
     private final UsersRepository userRepository;
     private final PostRepository postRepository;
 
     /**
      * CommentService의 생성자입니다.
      *
-     * @param commentRepository 댓글 데이터를 처리하는 리포지토리
+     * @param postCommentRepository 댓글 데이터를 처리하는 리포지토리
      * @param userRepository 사용자 데이터를 처리하는 리포지토리
      * @param postRepository 게시글 데이터를 처리하는 리포지토리
      */
-    public CommentService(CommentRepository commentRepository, UsersRepository userRepository, PostRepository postRepository) {
-        this.commentRepository = commentRepository;
+    public CommentService(PostCommentRepository postCommentRepository, UsersRepository userRepository, PostRepository postRepository) {
+        this.postCommentRepository = postCommentRepository;
         this.userRepository = userRepository;
         this.postRepository = postRepository;
     }
@@ -55,7 +55,7 @@ public class CommentService {
         if (postRepository.findById(postId).isEmpty()) {
             throw new NotFoundPostException();
         }
-        return commentRepository.findByPost_PostId(postId).stream().map(Comment::toCommentReq).toList();
+        return postCommentRepository.findByPost_PostId(postId).stream().map(PostComment::toCommentReq).toList();
     }
 
     /**
@@ -74,7 +74,7 @@ public class CommentService {
         if (userRepository.findById(commentReq.getUserId()).isEmpty()) {
             throw new NotFoundUserException();
         }
-        return Comment.toCommentDto(commentRepository.save(Comment.builder()
+        return PostComment.toCommentDto(postCommentRepository.save(PostComment.builder()
                 .content(commentReq.getContent())
                 .updateTime(Instant.now())
                 .user(userRepository.findById(commentReq.getUserId()).get())
@@ -91,18 +91,18 @@ public class CommentService {
      * @throws NotMatchPostException 댓글이 게시글과 일치하지 않을 경우 발생합니다.
      */
     public void updateComment(UpdateCommentReq commentReq) {
-        if (commentRepository.findById(commentReq.getCommentId()).isEmpty()) {
+        if (postCommentRepository.findById(commentReq.getCommentId()).isEmpty()) {
             throw new NotFoundCommentException();
         }
-        Comment comment = commentRepository.findById(commentReq.getCommentId()).get();
-        if (!Objects.equals(comment.getUser().getUserId(), commentReq.getUserId())) {
+        PostComment postComment = postCommentRepository.findById(commentReq.getCommentId()).get();
+        if (!Objects.equals(postComment.getUser().getUserId(), commentReq.getUserId())) {
             throw new NotMatchUserException();
         }
-        if (!Objects.equals(comment.getPost().getPostId(), commentReq.getPostId())) {
+        if (!Objects.equals(postComment.getPost().getPostId(), commentReq.getPostId())) {
             throw new NotMatchPostException();
         }
-        comment.setContent(commentReq.getContent());
-        commentRepository.save(comment);
+        postComment.setContent(commentReq.getContent());
+        postCommentRepository.save(postComment);
     }
 
     /**
@@ -113,9 +113,9 @@ public class CommentService {
      * @throws NotFoundCommentException 댓글이 존재하지 않을 경우 발생합니다.
      */
     public void deleteComment(CommentDto commentdto) {
-        if (commentRepository.findById(commentdto.getCommentId()).isEmpty()) {
+        if (postCommentRepository.findById(commentdto.getCommentId()).isEmpty()) {
             throw new NotFoundCommentException();
         }
-        commentRepository.deleteById(commentdto.getCommentId());
+        postCommentRepository.deleteById(commentdto.getCommentId());
     }
 }

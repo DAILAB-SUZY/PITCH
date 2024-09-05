@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.post.dtos.Post.PostDto;
 import org.cosmic.backend.domain.post.dtos.Post.PostReq;
 import org.cosmic.backend.domain.user.domains.User;
@@ -24,30 +25,30 @@ public class Post {
     @Column(name = "post_id") // 컬럼 이름 명시
     private Long postId;
 
-    private String cover; // 앨범커버
-    private String title; // 앨범제목
     private String content; // 내용
-    private String artistName;
-    private Instant updateTime;
+    private Instant update_time;
+    @Builder.Default
+    private Instant create_time=Instant.now();
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comment> comments;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "album_id")
+    private Album album;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Like> likes;
+    private List<PostComment> postComments;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostLike> postLikes;
 
     public static PostReq toPostReq(Post post) {
         return PostReq.builder()
                 .postId(post.getPostId())
-                .cover(post.getCover())
-                .title(post.getTitle())
                 .content(post.getContent())
-                .artistName(post.getArtistName())
-                .updateTime(post.getUpdateTime())
+                .update_time(post.getUpdate_time())
                 .build();
     }
 

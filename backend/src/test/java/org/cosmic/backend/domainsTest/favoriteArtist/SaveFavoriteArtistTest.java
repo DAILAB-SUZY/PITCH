@@ -1,7 +1,6 @@
 package org.cosmic.backend.domainsTest.favoriteArtist;
 
 import lombok.extern.log4j.Log4j2;
-import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatRepository;
 import org.cosmic.backend.domain.auth.dtos.UserLogin;
 import org.cosmic.backend.domain.favoriteArtist.dtos.FavoriteReq;
 import org.cosmic.backend.domain.playList.domains.Album;
@@ -37,8 +36,6 @@ public class SaveFavoriteArtistTest extends BaseSetting {
     AlbumRepository albumRepository;
     @Autowired
     TrackRepository trackRepository;
-    @Autowired
-    AlbumChatRepository albumChatRepository;
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @Test

@@ -8,12 +8,12 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AlbumChatCommentRepository extends JpaRepository<AlbumChatComment,Long> {
-    Optional<List<AlbumChatComment>> findByAlbumChat_AlbumChatId(Long albumChatid);//key로 찾기
+    Optional<List<AlbumChatComment>> findByAlbum_AlbumId(Long albumid);//key로 찾기
     @Query("SELECT acc " +
             "FROM AlbumChatComment acc " +
             "LEFT JOIN acc.albumChatCommentLikes acl " +
-            "WHERE acc.albumChat.albumChatId = :albumChatid " +
+            "WHERE acc.album.albumId = :albumid " +
             "GROUP BY acc " +
             "ORDER BY COUNT(acl) DESC")
-    Optional<List<AlbumChatComment>> findByAlbumChatIdOrderByCountAlbumChatCommentLikes(Long albumChatid);//key로 찾기
+    Optional<List<AlbumChatComment>> findByAlbumIdOrderByCountAlbumChatCommentLikes(Long albumid);//key로 찾기
 }

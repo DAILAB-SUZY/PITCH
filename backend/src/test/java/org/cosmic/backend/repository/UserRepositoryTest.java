@@ -42,7 +42,7 @@ public class UserRepositoryTest {
         Assertions.assertThat(savedUser.getPassword()).isNotNull();//NOT NULL확인
         Assertions.assertThat(user.getPassword()).isEqualTo(savedUser.getPassword());
         Assertions.assertThat(user.getProfilePicture()).isEqualTo(savedUser.getProfilePicture());
-        Assertions.assertThat(user.getSignupDate()).isEqualTo(savedUser.getSignupDate());
+        Assertions.assertThat(user.getCreate_time()).isEqualTo(savedUser.getCreate_time());
     }
 
     @Test

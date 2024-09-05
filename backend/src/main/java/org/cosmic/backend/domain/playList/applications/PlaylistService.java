@@ -64,11 +64,11 @@ public class PlaylistService {
             throw new NotFoundUserException();
         }
         Playlist playList = playlistRepository.findByUser_UserId(userId).get(); // 사용자의 플레이리스트를 찾음
-        playList.setUpdatedDate(Instant.now());
+        playList.setUpdate_time(Instant.now());
         playlistTrackRepository.deleteByPlaylist_PlaylistId(playList.getPlaylistId());
         playlistTrackRepository.saveAll(newPlayList.stream()
                 .map(track -> trackRepository.findById(track.getTrackId()).orElseThrow(NotFoundTrackException::new))
-                .map(track -> new Playlist_Track(track, playList))
+                .map(track -> Playlist_Track.builder().track(track).playlist(playList).build())
                 .toList());
     }
 

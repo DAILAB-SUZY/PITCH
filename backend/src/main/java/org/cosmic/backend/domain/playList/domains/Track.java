@@ -8,7 +8,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.cosmic.backend.domain.playList.dtos.TrackGiveDto;
 
-import java.time.Instant;
 import java.util.List;
 
 @Data
@@ -23,24 +22,14 @@ public class Track {//여기엔 모든 노래들이 담길 것임. 담길 때 �
     @Column(name="track_id")
     private Long trackId ;
 
-    @Column(nullable=false)
-    private String genre;
+    @OneToOne(fetch = FetchType.EAGER)
+    private Genre genre;
 
     @Column(nullable=false)
     private String title;//곡 제목
 
-    @Builder.Default
-    @Column(nullable=false)
-    private String Cover="base";//곡 제목
-
-    @Builder.Default
-    @Column(nullable=false,name="created_date")
-    private Instant createdDate=Instant.now();//발매 일
-
-
     @OneToMany(mappedBy = "track")
     private List<Playlist_Track> playlist_track;
-
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="album_id")
@@ -51,12 +40,10 @@ public class Track {//여기엔 모든 노래들이 담길 것임. 담길 때 �
     @JoinColumn(name="artist_id")
     private Artist artist;
 
-    public Track(String genre, String title,String cover, Artist artist, Instant createdDate,Album album){
+    public Track(Genre genre, String title, Artist artist, Album album){
         this.genre = genre;
         this.title = title;
         this.artist = artist;
-        this.Cover=cover;
-        this.createdDate = createdDate;
         this.album = album;
     }
 
@@ -64,7 +51,6 @@ public class Track {//여기엔 모든 노래들이 담길 것임. 담길 때 �
         return TrackGiveDto.builder()
                 .title(track.getTitle())
                 .artistName(track.getArtist().getArtistName())
-                .cover(track.getCover())
                 .build();
     }
 }

@@ -70,14 +70,14 @@ public class AlbumChatCommentLikeApi {//댓글 마다의 좋아요
     /**
      * 특정 좋아요 ID로 좋아요를 삭제하는 API
      *
-     * @param likedto 삭제할 좋아요 ID 정보
+     * @param likeDto 삭제할 좋아요 ID 정보
      * @return ResponseEntity<?> 성공 메시지 반환
      * @throws NotFoundCommentLikeException 좋아요가 존재하지 않을 경우 발생
      */
     @PostMapping("/delete")
     @ApiResponse(responseCode = "404", description = "Not Found CommentLike")
-    public ResponseEntity<?> albumChatCommentLikeDelete(@RequestBody AlbumChatCommentLikeIdResponse likedto) {
-        likeService.albumChatCommentLikeDelete(likedto.getAlbumChatCommentLikeId());
+    public ResponseEntity<?> albumChatCommentLikeDelete(@RequestBody AlbumChatCommentLikeIdResponse likeDto) {
+        likeService.albumChatCommentLikeDelete(likeDto.getAlbumChatCommentId(), likeDto.getUserId());
         return ResponseEntity.ok("성공");
     }
 }

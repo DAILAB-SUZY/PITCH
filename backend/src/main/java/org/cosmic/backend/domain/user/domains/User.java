@@ -3,10 +3,10 @@ package org.cosmic.backend.domain.user.domains;
 import jakarta.persistence.*;
 import lombok.*;
 import org.cosmic.backend.domain.favoriteArtist.domains.FavoriteArtist;
-import org.cosmic.backend.domain.musicDna.domains.User_Dna;
+import org.cosmic.backend.domain.musicDna.domains.MusicDna;
 import org.cosmic.backend.domain.playList.domains.Playlist;
-import org.cosmic.backend.domain.post.entities.Comment;
-import org.cosmic.backend.domain.post.entities.Like;
+import org.cosmic.backend.domain.post.entities.PostComment;
+import org.cosmic.backend.domain.post.entities.PostLike;
 import org.cosmic.backend.domain.post.entities.Post;
 
 import java.time.Instant;
@@ -19,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Table(name="users")  // 테이블 이름이 'user'인 경우
-@EqualsAndHashCode(exclude = {"email", "playlist", "userDnas", "posts", "comments", "likes"})
+@EqualsAndHashCode(exclude = {"email", "playlist", "posts", "postComments", "postLikes"})
 public class User {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -41,17 +41,29 @@ public class User {
 
     @Builder.Default
     @Column(nullable=false)
-    private Instant signupDate=Instant.now();
+    private Instant create_time =Instant.now();
 
-    @OneToMany(mappedBy = "user")
-    @Builder.Default
-    private List<User_Dna>userDnas=new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name="dna1_id")
+    private MusicDna dna1;
+
+    @ManyToOne
+    @JoinColumn(name="dna2_id")
+    private MusicDna dna2;
+
+    @ManyToOne
+    @JoinColumn(name="dna3_id")
+    private MusicDna dna3;
+
+    @ManyToOne
+    @JoinColumn(name="dna4_id")
+    private MusicDna dna4;
 
     @OneToOne(mappedBy = "user")
     private Playlist playlist;
 
     @OneToOne(mappedBy = "user")
-    private FavoriteArtist favoriteAlbum;
+    private FavoriteArtist favoriteArtist;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
@@ -59,11 +71,11 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<Comment> comments=new ArrayList<>();
+    private List<PostComment> postComments =new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<Like> likes=new ArrayList<>();
+    private List<PostLike> postLikes =new ArrayList<>();
 
     @Override
     public String toString() {
@@ -72,9 +84,30 @@ public class User {
                 ", email=" + (email != null ? email.getEmail() : "null") +
                 ", username='" + username + '\'' +
                 ", profilePicture='" + profilePicture + '\'' +
-                ", signupDate=" + signupDate +
+                ", signupDate=" + create_time +
                 '}';
     }
+
+    public void setDNAs(MusicDna dna1, MusicDna dna2, MusicDna dna3, MusicDna dna4) {
+        this.dna1 = dna1;
+        this.dna2 = dna2;
+        this.dna3 = dna3;
+        this.dna4 = dna4;
+    }
+
+    public void setDNAs(List<MusicDna> dnaList) {
+        setDNAs(dnaList.get(0), dnaList.get(1), dnaList.get(2), dnaList.get(3));
+    }
+
+    public List<MusicDna> getDNAs() {
+        List<MusicDna> dnaList = new ArrayList<>();
+        dnaList.add(dna1);
+        dnaList.add(dna2);
+        dnaList.add(dna3);
+        dnaList.add(dna4);
+        return dnaList;
+    }
+
     public User(Email email, String username, String password){
         this.email=email;
         this.username=username;

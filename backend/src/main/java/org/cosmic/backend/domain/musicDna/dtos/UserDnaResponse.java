@@ -4,18 +4,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.cosmic.backend.domain.musicDna.domains.User_Dna;
+import org.cosmic.backend.domain.musicDna.domains.MusicDna;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDnaResponse {
-    private Long userId;
-    private String emotion;
+    private String DNA;
 
-    public UserDnaResponse(User_Dna userDna) {
-        this.userId = userDna.getUser().getUserId();
-        this.emotion = userDna.getEmotion().getEmotion();
+    public UserDnaResponse(MusicDna DNA) {
+        this.DNA = DNA.getName();
     }
 }

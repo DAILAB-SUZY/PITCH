@@ -1,14 +1,11 @@
 package org.cosmic.backend.domain.musicDna.applications;
 
 import jakarta.transaction.Transactional;
-import org.cosmic.backend.domain.musicDna.domains.MusicDna;
-import org.cosmic.backend.domain.musicDna.domains.User_Dna;
 import org.cosmic.backend.domain.musicDna.dtos.DnaDetail;
 import org.cosmic.backend.domain.musicDna.dtos.ListDna;
 import org.cosmic.backend.domain.musicDna.dtos.UserDnaResponse;
 import org.cosmic.backend.domain.musicDna.exceptions.NotMatchMusicDnaCountException;
-import org.cosmic.backend.domain.musicDna.repositorys.DnaRepository;
-import org.cosmic.backend.domain.musicDna.repositorys.EmotionRepository;
+import org.cosmic.backend.domain.musicDna.repositorys.MusicDnaRepository;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.dtos.UserDto;
@@ -17,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * 음악 DNA와 관련된 비즈니스 로직을 처리하는 서비스 클래스입니다.
@@ -25,21 +21,18 @@ import java.util.stream.Stream;
  */
 @Service
 public class MusicDnaService {
-    private final DnaRepository dnaRepository;
-    private final EmotionRepository emotionRepository;
+    private final MusicDnaRepository musicDnaRepository;
     private final UsersRepository usersRepository;
     private final int MAX_DNA_SIZE = 4;
 
     /**
      * MusicDnaService의 생성자입니다.
      *
-     * @param dnaRepository DNA 데이터를 처리하는 리포지토리
-     * @param emotionRepository 감정 데이터를 처리하는 리포지토리
+     * @param musicDnaRepository 감정 데이터를 처리하는 리포지토리
      * @param usersRepository 사용자 데이터를 처리하는 리포지토리
      */
-    public MusicDnaService(DnaRepository dnaRepository, EmotionRepository emotionRepository, UsersRepository usersRepository) {
-        this.dnaRepository = dnaRepository;
-        this.emotionRepository = emotionRepository;
+    public MusicDnaService(MusicDnaRepository musicDnaRepository, UsersRepository usersRepository) {
+        this.musicDnaRepository = musicDnaRepository;
         this.usersRepository = usersRepository;
     }
 
@@ -61,18 +54,8 @@ public class MusicDnaService {
             throw new NotMatchMusicDnaCountException();
         }
         User user = usersRepository.findById(userId).get();
-        List<User_Dna> userDNAs = dnaRepository.findAllByUser_UserId(userId);
-        if (dna.size() < userDNAs.size()) {
-            dnaRepository.deleteAllById(userDNAs.stream().skip(dna.size()).map(User_Dna::getId).toList());
-            userDNAs = userDNAs.subList(0, dna.size());
-        }
-        userDNAs.addAll(Stream.generate(User_Dna::new).limit(dna.size() - userDNAs.size()).toList());
-        List<MusicDna> newDNAs = emotionRepository.findAllById(dna.stream().map(DnaDetail::getDnaKey).toList());
-        for (int i = 0; i < userDNAs.size(); i++) {
-            userDNAs.get(i).setUser(user);
-            userDNAs.get(i).setEmotion(newDNAs.get(i));
-        }
-        dnaRepository.saveAll(userDNAs);
+        user.setDNAs(musicDnaRepository.findAllById(dna.stream().map(DnaDetail::getDnaKey).toList()));
+        usersRepository.save(user);
     }
 
     /**
@@ -82,8 +65,8 @@ public class MusicDnaService {
      */
     @Transactional
     public List<ListDna> getAllDna() {
-        return emotionRepository.findAll().stream()
-                .map(dna -> new ListDna(dna.getEmotionId(), dna.getEmotion()))
+        return musicDnaRepository.findAll().stream()
+                .map(dna -> new ListDna(dna.getDnaId(), dna.getName()))
                 .collect(Collectors.toList());
     }
 
@@ -100,9 +83,9 @@ public class MusicDnaService {
         if (usersRepository.findById(user.getUserId()).isEmpty()) {
             throw new NotFoundUserException();
         }
-        return dnaRepository.findAllByUser_UserId(user.getUserId())
+        return usersRepository.findById(user.getUserId()).get().getDNAs()
                 .stream()
                 .map(UserDnaResponse::new)
-                .toList();
+                .collect(Collectors.toList());
     }
 }

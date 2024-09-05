@@ -9,8 +9,8 @@ import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatCommentEx
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatException;
 import org.cosmic.backend.domain.albumChat.exceptions.NotMatchAlbumChatException;
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatCommentRepository;
-import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatRepository;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
+import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
 import org.cosmic.backend.domain.post.exceptions.NotMatchUserException;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.springframework.stereotype.Service;
@@ -26,21 +26,21 @@ import java.util.stream.Collectors;
  */
 @Service
 public class AlbumChatCommentService {
-    private final AlbumChatRepository albumChatRepository;
+    private final AlbumRepository albumRepository;
     private final AlbumChatCommentRepository commentRepository;
     private final UsersRepository userRepository;
 
     /**
      * AlbumChatCommentService 생성자.
      *
-     * @param albumChatRepository 앨범 챗 저장소 주입
+     * @param albumRepository 앨범 저장소 주입
      * @param commentRepository 댓글 저장소 주입
      * @param userRepository 사용자 저장소 주입
      */
     public AlbumChatCommentService
-    (AlbumChatRepository albumChatRepository, AlbumChatCommentRepository commentRepository,
+    (AlbumRepository albumRepository, AlbumChatCommentRepository commentRepository,
      UsersRepository userRepository) {
-        this.albumChatRepository = albumChatRepository;
+        this.albumRepository = albumRepository;
         this.commentRepository = commentRepository;
         this.userRepository = userRepository;
     }
@@ -52,11 +52,11 @@ public class AlbumChatCommentService {
      * @return List<AlbumChatCommentResponse> 조회된 댓글 목록
      * @throws NotFoundAlbumChatException 앨범 챗이 존재하지 않을 경우 발생
      */
-    public List<AlbumChatCommentResponse> getCommentsByAlbumChatId(Long albumChatId) {
-        if(albumChatRepository.findById(albumChatId).isEmpty()) {
+    public List<AlbumChatCommentResponse> getCommentsByAlbumId(Long albumChatId) {
+        if(albumRepository.findById(albumChatId).isEmpty()) {
             throw new NotFoundAlbumChatException();
         }
-        return commentRepository.findByAlbumChat_AlbumChatId(albumChatId)
+        return commentRepository.findByAlbum_AlbumId(albumChatId)
             .orElse(Collections.emptyList())
             .stream()
             .map(AlbumChatCommentResponse::new)
@@ -72,7 +72,7 @@ public class AlbumChatCommentService {
      * @throws NotFoundUserException 사용자가 존재하지 않을 경우 발생
      */
     public AlbumChatCommentDto albumChatCommentCreate(AlbumChatCommentCreateReq comment) {
-        if(albumChatRepository.findById(comment.getAlbumChatId()).isEmpty()) {
+        if(albumRepository.findById(comment.getAlbumId()).isEmpty()) {
             throw new NotFoundAlbumChatException();
         }
         if(userRepository.findById(comment.getUserId()).isEmpty()) {
@@ -83,8 +83,7 @@ public class AlbumChatCommentService {
                     comment.getContent()
                     ,Instant.now()
                     ,userRepository.findById(comment.getUserId()).get()
-                    ,null
-                    ,albumChatRepository.findById(comment.getAlbumChatId()).get()));
+                    ,albumRepository.findById(comment.getAlbumId()).get()));
         return new AlbumChatCommentDto(commentEntity);
     }
 
@@ -105,7 +104,7 @@ public class AlbumChatCommentService {
             throw new NotFoundUserException();
         }
         AlbumChatComment updatedComment = commentRepository.findById(comment.getAlbumChatCommentId()).get();
-        if(!updatedComment.getAlbumChat().getAlbumChatId().equals(comment.getAlbumChatId())) {
+        if(!updatedComment.getAlbum().getAlbumId().equals(comment.getAlbumId())) {
             throw new NotMatchAlbumChatException();
         }
         if(!updatedComment.getUser().getUserId().equals(comment.getUserId())) {
