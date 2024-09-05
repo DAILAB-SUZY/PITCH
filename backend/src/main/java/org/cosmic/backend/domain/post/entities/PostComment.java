@@ -12,6 +12,7 @@ import org.cosmic.backend.domain.post.dtos.Reply.UpdateReplyReq;
 import org.cosmic.backend.domain.user.domains.User;
 
 import java.time.Instant;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -44,6 +45,9 @@ public class PostComment {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToMany(mappedBy = "postComment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostCommentLike> postCommentLikes;
 
     public static CommentReq toCommentReq(PostComment postComment) {
         return CommentReq.builder()
