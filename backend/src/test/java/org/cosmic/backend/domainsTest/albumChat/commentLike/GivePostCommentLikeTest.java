@@ -1,9 +1,8 @@
 package org.cosmic.backend.domainsTest.albumChat.commentLike;
 
 import lombok.extern.log4j.Log4j2;
-import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumChatResponse;
-import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentCreateReq;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDto;
+import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentReq;
 import org.cosmic.backend.domain.albumChat.dtos.commentlike.AlbumChatCommentLikeDto;
 import org.cosmic.backend.domain.auth.dtos.UserLogin;
 import org.cosmic.backend.domain.playList.domains.Album;
@@ -53,9 +52,9 @@ public class GivePostCommentLikeTest extends BaseSetting {
         UserLogin userLogin = loginUser("test1@example.com");
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
 
-        AlbumChatCommentCreateReq albumChatCommentCreateReq=AlbumChatCommentCreateReq.createAlbumChatCommentCreateReq(
-                user.getUserId(),"안녕",null);
-        ResultActions resultActions=mockMvcHelper("/api/albumchat/comment/create/{albumId}",album.getAlbumId(),albumChatCommentCreateReq);
+        AlbumChatCommentReq albumChatCommentReq=AlbumChatCommentReq.createAlbumChatCommentReq(
+                "안녕",null);
+        ResultActions resultActions=mockMvcHelper("/api/albumchat/comment/create/{albumId}",album.getAlbumId(),albumChatCommentReq);
         MvcResult result = resultActions.andReturn();
         String content = result.getResponse().getContentAsString();
         AlbumChatCommentDto albumChatCommentDto = mapper.readValue(content, AlbumChatCommentDto.class);

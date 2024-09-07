@@ -2,8 +2,8 @@ package org.cosmic.backend.domainsTest.albumChat.albumChat;
 
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumChatDto;
-import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentCreateReq;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDto;
+import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentReq;
 import org.cosmic.backend.domain.albumChat.dtos.commentlike.AlbumChatCommentLikeDto;
 import org.cosmic.backend.domain.auth.dtos.UserLogin;
 import org.cosmic.backend.domain.playList.domains.Album;
@@ -57,6 +57,9 @@ public class ManyLikeAlbumChatPostCommentTest extends BaseSetting {
     @Transactional
     @Sql("/data/albumChat.sql")
     public void manyLikeAlbumChatCommentTest() throws Exception {
+
+        //USER1, 2의  valid token때문에 생긴 문제 각각의 valid token필요.
+
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         User user=userRepository.findByEmail_Email("test1@example.com").get();
         user.setPassword(encoder.encode(user.getPassword()));
@@ -65,9 +68,9 @@ public class ManyLikeAlbumChatPostCommentTest extends BaseSetting {
         UserLogin userLogin = loginUser("test1@example.com");
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
 
-        AlbumChatCommentCreateReq albumChatCommentCreateReq=AlbumChatCommentCreateReq.createAlbumChatCommentCreateReq
-            (user.getUserId(),"안녕",null);
-        ResultActions resultActions =mockMvcHelper("/api/albumchat/comment/create/{albumId}",album.getAlbumId(),albumChatCommentCreateReq);
+        AlbumChatCommentReq albumChatCommentReq=AlbumChatCommentReq.createAlbumChatCommentReq(
+            "안녕",null);
+        ResultActions resultActions =mockMvcHelper("/api/albumchat/comment/create/{albumId}",album.getAlbumId(),albumChatCommentReq);
         MvcResult result = resultActions.andReturn();
         String content = result.getResponse().getContentAsString();
         AlbumChatCommentDto albumChatCommentDto2 = mapper.readValue(content, AlbumChatCommentDto.class);
@@ -77,9 +80,9 @@ public class ManyLikeAlbumChatPostCommentTest extends BaseSetting {
             (user.getUserId(),albumChatCommentId2);
         mockMvcHelper("/api/albumchat/commentlike/create/{albumChatCommentId}",albumChatCommentId2,albumChatCommentLikeDto);
 
-        AlbumChatCommentCreateReq albumChatCommentCreateReq1=AlbumChatCommentCreateReq.createAlbumChatCommentCreateReq
-            (user2.getUserId(),"안녕",null);
-        resultActions=mockMvcHelper("/api/albumchat/comment/create/{albumId}",album.getAlbumId(),albumChatCommentCreateReq1);
+        AlbumChatCommentReq albumChatCommentReq1=AlbumChatCommentReq.createAlbumChatCommentReq
+            ("안녕",null);
+        resultActions=mockMvcHelper("/api/albumchat/comment/create/{albumId}",album.getAlbumId(),albumChatCommentReq1);
         result = resultActions.andReturn();
         content = result.getResponse().getContentAsString();
         AlbumChatCommentDto albumChatCommentDto = mapper.readValue(content, AlbumChatCommentDto.class);

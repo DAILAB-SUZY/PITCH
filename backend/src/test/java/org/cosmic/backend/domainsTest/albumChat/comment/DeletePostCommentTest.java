@@ -1,8 +1,8 @@
 package org.cosmic.backend.domainsTest.albumChat.comment;
 
 import lombok.extern.log4j.Log4j2;
-import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentCreateReq;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDto;
+import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentReq;
 import org.cosmic.backend.domain.albumChat.dtos.commentlike.AlbumChatCommentLikeDto;
 import org.cosmic.backend.domain.auth.dtos.UserLogin;
 import org.cosmic.backend.domain.playList.domains.Album;
@@ -50,16 +50,16 @@ public class DeletePostCommentTest extends BaseSetting {
         UserLogin userLogin = loginUser("test1@example.com");
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
 
-        AlbumChatCommentCreateReq albumChatCommentCreateReq=AlbumChatCommentCreateReq.createAlbumChatCommentCreateReq(
-            user.getUserId(),"안녕",null);
-        ResultActions resultActions=mockMvcHelper("/api/albumchat/comment/create/{albumId}",
-            album.getAlbumId(),albumChatCommentCreateReq);
+        AlbumChatCommentReq albumChatCommentReq=AlbumChatCommentReq.createAlbumChatCommentReq(
+            "안녕",null);
+        ResultActions resultActions=mockMvcHelper("/api/album/{albumId}/comment",
+            album.getAlbumId(),albumChatCommentReq);
         MvcResult result = resultActions.andReturn();
         String content = result.getResponse().getContentAsString();
         AlbumChatCommentDto albumChatCommentDto = mapper.readValue(content, AlbumChatCommentDto.class);
 
-        mockMvcDeleteHelper("/api/albumchat/comment/delete/{albumChatCommentId}"
-            ,albumChatCommentDto.getAlbumChatCommentId()).andExpect(status().isOk());
+        mockMvcDeletesHelper("/api/album/{albumId}/comment/{albumChatCommentId}",
+            album.getAlbumId(),albumChatCommentDto.getAlbumChatCommentId()).andExpect(status().isOk());
     }
 
     @Test
@@ -71,12 +71,12 @@ public class DeletePostCommentTest extends BaseSetting {
         UserLogin userLogin = loginUser("test1@example.com");
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
 
-        AlbumChatCommentCreateReq albumChatCommentCreateReq=AlbumChatCommentCreateReq.createAlbumChatCommentCreateReq(
-            user.getUserId(),"안녕",null);
-        mockMvcHelper("/api/albumchat/comment/create",albumChatCommentCreateReq);
+        AlbumChatCommentReq albumChatCommentReq=AlbumChatCommentReq.createAlbumChatCommentReq(
+            "안녕",null);
+        mockMvcHelper("/api/album/{albumId}/comment",album.getAlbumId(),albumChatCommentReq);
 
-        mockMvcDeleteHelper("/api/albumchat/comment/delete/{albumChatCommentId}"
-        ,100L).andExpect(status().isNotFound());
+        mockMvcDeletesHelper("/api/album/{albumId}/comment/{albumChatCommentId}",
+                album.getAlbumId(),100L).andExpect(status().isNotFound());
     }
     @Test
     @Transactional
@@ -87,23 +87,21 @@ public class DeletePostCommentTest extends BaseSetting {
         UserLogin userLogin = loginUser("test1@example.com");
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
 
-        AlbumChatCommentCreateReq albumChatCommentCreateReq=AlbumChatCommentCreateReq.createAlbumChatCommentCreateReq(
-            user.getUserId(),"안녕",null);
-        ResultActions resultActions=mockMvcHelper("/api/albumchat/comment/create/{albumId}",
-            album.getAlbumId(),albumChatCommentCreateReq);
+        AlbumChatCommentReq albumChatCommentReq=AlbumChatCommentReq.createAlbumChatCommentReq(
+            "안녕",null);
+        ResultActions resultActions=mockMvcHelper("/api/album/{albumId}/comment",
+            album.getAlbumId(),albumChatCommentReq);
         MvcResult result = resultActions.andReturn();
         String content = result.getResponse().getContentAsString();
         AlbumChatCommentDto albumChatCommentDto = mapper.readValue(content, AlbumChatCommentDto.class);
         Long albumChatCommentId = albumChatCommentDto.getAlbumChatCommentId();
 
-                AlbumChatCommentLikeDto albumChatCommentLikeDto=AlbumChatCommentLikeDto.createAlbumChatCommentLikeDto(
+        AlbumChatCommentLikeDto albumChatCommentLikeDto=AlbumChatCommentLikeDto.createAlbumChatCommentLikeDto(
             user.getUserId(),albumChatCommentId);
         mockMvcHelper("/api/albumchat/commentlike/create",albumChatCommentLikeDto);
 
-        mockMvcHelper("/api/albumchat/comment/delete",albumChatCommentDto);
-
-        mockMvcDeleteHelper("/api/albumchat/comment/delete/{albumChatCommentId}"
-            ,albumChatCommentDto.getAlbumChatCommentId());
+        mockMvcDeletesHelper("/api/album/{albumId}/comment/{albumChatCommentId}"
+            ,album.getAlbumId(),albumChatCommentDto.getAlbumChatCommentId());
 
         mockMvcHelper("/api/albumchat/commentlike/give",albumChatCommentDto)
             .andExpect(status().isNotFound());

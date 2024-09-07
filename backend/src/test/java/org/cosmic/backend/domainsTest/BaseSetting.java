@@ -46,6 +46,12 @@ public class BaseSetting {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(requestObject)));
     }
+    protected <T> ResultActions mockMvcHelper(String url, Long id1,Long id2,T requestObject) throws Exception {
+        return mockMvc.perform(MockMvcRequestBuilders.post(url,id1,id2)
+                .header("Authorization", "Bearer " + validToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(requestObject)));
+    }
 
     protected <T> ResultActions mockMvcHelper(String url, T requestObject) throws Exception {
         return mockMvc.perform(MockMvcRequestBuilders.post(url)
@@ -82,6 +88,14 @@ public class BaseSetting {
                 .content(mapper.writeValueAsString(requestObject))
         );
     }
+
+    protected  ResultActions mockMvcDeletesHelper(String url, Long requestId1,Long requestId2) throws Exception {
+        return mockMvc.perform(MockMvcRequestBuilders.delete(url,requestId1,requestId2)
+                .header("Authorization", "Bearer " +validToken)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+    }
+
     protected <T> ResultActions mockMvcDeleteHelper(String url, T request) throws Exception {
         return mockMvc.perform(MockMvcRequestBuilders.delete(url,request)
                 .header("Authorization", "Bearer " +validToken)

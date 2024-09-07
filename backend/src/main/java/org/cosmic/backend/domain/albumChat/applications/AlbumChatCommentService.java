@@ -1,10 +1,9 @@
 package org.cosmic.backend.domain.albumChat.applications;
 
 import org.cosmic.backend.domain.albumChat.domains.AlbumChatComment;
-import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentCreateReq;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDto;
+import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentReq;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentResponse;
-import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentUpdateReq;
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatCommentException;
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatException;
 import org.cosmic.backend.domain.albumChat.exceptions.NotMatchAlbumChatException;
@@ -48,15 +47,15 @@ public class AlbumChatCommentService {
     /**
      * 특정 앨범 챗 ID로 댓글 목록을 조회합니다.
      *
-     * @param albumChatId 조회할 앨범 챗 ID
+     * @param albumId 조회할 앨범 챗 ID
      * @return List<AlbumChatCommentResponse> 조회된 댓글 목록
      * @throws NotFoundAlbumChatException 앨범 챗이 존재하지 않을 경우 발생
      */
-    public List<AlbumChatCommentResponse> getCommentsByAlbumId(Long albumChatId) {
-        if(albumRepository.findById(albumChatId).isEmpty()) {
+    public List<AlbumChatCommentResponse> getCommentsByAlbumId(Long albumId) {
+        if(albumRepository.findById(albumId).isEmpty()) {
             throw new NotFoundAlbumChatException();
         }
-        return commentRepository.findByAlbum_AlbumId(albumChatId)
+        return commentRepository.findByAlbum_AlbumId(albumId)
             .orElse(Collections.emptyList())
             .stream()
             .map(AlbumChatCommentResponse::new)
@@ -71,18 +70,18 @@ public class AlbumChatCommentService {
      * @throws NotFoundAlbumChatException 앨범 챗이 존재하지 않을 경우 발생
      * @throws NotFoundUserException 사용자가 존재하지 않을 경우 발생
      */
-    public AlbumChatCommentDto albumChatCommentCreate(Long albumId,AlbumChatCommentCreateReq comment) {
+    public AlbumChatCommentDto albumChatCommentCreate(Long albumId,AlbumChatCommentReq comment,Long userId) {
         if(albumRepository.findById(albumId).isEmpty()) {
             throw new NotFoundAlbumChatException();
         }
-        if(userRepository.findById(comment.getUserId()).isEmpty()) {
+        if(userRepository.findById(userId).isEmpty()) {
             throw new NotFoundUserException();
         }
         AlbumChatComment commentEntity = commentRepository.save(
                 new AlbumChatComment(
                     comment.getContent()
                     ,Instant.now()
-                    ,userRepository.findById(comment.getUserId()).get()
+                    ,userRepository.findById(userId).get()
                     ,albumRepository.findById(albumId).get()));
         return new AlbumChatCommentDto(commentEntity);
     }
@@ -96,18 +95,18 @@ public class AlbumChatCommentService {
      * @throws NotMatchAlbumChatException 댓글이 속한 앨범 챗이 일치하지 않을 경우 발생
      * @throws NotMatchUserException 수정하려는 사용자와 기존 댓글 생성한 사용자가 다를때 발생
      */
-    public void albumChatCommentUpdate(Long albumChatCommentId,AlbumChatCommentUpdateReq comment) {
+    public void albumChatCommentUpdate(Long albumId,Long albumChatCommentId, AlbumChatCommentReq comment,Long userId) {
         if(commentRepository.findById(albumChatCommentId).isEmpty()) {
             throw new NotFoundAlbumChatCommentException();
         }
-        if(userRepository.findById(comment.getUserId()).isEmpty()) {
+        if(userRepository.findById(userId).isEmpty()) {
             throw new NotFoundUserException();
         }
         AlbumChatComment updatedComment = commentRepository.findById(albumChatCommentId).get();
-        if(!updatedComment.getAlbum().getAlbumId().equals(comment.getAlbumId())) {
+        if(!updatedComment.getAlbum().getAlbumId().equals(albumId)) {
             throw new NotMatchAlbumChatException();
         }
-        if(!updatedComment.getUser().getUserId().equals(comment.getUserId())) {
+        if(!updatedComment.getUser().getUserId().equals(userId)) {
             throw new NotMatchUserException();
         }
         updatedComment.setContent(comment.getContent());
