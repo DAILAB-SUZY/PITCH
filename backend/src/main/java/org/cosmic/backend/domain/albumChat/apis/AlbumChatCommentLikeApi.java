@@ -12,6 +12,7 @@ import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatCommentEx
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundCommentLikeException;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,7 +21,7 @@ import java.util.List;
  * AlbumChatCommentLikeApi 클래스는 앨범 챗 댓글에 대한 좋아요 기능을 처리하는 API를 정의합니다.
  */
 @RestController
-@RequestMapping("/api/albumchat/commentlike")
+@RequestMapping("/api/")
 @ApiCommonResponses
 public class AlbumChatCommentLikeApi {//댓글 마다의 좋아요
     private final AlbumChatCommentLikeService likeService;
@@ -41,7 +42,7 @@ public class AlbumChatCommentLikeApi {//댓글 마다의 좋아요
      * @return List<AlbumChatCommentLikeResponse> 좋아요 목록 반환
      * @throws NotFoundAlbumChatCommentException 앨범 챗 댓글이 존재하지 않을 경우 발생
      */
-    @GetMapping("/give/{albumChatCommentId}")
+    @GetMapping("/album/{albumId}/comment/{albumChatCommentId}/commentLike")
     @ApiResponse(responseCode = "404", description = "Not Found AlbumChatComment")
     public List<AlbumChatCommentLikeResponse> albumChatCommentLikeGetByAlbumChatCommentId
         (@PathVariable Long albumChatCommentId) {
@@ -57,26 +58,26 @@ public class AlbumChatCommentLikeApi {//댓글 마다의 좋아요
      * @throws NotFoundUserException 사용자가 존재하지 않을 경우 발생
      * @throws ExistCommentLikeException 이미 해당 사용자가 해당 댓글에 좋아요를 눌렀을 경우 발생
      */
-    @PostMapping("/create/{albumChatCommentId}")
+    @PostMapping("/album/{albumId}/comment/{albumChatCommentId}/commentLike")
     @ApiResponse(responseCode = "404", description = "Not Found User or AlbumChatComment")
     @ApiResponse(responseCode = "409", description = "CommentLike Already Exists")
     public AlbumChatCommentLikeIdResponse albumChatCommentLikeCreate(
-        @PathVariable Long albumChatCommentId,@RequestBody AlbumChatCommentLikeDto like) {
-        return likeService.albumChatCommentLikeCreate(like.getUserId(),albumChatCommentId);
+        @PathVariable Long albumChatCommentId, @AuthenticationPrincipal Long userId) {
+        return likeService.albumChatCommentLikeCreate(userId,albumChatCommentId);
     }
 
     /**
      * 특정 좋아요 ID로 좋아요를 삭제하는 API
      *
-     * @param albumChatCommentLikeId 삭제할 좋아요 ID 정보
+     * @param albumChatCommentId 삭제할 좋아요 ID 정보
      * @return ResponseEntity<?> 성공 메시지 반환
      * @throws NotFoundCommentLikeException 좋아요가 존재하지 않을 경우 발생
      */
-    @DeleteMapping("/delete/{albumChatCommentLikeId}")
+    @DeleteMapping("/album/{albumId}/comment/{albumChatCommentId}/commentLike")
     @ApiResponse(responseCode = "404", description = "Not Found CommentLike")
     public ResponseEntity<?> albumChatCommentLikeDelete(
-        @PathVariable Long albumChatCommentLikeId,@RequestBody AlbumChatCommentLikeIdResponse likeDto) {
-        likeService.albumChatCommentLikeDelete(albumChatCommentLikeId, likeDto.getUserId());
+        @PathVariable Long albumChatCommentId,@AuthenticationPrincipal Long userId) {
+        likeService.albumChatCommentLikeDelete(albumChatCommentId,userId);
         return ResponseEntity.ok("성공");
     }
 }

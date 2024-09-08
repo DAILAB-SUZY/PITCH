@@ -51,21 +51,16 @@ public class GivePostCommentLikeTest extends BaseSetting {
         user.setPassword(encoder.encode(user.getPassword()));
         UserLogin userLogin = loginUser("test1@example.com");
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
-
         AlbumChatCommentReq albumChatCommentReq=AlbumChatCommentReq.createAlbumChatCommentReq(
                 "안녕",null);
-        ResultActions resultActions=mockMvcHelper("/api/albumchat/comment/create/{albumId}",album.getAlbumId(),albumChatCommentReq);
+        ResultActions resultActions=mockMvcHelper("/api/album/{albumId}/comment",album.getAlbumId(),albumChatCommentReq);
         MvcResult result = resultActions.andReturn();
         String content = result.getResponse().getContentAsString();
         AlbumChatCommentDto albumChatCommentDto = mapper.readValue(content, AlbumChatCommentDto.class);
         Long albumChatCommentId = albumChatCommentDto.getAlbumChatCommentId();
 
-        AlbumChatCommentLikeDto albumChatCommentLikeDto=AlbumChatCommentLikeDto.createAlbumChatCommentLikeDto(
-            user.getUserId(),albumChatCommentId);
-        mockMvcHelper("/api/albumchat/commentlike/create/{albumChatCommentId}"
-            ,albumChatCommentId,albumChatCommentLikeDto).andExpect(status().isOk());
-
-        albumChatCommentDto=AlbumChatCommentDto.createAlbumChatCommentDto(albumChatCommentId);
-        mockMvcGetHelper("/api/albumchat/commentlike/give/{albumChatCommentId}",albumChatCommentId,albumChatCommentDto).andExpect(status().isOk());
+        mockMvcsHelper("/api/album/{albumId}/comment/{albumChatCommentId}/commentLike"
+                ,album.getAlbumId(),albumChatCommentId);
+        mockMvcGetsHelper("/api/album/{albumId}/comment/{albumChatCommentId}/commentLike",album.getAlbumId(),albumChatCommentId).andExpect(status().isOk());
     }
 }

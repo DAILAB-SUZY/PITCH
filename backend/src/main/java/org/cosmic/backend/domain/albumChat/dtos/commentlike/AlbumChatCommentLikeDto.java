@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentCreateReq;
 
 import java.time.Instant;
 

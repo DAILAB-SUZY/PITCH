@@ -46,6 +46,11 @@ public class BaseSetting {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(requestObject)));
     }
+    protected ResultActions mockMvcsHelper(String url, Long id1,Long id2) throws Exception {
+        return mockMvc.perform(MockMvcRequestBuilders.post(url,id1,id2)
+                .header("Authorization", "Bearer " + validToken)
+                .contentType(MediaType.APPLICATION_JSON));
+    }
     protected <T> ResultActions mockMvcHelper(String url, Long id1,Long id2,T requestObject) throws Exception {
         return mockMvc.perform(MockMvcRequestBuilders.post(url,id1,id2)
                 .header("Authorization", "Bearer " + validToken)
@@ -67,6 +72,12 @@ public class BaseSetting {
                 .content(mapper.writeValueAsString(requestObject))
         );
     }
+    protected  ResultActions mockMvcGetsHelper(String url, Long requestId,Long requestId2) throws Exception {
+        return mockMvc.perform(MockMvcRequestBuilders.get(url,requestId,requestId2)
+                .header("Authorization", "Bearer " +validToken)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+    }
     protected <T>  ResultActions mockMvcGetHelper(String url, String request,T requestObject) throws Exception {
         return mockMvc.perform(MockMvcRequestBuilders.get(url,request)
                 .header("Authorization", "Bearer " +validToken)
@@ -74,7 +85,6 @@ public class BaseSetting {
                 .content(mapper.writeValueAsString(requestObject))
         );
     }
-
     protected <T> ResultActions mockMvcGetHelper(String url, T request) throws Exception {
         return mockMvc.perform(MockMvcRequestBuilders.get(url,request)
                 .header("Authorization", "Bearer " +validToken)
