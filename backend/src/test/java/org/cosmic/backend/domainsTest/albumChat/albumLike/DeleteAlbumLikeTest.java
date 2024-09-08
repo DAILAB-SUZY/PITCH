@@ -50,14 +50,8 @@ public class DeleteAlbumLikeTest extends BaseSetting {
         user.setPassword(encoder.encode(user.getPassword()));
         UserLogin userLogin = loginUser("test1@example.com");
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
-
-        AlbumChatAlbumLikeDto albumChatAlbumLikeDto=AlbumChatAlbumLikeDto.createAlbumChatAlbumLikeDto
-            (user.getUserId(),album.getAlbumId());
-        ResultActions resultActions =mockMvcHelper("/api/albumchat/albumlike/create/{albumId}",album.getAlbumId(),albumChatAlbumLikeDto);
-        MvcResult result = resultActions.andReturn();
-        String content = result.getResponse().getContentAsString();
-        AlbumLikeReq albumLikeReq = mapper.readValue(content, AlbumLikeReq.class);
-        mockMvcDeleteHelper("/api/albumchat/albumlike/delete/{albumId}",album.getAlbumId(), albumLikeReq)
+        mockMvcHelper("/api/album/{albumId}/albumLike",album.getAlbumId());
+        mockMvcDeleteHelper("/api/album/{albumId}/albumLike",album.getAlbumId())
             .andExpect(status().isOk());
     }
 
@@ -69,14 +63,8 @@ public class DeleteAlbumLikeTest extends BaseSetting {
         user.setPassword(encoder.encode(user.getPassword()));
         UserLogin userLogin = loginUser("test1@example.com");
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
-
-        AlbumChatAlbumLikeDto albumChatAlbumLikeDto=AlbumChatAlbumLikeDto.createAlbumChatAlbumLikeDto
-            (user.getUserId(),album.getAlbumId());
-        mockMvcHelper("/api/albumchat/albumlike/create/{albumId}",album.getAlbumId(),albumChatAlbumLikeDto);
-
-        AlbumLikeReq albumLikereq = AlbumLikeReq.createAlbumChatAlbumLikeReq
-            (100L, user.getUserId());
-        mockMvcDeleteHelper("/api/albumchat/albumlike/delete/{albumId}",100L, albumLikereq)
+        mockMvcHelper("/api/album/{albumId}/albumLike",album.getAlbumId());
+        mockMvcDeleteHelper("/api/album/{albumId}/albumLike",100L)
             .andExpect(status().isNotFound());
     }
 }

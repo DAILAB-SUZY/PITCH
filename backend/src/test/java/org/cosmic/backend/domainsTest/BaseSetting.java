@@ -57,7 +57,12 @@ public class BaseSetting {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(requestObject)));
     }
-
+    protected ResultActions mockMvcHelper(String url, Long id) throws Exception {
+        return mockMvc.perform(MockMvcRequestBuilders.post(url,id)
+                .header("Authorization", "Bearer " + validToken)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+    }
     protected <T> ResultActions mockMvcHelper(String url, T requestObject) throws Exception {
         return mockMvc.perform(MockMvcRequestBuilders.post(url)
                 .header("Authorization", "Bearer " + validToken)
