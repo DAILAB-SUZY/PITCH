@@ -57,7 +57,7 @@ public class CreateAlbumLikeTest extends BaseSetting {
         UserLogin userLogin = loginUser("test1@example.com");
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
 
-        mockMvcHelper("/api/album/{albumId}/albumLike",album.getAlbumId())
+        mockMvcHelper("/api/album/{albumId}/albumLike",album.getAlbumId(),userLogin.getToken())
             .andExpect(status().isOk());
     }
 
@@ -70,7 +70,7 @@ public class CreateAlbumLikeTest extends BaseSetting {
         UserLogin userLogin = loginUser("test1@example.com");
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
 
-        mockMvcHelper("/api/album/{albumId}/albumLike",100L)
+        mockMvcHelper("/api/album/{albumId}/albumLike",100L,userLogin.getToken())
             .andExpect(status().isNotFound());
     }
 
@@ -83,8 +83,8 @@ public class CreateAlbumLikeTest extends BaseSetting {
         UserLogin userLogin = loginUser("test1@example.com");
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
 
-        mockMvcHelper("/api/album/{albumId}/albumLike",album.getAlbumId());
-        mockMvcHelper("/api/album/{albumId}/albumLike",album.getAlbumId())
+        mockMvcHelper("/api/album/{albumId}/albumLike",album.getAlbumId(),userLogin.getToken());
+        mockMvcHelper("/api/album/{albumId}/albumLike",album.getAlbumId(),userLogin.getToken())
             .andExpect(status().isConflict());
     }
 }

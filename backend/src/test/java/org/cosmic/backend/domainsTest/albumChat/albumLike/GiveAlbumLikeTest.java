@@ -52,9 +52,9 @@ public class GiveAlbumLikeTest extends BaseSetting {
         UserLogin userLogin = loginUser("test1@example.com");
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
 
-        mockMvcHelper("/api/album/{albumId}/albumLike",album.getAlbumId());
+        mockMvcHelper("/api/album/{albumId}/albumLike",album.getAlbumId(),userLogin.getToken());
 
-        mockMvcGetHelper("/api/album/{albumId}/albumLike",album.getAlbumId())
+        mockMvcGetHelper("/api/album/{albumId}/albumLike",album.getAlbumId(),userLogin.getToken())
             .andExpect(status().isOk());
     }
 }

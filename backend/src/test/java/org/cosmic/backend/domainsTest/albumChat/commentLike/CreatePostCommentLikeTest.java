@@ -52,14 +52,15 @@ public class CreatePostCommentLikeTest extends BaseSetting {
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
         AlbumChatCommentReq albumChatCommentReq=AlbumChatCommentReq.createAlbumChatCommentReq(
                 "안녕",null);
-        ResultActions resultActions=mockMvcHelper("/api/album/{albumId}/comment",album.getAlbumId(),albumChatCommentReq);
+        ResultActions resultActions=mockMvcHelper("/api/album/{albumId}/comment"
+            ,album.getAlbumId(),albumChatCommentReq,userLogin.getToken());
         MvcResult result = resultActions.andReturn();
         String content = result.getResponse().getContentAsString();
         AlbumChatCommentDto albumChatCommentDto = mapper.readValue(content, AlbumChatCommentDto.class);
         Long albumChatCommentId = albumChatCommentDto.getAlbumChatCommentId();
 
         mockMvcsHelper("/api/album/{albumId}/comment/{albumChatCommentId}/commentLike"
-            ,album.getAlbumId(),albumChatCommentId)
+            ,album.getAlbumId(),albumChatCommentId,userLogin.getToken())
             .andExpect(status().isOk());
     }
 
@@ -74,10 +75,10 @@ public class CreatePostCommentLikeTest extends BaseSetting {
 
         AlbumChatCommentReq albumChatCommentReq=AlbumChatCommentReq.createAlbumChatCommentReq(
                 "안녕",null);
-        mockMvcHelper("/api/album/{albumId}/comment",album.getAlbumId(),albumChatCommentReq);
+        mockMvcHelper("/api/album/{albumId}/comment",album.getAlbumId(),albumChatCommentReq,userLogin.getToken());
 
         mockMvcsHelper("/api/album/{albumId}/comment/{albumChatCommentId}/commentLike"
-            ,album.getAlbumId(),100L).andExpect(status().isNotFound());
+            ,album.getAlbumId(),100L,userLogin.getToken()).andExpect(status().isNotFound());
 
     }
     @Test
@@ -92,15 +93,16 @@ public class CreatePostCommentLikeTest extends BaseSetting {
 
         AlbumChatCommentReq albumChatCommentReq=AlbumChatCommentReq.createAlbumChatCommentReq(
                 "안녕",null);
-        ResultActions resultActions=mockMvcHelper("/api/album/{albumId}/comment",album.getAlbumId(),albumChatCommentReq);
+        ResultActions resultActions=mockMvcHelper("/api/album/{albumId}/comment"
+            ,album.getAlbumId(),albumChatCommentReq,userLogin.getToken());
         MvcResult result = resultActions.andReturn();
         String content = result.getResponse().getContentAsString();
         AlbumChatCommentDto albumChatCommentDto = mapper.readValue(content, AlbumChatCommentDto.class);
         Long albumChatCommentId = albumChatCommentDto.getAlbumChatCommentId();
 
         mockMvcsHelper("/api/album/{albumId}/comment/{albumChatCommentId}/commentLike"
-                ,album.getAlbumId(),albumChatCommentId);
+                ,album.getAlbumId(),albumChatCommentId,userLogin.getToken());
         mockMvcsHelper("/api/album/{albumId}/comment/{albumChatCommentId}/commentLike"
-                ,album.getAlbumId(),albumChatCommentId).andExpect(status().isConflict());
+                ,album.getAlbumId(),albumChatCommentId,userLogin.getToken()).andExpect(status().isConflict());
     }
 }

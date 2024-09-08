@@ -51,14 +51,14 @@ public class UpdatePostTest extends BaseSetting {
 
         CreatePost createPost=CreatePost.createCreatePost
                 (user.getUserId(),"base","bibi","밤양갱 노래좋다","bam",null);
-        ResultActions resultActions =mockMvcHelper("/api/post/create",createPost);
+        ResultActions resultActions =mockMvcHelper("/api/post/create",createPost,userLogin.getToken());
         result = resultActions.andReturn();
         String content = result.getResponse().getContentAsString();
         PostDto postDto = mapper.readValue(content, PostDto.class);
         Long postId = postDto.getPostId();
 
         UpdatePost updatePost=UpdatePost.createUpdatePost(postId,"밤양갱 노래 별론대");
-        mockMvcHelper("/api/post/update",updatePost).andExpect(status().isOk());
+        mockMvcHelper("/api/post/update",updatePost,userLogin.getToken()).andExpect(status().isOk());
     }
 
 }

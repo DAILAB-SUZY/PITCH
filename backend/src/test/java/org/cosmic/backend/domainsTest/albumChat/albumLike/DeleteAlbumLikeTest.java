@@ -50,8 +50,8 @@ public class DeleteAlbumLikeTest extends BaseSetting {
         user.setPassword(encoder.encode(user.getPassword()));
         UserLogin userLogin = loginUser("test1@example.com");
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
-        mockMvcHelper("/api/album/{albumId}/albumLike",album.getAlbumId());
-        mockMvcDeleteHelper("/api/album/{albumId}/albumLike",album.getAlbumId())
+        mockMvcHelper("/api/album/{albumId}/albumLike",album.getAlbumId(),userLogin.getToken());
+        mockMvcDeleteHelper("/api/album/{albumId}/albumLike",album.getAlbumId(),userLogin.getToken())
             .andExpect(status().isOk());
     }
 
@@ -63,8 +63,8 @@ public class DeleteAlbumLikeTest extends BaseSetting {
         user.setPassword(encoder.encode(user.getPassword()));
         UserLogin userLogin = loginUser("test1@example.com");
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
-        mockMvcHelper("/api/album/{albumId}/albumLike",album.getAlbumId());
-        mockMvcDeleteHelper("/api/album/{albumId}/albumLike",100L)
+        mockMvcHelper("/api/album/{albumId}/albumLike",album.getAlbumId(),userLogin.getToken());
+        mockMvcDeleteHelper("/api/album/{albumId}/albumLike",100L,userLogin.getToken())
             .andExpect(status().isNotFound());
     }
 }

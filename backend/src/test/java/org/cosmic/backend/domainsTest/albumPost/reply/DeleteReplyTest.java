@@ -55,7 +55,7 @@ public class DeleteReplyTest extends BaseSetting {
 
         CreatePost createPost=CreatePost.createCreatePost
                 (user.getUserId(),"base","bibi","밤양갱 노래좋다","bam",null);
-        ResultActions resultActions =mockMvcHelper("/api/post/create",createPost);
+        ResultActions resultActions =mockMvcHelper("/api/post/create",createPost,userLogin.getToken());
         result = resultActions.andReturn();
         String content = result.getResponse().getContentAsString();
         PostDto postDto = mapper.readValue(content, PostDto.class); // 응답 JSON을 PostDto 객체로 변환
@@ -63,7 +63,7 @@ public class DeleteReplyTest extends BaseSetting {
 
         CreateCommentReq createCommentReq=CreateCommentReq.createCreateCommentReq
                 (user.getUserId(),null,postId,"안녕");
-        resultActions=mockMvcHelper("/api/comment/create",createCommentReq).andExpect(status().isOk());
+        resultActions=mockMvcHelper("/api/comment/create",createCommentReq,userLogin.getToken()).andExpect(status().isOk());
         result = resultActions.andReturn();
         content = result.getResponse().getContentAsString();
         CommentDto comment = mapper.readValue(content, CommentDto.class); // 응답 JSON을 PostDto 객체로 변환
@@ -71,13 +71,13 @@ public class DeleteReplyTest extends BaseSetting {
 
         CreateReplyReq createReplyReq =CreateReplyReq.createCreateReplyReq
                 (user.getUserId(),commentId,"안녕",null);
-        resultActions=mockMvcHelper("/api/reply/create",createReplyReq).andExpect(status().isOk());
+        resultActions=mockMvcHelper("/api/reply/create",createReplyReq,userLogin.getToken()).andExpect(status().isOk());
         result = resultActions.andReturn();
         content = result.getResponse().getContentAsString();
         ReplyDto reply = mapper.readValue(content, ReplyDto.class); // 응답 JSON을 PostDto 객체로 변환
         Long replyId = reply.getReplyId();
 
         ReplyDto replyDto= ReplyDto.createReplyDto(replyId);
-        mockMvcHelper("/api/reply/delete",replyDto).andExpect(status().isOk());
+        mockMvcHelper("/api/reply/delete",replyDto,userLogin.getToken()).andExpect(status().isOk());
     }
 }

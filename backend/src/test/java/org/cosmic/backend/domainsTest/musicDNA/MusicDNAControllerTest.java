@@ -1,6 +1,7 @@
 package org.cosmic.backend.domainsTest.musicDNA;
 
 import lombok.extern.log4j.Log4j2;
+import org.cosmic.backend.domain.auth.dtos.UserLogin;
 import org.cosmic.backend.domain.musicDna.domains.MusicDna;
 import org.cosmic.backend.domain.musicDna.dtos.DnaDetail;
 import org.cosmic.backend.domain.musicDna.dtos.DnaDto;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Log4j2
 public class MusicDNAControllerTest extends BaseSetting {
     @Autowired
-    private UsersRepository usersRepository;
+    private UsersRepository userRepository;
     @Autowired
     private MockMvc mockMvc;
 
@@ -55,22 +57,28 @@ public class MusicDNAControllerTest extends BaseSetting {
     @Transactional
     @Sql("/data/musicDna.sql")
     public void dnaSaveTest() throws Exception {
-        User user=usersRepository.findByEmail_Email("test1@example.com").get();
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        User user=userRepository.findByEmail_Email("test1@example.com").get();
+        user.setPassword(encoder.encode(user.getPassword()));
+        UserLogin userLogin = loginUser("test1@example.com");
         DnaDto dnaDTO=new DnaDto(user.getUserId());
         dnaDTO.setDna(Arrays.asList(new DnaDetail(1L),new DnaDetail(2L),
             new DnaDetail(3L),new DnaDetail(4L)));
-        mockMvcHelper("/api/dna/save",dnaDTO).andExpect(status().isOk());
+        mockMvcHelper("/api/dna/save",dnaDTO,userLogin.getToken()).andExpect(status().isOk());
     }
 
     @Test
     @Transactional
     @Sql("/data/musicDna.sql")
     public void notMatchDataTest() throws Exception {
-        User user=usersRepository.findByEmail_Email("test1@example.com").get();
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        User user=userRepository.findByEmail_Email("test1@example.com").get();
+        user.setPassword(encoder.encode(user.getPassword()));
+        UserLogin userLogin = loginUser("test1@example.com");
         DnaDto dnaDTO=new DnaDto(user.getUserId());
         dnaDTO.setDna(Arrays.asList(new DnaDetail(1L),new DnaDetail(2L),
                 new DnaDetail(3L)));
-        mockMvcHelper("/api/dna/save",dnaDTO).andExpect(status().isBadRequest());
+        mockMvcHelper("/api/dna/save",dnaDTO,userLogin.getToken()).andExpect(status().isBadRequest());
     }
 }
 

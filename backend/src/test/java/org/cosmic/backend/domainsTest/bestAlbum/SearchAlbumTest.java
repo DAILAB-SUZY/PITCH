@@ -48,7 +48,7 @@ public class SearchAlbumTest extends BaseSetting {
         //TODO 앨범추가
 
         AlbumNameDto albumNameDto=AlbumNameDto.createAlbumNameDto("bam");
-        mockMvcGetHelper("/api/bestAlbum/Albumsearch/{albumName}","bam").andExpect(status().isOk());
+        mockMvcGetHelper("/api/bestAlbum/Albumsearch/{albumName}","bam",userLogin.getToken()).andExpect(status().isOk());
     }
 
     @Test
@@ -59,6 +59,6 @@ public class SearchAlbumTest extends BaseSetting {
         user.setPassword(encoder.encode(user.getPassword()));
         UserLogin userLogin = loginUser("test1@example.com");
 
-        mockMvcGetHelper("/api/bestAlbum/Artistsearch/{artistName}","bibi").andExpect(status().isOk());
+        mockMvcGetHelper("/api/bestAlbum/Artistsearch/{artistName}","bibi",userLogin.getToken()).andExpect(status().isOk());
     }
 }

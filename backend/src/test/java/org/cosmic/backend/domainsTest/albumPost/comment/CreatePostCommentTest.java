@@ -53,13 +53,13 @@ public class CreatePostCommentTest extends BaseSetting {
         UserLogin userLogin = loginUser("test1@example.com");
 
         CreatePost createPost=CreatePost.createCreatePost(user.getUserId(),"base","bibi","밤양갱 노래좋다","bam",null);
-        ResultActions resultActions =mockMvcHelper("/api/post/create",createPost);
+        ResultActions resultActions =mockMvcHelper("/api/post/create",createPost,userLogin.getToken());
         result = resultActions.andReturn();
         String content = result.getResponse().getContentAsString();
         PostDto postDto = mapper.readValue(content, PostDto.class); // 응답 JSON을 PostDto 객체로 변환
         Long postId = postDto.getPostId();
         CreateCommentReq createCommentReq=CreateCommentReq.createCreateCommentReq(user.getUserId(),null,postId,"안녕");
-        mockMvcHelper("/api/comment/create",createCommentReq).andExpect(status().isOk());
+        mockMvcHelper("/api/comment/create",createCommentReq,userLogin.getToken()).andExpect(status().isOk());
     }
 
     //post잘 만들어지는지
@@ -72,16 +72,16 @@ public class CreatePostCommentTest extends BaseSetting {
         UserLogin userLogin = loginUser("test1@example.com");
 
         CreatePost createPost=CreatePost.createCreatePost(user.getUserId(),"base","bibi","밤양갱 노래좋다","bam",null);
-        ResultActions resultActions =mockMvcHelper("/api/post/create",createPost);
+        ResultActions resultActions =mockMvcHelper("/api/post/create",createPost,userLogin.getToken());
         result = resultActions.andReturn();
         String content = result.getResponse().getContentAsString();
         PostDto postDto = mapper.readValue(content, PostDto.class); // 응답 JSON을 PostDto 객체로 변환
         Long postId = postDto.getPostId();
 
         CreateCommentReq createCommentReq=CreateCommentReq.createCreateCommentReq(user.getUserId(),null,postId,"안녕");
-        mockMvcHelper("/api/comment/create",createCommentReq);
+        mockMvcHelper("/api/comment/create",createCommentReq,userLogin.getToken());
 
         PostDto postDto2=PostDto.createPostDto(postId);
-        mockMvcHelper("/api/comment/give",postDto2).andExpect(status().isOk());
+        mockMvcHelper("/api/comment/give",postDto2,userLogin.getToken()).andExpect(status().isOk());
     }
 }

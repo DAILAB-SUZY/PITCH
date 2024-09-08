@@ -54,7 +54,7 @@ public class CreatePlaylistTest extends BaseSetting {
         UserLogin userLogin = loginUser("test1@example.com");
         Track track=trackRepository.findByTitle("bam").get();
         PlaylistDto playlistdto=new PlaylistDto(user.getUserId(),List.of(new PlaylistDetail(track.getTrackId())));
-        mockMvcHelper("/api/playlist/save",playlistdto).andExpect(status().isOk());
+        mockMvcHelper("/api/playlist/save",playlistdto,userLogin.getToken()).andExpect(status().isOk());
     }
 
     @Test
@@ -65,7 +65,7 @@ public class CreatePlaylistTest extends BaseSetting {
         user.setPassword(encoder.encode(user.getPassword()));
         UserLogin userLogin = loginUser("test1@example.com");
 
-        mockMvcGetHelper("/api/playlist/Tracksearch/{trackName}","bam").andExpect(status().isOk());
+        mockMvcGetHelper("/api/playlist/Tracksearch/{trackName}","bam",userLogin.getToken()).andExpect(status().isOk());
     }
 
     @Test
@@ -75,6 +75,6 @@ public class CreatePlaylistTest extends BaseSetting {
         User user=userRepository.findByEmail_Email("test1@example.com").get();
         user.setPassword(encoder.encode(user.getPassword()));
         UserLogin userLogin = loginUser("test1@example.com");
-        mockMvcGetHelper("/api/playlist/Tracksearch/{trackName}","id").andExpect(status().isNotFound());
+        mockMvcGetHelper("/api/playlist/Tracksearch/{trackName}","id",userLogin.getToken()).andExpect(status().isNotFound());
     }
 }

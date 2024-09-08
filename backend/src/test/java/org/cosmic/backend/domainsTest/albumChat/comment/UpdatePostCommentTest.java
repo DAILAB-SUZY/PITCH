@@ -53,7 +53,7 @@ public class UpdatePostCommentTest extends BaseSetting {
         AlbumChatCommentReq albumChatCommentReq=AlbumChatCommentReq.createAlbumChatCommentReq(
             "안녕",null);
         ResultActions resultActions=mockMvcHelper("/api/album/{albumId}/comment",
-            album.getAlbumId(),albumChatCommentReq);
+            album.getAlbumId(),albumChatCommentReq,userLogin.getToken());
         MvcResult result = resultActions.andReturn();
         String content = result.getResponse().getContentAsString();
         AlbumChatCommentDto albumChatCommentDto = mapper.readValue(content, AlbumChatCommentDto.class);
@@ -61,7 +61,7 @@ public class UpdatePostCommentTest extends BaseSetting {
         albumChatCommentReq=AlbumChatCommentReq.createAlbumChatCommentReq(
             "hi",null);
         mockMvcHelper("/api/album/{albumId}/comment/{albumChatCommentId}"
-            ,album.getAlbumId(),albumChatCommentId,albumChatCommentReq).andExpect(status().isOk());
+            ,album.getAlbumId(),albumChatCommentId,albumChatCommentReq,userLogin.getToken()).andExpect(status().isOk());
     }
 
     @Test
@@ -75,13 +75,13 @@ public class UpdatePostCommentTest extends BaseSetting {
 
         AlbumChatCommentReq albumChatCommentReq=AlbumChatCommentReq.createAlbumChatCommentReq(
                 "안녕",null);
-        mockMvcHelper("/api/album/{albumId}/comment",album.getAlbumId(),albumChatCommentReq);
+        mockMvcHelper("/api/album/{albumId}/comment",album.getAlbumId(),albumChatCommentReq,userLogin.getToken());
 
         albumChatCommentReq=AlbumChatCommentReq.createAlbumChatCommentReq(
             "hi",null);
 
         mockMvcHelper("/api/album/{albumId}/comment/{albumChatCommentId}"
-            ,album.getAlbumId(),100L,albumChatCommentReq)
+            ,album.getAlbumId(),100L,albumChatCommentReq,userLogin.getToken())
             .andExpect(status().isNotFound());
     }
 }

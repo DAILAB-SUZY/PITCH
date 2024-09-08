@@ -51,7 +51,7 @@ public class SearchFavoriteArtistTest extends BaseSetting {
         Artist artist=artistRepository.findByArtistName("bibi").get();
 
         mockMvcGetHelper("/api/favoriteArtist/searchartist/{artistName}"
-            ,artist.getArtistName()).andExpect(status().isOk());
+            ,artist.getArtistName(),userLogin.getToken()).andExpect(status().isOk());
     }
     @Test
     @Transactional
@@ -61,7 +61,7 @@ public class SearchFavoriteArtistTest extends BaseSetting {
         user.setPassword(encoder.encode(user.getPassword()));
         UserLogin userLogin = loginUser("test1@example.com");
 
-        mockMvcGetHelper("/api/favoriteArtist/searchartist/{artistId}","bi")
+        mockMvcGetHelper("/api/favoriteArtist/searchartist/{artistId}","bi",userLogin.getToken())
             .andExpect(status().isNotFound());
     }
     @Test
@@ -75,7 +75,7 @@ public class SearchFavoriteArtistTest extends BaseSetting {
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
 
         AlbumRequest albumRequest=AlbumRequest.createAlbumRequest(artist.getArtistId(),album.getTitle());
-        mockMvcGetHelper("/api/favoriteArtist/searchalbum/{artistId}",artist.getArtistId(),albumRequest)
+        mockMvcGetHelper("/api/favoriteArtist/searchalbum/{artistId}",artist.getArtistId(),albumRequest,userLogin.getToken())
             .andExpect(status().isOk());
     }
 
@@ -90,7 +90,7 @@ public class SearchFavoriteArtistTest extends BaseSetting {
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
 
         AlbumRequest albumRequest=AlbumRequest.createAlbumRequest(100L,"bam");
-        mockMvcGetHelper("/api/favoriteArtist/searchalbum/{artistId}",100L,albumRequest).andExpect(status().isNotFound());
+        mockMvcGetHelper("/api/favoriteArtist/searchalbum/{artistId}",100L,albumRequest,userLogin.getToken()).andExpect(status().isNotFound());
 }
 
     @Test
@@ -104,7 +104,7 @@ public class SearchFavoriteArtistTest extends BaseSetting {
         Track track=trackRepository.findByTitle("bam").get();
 
         TrackRequest trackRequest=TrackRequest.createTrackRequest(album.getAlbumId(),track.getTitle());
-        mockMvcGetHelper("/api/favoriteArtist/searchtrack/{albumId}",album.getAlbumId(),trackRequest)
+        mockMvcGetHelper("/api/favoriteArtist/searchtrack/{albumId}",album.getAlbumId(),trackRequest,userLogin.getToken())
             .andExpect(status().isOk());
     }
 
@@ -118,7 +118,7 @@ public class SearchFavoriteArtistTest extends BaseSetting {
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
 
         TrackRequest trackRequest=TrackRequest.createTrackRequest(album.getAlbumId(),"bamd");
-        mockMvcGetHelper("/api/favoriteArtist/searchtrack/{albumId}",album.getAlbumId(),trackRequest)
+        mockMvcGetHelper("/api/favoriteArtist/searchtrack/{albumId}",album.getAlbumId(),trackRequest,userLogin.getToken())
             .andExpect(status().isNotFound());
     }
 }

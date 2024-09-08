@@ -52,19 +52,19 @@ public class DeletePostLikeTest extends BaseSetting {
 
         CreatePost createPost=CreatePost.createCreatePost
                 (user.getUserId(),"base","bibi","밤양갱 노래좋다","bam",null);
-        ResultActions resultActions =mockMvcHelper("/api/post/create",createPost);
+        ResultActions resultActions =mockMvcHelper("/api/post/create",createPost,userLogin.getToken());
         result = resultActions.andReturn();
         String content = result.getResponse().getContentAsString();
         PostDto postDto = mapper.readValue(content, PostDto.class); // 응답 JSON을 PostDto 객체로 변환
         Long postId = postDto.getPostId();
 
         LikeDto likeDto=LikeDto.createLikeDto(user.getUserId(),postId);
-        resultActions=mockMvcHelper("/api/like/create",likeDto).andExpect(status().isOk());
+        resultActions=mockMvcHelper("/api/like/create",likeDto,userLogin.getToken()).andExpect(status().isOk());
         result = resultActions.andReturn();
         content = result.getResponse().getContentAsString();
         LikeReq likeReq = mapper.readValue(content, LikeReq.class); // 응답 JSON을 PostDto 객체로 변환
 
         LikeReq likereq1=LikeReq.createLikeReq(user.getUserId(), postDto.getPostId());
-        mockMvcHelper("/api/like/delete",likereq1).andExpect(status().isOk());
+        mockMvcHelper("/api/like/delete",likereq1,userLogin.getToken()).andExpect(status().isOk());
     }
 }

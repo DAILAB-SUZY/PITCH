@@ -52,10 +52,10 @@ public class CreatePostTest extends BaseSetting {
         UserLogin userLogin = loginUser("test1@example.com");
 
         AlbumDto albumDto=AlbumDto.createAlbumDto("bam");
-        mockMvcHelper("/api/post/searchAlbum",albumDto).andExpect(status().isOk());
+        mockMvcHelper("/api/post/searchAlbum",albumDto,userLogin.getToken()).andExpect(status().isOk());
 
         ArtistDto artistDto=ArtistDto.createArtistDto("bibi");
-        mockMvcHelper("/api/post/searchArtist",artistDto).andExpect(status().isOk());
+        mockMvcHelper("/api/post/searchArtist",artistDto,userLogin.getToken()).andExpect(status().isOk());
     }
     //아티스트 또는 앨범으로 찾기
 
@@ -68,7 +68,7 @@ public class CreatePostTest extends BaseSetting {
         UserLogin userLogin = loginUser("test1@example.com");
         CreatePost createPost=CreatePost.createCreatePost
             (user.getUserId(),"base","bibi","밤양갱 노래좋다","bam",null);
-        mockMvcHelper("/api/post/create",createPost)
+        mockMvcHelper("/api/post/create",createPost,userLogin.getToken())
             .andExpect(status().isOk());
     }
 
@@ -83,15 +83,15 @@ public class CreatePostTest extends BaseSetting {
 
         CreatePost createPost=CreatePost.createCreatePost
             (user.getUserId(),"base","bibi","밤양갱 노래좋다","bam",null);
-        ResultActions resultActions =mockMvcHelper("/api/post/create",createPost);
+        ResultActions resultActions =mockMvcHelper("/api/post/create",createPost,userLogin.getToken());
         result = resultActions.andReturn();
         String content = result.getResponse().getContentAsString();
         PostDto postDto = mapper.readValue(content, PostDto.class);
         Long postId = postDto.getPostId();
 
         UserDto userDto=UserDto.createUserDto(user.getUserId());
-        mockMvcHelper("/api/post/give",userDto).andExpect(status().isOk());
+        mockMvcHelper("/api/post/give",userDto,userLogin.getToken()).andExpect(status().isOk());
         PostDto postDto1=PostDto.createPostDto(postId);
-        mockMvcHelper("/api/post/open",postDto1).andExpect(status().isOk());
+        mockMvcHelper("/api/post/open",postDto1,userLogin.getToken()).andExpect(status().isOk());
     }
 }

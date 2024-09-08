@@ -51,9 +51,9 @@ public class GiveFavoriteArtistTest extends BaseSetting {
 
         FavoriteReq favoriteReq=FavoriteReq.createFavoriteReq
             (user.getUserId(),artist.getArtistId(),album.getAlbumId(),track.getTrackId(),album.getCover());
-        mockMvcHelper("/api/favoriteArtist/save",favoriteReq);
+        mockMvcHelper("/api/favoriteArtist/save",favoriteReq,userLogin.getToken());
         UserDto userDto=UserDto.createUserDto(user.getUserId());
-        mockMvcGetHelper("/api/favoriteArtist/give/{userId}",user.getUserId())
+        mockMvcGetHelper("/api/favoriteArtist/give/{userId}",user.getUserId(),userLogin.getToken())
             .andExpect(status().isOk());
     }
     @Test
@@ -69,9 +69,9 @@ public class GiveFavoriteArtistTest extends BaseSetting {
 
         FavoriteReq favoriteReq=FavoriteReq.createFavoriteReq
                 (user.getUserId(),artist.getArtistId(),album.getAlbumId(),track.getTrackId(),album.getCover());
-        mockMvcHelper("/api/favoriteArtist/save",favoriteReq);
+        mockMvcHelper("/api/favoriteArtist/save",favoriteReq,userLogin.getToken());
 
-        mockMvcGetHelper("/api/favoriteArtist/give/{userId}",100L)
+        mockMvcGetHelper("/api/favoriteArtist/give/{userId}",100L,userLogin.getToken())
             .andExpect(status().isNotFound());
     }
 }

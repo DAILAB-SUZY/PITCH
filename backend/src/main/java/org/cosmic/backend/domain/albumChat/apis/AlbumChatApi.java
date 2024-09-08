@@ -18,7 +18,7 @@ import java.util.List;
  * 사용자는 이 API를 통해 앨범챗 열기, 좋아요 순으로 댓글 정렬 등의 기능을 수행할 수 있습니다.
  */
 @RestController
-@RequestMapping("/api/albumchat")
+@RequestMapping("/api/")
 @ApiCommonResponses
 public class AlbumChatApi {
     private final AlbumChatService albumChatService;
@@ -39,10 +39,15 @@ public class AlbumChatApi {
      * @throws NotFoundAlbumChatException 특정 앨범의 앨범 챗을 찾을 수 없는 경우 발생
      */
     @Transactional
-    @GetMapping("/manylike/{albumId}")
+    @GetMapping("/album/{albumId}")
     @ApiResponse(responseCode = "404", description = "Not Found Album")
-    public List<AlbumChatCommentResponse> getAlbumChatCommentByManyLikeId(@PathVariable("albumId")Long albumId) {
-        return albumChatService.getAlbumChatCommentByManyLikeId(albumId);
+    public List<AlbumChatCommentResponse> getAlbumChatCommentByManyLikeId(
+        @PathVariable("albumId")Long albumId,@RequestParam String sorted) {
+        if(sorted.equals("manylike"))
+        {
+            return albumChatService.getAlbumChatCommentByManyLikeId(albumId);
+        }
+        return null;
     }
 
 }

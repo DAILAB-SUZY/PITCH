@@ -49,7 +49,7 @@ public class CreatePostCommentTest extends BaseSetting {
 
         AlbumChatCommentReq albumChatCommentReq=AlbumChatCommentReq.createAlbumChatCommentReq(
             "안녕",null);
-        mockMvcHelper("/api/album/{albumId}/comment",album.getAlbumId(),albumChatCommentReq)
+        mockMvcHelper("/api/album/{albumId}/comment",album.getAlbumId(),albumChatCommentReq,userLogin.getToken())
             .andExpect(status().isOk());
     }
 
@@ -63,7 +63,7 @@ public class CreatePostCommentTest extends BaseSetting {
 
         AlbumChatCommentReq albumChatCommentReq=AlbumChatCommentReq.createAlbumChatCommentReq(
                 "안녕",null);
-        mockMvcHelper("/api/album/{albumId}/comment",100L,albumChatCommentReq)
+        mockMvcHelper("/api/album/{albumId}/comment",100L,albumChatCommentReq,userLogin.getToken())
                 .andExpect(status().isNotFound());
     }
 }
