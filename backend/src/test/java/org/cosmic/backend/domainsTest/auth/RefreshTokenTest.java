@@ -60,7 +60,7 @@ public class RefreshTokenTest {
                 .password(encoder.encode("123456"))
                 .build());
 
-        mockMvc.perform(post("/auth/signin")
+        mockMvc.perform(post("/api/auth/signin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(UserLogin.builder()
                                 .email("testw1@example.com")
@@ -73,7 +73,7 @@ public class RefreshTokenTest {
 
         String refreshToken = redisTemplate.opsForValue().get(email.getEmail());
 
-        mockMvc.perform(post("/auth/reissued")
+        mockMvc.perform(post("/api/auth/reissued")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Refresh-Token", refreshToken)
                 ).andDo(print())
@@ -84,7 +84,7 @@ public class RefreshTokenTest {
     @Test
     @Order(2)
     public void invalidRefreshTokenTest() throws Exception {
-        mockMvc.perform(post("/auth/reissued")
+        mockMvc.perform(post("/api/auth/reissued")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Refresh-Token", "1231231231231232")
         ).andDo(print())

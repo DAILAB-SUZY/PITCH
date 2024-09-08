@@ -55,7 +55,7 @@ class SignInTest {
                 .username("goodwill")
                 .password(encoder.encode("123456"))
                 .build());
-        mockMvc.perform(post("/auth/signin")
+        mockMvc.perform(post("/api/auth/signin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(UserLogin.builder()
                                 .email("testboy9@example.com")
@@ -71,7 +71,7 @@ class SignInTest {
     @Test
     @Order(2)
     public void notMatchTest() throws Exception {
-        mockMvc.perform(post("/auth/signin")
+        mockMvc.perform(post("/api/auth/signin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(UserLogin.builder()
                                 .email("test4@example.com")
@@ -84,7 +84,7 @@ class SignInTest {
 
     @Test
     public void notMatchEmailTest() throws Exception {
-        mockMvc.perform(post("/auth/signin")
+        mockMvc.perform(post("/api/auth/signin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(UserLogin.builder()
                                 .email("tesswoman@example.com")

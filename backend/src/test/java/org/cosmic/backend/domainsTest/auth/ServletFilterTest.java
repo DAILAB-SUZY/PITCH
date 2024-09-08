@@ -62,7 +62,7 @@ public class ServletFilterTest {
                 .password("123456")
                 .build();
 
-        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/auth/signin")
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/signin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(userLogin)))
                 .andExpect(status().isOk());
@@ -70,7 +70,7 @@ public class ServletFilterTest {
         MvcResult result = resultActions.andReturn();
         validToken = mapper.readValue(result.getResponse().getContentAsString(), UserLogin.class).getToken();
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/example")
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/example")
                         .header("Authorization", "Bearer " + validToken)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
@@ -95,7 +95,7 @@ public class ServletFilterTest {
                 .password("123456")
                 .build();
 
-        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/auth/signin")
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/signin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(userLogin)))
                 .andExpect(status().isOk());
@@ -105,7 +105,7 @@ public class ServletFilterTest {
 
         String invalidToken = "Bearerinvalid.token.jwt";
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/example")
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/example")
                         .header("Authorization", "Bearer " + invalidToken)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());

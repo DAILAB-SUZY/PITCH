@@ -23,7 +23,7 @@ public class EmailControllerTest extends EmailBaseTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<EmailAddress> emailRequest = new HttpEntity<>(EmailAddress.builder().email("tester@spring.com").build(), headers);
 
-        ResponseEntity<Void> response = testRestTemplate.postForEntity("/mail/request", emailRequest, Void.class);
+        ResponseEntity<Void> response = testRestTemplate.postForEntity("/api/mail/request", emailRequest, Void.class);
 
         // Assert
         Assertions.assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());

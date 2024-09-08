@@ -9,6 +9,7 @@ import org.cosmic.backend.domain.playList.exceptions.NotFoundTrackException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.user.dtos.UserDto;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,7 +19,7 @@ import java.util.List;
  * 사용자 플레이리스트의 조회, 저장 및 아티스트/트랙 검색 기능을 제공합니다.
  */
 @RestController
-@RequestMapping("/api/playlist")
+@RequestMapping("/api/")
 public class PlaylistApi {
     private final PlaylistService playlistService;
 
@@ -40,7 +41,7 @@ public class PlaylistApi {
      * @throws NotFoundUserException 사용자를 찾을 수 없을 때 발생합니다.
      */
     @Transactional
-    @GetMapping("/give/{userId}")
+    @GetMapping("/playlist")
     @ApiResponse(responseCode = "404", description = "Not Found User")
     public List<PlaylistGiveDto> dataGive(@PathVariable Long userId) {
         return playlistService.open(userId);
@@ -55,12 +56,11 @@ public class PlaylistApi {
      * @throws NotFoundUserException 사용자를 찾을 수 없을 때 발생합니다.
      * @throws NotFoundTrackException 트랙을 찾을 수 없을 때 발생합니다.
      */
-    @PostMapping("/save")
+    @PostMapping("/playlist")
     @Transactional
     @ApiResponse(responseCode = "404", description = "Not Found User or Track")
-    public ResponseEntity<?> savePlaylistData(@RequestBody PlaylistDto playlist) {
-        Long key = playlist.getId();
-        playlistService.save(key, playlist.getPlaylist());
+    public ResponseEntity<?> savePlaylistData(@RequestBody PlaylistDto playlist,@AuthenticationPrincipal Long userId) {
+        playlistService.save(userId, playlist.getPlaylist());
         return ResponseEntity.ok("성공");
     }
 
@@ -72,7 +72,7 @@ public class PlaylistApi {
      *
      * @throws NotFoundArtistException 아티스트 이름이 일치하지 않을 때 발생합니다.
      */
-    @GetMapping("/Artistsearch/{artistName}")
+    @GetMapping("/playlist/artist/{artistName}")
     @Transactional
     @ApiResponse(responseCode = "400", description = "Not Match Artist Name")
     public List<TrackGiveDto> artistSearch(@PathVariable String artistName) {
@@ -87,7 +87,7 @@ public class PlaylistApi {
      *
      * @throws NotFoundTrackException 트랙 제목이 일치하지 않을 때 발생합니다.
      */
-    @GetMapping("/Tracksearch/{trackName}")
+    @GetMapping("/playlist/track/{trackName}")
     @Transactional
     @ApiResponse(responseCode = "404", description = "Not Match Track Title")
     public List<TrackGiveDto> trackSearch(@PathVariable String trackName) {

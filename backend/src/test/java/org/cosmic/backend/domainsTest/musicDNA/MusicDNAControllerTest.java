@@ -44,10 +44,8 @@ public class MusicDNAControllerTest extends BaseSetting {
     @Transactional
     @Sql("/data/musicDna.sql")
     public void dnaRequestTest() throws Exception {
-        List<MusicDna> DNA= musicDnaRepository.findAll();
-        mockMvc.perform(get("/api/dna/give")
-        .contentType("application/json")
-        .content(mapper.writeValueAsString(DNA)))
+        mockMvc.perform(get("/api/dna")
+        .contentType("application/json"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].emotion").value("lazy"))
         .andExpect(jsonPath("$[1].emotion").value("funny"));
@@ -61,10 +59,10 @@ public class MusicDNAControllerTest extends BaseSetting {
         User user=userRepository.findByEmail_Email("test1@example.com").get();
         user.setPassword(encoder.encode(user.getPassword()));
         UserLogin userLogin = loginUser("test1@example.com");
-        DnaDto dnaDTO=new DnaDto(user.getUserId());
+        DnaDto dnaDTO=new DnaDto();
         dnaDTO.setDna(Arrays.asList(new DnaDetail(1L),new DnaDetail(2L),
             new DnaDetail(3L),new DnaDetail(4L)));
-        mockMvcHelper("/api/dna/save",dnaDTO,userLogin.getToken()).andExpect(status().isOk());
+        mockMvcHelper("/api/dna",dnaDTO,userLogin.getToken()).andExpect(status().isOk());
     }
 
     @Test
@@ -75,10 +73,10 @@ public class MusicDNAControllerTest extends BaseSetting {
         User user=userRepository.findByEmail_Email("test1@example.com").get();
         user.setPassword(encoder.encode(user.getPassword()));
         UserLogin userLogin = loginUser("test1@example.com");
-        DnaDto dnaDTO=new DnaDto(user.getUserId());
+        DnaDto dnaDTO=new DnaDto();
         dnaDTO.setDna(Arrays.asList(new DnaDetail(1L),new DnaDetail(2L),
                 new DnaDetail(3L)));
-        mockMvcHelper("/api/dna/save",dnaDTO,userLogin.getToken()).andExpect(status().isBadRequest());
+        mockMvcHelper("/api/dna",dnaDTO,userLogin.getToken()).andExpect(status().isBadRequest());
     }
 }
 

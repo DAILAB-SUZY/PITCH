@@ -57,9 +57,6 @@ public class ManyLikeAlbumChatPostCommentTest extends BaseSetting {
     @Transactional
     @Sql("/data/albumChat.sql")
     public void manyLikeAlbumChatCommentTest() throws Exception {
-
-        //USER1, 2의  valid token때문에 생긴 문제 각각의 valid token필요.
-
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         User user=userRepository.findByEmail_Email("test1@example.com").get();
         user.setPassword(encoder.encode(user.getPassword()));

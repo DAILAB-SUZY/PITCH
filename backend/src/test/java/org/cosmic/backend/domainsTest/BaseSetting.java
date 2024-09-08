@@ -28,7 +28,7 @@ public class BaseSetting {
                 .email(email)
                 .password("12345678")
                 .build();
-        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/auth/signin")
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/signin")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(userLogin)));
         MvcResult result = resultActions.andReturn();

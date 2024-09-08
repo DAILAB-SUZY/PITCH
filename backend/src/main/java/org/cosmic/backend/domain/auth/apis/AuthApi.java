@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @Log4j2
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/")
 @ApiCommonResponses
 public class AuthApi {
     private final UserService userService;
@@ -36,7 +36,7 @@ public class AuthApi {
      *
      * @throws CredentialNotMatchException 사용자를 찾을 수 없을 때 발생합니다.
      */
-    @PostMapping("/signin")
+    @PostMapping("/auth/signin")
     @ApiResponse(responseCode = "401", description = "Email or Password is invalid")
     public ResponseEntity<?> authenticate(@RequestBody UserLogin userLogin) {
         return ResponseEntity.ok(userService.getByCredentials(userLogin.getEmail(), userLogin.getPassword()));
@@ -51,7 +51,7 @@ public class AuthApi {
      *
      * @throws CredentialNotMatchException 리프레시 토큰이 유효하지 않거나 일치하지 않을 때 발생합니다.
      */
-    @PostMapping("/reissued")
+    @PostMapping("/auth/reissued")
     @ApiResponse(responseCode = "401", description = "RefreshToken is invalid")
     public ResponseEntity<?> reissued(@RequestHeader("Refresh-Token") String refreshToken) {
         return ResponseEntity.ok(userService.getUserByRefreshToken(refreshToken));

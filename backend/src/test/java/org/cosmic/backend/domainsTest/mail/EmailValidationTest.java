@@ -38,7 +38,7 @@ class EmailValidationTest extends EmailBaseTest {
         usersRepository.save(User.builder().email(email).username("testman").password("123456").profilePicture(null).build());
 
         try {
-            this.mockMvc.perform(post("/mail/request")
+            this.mockMvc.perform(post("/api/mail/request")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(mailAddress)))
                     .andDo(print())
@@ -56,7 +56,7 @@ class EmailValidationTest extends EmailBaseTest {
         emailRepository.save(Email.builder().email(mailAddress.getEmail()).verificationCode("123456").createTime(Instant.now().plus(9, ChronoUnit.HOURS)).build());
 
         try {
-            this.mockMvc.perform(post("/mail/request")
+            this.mockMvc.perform(post("/api/mail/request")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(mailAddress)))
                     .andDo(print())

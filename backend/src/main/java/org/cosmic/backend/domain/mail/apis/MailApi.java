@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/mail")
+@RequestMapping("/api/")
 @ApiCommonResponses
 public class MailApi {
 
@@ -38,7 +38,7 @@ public class MailApi {
      * @throws IntervalNotEnoughException 요청 간격이 너무 짧은 경우
      * @throws RuntimeException 기타 문제가 있는 경우
      */
-    @PostMapping("/request")
+    @PostMapping("/mail/request")
     @ApiResponse(responseCode = "401", description = "Email is already exist or interval is too short")
     public ResponseEntity<EmailAddress> sendVerificationEmail(@Valid @RequestBody EmailAddress address) {
         emailService.sendVerificationEmail(address.email(), "123456");
@@ -53,7 +53,7 @@ public class MailApi {
      *
      * @throws NotMatchPasswordException 이메일이 존재하지 않거나 인증 코드가 일치하지 않는 경우
      */
-    @PostMapping("/verify")
+    @PostMapping("mail/verify")
     @ApiResponse(responseCode = "401", description = "Email is not exist or random code is not matched")
     public ResponseEntity<EmailAddress> verifyEmail(@Valid @RequestBody VerificationForm form) {
         return emailService.verifyCode(form.email(), form.code());

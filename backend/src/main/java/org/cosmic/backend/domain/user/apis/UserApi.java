@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
  * 사용자 등록 기능을 제공합니다.
  */
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/")
 @ApiCommonResponses
 public class UserApi {
 
@@ -44,7 +44,7 @@ public class UserApi {
      * @throws NullPointerException 요청 데이터가 NULL일 때 발생할 수 있습니다.
      * @throws IllegalArgumentException 요청 본문이 비어 있을 때 발생할 수 있습니다.
      */
-    @PostMapping("/register")
+    @PostMapping("/user")
     @ApiResponse(responseCode = "400", description = "Not met password condition or Not Match Password")
     @ApiResponse(responseCode = "404", description = "Not found email")
     @ApiResponse(responseCode = "406", description = "Read NULL data")

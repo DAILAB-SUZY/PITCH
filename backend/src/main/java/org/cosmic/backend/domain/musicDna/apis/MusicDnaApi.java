@@ -11,6 +11,7 @@ import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.user.dtos.UserDto;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,7 +21,7 @@ import java.util.List;
  * 사용자와 관련된 음악 DNA 데이터를 저장하고 조회하는 기능을 포함합니다.
  */
 @RestController
-@RequestMapping("/api/dna")
+@RequestMapping("/api/")
 @ApiCommonResponses
 public class MusicDnaApi {
     private final MusicDnaService musicDnaService;
@@ -40,7 +41,7 @@ public class MusicDnaApi {
      * @return 모든 DNA 데이터를 포함하는 리스트
      */
     @Transactional
-    @GetMapping("/give")
+    @GetMapping("/dna")
     public List<ListDna> DnaGiveData() {
         return musicDnaService.getAllDna();
     }
@@ -54,11 +55,11 @@ public class MusicDnaApi {
      * @throws NotFoundUserException 유저 정보가 일치하지 않을 때 발생합니다.
      * @throws NotMatchMusicDnaCountException DNA 데이터가 4개 이상일 때 발생합니다.
      */
-    @PostMapping("/save")
+    @PostMapping("/dna")
     @ApiResponse(responseCode = "400", description = "Need 4 MusicDna")
     @ApiResponse(responseCode = "404", description = "Not Found Emotion")
-    public ResponseEntity<?> userDnaSaveData(@RequestBody DnaDto dna) {
-        musicDnaService.saveDNA(dna.getKey(), dna.getDna());
+    public ResponseEntity<?> userDnaSaveData(@RequestBody DnaDto dna,@AuthenticationPrincipal Long userId) {
+        musicDnaService.saveDNA(userId, dna.getDna());
         return ResponseEntity.ok("성공");
     }
 
@@ -70,10 +71,10 @@ public class MusicDnaApi {
      *
      * @throws NotFoundUserException 사용자를 찾을 수 없을 때 발생합니다.
      */
-    @PostMapping("/info/{userId}")
+    @GetMapping("/dna/info")
     @Transactional
     @ApiResponse(responseCode = "404", description = "Not Found User")
-    public List<UserDnaResponse> userDnaGive(@PathVariable Long userId) {
+    public List<UserDnaResponse> userDnaGive(@AuthenticationPrincipal Long userId) {
         return musicDnaService.getUserDna(userId);
     }
 }
