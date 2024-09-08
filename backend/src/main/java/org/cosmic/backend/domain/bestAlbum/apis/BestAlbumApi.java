@@ -8,6 +8,7 @@ import org.cosmic.backend.domain.playList.dtos.ArtistDto;
 import org.cosmic.backend.domain.user.dtos.UserDto;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundArtistException;
@@ -25,7 +26,7 @@ import java.util.List;
  *
  */
 @RestController
-@RequestMapping("/api/bestAlbum")
+@RequestMapping("/api/")
 @ApiCommonResponses
 public class BestAlbumApi {
     private final BestAlbumService bestAlbumService;
@@ -42,27 +43,27 @@ public class BestAlbumApi {
      * @throws NotFoundUserException 사용자를 찾을 수 없는 경우 발생합니다.
      */
     @Transactional
-    @GetMapping("/give/{userId}")
+    @GetMapping("/bestAlbum")
     @ApiResponse(responseCode = "404", description = "Not Found User")
-    public List<BestAlbumGiveDto> bestAlbumGive(@PathVariable Long userId) {
+    public List<BestAlbumGiveDto> bestAlbumGive(@AuthenticationPrincipal Long userId) {
         return bestAlbumService.open(userId);
     }
 
     /**
      * 사용자의 좋아요 앨범 목록에 새 앨범을 추가합니다.
      *
-     * @param bestAlbumDto 사용자의 ID와 추가할 앨범의 ID를 포함한 DTO 객체
+     * @param userId 사용자의 ID와 추가할 앨범의 ID를 포함한 DTO 객체
      * @return 성공 메시지
      * @throws NotFoundUserException 사용자를 찾을 수 없는 경우 발생합니다.
      * @throws NotFoundAlbumException 앨범을 찾을 수 없는 경우 발생합니다.
      * @throws ExistBestAlbumException 이미 사용자의 좋아요 목록에 해당 앨범이 존재하는 경우 발생합니다.
      */
     @Transactional
-    @PostMapping("/add/{albumId}")
+    @PostMapping("/bestAlbum/{albumId}")
     @ApiResponse(responseCode = "404", description = "Not Found User or Album")
     @ApiResponse(responseCode = "409", description = "Exist BestAlbum")
-    public ResponseEntity<?> bestAlbumAdd(@PathVariable Long albumId,@RequestBody BestAlbumDto bestAlbumDto) {
-        bestAlbumService.add(bestAlbumDto.getUserId(),albumId);
+    public ResponseEntity<?> bestAlbumAdd(@PathVariable Long albumId,@AuthenticationPrincipal Long userId) {
+        bestAlbumService.add(userId,albumId);
         return ResponseEntity.ok("성공");
     }
 
@@ -76,11 +77,11 @@ public class BestAlbumApi {
      * @throws NotMatchBestAlbumException 사용자의 기존 좋아요 앨범 목록과 일치하지 않는 경우 발생합니다.
      */
     @Transactional
-    @PostMapping("/save")
+    @PostMapping("/bestAlbum")
     @ApiResponse(responseCode = "400", description = "Not Match BestAlbum")
     @ApiResponse(responseCode = "404", description = "Not Found User or Album")
-    public ResponseEntity<?> bestAlbumSave(@RequestBody BestAlbumListDto bestAlbumlistDto) {
-        bestAlbumService.save(bestAlbumlistDto.getUserId(),bestAlbumlistDto.getBestalbum());
+    public ResponseEntity<?> bestAlbumSave(@RequestBody BestAlbumListDto bestAlbumlistDto,@AuthenticationPrincipal Long userId) {
+        bestAlbumService.save(userId,bestAlbumlistDto.getBestalbum());
         return ResponseEntity.ok("성공");
     }
 
@@ -91,7 +92,7 @@ public class BestAlbumApi {
      * @return 해당 아티스트가 가진 앨범들의 정보
      * @throws NotFoundArtistException 아티스트를 찾을 수 없는 경우 발생합니다.
      */
-    @GetMapping("/Artistsearch/{artistName}")
+    @GetMapping("bestAlbum/artist/{artistName}")
     @ApiResponse(responseCode = "404", description = "Not Match Artist Name")
     public List<AlbumGiveDto> artistSearch(@PathVariable String artistName) {
         return bestAlbumService.searchArtist(artistName);
@@ -104,7 +105,7 @@ public class BestAlbumApi {
      * @return 해당 제목을 가진 모든 앨범들의 정보
      * @throws NotFoundAlbumException 앨범을 찾을 수 없는 경우 발생합니다.
      */
-    @GetMapping("/Albumsearch/{albumName}")
+    @GetMapping("/bestAlbum/album/{albumName}")
     @ApiResponse(responseCode = "404", description = "Not Match Album Title")
     public List<AlbumGiveDto> albumSearch(@PathVariable String albumName) {
         return bestAlbumService.searchAlbum(albumName);

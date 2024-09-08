@@ -83,6 +83,12 @@ public class BaseSetting {
                 .contentType(MediaType.APPLICATION_JSON)
         );
     }
+    protected  ResultActions mockMvcGetHelper(String url, String validToken) throws Exception {
+        return mockMvc.perform(MockMvcRequestBuilders.get(url)
+                .header("Authorization", "Bearer " +validToken)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+    }
     protected <T>  ResultActions mockMvcGetHelper(String url, String request,T requestObject,String validToken) throws Exception {
         return mockMvc.perform(MockMvcRequestBuilders.get(url,request)
                 .header("Authorization", "Bearer " +validToken)

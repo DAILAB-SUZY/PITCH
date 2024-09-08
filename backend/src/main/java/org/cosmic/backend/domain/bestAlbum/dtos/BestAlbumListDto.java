@@ -11,14 +11,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BestAlbumListDto {
-    private Long userId;
     private List<BestAlbumDetail> bestalbum;
-    public BestAlbumListDto(Long userId) {
-        this.userId = userId;
-    }
-    public static BestAlbumListDto createBestAlbumListDto(Long userId,List<BestAlbumDetail> bestalbum) {
+    public static BestAlbumListDto createBestAlbumListDto(List<BestAlbumDetail> bestalbum) {
         return  BestAlbumListDto.builder()
-                .userId(userId)
                 .bestalbum(bestalbum)
                 .build();
     }

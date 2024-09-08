@@ -58,8 +58,7 @@ public class AddBestAlbumTest extends BaseSetting {
         UserLogin userLogin = loginUser("test1@example.com");
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
 
-        BestAlbumDto bestAlbumDto=BestAlbumDto.createBestAlbumDto(user.getUserId(),album.getAlbumId());
-        mockMvcHelper("/api/bestAlbum/add/{albumId}",album.getAlbumId(),bestAlbumDto,userLogin.getToken())
+        mockMvcHelper("/api/bestAlbum/{albumId}",album.getAlbumId(),userLogin.getToken())
             .andExpect(status().isOk());
     }
     @Test
@@ -74,8 +73,7 @@ public class AddBestAlbumTest extends BaseSetting {
         BestAlbumDto bestAlbumDto=BestAlbumDto.createBestAlbumDto(100L,album.getAlbumId());
         mockMvcHelper("/api/bestAlbum/add/{albumId}",album.getAlbumId(),bestAlbumDto,userLogin.getToken())
                 .andExpect(status().isNotFound());
-        bestAlbumDto=BestAlbumDto.createBestAlbumDto(user.getUserId(),100L);
-        mockMvcHelper("/api/bestAlbum/add/{albumId}",100L,bestAlbumDto,userLogin.getToken())
+        mockMvcHelper("/api/bestAlbum/{albumId}",100L,userLogin.getToken())
                 .andExpect(status().isNotFound());
     }
 }

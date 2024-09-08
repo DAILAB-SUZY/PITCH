@@ -50,22 +50,21 @@ public class SaveBestAlbumTest extends BaseSetting {
         Album album1=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
         Album album2=albumRepository.findByTitleAndArtist_ArtistName("lilac","IU").get();
 
-        BestAlbumListDto bestalbumListDTO=new BestAlbumListDto(user.getUserId());
+        BestAlbumListDto bestalbumListDTO=new BestAlbumListDto();
         bestalbumListDTO.setBestalbum(Arrays.asList(new BestAlbumDetail(album1.getAlbumId()),
             new BestAlbumDetail(album2.getAlbumId())));
 
-        BestAlbumDto bestAlbumDto=BestAlbumDto.createBestAlbumDto(user.getUserId(),album1.getAlbumId());
-        mockMvcHelper("/api/bestAlbum/add/{albumId}",album1.getAlbumId(),bestAlbumDto,userLogin.getToken())
+
+        mockMvcHelper("/api/bestAlbum/{albumId}",album1.getAlbumId(),userLogin.getToken())
                 .andExpect(status().isOk());
-        bestAlbumDto=BestAlbumDto.createBestAlbumDto(user.getUserId(),album2.getAlbumId());
-        mockMvcHelper("/api/bestAlbum/add/{albumId}",album2.getAlbumId(),bestAlbumDto,userLogin.getToken())
+        mockMvcHelper("/api/bestAlbum/{albumId}",album2.getAlbumId(),userLogin.getToken())
                 .andExpect(status().isOk());
 
         BestAlbumListDto bestAlbumListDto=BestAlbumListDto.createBestAlbumListDto
-            (bestalbumListDTO.getUserId(),bestalbumListDTO.getBestalbum());
-        mockMvcHelper("/api/bestAlbum/save",bestAlbumListDto,userLogin.getToken());
+            (bestalbumListDTO.getBestalbum());
+        mockMvcHelper("/api/bestAlbum",bestAlbumListDto,userLogin.getToken());
 
-        mockMvcGetHelper("/api/bestAlbum/give/{userId}",user.getUserId(),userLogin.getToken()).andExpect(status().isOk());
+        mockMvcGetHelper("/api/bestAlbum",userLogin.getToken()).andExpect(status().isOk());
 }
 
     @Test
@@ -79,16 +78,15 @@ public class SaveBestAlbumTest extends BaseSetting {
         Album album1=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
         Album album2=albumRepository.findByTitleAndArtist_ArtistName("lilac","IU").get();
 
-        BestAlbumListDto bestalbumListDTO=new BestAlbumListDto(user.getUserId());
+        BestAlbumListDto bestalbumListDTO=new BestAlbumListDto();
         bestalbumListDTO.setBestalbum(Arrays.asList(new BestAlbumDetail(album1.getAlbumId()),
                 new BestAlbumDetail(album2.getAlbumId())));
 
-        BestAlbumDto bestAlbumDto=BestAlbumDto.createBestAlbumDto(user.getUserId(),album1.getAlbumId());
-        mockMvcHelper("/api/bestAlbum/add/{albumId}",album1.getAlbumId(),bestAlbumDto,userLogin.getToken())
+        mockMvcHelper("/api/bestAlbum/{albumId}",album1.getAlbumId(),userLogin.getToken())
                 .andExpect(status().isOk());
 
         BestAlbumListDto bestAlbumListDto=BestAlbumListDto.createBestAlbumListDto
-                (bestalbumListDTO.getUserId(),bestalbumListDTO.getBestalbum());
+                (bestalbumListDTO.getBestalbum());
         mockMvcHelper("/api/bestAlbum/save",bestAlbumListDto,userLogin.getToken()).andExpect(status().isBadRequest());
     }
 }
