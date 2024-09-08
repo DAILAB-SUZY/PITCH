@@ -107,8 +107,8 @@ public class FavoriteArtistService {
      * @throws NotFoundTrackException 트랙을 찾을 수 없는 경우 발생합니다.
      * @throws NotFoundAlbumException 앨범을 찾을 수 없는 경우 발생합니다.
      */
-    public void favoriteArtistSaveData(FavoriteReq favoriteArtist) {
-        if(usersRepository.findById(favoriteArtist.getUserId()).isEmpty()) {
+    public void favoriteArtistSaveData(FavoriteReq favoriteArtist,Long userId) {
+        if(usersRepository.findById(userId).isEmpty()) {
             throw new NotFoundUserException();
         }
         if(trackRepository.findByTrackIdAndArtist_ArtistId
@@ -119,7 +119,7 @@ public class FavoriteArtistService {
             (favoriteArtist.getAlbumId(),favoriteArtist.getArtistId()).isEmpty()) {
             throw new NotFoundAlbumException();
         }
-        User user=usersRepository.findByUserId(favoriteArtist.getUserId()).orElseThrow();
+        User user=usersRepository.findByUserId(userId).orElseThrow();
         favoriteArtistRepository.deleteByUser_UserId(user.getUserId());
         favoriteArtistRepository.save(FavoriteArtist.builder()
                         .artist(artistRepository.findById(favoriteArtist.getArtistId()).orElseThrow())

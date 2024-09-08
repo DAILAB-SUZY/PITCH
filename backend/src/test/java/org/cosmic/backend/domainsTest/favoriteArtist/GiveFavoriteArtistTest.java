@@ -50,28 +50,10 @@ public class GiveFavoriteArtistTest extends BaseSetting {
         Track track=trackRepository.findByTitle("bam").get();
 
         FavoriteReq favoriteReq=FavoriteReq.createFavoriteReq
-            (user.getUserId(),artist.getArtistId(),album.getAlbumId(),track.getTrackId(),album.getCover());
-        mockMvcHelper("/api/favoriteArtist/save",favoriteReq,userLogin.getToken());
-        UserDto userDto=UserDto.createUserDto(user.getUserId());
-        mockMvcGetHelper("/api/favoriteArtist/give/{userId}",user.getUserId(),userLogin.getToken())
+            (artist.getArtistId(),album.getAlbumId(),track.getTrackId(),album.getCover());
+        mockMvcHelper("/api/favoriteArtist",favoriteReq,userLogin.getToken());
+
+        mockMvcGetHelper("/api/favoriteArtist",userLogin.getToken())
             .andExpect(status().isOk());
-    }
-    @Test
-    @Transactional
-    @Sql("/data/favoriteArtist.sql")
-    public void notMatchFavoriteArtistGiveTest() throws Exception {
-        User user=userRepository.findByEmail_Email("test1@example.com").get();
-        user.setPassword(encoder.encode(user.getPassword()));
-        UserLogin userLogin = loginUser("test1@example.com");
-        Artist artist=artistRepository.findByArtistName("bibi").get();
-        Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
-        Track track=trackRepository.findByTitle("bam").get();
-
-        FavoriteReq favoriteReq=FavoriteReq.createFavoriteReq
-                (user.getUserId(),artist.getArtistId(),album.getAlbumId(),track.getTrackId(),album.getCover());
-        mockMvcHelper("/api/favoriteArtist/save",favoriteReq,userLogin.getToken());
-
-        mockMvcGetHelper("/api/favoriteArtist/give/{userId}",100L,userLogin.getToken())
-            .andExpect(status().isNotFound());
     }
 }
