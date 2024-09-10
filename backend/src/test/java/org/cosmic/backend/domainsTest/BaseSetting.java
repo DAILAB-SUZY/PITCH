@@ -5,6 +5,7 @@ import org.cosmic.backend.domain.auth.dtos.UserLogin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -40,6 +41,13 @@ public class BaseSetting {
                 .email(email)
                 .token(validToken)
                 .build();
+    }
+
+    protected  <T> ResultActions mockMvcHelper(HttpMethod httpMethod, String url, T requestObject, String validToken) throws Exception {
+        return mockMvc.perform(MockMvcRequestBuilders.request(httpMethod, url)
+                .header("Authorization", "Bearer " + validToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(requestObject)));
     }
 
     protected <T> ResultActions mockMvcGetssHelper(String url, T requestObject,String validToken) throws Exception {
