@@ -14,14 +14,19 @@ import org.cosmic.backend.domain.user.dtos.UserDto;
 import org.cosmic.backend.domain.user.repositorys.EmailRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.cosmic.backend.domainsTest.BaseSetting;
+import org.cosmic.backend.domainsTest.UrlGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -38,6 +43,8 @@ public class SaveBestAlbumTest extends BaseSetting {
     AlbumRepository albumRepository;
     @Autowired
     ArtistRepository artistRepository;
+    UrlGenerator urlGenerator=new UrlGenerator();
+    Map<String,Object> params= new HashMap<>();
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @Test
@@ -54,17 +61,21 @@ public class SaveBestAlbumTest extends BaseSetting {
         bestalbumListDTO.setBestalbum(Arrays.asList(new BestAlbumDetail(album1.getAlbumId()),
             new BestAlbumDetail(album2.getAlbumId())));
 
+        params.clear();
+        params.put("albumId",album1.getAlbumId());
+        String url=urlGenerator.buildUrl("/api/bestAlbum/{albumId}",params);
+        mockMvcHelper(HttpMethod.POST,url,null,userLogin.getToken()).andExpect(status().isOk());
 
-        mockMvcHelper("/api/bestAlbum/{albumId}",album1.getAlbumId(),userLogin.getToken())
-                .andExpect(status().isOk());
-        mockMvcHelper("/api/bestAlbum/{albumId}",album2.getAlbumId(),userLogin.getToken())
-                .andExpect(status().isOk());
+        params.clear();
+        params.put("albumId",album2.getAlbumId());
+        url=urlGenerator.buildUrl("/api/bestAlbum/{albumId}",params);
+        mockMvcHelper(HttpMethod.POST,url,null,userLogin.getToken()).andExpect(status().isOk());
 
         BestAlbumListDto bestAlbumListDto=BestAlbumListDto.createBestAlbumListDto
             (bestalbumListDTO.getBestalbum());
-        mockMvcHelper("/api/bestAlbum",bestAlbumListDto,userLogin.getToken());
+        mockMvcHelper(HttpMethod.POST,"/api/bestAlbum",bestAlbumListDto,userLogin.getToken());
 
-        mockMvcGetHelper("/api/bestAlbum",userLogin.getToken()).andExpect(status().isOk());
+        mockMvcHelper(HttpMethod.GET,"/api/bestAlbum",null,userLogin.getToken()).andExpect(status().isOk());
 }
 
     @Test
@@ -82,11 +93,13 @@ public class SaveBestAlbumTest extends BaseSetting {
         bestalbumListDTO.setBestalbum(Arrays.asList(new BestAlbumDetail(album1.getAlbumId()),
                 new BestAlbumDetail(album2.getAlbumId())));
 
-        mockMvcHelper("/api/bestAlbum/{albumId}",album1.getAlbumId(),userLogin.getToken())
-                .andExpect(status().isOk());
+        params.clear();
+        params.put("albumId",album1.getAlbumId());
+        String url=urlGenerator.buildUrl("/api/bestAlbum/{albumId}",params);
+        mockMvcHelper(HttpMethod.POST,url,null,userLogin.getToken()).andExpect(status().isOk());
 
         BestAlbumListDto bestAlbumListDto=BestAlbumListDto.createBestAlbumListDto
                 (bestalbumListDTO.getBestalbum());
-        mockMvcHelper("/api/bestAlbum/save",bestAlbumListDto,userLogin.getToken()).andExpect(status().isBadRequest());
+        mockMvcHelper(HttpMethod.POST,"/api/bestAlbum/save",bestAlbumListDto,userLogin.getToken()).andExpect(status().isBadRequest());
     }
 }

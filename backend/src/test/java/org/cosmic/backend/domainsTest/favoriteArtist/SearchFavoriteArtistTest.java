@@ -15,13 +15,19 @@ import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.EmailRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.cosmic.backend.domainsTest.BaseSetting;
+import org.cosmic.backend.domainsTest.UrlGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -38,7 +44,8 @@ public class SearchFavoriteArtistTest extends BaseSetting {
     AlbumRepository albumRepository;
     @Autowired
     TrackRepository trackRepository;
-
+    UrlGenerator urlGenerator=new UrlGenerator();
+    Map<String,Object> params= new HashMap<>();
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @Test
@@ -50,9 +57,12 @@ public class SearchFavoriteArtistTest extends BaseSetting {
         UserLogin userLogin = loginUser("test1@example.com");
         Artist artist=artistRepository.findByArtistName("bibi").get();
 
-        mockMvcGetHelper("/api/favoriteArtist/artist/{artistName}"
-            ,artist.getArtistName(),userLogin.getToken()).andExpect(status().isOk());
+        params.clear();
+        params.put("artistName",artist.getArtistName());
+        String url=urlGenerator.buildUrl("/api/favoriteArtist/artist/{artistName}",params);
+        mockMvcHelper(HttpMethod.GET,url,null,userLogin.getToken()).andExpect(status().isOk());
     }
+
     @Test
     @Transactional
     @Sql("/data/favoriteArtist.sql")
@@ -61,9 +71,12 @@ public class SearchFavoriteArtistTest extends BaseSetting {
         user.setPassword(encoder.encode(user.getPassword()));
         UserLogin userLogin = loginUser("test1@example.com");
 
-        mockMvcGetHelper("/api/favoriteArtist/artist/{artistName}","bi",userLogin.getToken())
-            .andExpect(status().isNotFound());
+        params.clear();
+        params.put("artistName","bi");
+        String url=urlGenerator.buildUrl("/api/favoriteArtist/artist/{artistName}",params);
+        mockMvcHelper(HttpMethod.GET,url,null,userLogin.getToken()).andExpect(status().isNotFound());
     }
+
     @Test
     @Transactional
     @Sql("/data/favoriteArtist.sql")
@@ -73,9 +86,11 @@ public class SearchFavoriteArtistTest extends BaseSetting {
         UserLogin userLogin = loginUser("test1@example.com");
         Artist artist=artistRepository.findByArtistName("bibi").get();
 
-        mockMvcGetsHelper("/api/favoriteArtist/artist/{artistId}/album/{albumName}"
-            ,artist.getArtistId(),"bam",userLogin.getToken())
-            .andExpect(status().isOk());
+        params.clear();
+        params.put("artistId",artist.getArtistId());
+        params.put("albumName","bam");
+        String url=urlGenerator.buildUrl("/api/favoriteArtist/artist/{artistId}/album/{albumName}",params);
+        mockMvcHelper(HttpMethod.GET,url,null,userLogin.getToken()).andExpect(status().isOk());
     }
 
     @Test
@@ -85,8 +100,12 @@ public class SearchFavoriteArtistTest extends BaseSetting {
         User user=userRepository.findByEmail_Email("test1@example.com").get();
         user.setPassword(encoder.encode(user.getPassword()));
         UserLogin userLogin = loginUser("test1@example.com");
-        mockMvcGetsHelper("/api/favoriteArtist/artist/{artistId}/album/{albumName}"
-            ,100L,"bam",userLogin.getToken()).andExpect(status().isNotFound());
+
+        params.clear();
+        params.put("artistId",100L);
+        params.put("albumName","bam");
+        String url=urlGenerator.buildUrl("/api/favoriteArtist/artist/{artistId}/album/{albumName}",params);
+        mockMvcHelper(HttpMethod.GET,url,null,userLogin.getToken()).andExpect(status().isNotFound());
 }
 
     @Test
@@ -99,9 +118,11 @@ public class SearchFavoriteArtistTest extends BaseSetting {
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
         Track track=trackRepository.findByTitle("bam").get();
 
-        mockMvcGetsHelper("/api/favoriteArtist/album/{albumId}/track/{trackName}"
-            ,album.getAlbumId(),track.getTitle(),userLogin.getToken())
-            .andExpect(status().isOk());
+        params.clear();
+        params.put("albumId",album.getAlbumId());
+        params.put("trackName",track.getTitle());
+        String url=urlGenerator.buildUrl("/api/favoriteArtist/album/{albumId}/track/{trackName}",params);
+        mockMvcHelper(HttpMethod.GET,url,null,userLogin.getToken()).andExpect(status().isOk());
     }
 
     @Test
@@ -113,8 +134,10 @@ public class SearchFavoriteArtistTest extends BaseSetting {
         UserLogin userLogin = loginUser("test1@example.com");
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
 
-        mockMvcGetsHelper("/api/favoriteArtist/album/{albumId}/track/{trackName}"
-            ,album.getAlbumId(),"bamd",userLogin.getToken())
-            .andExpect(status().isNotFound());
+        params.clear();
+        params.put("albumId",album.getAlbumId());
+        params.put("trackName","bamd");
+        String url=urlGenerator.buildUrl("/api/favoriteArtist/album/{albumId}/track/{trackName}",params);
+        mockMvcHelper(HttpMethod.GET,url,null,userLogin.getToken()).andExpect(status().isNotFound());
     }
 }

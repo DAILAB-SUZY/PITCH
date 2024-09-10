@@ -11,14 +11,20 @@ import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.EmailRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.cosmic.backend.domainsTest.BaseSetting;
+import org.cosmic.backend.domainsTest.UrlGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -37,6 +43,8 @@ public class CreatePostCommentTest extends BaseSetting {
     @Autowired
     TrackRepository trackRepository;
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    UrlGenerator urlGenerator=new UrlGenerator();
+    Map<String,Object> params= new HashMap<>();
 
     @Test
     @Transactional
@@ -48,9 +56,12 @@ public class CreatePostCommentTest extends BaseSetting {
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
 
         AlbumChatCommentReq albumChatCommentReq=AlbumChatCommentReq.createAlbumChatCommentReq(
-            "안녕",null);
-        mockMvcHelper("/api/album/{albumId}/comment",album.getAlbumId(),albumChatCommentReq,userLogin.getToken())
-            .andExpect(status().isOk());
+                "안녕",null);
+        params.clear();
+        params.put("albumId",album.getAlbumId());
+        String url=urlGenerator.buildUrl("/api/album/{albumId}/comment",params);
+        mockMvcHelper(HttpMethod.POST,url,albumChatCommentReq,userLogin.getToken())
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -60,10 +71,13 @@ public class CreatePostCommentTest extends BaseSetting {
         User user=userRepository.findByEmail_Email("test1@example.com").get();
         user.setPassword(encoder.encode(user.getPassword()));
         UserLogin userLogin = loginUser("test1@example.com");
-
         AlbumChatCommentReq albumChatCommentReq=AlbumChatCommentReq.createAlbumChatCommentReq(
-                "안녕",null);
-        mockMvcHelper("/api/album/{albumId}/comment",100L,albumChatCommentReq,userLogin.getToken())
-                .andExpect(status().isNotFound());
+            "안녕",null);
+
+        params.clear();
+        params.put("albumId",100L);
+        String url=urlGenerator.buildUrl("/api/album/{albumId}/comment",params);
+        mockMvcHelper(HttpMethod.POST,url,albumChatCommentReq,userLogin.getToken())
+            .andExpect(status().isNotFound());
     }
 }

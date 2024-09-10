@@ -14,6 +14,7 @@ import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.EmailRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.cosmic.backend.domainsTest.BaseSetting;
+import org.cosmic.backend.domainsTest.UrlGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -24,6 +25,10 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
@@ -42,6 +47,8 @@ public class DeletePostCommentTest extends BaseSetting {
     TrackRepository trackRepository;
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
     private MvcResult result;
+    UrlGenerator urlGenerator=new UrlGenerator();
+    Map<String,Object> params= new HashMap<>();
 
     @Test
     @Transactional

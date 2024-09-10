@@ -2,10 +2,7 @@ package org.cosmic.backend.domain.albumChat.apis;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.cosmic.backend.domain.albumChat.applications.AlbumChatService;
-import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumChatDto;
-import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumChatResponse;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentResponse;
-import org.cosmic.backend.domain.post.dtos.Post.AlbumDto;
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatException;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,10 +31,11 @@ public class AlbumChatApi {
     /**
      * 앨범 챗 ID를 기반으로 해당 앨범 챗의 댓글을 좋아요 수 순서대로 정렬하여 반환합니다.
      *
-     * @param albumId 조회할 앨범 챗의 ID를 포함한 AlbumChatDto 객체
+     * @param albumId 조회할 앨범 ID
      * @return List<AlbumChatCommentResponse> 좋아요 수 순서로 정렬된 앨범 챗 댓글 목록
      * @throws NotFoundAlbumChatException 특정 앨범의 앨범 챗을 찾을 수 없는 경우 발생
      */
+
     @Transactional
     @GetMapping("/album/{albumId}")
     @ApiResponse(responseCode = "404", description = "Not Found Album")

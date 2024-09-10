@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
@@ -62,7 +63,8 @@ public class MusicDNAControllerTest extends BaseSetting {
         DnaDto dnaDTO=new DnaDto();
         dnaDTO.setDna(Arrays.asList(new DnaDetail(1L),new DnaDetail(2L),
             new DnaDetail(3L),new DnaDetail(4L)));
-        mockMvcHelper("/api/dna",dnaDTO,userLogin.getToken()).andExpect(status().isOk());
+
+        mockMvcHelper(HttpMethod.POST,"/api/dna",dnaDTO,userLogin.getToken()).andExpect(status().isOk());
     }
 
     @Test
@@ -76,7 +78,7 @@ public class MusicDNAControllerTest extends BaseSetting {
         DnaDto dnaDTO=new DnaDto();
         dnaDTO.setDna(Arrays.asList(new DnaDetail(1L),new DnaDetail(2L),
                 new DnaDetail(3L)));
-        mockMvcHelper("/api/dna",dnaDTO,userLogin.getToken()).andExpect(status().isBadRequest());
+        mockMvcHelper(HttpMethod.POST,"/api/dna",dnaDTO,userLogin.getToken()).andExpect(status().isBadRequest());
     }
 }
 

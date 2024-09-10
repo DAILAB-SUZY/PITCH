@@ -9,10 +9,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
@@ -39,50 +42,69 @@ public class BaseSetting {
                 .build();
     }
 
-    protected <T> ResultActions mockMvcHelper(String url, Long id,T requestObject,String validToken) throws Exception {
-        return mockMvc.perform(MockMvcRequestBuilders.post(url,id)
+    protected <T> ResultActions mockMvcGetssHelper(String url, T requestObject,String validToken) throws Exception {
+        return mockMvc.perform(MockMvcRequestBuilders.get(url)
                 .header("Authorization", "Bearer " + validToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(requestObject)));
     }
-    protected ResultActions mockMvcsHelper(String url, Long id1,Long id2,String validToken) throws Exception {
-        return mockMvc.perform(MockMvcRequestBuilders.post(url,id1,id2)
+    protected <T> ResultActions mockMvcPostssHelper(String url,T requestObject,String validToken) throws Exception {
+        return mockMvc.perform(MockMvcRequestBuilders.post(url)
                 .header("Authorization", "Bearer " + validToken)
-                .contentType(MediaType.APPLICATION_JSON));
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(requestObject)));
     }
+    protected <T> ResultActions mockMvcDeletessHelper(String url,T requestObject,String validToken) throws Exception {
+        return mockMvc.perform(MockMvcRequestBuilders.delete(url)
+                .header("Authorization", "Bearer " + validToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(requestObject)));
+    }
+
+
+
     protected <T> ResultActions mockMvcHelper(String url, Long id1,Long id2,T requestObject,String validToken) throws Exception {
         return mockMvc.perform(MockMvcRequestBuilders.post(url,id1,id2)
                 .header("Authorization", "Bearer " + validToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(requestObject)));
     }
+    protected <T> ResultActions mockMvcHelper(String url, Long id,T requestObject,String validToken) throws Exception {
+        return this.mockMvcHelper(url, id, null,requestObject, validToken);
+    }
+
+    protected ResultActions mockMvcsHelper(String url, Long id1,Long id2,String validToken) throws Exception {
+        return this.mockMvcHelper(url, id1, id2,null, validToken);
+    }
+
     protected ResultActions mockMvcHelper(String url, Long id,String validToken) throws Exception {
-        return mockMvc.perform(MockMvcRequestBuilders.post(url,id)
-                .header("Authorization", "Bearer " + validToken)
-                .contentType(MediaType.APPLICATION_JSON)
-        );
+        return this.mockMvcHelper(url, id, null,null, validToken);
+
     }
     protected <T> ResultActions mockMvcHelper(String url, T requestObject,String validToken) throws Exception {
-        return mockMvc.perform(MockMvcRequestBuilders.post(url)
-                .header("Authorization", "Bearer " + validToken)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(requestObject)));
+        return this.mockMvcHelper(url,null,null,requestObject, validToken);
     }
 
-
-    protected <T>  ResultActions mockMvcGetHelper(String url, Long requestId,T requestObject,String validToken) throws Exception {
-        return mockMvc.perform(MockMvcRequestBuilders.get(url,requestId)
+    protected <T>  ResultActions mockMvcGetHelper(String url, Long id1,Long id2,String name,T requestObject,String validToken) throws Exception {
+        return mockMvc.perform(MockMvcRequestBuilders.get(url,id1,id2,name)
                 .header("Authorization", "Bearer " +validToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(requestObject))
         );
     }
-    protected  ResultActions mockMvcGetsHelper(String url, Long requestId,Long requestId2,String validToken) throws Exception {
-        return mockMvc.perform(MockMvcRequestBuilders.get(url,requestId,requestId2)
-                .header("Authorization", "Bearer " +validToken)
-                .contentType(MediaType.APPLICATION_JSON)
-        );
+
+    protected <T>  ResultActions mockMvcGetHelper(String url, Long id1,T requestObject,String validToken) throws Exception {
+        return this.mockMvcGetHelper(url,id1,null,null,requestObject, validToken);
     }
+    protected  ResultActions mockMvcGetsHelper(String url, Long id1,Long id2,String validToken) throws Exception {
+        return this.mockMvcGetHelper(url,id1,id2,null,null, validToken);
+    }
+
+    protected  ResultActions mockMvcGetsHelper(String url,String validToken) throws Exception {
+        return this.mockMvcGetHelper(url,null,null,null,null, validToken);
+    }
+
+
     protected  ResultActions mockMvcGetsHelper(String url, Long requestId,String requestString,String validToken) throws Exception {
         return mockMvc.perform(MockMvcRequestBuilders.get(url,requestId,requestString)
                 .header("Authorization", "Bearer " +validToken)

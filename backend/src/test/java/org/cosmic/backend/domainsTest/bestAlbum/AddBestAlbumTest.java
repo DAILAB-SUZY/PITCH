@@ -12,10 +12,12 @@ import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.EmailRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.cosmic.backend.domainsTest.BaseSetting;
+import org.cosmic.backend.domainsTest.UrlGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
@@ -23,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -47,6 +51,8 @@ public class AddBestAlbumTest extends BaseSetting {
     ArtistRepository artistRepository;
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
+    UrlGenerator urlGenerator=new UrlGenerator();
+    Map<String,Object> params= new HashMap<>();
     final ObjectMapper mapper = new ObjectMapper();
 
     @Test
@@ -58,8 +64,10 @@ public class AddBestAlbumTest extends BaseSetting {
         UserLogin userLogin = loginUser("test1@example.com");
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
 
-        mockMvcHelper("/api/bestAlbum/{albumId}",album.getAlbumId(),userLogin.getToken())
-            .andExpect(status().isOk());
+        params.clear();
+        params.put("albumId",album.getAlbumId());
+        String url=urlGenerator.buildUrl("/api/bestAlbum/{albumId}",params);
+        mockMvcHelper(HttpMethod.POST,url,null,userLogin.getToken()).andExpect(status().isOk());
     }
     @Test
     @Transactional
@@ -70,10 +78,9 @@ public class AddBestAlbumTest extends BaseSetting {
         UserLogin userLogin = loginUser("test1@example.com");
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
 
-        BestAlbumDto bestAlbumDto=BestAlbumDto.createBestAlbumDto(100L,album.getAlbumId());
-        mockMvcHelper("/api/bestAlbum/add/{albumId}",album.getAlbumId(),bestAlbumDto,userLogin.getToken())
-                .andExpect(status().isNotFound());
-        mockMvcHelper("/api/bestAlbum/{albumId}",100L,userLogin.getToken())
-                .andExpect(status().isNotFound());
+        params.clear();
+        params.put("albumId",100L);
+        String url=urlGenerator.buildUrl("/api/bestAlbum/{albumId}",params);
+        mockMvcHelper(HttpMethod.POST,url,null,userLogin.getToken()).andExpect(status().isNotFound());
     }
 }

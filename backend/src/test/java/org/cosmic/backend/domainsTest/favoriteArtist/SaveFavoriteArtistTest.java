@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,6 +52,6 @@ public class SaveFavoriteArtistTest extends BaseSetting {
 
         FavoriteReq favoriteReq=FavoriteReq.createFavoriteReq
                 (artist.getArtistId(),album.getAlbumId(),track.getTrackId(),album.getCover());
-        mockMvcHelper("/api/favoriteArtist",favoriteReq,userLogin.getToken()).andExpect(status().isOk());
+        mockMvcHelper(HttpMethod.POST,"/api/favoriteArtist",favoriteReq,userLogin.getToken()).andExpect(status().isOk());
     }
 }

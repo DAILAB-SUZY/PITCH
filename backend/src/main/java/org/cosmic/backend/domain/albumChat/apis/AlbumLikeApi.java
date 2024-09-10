@@ -2,23 +2,17 @@ package org.cosmic.backend.domain.albumChat.apis;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.cosmic.backend.domain.albumChat.applications.AlbumLikeService;
-import org.cosmic.backend.domain.albumChat.dtos.albumlike.AlbumChatAlbumLikeDto;
 import org.cosmic.backend.domain.albumChat.dtos.albumlike.AlbumLikeReq;
 import org.cosmic.backend.domain.albumChat.dtos.albumlike.AlbumChatAlbumLikeResponse;
 import org.cosmic.backend.domain.albumChat.exceptions.ExistAlbumLikeException;
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatException;
-import org.cosmic.backend.domain.bestAlbum.dtos.AlbumDto;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.post.exceptions.NotFoundLikeException;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
-/**
- * AlbumLikeApi 클래스는 앨범 챗에 대한 좋아요 기능을 처리하는 API를 제공합니다.
- */
 @RestController
 @RequestMapping("/api")
 @ApiCommonResponses
@@ -36,7 +30,7 @@ public class AlbumLikeApi {//각 앨범의 총 좋아요
     /**
      * 앨범 챗 ID를 사용하여 해당 앨범 챗의 좋아요 목록을 조회합니다.
      *
-     * @param albumId 조회할 앨범 챗의 ID를 포함한 AlbumChatDto 객체
+     * @param albumId 조회할 앨범 ID
      * @return List<AlbumChatAlbumLikeResponse> 조회된 좋아요 목록
      * @throws NotFoundAlbumChatException 특정 앨범 챗을 찾을 수 없는 경우 발생
      */
@@ -49,7 +43,7 @@ public class AlbumLikeApi {//각 앨범의 총 좋아요
     /**
      * 앨범 챗에 새로운 좋아요를 생성합니다.
      *
-     * @param userId 생성할 좋아요에 대한 정보가 담긴 AlbumChatAlbumLikeDto 객체
+     *
      * @return AlbumLikeReq 생성된 좋아요의 ID를 포함한 객체
      * @throws NotFoundUserException 특정 사용자를 찾을 수 없는 경우 발생
      * @throws NotFoundAlbumChatException 특정 앨범 챗을 찾을 수 없는 경우 발생

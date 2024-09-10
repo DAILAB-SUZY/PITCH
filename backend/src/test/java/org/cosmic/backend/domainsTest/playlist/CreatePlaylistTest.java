@@ -15,20 +15,29 @@ import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.EmailRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.cosmic.backend.domainsTest.BaseSetting;
+import org.cosmic.backend.domainsTest.UrlGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @Log4j2
 public class CreatePlaylistTest extends BaseSetting {
+    @Autowired
+    MockMvc mockMvc;
     @Autowired
     MusicDnaRepository musicDnaRepository;
     @Autowired
@@ -43,6 +52,8 @@ public class CreatePlaylistTest extends BaseSetting {
     PlaylistRepository playlistRepository;
     @Autowired
     TrackRepository trackRepository;
+
+    UrlGenerator urlGenerator= new UrlGenerator();
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @Test
@@ -54,7 +65,9 @@ public class CreatePlaylistTest extends BaseSetting {
         UserLogin userLogin = loginUser("test1@example.com");
         Track track=trackRepository.findByTitle("bam").get();
         PlaylistDto playlistdto=new PlaylistDto(List.of(new PlaylistDetail(track.getTrackId())));
-        mockMvcHelper("/api/playlist",playlistdto,userLogin.getToken()).andExpect(status().isOk());
+
+        //postRequest("/api/playlist",null,null,null,playlistdto,userLogin.getToken()).andExpect(status().isOk());
+        mockMvcPostssHelper("/api/playlist",playlistdto,userLogin.getToken()).andExpect(status().isOk());
     }
 
     @Test
@@ -65,7 +78,13 @@ public class CreatePlaylistTest extends BaseSetting {
         user.setPassword(encoder.encode(user.getPassword()));
         UserLogin userLogin = loginUser("test1@example.com");
 
-        mockMvcGetHelper("/api/playlist/track/{trackName}","bam",userLogin.getToken()).andExpect(status().isOk());
+        Map<String,Object> params= new HashMap<>();
+        params.put("trackName","bam");
+
+        String url=urlGenerator.buildUrl("/api/playlist/track/{trackName}",params);
+        mockMvcHelper(HttpMethod.GET,url,null,userLogin.getToken()).andExpect(status().isOk());
+        //postRequest("/api/playlist/track/{trackName}",null,null,"bam",null,userLogin.getToken()).andExpect(status().isOk());
+        //mockMvcGetHelper("/api/playlist/track/{trackName}","bam",userLogin.getToken()).andExpect(status().isOk());
     }
 
     @Test
@@ -75,6 +94,14 @@ public class CreatePlaylistTest extends BaseSetting {
         User user=userRepository.findByEmail_Email("test1@example.com").get();
         user.setPassword(encoder.encode(user.getPassword()));
         UserLogin userLogin = loginUser("test1@example.com");
-        mockMvcGetHelper("/api/playlist/track/{trackName}","id",userLogin.getToken()).andExpect(status().isNotFound());
+
+        Map<String,Object> params= new HashMap<>();
+        params.put("trackName","id");
+
+        String url=urlGenerator.buildUrl("/api/playlist/track/{trackName}",params);
+        mockMvcHelper(HttpMethod.GET,url,null,userLogin.getToken()).andExpect(status().isNotFound());
+
+        //postRequest("/api/playlist/track/{trackName}",null,null,"id",null,userLogin.getToken()).andExpect(status().isNotFound());
+        //mockMvcGetHelper("/api/playlist/track/{trackName}","id",userLogin.getToken()).andExpect(status().isNotFound());
     }
 }

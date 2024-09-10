@@ -15,16 +15,22 @@ import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.EmailRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.cosmic.backend.domainsTest.BaseSetting;
+import org.cosmic.backend.domainsTest.UrlGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 
@@ -43,6 +49,8 @@ public class DeletePostCommentLikeTest extends BaseSetting {
     @Autowired
     TrackRepository trackRepository;
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    UrlGenerator urlGenerator=new UrlGenerator();
+    Map<String,Object> params= new HashMap<>();
 
     @Test
     @Transactional
@@ -54,19 +62,23 @@ public class DeletePostCommentLikeTest extends BaseSetting {
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
         AlbumChatCommentReq albumChatCommentReq=AlbumChatCommentReq.createAlbumChatCommentReq(
                 "안녕",null);
-        ResultActions resultActions=mockMvcHelper("/api/album/{albumId}/comment"
-            ,album.getAlbumId(),albumChatCommentReq,userLogin.getToken());
+        params.clear();
+        params.put("albumId",album.getAlbumId());
+        String url=urlGenerator.buildUrl("/api/album/{albumId}/comment",params);
+        ResultActions resultActions=mockMvcHelper(HttpMethod.POST,url,albumChatCommentReq,userLogin.getToken())
+                .andExpect(status().isOk());
+
         MvcResult result = resultActions.andReturn();
         String content = result.getResponse().getContentAsString();
         AlbumChatCommentDto albumChatCommentDto = mapper.readValue(content, AlbumChatCommentDto.class);
         Long albumChatCommentId = albumChatCommentDto.getAlbumChatCommentId();
 
-        mockMvcsHelper("/api/album/{albumId}/comment/{albumChatCommentId}/commentLike"
-                ,album.getAlbumId(),albumChatCommentId,userLogin.getToken());
-
-        mockMvcDeletesHelper("/api/album/{albumId}/comment/{albumChatCommentId}/commentLike"
-            ,album.getAlbumId(),albumChatCommentId,userLogin.getToken())
-            .andExpect(status().isOk());
+        params.put("albumChatCommentId",albumChatCommentId);
+        url=urlGenerator.buildUrl("/api/album/{albumId}/comment/{albumChatCommentId}/commentLike",params);
+        mockMvcHelper(HttpMethod.POST,url,albumChatCommentReq,userLogin.getToken())
+                .andExpect(status().isOk());
+        mockMvcHelper(HttpMethod.DELETE,url,albumChatCommentReq,userLogin.getToken())
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -79,18 +91,27 @@ public class DeletePostCommentLikeTest extends BaseSetting {
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
         AlbumChatCommentReq albumChatCommentReq=AlbumChatCommentReq.createAlbumChatCommentReq(
                 "안녕",null);
-        ResultActions resultActions=mockMvcHelper("/api/album/{albumId}/comment"
-            ,album.getAlbumId(),albumChatCommentReq,userLogin.getToken());
+        params.clear();
+        params.put("albumId",album.getAlbumId());
+        String url=urlGenerator.buildUrl("/api/album/{albumId}/comment",params);
+        ResultActions resultActions=mockMvcHelper(HttpMethod.POST,url,albumChatCommentReq,userLogin.getToken())
+                .andExpect(status().isOk());
+
         MvcResult result = resultActions.andReturn();
         String content = result.getResponse().getContentAsString();
         AlbumChatCommentDto albumChatCommentDto = mapper.readValue(content, AlbumChatCommentDto.class);
         Long albumChatCommentId = albumChatCommentDto.getAlbumChatCommentId();
 
-        mockMvcsHelper("/api/album/{albumId}/comment/{albumChatCommentId}/commentLike"
-                ,album.getAlbumId(),albumChatCommentId,userLogin.getToken());
+        params.put("albumChatCommentId",albumChatCommentId);
+        url=urlGenerator.buildUrl("/api/album/{albumId}/comment/{albumChatCommentId}/commentLike",params);
+        mockMvcHelper(HttpMethod.POST,url,null,userLogin.getToken())
+                .andExpect(status().isOk());
 
-        mockMvcDeletesHelper("/api/album/{albumId}/comment/{albumChatCommentId}/commentLike"
-                ,album.getAlbumId(),100L,userLogin.getToken())
+        params.clear();
+        params.put("albumId",album.getAlbumId());
+        params.put("albumChatCommentId",100L);
+        url=urlGenerator.buildUrl("/api/album/{albumId}/comment/{albumChatCommentId}/commentLike",params);
+        mockMvcHelper(HttpMethod.DELETE,url,null,userLogin.getToken())
                 .andExpect(status().isNotFound());
     }
 }
