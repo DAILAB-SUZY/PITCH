@@ -14,16 +14,22 @@ import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.EmailRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.cosmic.backend.domainsTest.BaseSetting;
+import org.cosmic.backend.domainsTest.UrlGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -43,6 +49,8 @@ public class CreateReplyTest extends BaseSetting {
     TrackRepository trackRepository;
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
     private MvcResult result;
+    UrlGenerator urlGenerator=new UrlGenerator();
+    Map<String,Object> params= new HashMap<>();
 
     @Test
     @Transactional
@@ -54,7 +62,8 @@ public class CreateReplyTest extends BaseSetting {
 
         CreatePost createPost=CreatePost.createCreatePost
                 (user.getUserId(),"base","bibi","밤양갱 노래좋다","bam",null);
-        ResultActions resultActions =mockMvcHelper("/api/post/create",createPost,userLogin.getToken());
+        String url="/api/post/create";
+        ResultActions resultActions =mockMvcHelper(HttpMethod.POST,url,createPost,userLogin.getToken());
         result = resultActions.andReturn();
         String content = result.getResponse().getContentAsString();
         PostDto postDto = mapper.readValue(content, PostDto.class); // 응답 JSON을 PostDto 객체로 변환
@@ -62,7 +71,8 @@ public class CreateReplyTest extends BaseSetting {
 
         CreateCommentReq createCommentReq=CreateCommentReq.createCreateCommentReq
                 (user.getUserId(),null,postId,"안녕");
-        resultActions=mockMvcHelper("/api/comment/create",createCommentReq,userLogin.getToken()).andExpect(status().isOk());
+        url="/api/comment/create";
+        resultActions=mockMvcHelper(HttpMethod.POST,url,createCommentReq,userLogin.getToken()).andExpect(status().isOk());
         result = resultActions.andReturn();
         content = result.getResponse().getContentAsString();
         CommentDto comment = mapper.readValue(content, CommentDto.class); // 응답 JSON을 PostDto 객체로 변환
@@ -70,7 +80,8 @@ public class CreateReplyTest extends BaseSetting {
 
         CreateReplyReq createReplyReq =CreateReplyReq.createCreateReplyReq
             (user.getUserId(),commentId,"안녕",null);
-        mockMvcHelper("/api/reply/create",createReplyReq,userLogin.getToken()).andExpect(status().isOk());
+        url="/api/reply/create";
+        mockMvcHelper(HttpMethod.POST,url,createReplyReq,userLogin.getToken()).andExpect(status().isOk());
     }
 
     //post잘 만들어지는지
@@ -84,7 +95,8 @@ public class CreateReplyTest extends BaseSetting {
 
         CreatePost createPost=CreatePost.createCreatePost
                 (user.getUserId(),"base","bibi","밤양갱 노래좋다","bam",null);
-        ResultActions resultActions =mockMvcHelper("/api/post/create",createPost,userLogin.getToken());
+        String url="/api/post/create";
+        ResultActions resultActions =mockMvcHelper(HttpMethod.POST,url,createPost,userLogin.getToken());
         result = resultActions.andReturn();
         String content = result.getResponse().getContentAsString();
         PostDto postDto = mapper.readValue(content, PostDto.class); // 응답 JSON을 PostDto 객체로 변환
@@ -92,7 +104,8 @@ public class CreateReplyTest extends BaseSetting {
 
         CreateCommentReq createCommentReq=CreateCommentReq.createCreateCommentReq
                 (user.getUserId(),null,postId,"안녕");
-        resultActions=mockMvcHelper("/api/comment/create",createCommentReq,userLogin.getToken()).andExpect(status().isOk());
+        url="/api/comment/create";
+        resultActions=mockMvcHelper(HttpMethod.POST,url,createCommentReq,userLogin.getToken()).andExpect(status().isOk());
         result = resultActions.andReturn();
         content = result.getResponse().getContentAsString();
         CommentDto comment = mapper.readValue(content, CommentDto.class); // 응답 JSON을 PostDto 객체로 변환
@@ -100,8 +113,10 @@ public class CreateReplyTest extends BaseSetting {
 
         CreateReplyReq createReplyReq =CreateReplyReq.createCreateReplyReq
             (user.getUserId(),commentId,"안녕",null);
-        mockMvcHelper("/api/reply/create",createReplyReq,userLogin.getToken()).andExpect(status().isOk());
+        url="/api/reply/create";
+        mockMvcHelper(HttpMethod.POST,url,createReplyReq,userLogin.getToken()).andExpect(status().isOk());
         CommentDto commentDto= CommentDto.createCommentDto(commentId);
-        mockMvcHelper("/api/reply/give",commentDto,userLogin.getToken()).andExpect(status().isOk());
+        url="/api/reply/give";
+        mockMvcHelper(HttpMethod.POST,url,commentDto,userLogin.getToken()).andExpect(status().isOk());
     }
 }

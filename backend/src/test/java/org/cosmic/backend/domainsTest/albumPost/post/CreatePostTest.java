@@ -14,16 +14,22 @@ import org.cosmic.backend.domain.user.dtos.UserDto;
 import org.cosmic.backend.domain.user.repositorys.EmailRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.cosmic.backend.domainsTest.BaseSetting;
+import org.cosmic.backend.domainsTest.UrlGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -43,6 +49,9 @@ public class CreatePostTest extends BaseSetting {
     TrackRepository trackRepository;
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
     private MvcResult result;
+    UrlGenerator urlGenerator=new UrlGenerator();
+    Map<String,Object> params= new HashMap<>();
+
     @Test
     @Transactional
     @Sql("/data/albumPost.sql")
@@ -52,10 +61,12 @@ public class CreatePostTest extends BaseSetting {
         UserLogin userLogin = loginUser("test1@example.com");
 
         AlbumDto albumDto=AlbumDto.createAlbumDto("bam");
-        mockMvcHelper("/api/post/searchAlbum",albumDto,userLogin.getToken()).andExpect(status().isOk());
+        String url="/api/post/searchAlbum";
+        mockMvcHelper(HttpMethod.POST,url,albumDto,userLogin.getToken()).andExpect(status().isOk());
 
         ArtistDto artistDto=ArtistDto.createArtistDto("bibi");
-        mockMvcHelper("/api/post/searchArtist",artistDto,userLogin.getToken()).andExpect(status().isOk());
+        url="/api/post/searchArtist";
+        mockMvcHelper(HttpMethod.POST,url,artistDto,userLogin.getToken()).andExpect(status().isOk());
     }
     //아티스트 또는 앨범으로 찾기
 
@@ -68,7 +79,8 @@ public class CreatePostTest extends BaseSetting {
         UserLogin userLogin = loginUser("test1@example.com");
         CreatePost createPost=CreatePost.createCreatePost
             (user.getUserId(),"base","bibi","밤양갱 노래좋다","bam",null);
-        mockMvcHelper("/api/post/create",createPost,userLogin.getToken())
+        String url="/api/post/create";
+        mockMvcHelper(HttpMethod.POST,url,createPost,userLogin.getToken())
             .andExpect(status().isOk());
     }
 
@@ -83,15 +95,18 @@ public class CreatePostTest extends BaseSetting {
 
         CreatePost createPost=CreatePost.createCreatePost
             (user.getUserId(),"base","bibi","밤양갱 노래좋다","bam",null);
-        ResultActions resultActions =mockMvcHelper("/api/post/create",createPost,userLogin.getToken());
+        String url="/api/post/create";
+        ResultActions resultActions =mockMvcHelper(HttpMethod.POST,url,createPost,userLogin.getToken());
         result = resultActions.andReturn();
         String content = result.getResponse().getContentAsString();
         PostDto postDto = mapper.readValue(content, PostDto.class);
         Long postId = postDto.getPostId();
 
         UserDto userDto=UserDto.createUserDto(user.getUserId());
-        mockMvcHelper("/api/post/give",userDto,userLogin.getToken()).andExpect(status().isOk());
+        url="/api/post/give";
+        mockMvcHelper(HttpMethod.POST,url,userDto,userLogin.getToken()).andExpect(status().isOk());
         PostDto postDto1=PostDto.createPostDto(postId);
-        mockMvcHelper("/api/post/open",postDto1,userLogin.getToken()).andExpect(status().isOk());
+        url="/api/post/open";
+        mockMvcHelper(HttpMethod.POST,url,postDto1,userLogin.getToken()).andExpect(status().isOk());
     }
 }

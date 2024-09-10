@@ -20,10 +20,12 @@ import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.EmailRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.cosmic.backend.domainsTest.BaseSetting;
+import org.cosmic.backend.domainsTest.UrlGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.jdbc.Sql;
@@ -35,6 +37,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -59,6 +63,8 @@ public class UpdateReplyTest extends BaseSetting {
     TrackRepository trackRepository;
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
     private MvcResult result;
+    UrlGenerator urlGenerator=new UrlGenerator();
+    Map<String,Object> params= new HashMap<>();
 
     @Test
     @Transactional
@@ -69,8 +75,9 @@ public class UpdateReplyTest extends BaseSetting {
         UserLogin userLogin = loginUser("test1@example.com");
 
         CreatePost createPost=CreatePost.createCreatePost
-                (user.getUserId(),"base","bibi","밤양갱 노래좋다","bam",null);
-        ResultActions resultActions =mockMvcHelper("/api/post/create",createPost,userLogin.getToken());
+            (user.getUserId(),"base","bibi","밤양갱 노래좋다","bam",null);
+        String url="/api/post/create";
+        ResultActions resultActions =mockMvcHelper(HttpMethod.POST,url,createPost,userLogin.getToken());
         result = resultActions.andReturn();
         String content = result.getResponse().getContentAsString();
         PostDto postDto = mapper.readValue(content, PostDto.class); // 응답 JSON을 PostDto 객체로 변환
@@ -78,7 +85,8 @@ public class UpdateReplyTest extends BaseSetting {
 
         CreateCommentReq createCommentReq=CreateCommentReq.createCreateCommentReq
                 (user.getUserId(),null,postId,"안녕");
-        resultActions=mockMvcHelper("/api/comment/create",createCommentReq,userLogin.getToken()).andExpect(status().isOk());
+        url="/api/comment/create";
+        resultActions=mockMvcHelper(HttpMethod.POST,url,createCommentReq,userLogin.getToken()).andExpect(status().isOk());
         result = resultActions.andReturn();
         content = result.getResponse().getContentAsString();
         CommentDto comment = mapper.readValue(content, CommentDto.class); // 응답 JSON을 PostDto 객체로 변환
@@ -86,13 +94,16 @@ public class UpdateReplyTest extends BaseSetting {
 
         CreateReplyReq createReplyReq =CreateReplyReq.createCreateReplyReq
                 (user.getUserId(),commentId,"안녕",null);
-        resultActions=mockMvcHelper("/api/reply/create",createReplyReq,userLogin.getToken()).andExpect(status().isOk());
+        url="/api/reply/create";
+
+        resultActions=mockMvcHelper(HttpMethod.POST,url,createReplyReq,userLogin.getToken()).andExpect(status().isOk());
         result = resultActions.andReturn();
         content = result.getResponse().getContentAsString();
         ReplyDto reply = mapper.readValue(content, ReplyDto.class); // 응답 JSON을 PostDto 객체로 변환
         Long replyId = reply.getReplyId();
 
         UpdateReplyReq updateReplyReq=UpdateReplyReq.createUpdateReplyReq(user.getUserId(),commentId,replyId,"밤양갱 노래 별론대",null);
-        mockMvcHelper("/api/reply/update",updateReplyReq,userLogin.getToken()).andExpect(status().isOk());
+        url="/api/reply/update";
+        mockMvcHelper(HttpMethod.POST,url,updateReplyReq,userLogin.getToken()).andExpect(status().isOk());
     }
 }

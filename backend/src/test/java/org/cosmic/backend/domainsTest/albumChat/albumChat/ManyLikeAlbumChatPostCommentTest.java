@@ -117,6 +117,7 @@ public class ManyLikeAlbumChatPostCommentTest extends BaseSetting {
         params.clear();
         params.put("albumId",album.getAlbumId());
         url=urlGenerator.buildUrl("/api/album/{albumId}?sorted=manylike",params);
+        System.out.println("*******"+url);
         mockMvcHelper(HttpMethod.GET,url,null,userLogin.getToken())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].albumChatCommentId", is(2)))

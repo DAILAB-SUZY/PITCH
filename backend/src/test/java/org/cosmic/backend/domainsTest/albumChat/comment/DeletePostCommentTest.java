@@ -93,10 +93,17 @@ public class DeletePostCommentTest extends BaseSetting {
 
         AlbumChatCommentReq albumChatCommentReq=AlbumChatCommentReq.createAlbumChatCommentReq(
             "안녕",null);
-        mockMvcHelper("/api/album/{albumId}/comment",album.getAlbumId(),albumChatCommentReq,userLogin.getToken());
 
-        mockMvcDeletesHelper("/api/album/{albumId}/comment/{albumChatCommentId}",
-                album.getAlbumId(),100L,userLogin.getToken()).andExpect(status().isNotFound());
+        params.clear();
+        params.put("albumId",album.getAlbumId());
+        String url=urlGenerator.buildUrl("/api/album/{albumId}/comment",params);
+        mockMvcHelper(HttpMethod.POST,url,albumChatCommentReq,userLogin.getToken())
+                .andExpect(status().isOk());
+
+        params.put("albumChatCommentId",100L);
+        url=urlGenerator.buildUrl("/api/album/{albumId}/comment/{albumChatCommentId}",params);
+        mockMvcHelper(HttpMethod.DELETE,url,null,userLogin.getToken())
+                .andExpect(status().isNotFound());
     }
     @Test
     @Transactional
@@ -109,8 +116,12 @@ public class DeletePostCommentTest extends BaseSetting {
 
         AlbumChatCommentReq albumChatCommentReq=AlbumChatCommentReq.createAlbumChatCommentReq(
             "안녕",null);
-        ResultActions resultActions=mockMvcHelper("/api/album/{albumId}/comment",
-            album.getAlbumId(),albumChatCommentReq,userLogin.getToken());
+
+        params.clear();
+        params.put("albumId",album.getAlbumId());
+        String url=urlGenerator.buildUrl("/api/album/{albumId}/comment",params);
+        ResultActions resultActions=mockMvcHelper(HttpMethod.POST,url,albumChatCommentReq,userLogin.getToken())
+                .andExpect(status().isOk());
         MvcResult result = resultActions.andReturn();
         String content = result.getResponse().getContentAsString();
         AlbumChatCommentDto albumChatCommentDto = mapper.readValue(content, AlbumChatCommentDto.class);
@@ -118,12 +129,17 @@ public class DeletePostCommentTest extends BaseSetting {
 
         AlbumChatCommentLikeDto albumChatCommentLikeDto=AlbumChatCommentLikeDto.createAlbumChatCommentLikeDto(
             user.getUserId(),albumChatCommentId);
-        mockMvcHelper("/api/albumchat/commentlike/create",albumChatCommentLikeDto,userLogin.getToken());
 
-        mockMvcDeletesHelper("/api/album/{albumId}/comment/{albumChatCommentId}"
-            ,album.getAlbumId(),albumChatCommentDto.getAlbumChatCommentId(),userLogin.getToken());
 
-        mockMvcHelper("/api/albumchat/commentlike/give",albumChatCommentDto,userLogin.getToken())
+        params.put("albumChatCommentId",albumChatCommentId);
+        url=urlGenerator.buildUrl("/album/{albumId}/comment/{albumChatCommentId}/commentLike",params);
+        mockMvcHelper(HttpMethod.POST,url,albumChatCommentLikeDto,userLogin.getToken());
+
+        url=urlGenerator.buildUrl("/api/album/{albumId}/comment/{albumChatCommentId}",params);
+        mockMvcHelper(HttpMethod.DELETE,url,albumChatCommentDto.getAlbumChatCommentId(),userLogin.getToken());
+
+        url=urlGenerator.buildUrl("/album/{albumId}/comment/{albumChatCommentId}/commentLike",params);
+        mockMvcHelper(HttpMethod.POST,url,albumChatCommentDto,userLogin.getToken())
             .andExpect(status().isNotFound());
     }
 }

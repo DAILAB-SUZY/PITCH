@@ -12,16 +12,22 @@ import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.EmailRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.cosmic.backend.domainsTest.BaseSetting;
+import org.cosmic.backend.domainsTest.UrlGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -41,6 +47,8 @@ public class CreatePostLikeTest extends BaseSetting {
     TrackRepository trackRepository;
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
     private MvcResult result;
+    UrlGenerator urlGenerator=new UrlGenerator();
+    Map<String,Object> params= new HashMap<>();
 
     @Test
     @Transactional
@@ -52,14 +60,16 @@ public class CreatePostLikeTest extends BaseSetting {
 
         CreatePost createPost=CreatePost.createCreatePost
                 (user.getUserId(),"base","bibi","밤양갱 노래좋다","bam",null);
-        ResultActions resultActions =mockMvcHelper("/api/post/create",createPost,userLogin.getToken());
+        String url="/api/post/create";
+        ResultActions resultActions =mockMvcHelper(HttpMethod.POST,url,createPost,userLogin.getToken());
         result = resultActions.andReturn();
         String content = result.getResponse().getContentAsString();
         PostDto postDto = mapper.readValue(content, PostDto.class); // 응답 JSON을 PostDto 객체로 변환
         Long postId = postDto.getPostId();
 
         LikeDto likeDto=LikeDto.createLikeDto(user.getUserId(),postId);
-        mockMvcHelper("/api/like/create",likeDto,userLogin.getToken()).andExpect(status().isOk());
+        url="/api/like/create";
+        mockMvcHelper(HttpMethod.POST,url,likeDto,userLogin.getToken()).andExpect(status().isOk());
     }
 
     @Test
@@ -72,17 +82,20 @@ public class CreatePostLikeTest extends BaseSetting {
 
         CreatePost createPost=CreatePost.createCreatePost
             (user.getUserId(),"base","bibi","밤양갱 노래좋다","bam",null);
-        ResultActions resultActions =mockMvcHelper("/api/post/create",createPost,userLogin.getToken());
+        String url="/api/post/create";
+        ResultActions resultActions =mockMvcHelper(HttpMethod.POST,url,createPost,userLogin.getToken());
         result = resultActions.andReturn();
         String content = result.getResponse().getContentAsString();
         PostDto postDto = mapper.readValue(content, PostDto.class); // 응답 JSON을 PostDto 객체로 변환
         Long postId = postDto.getPostId();
 
         LikeDto likeDto=LikeDto.createLikeDto(user.getUserId(),postId);
-        mockMvcHelper("/api/like/create",likeDto,userLogin.getToken()).andExpect(status().isOk());
+        url="/api/like/create";
+        mockMvcHelper(HttpMethod.POST,url,likeDto,userLogin.getToken()).andExpect(status().isOk());
 
         PostDto postDto1=PostDto.createPostDto(postId);
-        mockMvcHelper("/api/like/give",postDto1,userLogin.getToken()).andExpect(status().isOk());
+        url="/api/like/give";
+        mockMvcHelper(HttpMethod.POST,url,postDto1,userLogin.getToken()).andExpect(status().isOk());
     }
     @Test
     @Transactional
@@ -94,14 +107,16 @@ public class CreatePostLikeTest extends BaseSetting {
 
         CreatePost createPost=CreatePost.createCreatePost
                 (user.getUserId(),"base","bibi","밤양갱 노래좋다","bam",null);
-        ResultActions resultActions =mockMvcHelper("/api/post/create",createPost,userLogin.getToken());
+        String url="/api/post/create";
+        ResultActions resultActions =mockMvcHelper(HttpMethod.POST,url,createPost,userLogin.getToken());
         result = resultActions.andReturn();
         String content = result.getResponse().getContentAsString();
         PostDto postDto = mapper.readValue(content, PostDto.class); // 응답 JSON을 PostDto 객체로 변환
         Long postId = postDto.getPostId();
 
         LikeDto likeDto=LikeDto.createLikeDto(user.getUserId(),postId);
-        mockMvcHelper("/api/like/create",likeDto,userLogin.getToken()).andExpect(status().isOk());
-        mockMvcHelper("/api/like/create",likeDto,userLogin.getToken()).andExpect(status().isConflict());
+        url="/api/like/create";
+        mockMvcHelper(HttpMethod.POST,url,likeDto,userLogin.getToken()).andExpect(status().isOk());
+        mockMvcHelper(HttpMethod.POST,url,likeDto,userLogin.getToken()).andExpect(status().isConflict());
     }
 }

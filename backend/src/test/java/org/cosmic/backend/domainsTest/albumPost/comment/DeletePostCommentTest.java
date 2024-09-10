@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MvcResult;
@@ -60,7 +61,8 @@ public class DeletePostCommentTest extends BaseSetting {
 
         CreatePost createPost=CreatePost.createCreatePost
             (user.getUserId(),"base","bibi","밤양갱 노래좋다","bam",null);
-        ResultActions resultActions =mockMvcHelper("/api/post/create",createPost,userLogin.getToken());
+        String url="/api/post/create";
+        ResultActions resultActions =mockMvcHelper(HttpMethod.POST,url,createPost,userLogin.getToken());
         result = resultActions.andReturn();
         String content = result.getResponse().getContentAsString();
         PostDto postDto = mapper.readValue(content, PostDto.class); // 응답 JSON을 PostDto 객체로 변환
@@ -68,14 +70,17 @@ public class DeletePostCommentTest extends BaseSetting {
 
         CreateCommentReq createCommentReq=CreateCommentReq.createCreateCommentReq
             (user.getUserId(),null,postId,"안녕");
-        resultActions=mockMvcHelper("/api/comment/create",createCommentReq,userLogin.getToken()).andExpect(status().isOk());
+        url="/api/comment/create";
+        resultActions=mockMvcHelper(HttpMethod.POST,url,createCommentReq,userLogin.getToken()).andExpect(status().isOk());
         result = resultActions.andReturn();
         content = result.getResponse().getContentAsString();
         CommentDto comment = mapper.readValue(content, CommentDto.class); // 응답 JSON을 PostDto 객체로 변환
         Long commentId = comment.getCommentId();
-
+        url="/api/comment/delete";
         CommentDto commentDto =CommentDto.createCommentDto(commentId);
-        mockMvcHelper("/api/comment/delete",commentDto,userLogin.getToken()).andExpect(status().isOk());
+        mockMvcHelper(HttpMethod.POST,url,commentDto,userLogin.getToken())
+                .andExpect(status().isOk());
+        //TODO DELETE로 바꿔주기
     }
 
     @Test
@@ -88,7 +93,9 @@ public class DeletePostCommentTest extends BaseSetting {
 
         CreatePost createPost=CreatePost.createCreatePost
             (user.getUserId(),"base","bibi","밤양갱 노래좋다","bam",null);
-        ResultActions resultActions =mockMvcHelper("/api/post/create",createPost,userLogin.getToken());
+
+        String url="/api/post/create";
+        ResultActions resultActions =mockMvcHelper(HttpMethod.POST,url,createPost,userLogin.getToken());
         result = resultActions.andReturn();
         String content = result.getResponse().getContentAsString();
         PostDto postDto = mapper.readValue(content, PostDto.class); // 응답 JSON을 PostDto 객체로 변환
@@ -96,17 +103,22 @@ public class DeletePostCommentTest extends BaseSetting {
 
         CreateCommentReq createCommentReq=CreateCommentReq.createCreateCommentReq
             (user.getUserId(),null,postId,"안녕");
-        resultActions=mockMvcHelper("/api/comment/create",createCommentReq,userLogin.getToken()).andExpect(status().isOk());
+
+        url="/api/comment/create";
+        resultActions=mockMvcHelper(HttpMethod.POST,url,createCommentReq,userLogin.getToken()).andExpect(status().isOk());
         result = resultActions.andReturn();
         content = result.getResponse().getContentAsString();
         CommentDto comment = mapper.readValue(content, CommentDto.class);
         Long commentId = comment.getCommentId();
 
         CreateReplyReq createReplyReq= CreateReplyReq.createCreateReplyReq(user.getUserId(),commentId,"안녕",null);
-        mockMvcHelper("/api/reply/create",createReplyReq,userLogin.getToken());
+        url="/api/reply/create";
+        mockMvcHelper(HttpMethod.POST,url,createReplyReq,userLogin.getToken());
 
         CommentDto commentDto =CommentDto.createCommentDto(commentId);
-        mockMvcHelper("/api/comment/delete",commentDto,userLogin.getToken()).andExpect(status().isOk());
-        mockMvcHelper("/api/reply/give",commentDto,userLogin.getToken()).andExpect(status().isNotFound());
+        url="/api/comment/delete";
+        mockMvcHelper(HttpMethod.POST,url,commentDto,userLogin.getToken()).andExpect(status().isOk());
+        url="/api/reply/give";
+        mockMvcHelper(HttpMethod.POST,url,commentDto,userLogin.getToken()).andExpect(status().isNotFound());
     }
 }
