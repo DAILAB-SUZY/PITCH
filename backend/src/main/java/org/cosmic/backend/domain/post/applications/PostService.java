@@ -10,9 +10,12 @@ import org.cosmic.backend.domain.post.dtos.Post.*;
 import org.cosmic.backend.domain.post.entities.Post;
 import org.cosmic.backend.domain.post.exceptions.NotFoundAlbumException;
 import org.cosmic.backend.domain.post.exceptions.NotFoundPostException;
+import org.cosmic.backend.domain.post.exceptions.NotMatchUserException;
 import org.cosmic.backend.domain.post.repositories.PostRepository;
+import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
@@ -52,10 +55,9 @@ public class PostService {
      * @throws NotFoundUserException 사용자를 찾을 수 없을 때 발생합니다.
      */
     public List<PostReq> getAllPosts(Long userId) {
-        if (userRepository.findById(userId).isEmpty()) {
-            throw new NotFoundUserException();
-        }
-        return postRepository.findByUser_UserId(userId)
+        User user = userRepository.findById(userId).orElseThrow(NotFoundUserException::new);
+
+        return user.getPosts()
                 .stream()
                 .map(Post::toPostReq)
                 .toList();
@@ -79,39 +81,36 @@ public class PostService {
     /**
      * 새로운 게시물을 생성합니다.
      *
-     * @param postInfo 생성할 게시물의 정보를 포함한 객체
      * @return 생성된 게시물의 DTO 객체
      *
      * @throws NotFoundUserException 사용자를 찾을 수 없을 때 발생합니다.
      * @throws NotMatchAlbumException 게시물에 해당하는 앨범을 찾을 수 없을 때 발생합니다.
      */
-    public PostDto createPost(CreatePost postInfo) {
-        if (userRepository.findById(postInfo.getUserId()).isEmpty()) {
-            throw new NotFoundUserException();
-        }
-        if (albumRepository.findByTitleAndArtist_ArtistName(postInfo.getTitle(), postInfo.getArtistName()).isEmpty()) {
-            throw new NotMatchAlbumException();
-        }
-        return Post.toPostDto(postRepository.save(Post.builder()
-                .content(postInfo.getContent())
-                .update_time(Instant.now())
-                .user(userRepository.findById(postInfo.getUserId()).get())
-                .build()));
+    @Transactional
+    public PostDto createPost(String content, Long albumId, Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(NotFoundUserException::new);
+        Album album = albumRepository.findById(albumId).orElseThrow(NotMatchAlbumException::new);
+        Post post = postRepository.save(Post.builder()
+                .content(content)
+                .user(user)
+                .album(album)
+                .build());
+        return Post.toPostDto(post);
     }
 
     /**
      * 기존 게시물을 수정합니다.
      *
-     * @param postInfo 수정할 게시물의 정보를 포함한 객체
      *
      * @throws NotFoundPostException 게시물을 찾을 수 없을 때 발생합니다.
      */
-    public void updatePost(UpdatePost postInfo) {
-        if (postRepository.findById(postInfo.getPostId()).isEmpty()) {
-            throw new NotFoundPostException();
+    @Transactional
+    public void updatePost(String content, Long postId, Long userId) {
+        Post updatedPost = postRepository.findById(postId).orElseThrow(NotFoundPostException::new);
+        if(!updatedPost.getUser().getUserId().equals(userId)) {
+            throw new NotMatchUserException();
         }
-        Post updatedPost = postRepository.findByPostId(postInfo.getPostId());
-        updatedPost.setContent(postInfo.getContent());
+        updatedPost.setContent(content);
         updatedPost.setUpdate_time(Instant.now());
         postRepository.save(updatedPost);
     }
@@ -123,11 +122,13 @@ public class PostService {
      *
      * @throws NotFoundPostException 게시물을 찾을 수 없을 때 발생합니다.
      */
-    public void deletePost(Long postId) {
-        if (postRepository.findById(postId).isEmpty()) {
-            throw new NotFoundPostException();
+    @Transactional
+    public void deletePost(Long postId, Long userId) {
+        Post post = postRepository.findById(postId).orElseThrow(NotFoundPostException::new);
+        if(!post.getUser().getUserId().equals(userId)) {
+            throw new NotMatchUserException();
         }
-        postRepository.deleteById(postId);
+        postRepository.delete(post);
     }
 
     /**

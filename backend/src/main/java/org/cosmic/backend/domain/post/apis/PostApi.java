@@ -12,10 +12,8 @@ import org.cosmic.backend.domain.post.exceptions.NotFoundPostException;
 import org.cosmic.backend.domain.user.dtos.UserDto;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -24,7 +22,7 @@ import java.util.List;
  * 게시물 조회, 생성, 수정, 삭제 및 앨범/아티스트 검색 기능을 제공합니다.
  */
 @RestController
-@RequestMapping("/api/post")
+@RequestMapping("/api/album/post")
 @ApiCommonResponses
 public class PostApi {
     private final PostService postService;
@@ -41,31 +39,28 @@ public class PostApi {
     /**
      * 특정 사용자의 모든 게시물을 조회합니다.
      *
-     * @param user 게시물을 조회할 사용자의 정보를 포함한 DTO 객체
      * @return 사용자의 모든 게시물을 포함한 요청 객체 리스트
      *
      * @throws NotFoundUserException 사용자를 찾을 수 없을 때 발생합니다.
      */
-    @Transactional
-    @PostMapping("/give")
+    @GetMapping("/")
     @ApiResponse(responseCode = "404", description = "Not Found User")
-    public List<PostReq> giveAllPosts(@RequestBody UserDto user) {
-        return postService.getAllPosts(user.getUserId());
+    public List<PostReq> giveAllPosts(@RequestParam Long userId) {
+        return postService.getAllPosts(userId);
     }
 
     /**
      * 특정 게시물 ID로 게시물을 조회합니다.
      *
-     * @param post 조회할 게시물의 정보를 포함한 DTO 객체
+     * @param postId 조회할 게시물의 정보
      * @return 조회된 게시물의 요청 객체
      *
      * @throws NotFoundPostException 게시물을 찾을 수 없을 때 발생합니다.
      */
-    @Transactional
-    @PostMapping("/open")
+    @GetMapping("/{postId}")
     @ApiResponse(responseCode = "404", description = "Not Found Post")
-    public PostReq getPostById(@RequestBody PostDto post) {
-        return postService.getPostById(post.getPostId());
+    public PostReq getPostById(@PathVariable Long postId) {
+        return postService.getPostById(postId);
     }
 
     /**
@@ -76,10 +71,10 @@ public class PostApi {
      *
      * @throws NotFoundAlbumException 앨범을 찾을 수 없을 때 발생합니다.
      */
-    @PostMapping("/create")
+    @PostMapping("/")
     @ApiResponse(responseCode = "404", description = "Not Found Album")
-    public PostDto createPost(@RequestBody CreatePost post) {
-        return postService.createPost(post);
+    public PostDto createPost(@RequestBody CreatePost post, @AuthenticationPrincipal Long userId) {
+        return postService.createPost(post.getContent(), post.getAlbumId(), userId);
     }
 
     /**
@@ -90,25 +85,24 @@ public class PostApi {
      *
      * @throws NotFoundPostException 게시물을 찾을 수 없을 때 발생합니다.
      */
-    @PostMapping("/update")
+    @PostMapping("/{postId}")
     @ApiResponse(responseCode = "404", description = "Not Found Post")
-    public ResponseEntity<?> updatePost(@RequestBody UpdatePost post) {
-        postService.updatePost(post);
+    public ResponseEntity<?> updatePost(@RequestBody UpdatePost post, @PathVariable Long postId, @AuthenticationPrincipal Long userId) {
+        postService.updatePost(post.getContent(), postId, userId);
         return ResponseEntity.ok("성공");
     }
 
     /**
      * 특정 게시물을 삭제합니다.
      *
-     * @param post 삭제할 게시물의 정보를 포함한 DTO 객체
      * @return 삭제 성공 메시지를 포함한 {@link ResponseEntity}
      *
      * @throws NotFoundPostException 게시물을 찾을 수 없을 때 발생합니다.
      */
-    @PostMapping("/delete")
+    @DeleteMapping("/{postId}")
     @ApiResponse(responseCode = "404", description = "Not Found Post")
-    public ResponseEntity<?> deletePost(@RequestBody PostDto post) {
-        postService.deletePost(post.getPostId());
+    public ResponseEntity<?> deletePost(@PathVariable Long postId, @AuthenticationPrincipal Long userId) {
+        postService.deletePost(postId, userId);
         return ResponseEntity.ok("성공");
     }
 

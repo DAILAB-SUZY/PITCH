@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.HashMap;
@@ -20,6 +21,7 @@ import java.util.Map;
 @Log4j2
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Sql(scripts = "/data/albumPost.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)  // 클래스가 끝나면 컨텍스트 초기화
 public class AlbumPostBaseTest extends BaseSetting {
     @Autowired
     private UsersRepository userRepository;
