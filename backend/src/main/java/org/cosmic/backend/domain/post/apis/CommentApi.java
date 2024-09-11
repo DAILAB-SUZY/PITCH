@@ -15,10 +15,8 @@ import org.cosmic.backend.domain.post.exceptions.NotMatchPostException;
 import org.cosmic.backend.domain.post.exceptions.NotMatchUserException;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,7 +25,7 @@ import java.util.List;
  * 댓글 조회, 생성, 수정, 삭제 기능을 제공합니다.
  */
 @RestController
-@RequestMapping("/api/comment")
+@RequestMapping("/api/album/post/{postId}/comment")
 @ApiCommonResponses
 public class CommentApi {
     private final CommentService commentService;
@@ -44,16 +42,14 @@ public class CommentApi {
     /**
      * 게시글 ID로 댓글 목록을 조회합니다.
      *
-     * @param post 조회할 게시글의 정보를 포함한 DTO 객체
      * @return 게시글에 해당하는 댓글 요청 객체 리스트
      *
      * @throws NotFoundPostException 게시글을 찾을 수 없을 때 발생합니다.
      */
-    @PostMapping("/give")
-    @Transactional
+    @GetMapping("/")
     @ApiResponse(responseCode = "404", description = "Not Found Post")
-    public List<CommentReq> getCommentsByPostId(@RequestBody PostDto post) {
-        return commentService.getCommentsByPostId(post.getPostId());
+    public List<CommentReq> getCommentsByPostId(@PathVariable Long postId) {
+        return commentService.getCommentsByPostId(postId);
     }
 
     /**
@@ -65,11 +61,10 @@ public class CommentApi {
      * @throws NotFoundPostException 게시글을 찾을 수 없을 때 발생합니다.
      * @throws NotFoundUserException 사용자를 찾을 수 없을 때 발생합니다.
      */
-    @PostMapping("/create")
-    @Transactional
+    @PostMapping("/")
     @ApiResponse(responseCode = "404", description = "Not Found User or Post")
-    public CommentDto createComment(@RequestBody CreateCommentReq comment) {
-        return commentService.createComment(comment);
+    public CommentDto createComment(@RequestBody CreateCommentReq comment, @PathVariable Long postId, @AuthenticationPrincipal Long userId) {
+        return commentService.createComment(comment.getContent(), postId, userId);
     }
 
     /**
@@ -82,27 +77,24 @@ public class CommentApi {
      * @throws NotMatchUserException 사용자가 댓글 작성자와 일치하지 않을 경우 발생합니다.
      * @throws NotMatchPostException 댓글이 게시글과 일치하지 않을 경우 발생합니다.
      */
-    @PostMapping("/update")
-    @Transactional
+    @PostMapping("/{commentId}")
     @ApiResponse(responseCode = "404", description = "Not Found Post or Comment")
-    public ResponseEntity<?> updateComment(@RequestBody UpdateCommentReq comment) {
-        commentService.updateComment(comment);
+    public ResponseEntity<?> updateComment(@RequestBody UpdateCommentReq comment, @PathVariable Long commentId, @AuthenticationPrincipal Long userId) {
+        commentService.updateComment(comment.getContent(), commentId, userId);
         return ResponseEntity.ok("성공");
     }
 
     /**
      * 댓글을 삭제합니다.
      *
-     * @param commentdto 삭제할 댓글의 DTO 객체
      * @return 삭제 성공 메시지를 포함한 {@link ResponseEntity}
      *
      * @throws NotFoundCommentException 댓글을 찾을 수 없을 때 발생합니다.
      */
-    @PostMapping("/delete")
-    @Transactional
+    @DeleteMapping("/{commentId}")
     @ApiResponse(responseCode = "404", description = "Not Found Comment")
-    public ResponseEntity<?> deleteComment(@RequestBody CommentDto commentdto) {
-        commentService.deleteComment(commentdto);
+    public ResponseEntity<?> deleteComment(@PathVariable Long commentId, @AuthenticationPrincipal Long userId) {
+        commentService.deleteComment(commentId, userId);
         return ResponseEntity.ok("성공");
     }
 }
