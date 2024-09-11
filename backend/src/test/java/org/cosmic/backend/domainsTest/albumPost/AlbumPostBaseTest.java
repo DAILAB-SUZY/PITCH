@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.HashMap;
@@ -20,6 +21,7 @@ import java.util.Map;
 @Log4j2
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Sql(scripts = "/data/albumPost.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)  // 클래스가 끝나면 컨텍스트 초기화
 public class AlbumPostBaseTest extends BaseSetting {
     @Autowired
     private UsersRepository userRepository;
@@ -28,7 +30,7 @@ public class AlbumPostBaseTest extends BaseSetting {
     private TokenProvider tokenProvider;
 
     @Autowired
-    private PostRepository postRepository;
+    protected PostRepository postRepository;
 
     protected UrlGenerator urlGenerator=new UrlGenerator();
     protected Map<String,Object> params= new HashMap<>();
@@ -45,7 +47,7 @@ public class AlbumPostBaseTest extends BaseSetting {
             user = userRepository.findByEmail_Email("test1@example.com").orElseThrow();
         }
         if(post == null){
-            post = postRepository.findByContent("밤양갱 노래좋다").orElseThrow();
+            post = postRepository.findByUser_UserId(user.getUserId()).get(0);
         }
         validToken = tokenProvider.create(user);
         params.clear();
