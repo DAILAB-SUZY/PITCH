@@ -16,10 +16,8 @@ import org.cosmic.backend.globals.annotations.ApiCommonResponses;
 import org.cosmic.backend.globals.dto.ErrorResponse;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -28,7 +26,7 @@ import java.util.List;
  * 특정 게시글의 좋아요 조회, 좋아요 생성, 좋아요 삭제 기능을 제공합니다.
  */
 @RestController
-@RequestMapping("/api/like")
+@RequestMapping("/api/album/post/{postId}/like")
 @ApiCommonResponses
 public class LikeApi {
     private final LikeService likeService;
@@ -45,28 +43,26 @@ public class LikeApi {
     /**
      * 특정 게시글의 좋아요 목록을 조회합니다.
      *
-     * @param post 조회할 게시글의 정보를 포함한 DTO 객체
      * @return 해당 게시글의 좋아요 응답 객체 리스트
      *
      * @throws NotFoundPostException 게시글을 찾을 수 없을 때 발생합니다.
      */
-    @PostMapping("/give")
+    @GetMapping("/")
     @ApiResponse(responseCode = "404", description = "Not Found Post")
-    public List<LikeResponse> getLikesByPostId(@RequestBody PostDto post) {
-        return likeService.getLikesByPostId(post.getPostId());
+    public List<LikeResponse> getLikesByPostId(@PathVariable Long postId) {
+        return likeService.getLikesByPostId(postId);
     }
 
     /**
      * 새로운 좋아요를 생성합니다.
      *
-     * @param like 생성할 좋아요의 정보를 포함한 DTO 객체
      * @return 생성된 좋아요 요청 객체
      *
      * @throws NotFoundPostException 게시글을 찾을 수 없을 때 발생합니다.
      * @throws NotFoundUserException 사용자를 찾을 수 없을 때 발생합니다.
      * @throws ExistLikeException 해당 사용자가 이미 게시글에 좋아요를 남겼을 때 발생합니다.
      */
-    @PostMapping("/create")
+    @PostMapping("/")
     @ApiResponse(responseCode = "404", description = "Not Found User or Post")
     @ApiResponse(responseCode = "409", description = "Like Already Exists",
             content = {
@@ -74,22 +70,21 @@ public class LikeApi {
                             schema = @Schema(implementation = ErrorResponse.class))
             }
     )
-    public LikeReq createLike(@RequestBody LikeDto like) {
-        return likeService.createLike(like.getUserId(), like.getPostId());
+    public LikeReq createLike(@PathVariable Long postId, @AuthenticationPrincipal Long userId) {
+        return likeService.createLike(userId, postId);
     }
 
     /**
      * 좋아요를 삭제합니다.
      *
-     * @param likedto 삭제할 좋아요의 정보를 포함한 요청 객체
      * @return 삭제 성공 메시지를 포함한 {@link ResponseEntity}
      *
      * @throws NotFoundLikeException 좋아요를 찾을 수 없을 때 발생합니다.
      */
-    @PostMapping("/delete")
+    @DeleteMapping("/")
     @ApiResponse(responseCode = "404", description = "Not Found Like")
-    public ResponseEntity<?> deleteLike(@RequestBody LikeReq likedto) {
-        likeService.deleteLike(likedto.getUser_id(), likedto.getPost_id());
+    public ResponseEntity<?> deleteLike(@PathVariable Long postId, @AuthenticationPrincipal Long userId) {
+        likeService.deleteLike(userId, postId);
         return ResponseEntity.ok("성공");
     }
 }
