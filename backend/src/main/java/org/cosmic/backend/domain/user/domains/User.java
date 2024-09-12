@@ -65,14 +65,17 @@ public class User {
     @OneToOne(mappedBy = "user")
     private FavoriteArtist favoriteArtist;
 
+    @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Post> posts;
+    private List<Post> posts = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PostComment> postComments;
+    private List<PostComment> postComments = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PostLike> postLikes;
+    private List<PostLike> postLikes = new ArrayList<>();
 
     @Override
     public String toString() {
