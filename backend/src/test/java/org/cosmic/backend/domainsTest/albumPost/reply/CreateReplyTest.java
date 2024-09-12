@@ -1,122 +1,72 @@
 package org.cosmic.backend.domainsTest.albumPost.reply;
 
-import lombok.extern.log4j.Log4j2;
-import org.cosmic.backend.domain.auth.dtos.UserLogin;
-import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
-import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
-import org.cosmic.backend.domain.playList.repositorys.TrackRepository;
-import org.cosmic.backend.domain.post.dtos.Comment.CommentDto;
-import org.cosmic.backend.domain.post.dtos.Comment.CreateCommentReq;
-import org.cosmic.backend.domain.post.dtos.Post.CreatePost;
-import org.cosmic.backend.domain.post.dtos.Post.PostDto;
 import org.cosmic.backend.domain.post.dtos.Reply.CreateReplyReq;
-import org.cosmic.backend.domain.user.domains.User;
-import org.cosmic.backend.domain.user.repositorys.EmailRepository;
-import org.cosmic.backend.domain.user.repositorys.UsersRepository;
-import org.cosmic.backend.domainsTest.BaseSetting;
-import org.cosmic.backend.domainsTest.UrlGenerator;
+import org.cosmic.backend.domain.post.dtos.Reply.UpdateReplyReq;
+import org.cosmic.backend.domain.post.entities.PostComment;
+import org.cosmic.backend.domain.post.repositories.PostCommentRepository;
+import org.cosmic.backend.domainsTest.albumPost.AlbumPostBaseTest;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.transaction.annotation.Transactional;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
-@Log4j2
-public class CreateReplyTest extends BaseSetting {
-    final ObjectMapper mapper = new ObjectMapper();
+@Sql(scripts = {"/data/albumPost.sql", "/data/CreateCommentAndLike.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
+public class CreateReplyTest extends AlbumPostBaseTest {
+    final String baseUrl = super.baseUrl + "/comment/{commentId}/reply/";
+
     @Autowired
-    UsersRepository userRepository;
-    @Autowired
-    EmailRepository emailRepository;
-    @Autowired
-    ArtistRepository artistRepository;
-    @Autowired
-    AlbumRepository albumRepository;
-    @Autowired
-    TrackRepository trackRepository;
-    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-    private MvcResult result;
-    UrlGenerator urlGenerator=new UrlGenerator();
-    Map<String,Object> params= new HashMap<>();
+    private PostCommentRepository postCommentRepository;
+
+    private PostComment postComment;
+
+    @BeforeEach
+    @Override
+    public void setUp(){
+        super.setUp();
+        if(postComment == null){
+            postComment = postCommentRepository.findByPost_PostId(post.getPostId()).get(0);
+        }
+        params.put("commentId", postComment.getCommentId());
+    }
 
     @Test
-    @Transactional
-    @Sql("/data/albumPost.sql")
+    @Order(1)
     public void createReplyTest() throws Exception {
-        User user=userRepository.findByEmail_Email("test1@example.com").get();
-        user.setPassword(encoder.encode(user.getPassword()));
-        UserLogin userLogin = loginUser("test1@example.com");
-
-        CreatePost createPost=CreatePost.createCreatePost
-                (user.getUserId(),"base","bibi","밤양갱 노래좋다","bam",null);
-        String url="/api/post/create";
-        ResultActions resultActions =mockMvcHelper(HttpMethod.POST,url,createPost,userLogin.getToken());
-        result = resultActions.andReturn();
-        String content = result.getResponse().getContentAsString();
-        PostDto postDto = mapper.readValue(content, PostDto.class); // 응답 JSON을 PostDto 객체로 변환
-        Long postId = postDto.getPostId();
-
-        CreateCommentReq createCommentReq=CreateCommentReq.createCreateCommentReq
-                (user.getUserId(),null,postId,"안녕");
-        url="/api/comment/create";
-        resultActions=mockMvcHelper(HttpMethod.POST,url,createCommentReq,userLogin.getToken()).andExpect(status().isOk());
-        result = resultActions.andReturn();
-        content = result.getResponse().getContentAsString();
-        CommentDto comment = mapper.readValue(content, CommentDto.class); // 응답 JSON을 PostDto 객체로 변환
-        Long commentId = comment.getCommentId();
-
-        CreateReplyReq createReplyReq =CreateReplyReq.createCreateReplyReq
-            (user.getUserId(),commentId,"안녕",null);
-        url="/api/reply/create";
-        mockMvcHelper(HttpMethod.POST,url,createReplyReq,userLogin.getToken()).andExpect(status().isOk());
+        CreateReplyReq createReplyReq =CreateReplyReq.builder()
+                .content("Hi")
+                .build();
+        mockMvcHelper(HttpMethod.POST,urlGenerator.buildUrl(baseUrl, params),createReplyReq,validToken)
+                .andExpect(status().isOk());
     }
 
     //post잘 만들어지는지
     @Test
-    @Transactional
-    @Sql("/data/albumPost.sql")
+    @Order(2)
     public void giveReplyTest() throws Exception {
-        User user=userRepository.findByEmail_Email("test1@example.com").get();
-        user.setPassword(encoder.encode(user.getPassword()));
-        UserLogin userLogin = loginUser("test1@example.com");
+        mockMvcHelper(HttpMethod.GET,urlGenerator.buildUrl(baseUrl, params),null,validToken)
+                .andExpect(status().isOk());
+    }
 
-        CreatePost createPost=CreatePost.createCreatePost
-                (user.getUserId(),"base","bibi","밤양갱 노래좋다","bam",null);
-        String url="/api/post/create";
-        ResultActions resultActions =mockMvcHelper(HttpMethod.POST,url,createPost,userLogin.getToken());
-        result = resultActions.andReturn();
-        String content = result.getResponse().getContentAsString();
-        PostDto postDto = mapper.readValue(content, PostDto.class); // 응답 JSON을 PostDto 객체로 변환
-        Long postId = postDto.getPostId();
+    @Test
+    @Order(3)
+    public void updateReplyTest() throws Exception {
+        UpdateReplyReq updateReplyReq=UpdateReplyReq.builder()
+                .content("안녕이라고 말 하지마")
+                .build();
+        params.put("replyId", postCommentRepository.findAllByParentComment_CommentId(postComment.getCommentId()).get(0).getCommentId());
+        mockMvcHelper(HttpMethod.POST,urlGenerator.buildUrl(baseUrl+"{replyId}", params),updateReplyReq,validToken)
+                .andExpect(status().isOk());
+    }
 
-        CreateCommentReq createCommentReq=CreateCommentReq.createCreateCommentReq
-                (user.getUserId(),null,postId,"안녕");
-        url="/api/comment/create";
-        resultActions=mockMvcHelper(HttpMethod.POST,url,createCommentReq,userLogin.getToken()).andExpect(status().isOk());
-        result = resultActions.andReturn();
-        content = result.getResponse().getContentAsString();
-        CommentDto comment = mapper.readValue(content, CommentDto.class); // 응답 JSON을 PostDto 객체로 변환
-        Long commentId = comment.getCommentId();
-
-        CreateReplyReq createReplyReq =CreateReplyReq.createCreateReplyReq
-            (user.getUserId(),commentId,"안녕",null);
-        url="/api/reply/create";
-        mockMvcHelper(HttpMethod.POST,url,createReplyReq,userLogin.getToken()).andExpect(status().isOk());
-        CommentDto commentDto= CommentDto.createCommentDto(commentId);
-        url="/api/reply/give";
-        mockMvcHelper(HttpMethod.POST,url,commentDto,userLogin.getToken()).andExpect(status().isOk());
+    @Test
+    @Order(4)
+    public void deleteReplyTest() throws Exception {
+        params.put("replyId", postCommentRepository.findAllByParentComment_CommentId(postComment.getCommentId()).get(0).getCommentId());
+        mockMvcHelper(HttpMethod.DELETE,urlGenerator.buildUrl(baseUrl+"{replyId}", params),null,validToken)
+                .andExpect(status().isOk());
     }
 }

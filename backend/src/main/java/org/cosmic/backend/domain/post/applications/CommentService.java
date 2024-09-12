@@ -4,8 +4,6 @@ import jakarta.transaction.Transactional;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.post.dtos.Comment.CommentDto;
 import org.cosmic.backend.domain.post.dtos.Comment.CommentReq;
-import org.cosmic.backend.domain.post.dtos.Comment.CreateCommentReq;
-import org.cosmic.backend.domain.post.dtos.Comment.UpdateCommentReq;
 import org.cosmic.backend.domain.post.entities.Post;
 import org.cosmic.backend.domain.post.entities.PostComment;
 import org.cosmic.backend.domain.post.exceptions.NotFoundCommentException;
@@ -20,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * 댓글과 관련된 비즈니스 로직을 처리하는 서비스 클래스입니다.

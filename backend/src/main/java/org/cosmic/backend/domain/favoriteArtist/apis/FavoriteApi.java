@@ -4,8 +4,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.transaction.Transactional;
 import org.cosmic.backend.domain.favoriteArtist.applications.FavoriteArtistService;
 import org.cosmic.backend.domain.favoriteArtist.dtos.*;
-import org.cosmic.backend.domain.playList.dtos.ArtistDto;
-import org.cosmic.backend.domain.user.dtos.UserDto;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundArtistException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundTrackException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;

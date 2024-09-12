@@ -5,7 +5,6 @@ import org.cosmic.backend.domain.post.dtos.Like.LikeReq;
 import org.cosmic.backend.domain.post.dtos.Like.LikeResponse;
 import org.cosmic.backend.domain.post.entities.Post;
 import org.cosmic.backend.domain.post.entities.PostLike;
-import org.cosmic.backend.domain.post.entities.PostLikePK;
 import org.cosmic.backend.domain.post.exceptions.ExistLikeException;
 import org.cosmic.backend.domain.post.exceptions.NotFoundLikeException;
 import org.cosmic.backend.domain.post.exceptions.NotFoundPostException;

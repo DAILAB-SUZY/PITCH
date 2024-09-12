@@ -5,9 +5,9 @@ import lombok.*;
 import org.cosmic.backend.domain.favoriteArtist.domains.FavoriteArtist;
 import org.cosmic.backend.domain.musicDna.domains.MusicDna;
 import org.cosmic.backend.domain.playList.domains.Playlist;
+import org.cosmic.backend.domain.post.entities.Post;
 import org.cosmic.backend.domain.post.entities.PostComment;
 import org.cosmic.backend.domain.post.entities.PostLike;
-import org.cosmic.backend.domain.post.entities.Post;
 
 import java.time.Instant;
 import java.util.ArrayList;
