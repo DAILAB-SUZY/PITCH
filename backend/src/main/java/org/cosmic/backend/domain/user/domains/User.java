@@ -8,6 +8,7 @@ import org.cosmic.backend.domain.playList.domains.Playlist;
 import org.cosmic.backend.domain.post.entities.Post;
 import org.cosmic.backend.domain.post.entities.PostComment;
 import org.cosmic.backend.domain.post.entities.PostLike;
+import org.cosmic.backend.domain.user.dtos.UserDetail;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -112,5 +113,13 @@ public class User {
         this.email=email;
         this.username=username;
         this.password=password;
+    }
+
+    public static UserDetail toUserDetail(User user) {
+        return UserDetail.builder()
+                .id(user.userId)
+                .username(user.username)
+                .profilePicture(user.profilePicture)
+                .build();
     }
 }
