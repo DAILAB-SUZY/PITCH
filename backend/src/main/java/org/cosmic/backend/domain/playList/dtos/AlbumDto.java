@@ -1,4 +1,4 @@
-package org.cosmic.backend.domain.bestAlbum.dtos;
+package org.cosmic.backend.domain.playList.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,9 +11,4 @@ import lombok.NoArgsConstructor;
 @Builder
 public class AlbumDto {
     private Long albumId;
-    public static AlbumDto createAlbumDto(Long albumId) {
-        return  AlbumDto.builder()
-                .albumId(albumId)
-                .build();
-    }
 }

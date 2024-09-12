@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.cosmic.backend.domain.albumChat.dtos.albumlike.AlbumLikeReq;
 import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.user.domains.User;
 
@@ -28,10 +27,4 @@ public class AlbumLike {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public static AlbumLikeReq toLikeReq(AlbumLike like) {
-        return AlbumLikeReq.builder()
-                .albumId(like.getAlbum().getAlbumId())
-                .userId(like.getUser().getUserId())
-                .build();
-    }
 }

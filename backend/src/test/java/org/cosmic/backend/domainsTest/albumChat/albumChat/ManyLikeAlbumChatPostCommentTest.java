@@ -1,8 +1,9 @@
 package org.cosmic.backend.domainsTest.albumChat.albumChat;
 
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.log4j.Log4j2;
-import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDto;
-import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentReq;
+import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDetail;
+import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentRequest;
 import org.cosmic.backend.domain.auth.dtos.UserLogin;
 import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
@@ -23,9 +24,11 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.shaded.com.fasterxml.jackson.core.type.TypeReference;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
@@ -64,19 +67,20 @@ public class ManyLikeAlbumChatPostCommentTest extends BaseSetting {
 
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
 
-        AlbumChatCommentReq albumChatCommentReq=AlbumChatCommentReq.createAlbumChatCommentReq(
+        AlbumChatCommentRequest albumChatCommentReq=AlbumChatCommentRequest.createAlbumChatCommentReq(
             "안녕",null);
 
         params.clear();
         params.put("albumId",album.getAlbumId());
         String url=urlGenerator.buildUrl("/api/album/{albumId}/comment",params);
         ResultActions resultActions=mockMvcHelper(HttpMethod.POST,url,albumChatCommentReq,userLogin.getToken())
-            .andExpect(status().isOk());
-
+                .andExpect(status().isOk());
         MvcResult result = resultActions.andReturn();
         String content = result.getResponse().getContentAsString();
-        AlbumChatCommentDto albumChatCommentDto2 = mapper.readValue(content, AlbumChatCommentDto.class);
-        Long albumChatCommentId1 = albumChatCommentDto2.getAlbumChatCommentId();
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper objectMapper = mapper.registerModule(new JavaTimeModule());
+        List<AlbumChatCommentDetail> response= mapper.readValue(content,new TypeReference<List<AlbumChatCommentDetail>>() {});
+        Long albumChatCommentId1 = response.get(0).getAlbumChatCommentId();
 
         params.clear();
         params.put("albumId",album.getAlbumId());
@@ -94,8 +98,9 @@ public class ManyLikeAlbumChatPostCommentTest extends BaseSetting {
                 .andExpect(status().isOk());
         result = resultActions.andReturn();
         content = result.getResponse().getContentAsString();
-        AlbumChatCommentDto albumChatCommentDto = mapper.readValue(content, AlbumChatCommentDto.class);
-        Long albumChatCommentId2 = albumChatCommentDto.getAlbumChatCommentId();
+        mapper = new ObjectMapper();
+        response= mapper.readValue(content,new TypeReference<List<AlbumChatCommentDetail>>() {});
+        Long albumChatCommentId2 = response.get(1).getAlbumChatCommentId();
 
 
         params.clear();
@@ -116,7 +121,6 @@ public class ManyLikeAlbumChatPostCommentTest extends BaseSetting {
         params.clear();
         params.put("albumId",album.getAlbumId());
         url=urlGenerator.buildUrl("/api/album/{albumId}?sorted=manylike",params);
-        System.out.println("*******"+url);
         mockMvcHelper(HttpMethod.GET,url,null,userLogin.getToken())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].albumChatCommentId", is(2)))

@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AlbumChatCommentRepository extends JpaRepository<AlbumChatComment,Long> {
+
+    Optional<List<AlbumChatComment>> findByAlbumChatCommentId(Long albumChatCommentid);//key로 찾기
     Optional<List<AlbumChatComment>> findByAlbum_AlbumId(Long albumid);//key로 찾기
     @Query("SELECT acc " +
             "FROM AlbumChatComment acc " +

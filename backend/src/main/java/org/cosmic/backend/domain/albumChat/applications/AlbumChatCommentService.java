@@ -1,9 +1,8 @@
 package org.cosmic.backend.domain.albumChat.applications;
 
 import org.cosmic.backend.domain.albumChat.domains.AlbumChatComment;
-import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDto;
-import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentReq;
-import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentResponse;
+import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDetail;
+import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentRequest;
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatCommentException;
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatException;
 import org.cosmic.backend.domain.albumChat.exceptions.NotMatchAlbumChatException;
@@ -48,17 +47,17 @@ public class AlbumChatCommentService {
      * 특정 앨범 챗 ID로 댓글 목록을 조회합니다.
      *
      * @param albumId 조회할 앨범 챗 ID
-     * @return List<AlbumChatCommentResponse> 조회된 댓글 목록
+     * @return List<AlbumChatCommentDetail> 조회된 댓글 목록
      * @throws NotFoundAlbumChatException 앨범 챗이 존재하지 않을 경우 발생
      */
-    public List<AlbumChatCommentResponse> getCommentsByAlbumId(Long albumId) {
+    public List<AlbumChatCommentDetail> getCommentsByAlbumId(Long albumId) {
         if(albumRepository.findById(albumId).isEmpty()) {
             throw new NotFoundAlbumChatException();
         }
         return commentRepository.findByAlbum_AlbumId(albumId)
             .orElse(Collections.emptyList())
             .stream()
-            .map(AlbumChatCommentResponse::new)
+            .map(AlbumChatCommentDetail::new)
             .collect(Collectors.toList());
     }
 
@@ -70,20 +69,25 @@ public class AlbumChatCommentService {
      * @throws NotFoundAlbumChatException 앨범 챗이 존재하지 않을 경우 발생
      * @throws NotFoundUserException 사용자가 존재하지 않을 경우 발생
      */
-    public AlbumChatCommentDto albumChatCommentCreate(Long albumId,AlbumChatCommentReq comment,Long userId) {
+    public List<AlbumChatCommentDetail> albumChatCommentCreate(Long albumId, AlbumChatCommentRequest comment, Long userId) {
         if(albumRepository.findById(albumId).isEmpty()) {
             throw new NotFoundAlbumChatException();
         }
         if(userRepository.findById(userId).isEmpty()) {
             throw new NotFoundUserException();
         }
-        AlbumChatComment commentEntity = commentRepository.save(
-                new AlbumChatComment(
-                    comment.getContent()
-                    ,Instant.now()
-                    ,userRepository.findById(userId).get()
-                    ,albumRepository.findById(albumId).get()));
-        return new AlbumChatCommentDto(commentEntity);
+        commentRepository.save(
+            new AlbumChatComment(
+                comment.getContent()
+                ,Instant.now()
+                ,userRepository.findById(userId).get()
+                ,albumRepository.findById(albumId).get()));
+
+        return commentRepository.findByAlbum_AlbumId(albumId)
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(AlbumChatCommentDetail::new)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -95,7 +99,7 @@ public class AlbumChatCommentService {
      * @throws NotMatchAlbumChatException 댓글이 속한 앨범 챗이 일치하지 않을 경우 발생
      * @throws NotMatchUserException 수정하려는 사용자와 기존 댓글 생성한 사용자가 다를때 발생
      */
-    public void albumChatCommentUpdate(Long albumId,Long albumChatCommentId, AlbumChatCommentReq comment,Long userId) {
+    public List<AlbumChatCommentDetail> albumChatCommentUpdate(Long albumId, Long albumChatCommentId, AlbumChatCommentRequest comment, Long userId) {
         if(commentRepository.findById(albumChatCommentId).isEmpty()) {
             throw new NotFoundAlbumChatCommentException();
         }
@@ -112,6 +116,11 @@ public class AlbumChatCommentService {
         updatedComment.setContent(comment.getContent());
         commentRepository.save(updatedComment);
         //사용자가 다를때 1!=2인데 바꾸려고하는경우
+        return commentRepository.findByAlbum_AlbumId(albumId)
+            .orElse(Collections.emptyList())
+            .stream()
+            .map(AlbumChatCommentDetail::new)
+            .collect(Collectors.toList());
     }
     /**
      * 앨범 챗 댓글을 삭제합니다. 댓글 삭제하면 해당 댓글에 붙어있던 좋아요, 대댓글 등 모두 삭제됩니다.
@@ -119,11 +128,17 @@ public class AlbumChatCommentService {
      * @param albumChatCommentId 삭제할 댓글 정보가 담긴 AlbumChatCommentDto객체
      * @throws NotFoundAlbumChatCommentException 댓글이 존재하지 않을 경우 발생
      */
-    public void albumChatCommentDelete(Long albumChatCommentId) {
+    public List<AlbumChatCommentDetail> albumChatCommentDelete(Long albumChatCommentId) {
         if(commentRepository.findById(albumChatCommentId).isEmpty()) {
             throw new NotFoundAlbumChatCommentException();
         }
         //TODO 삭제하려는 사용자와 해당 글 올린 사용자와 다를때
         commentRepository.deleteById(albumChatCommentId);
+
+        return commentRepository.findByAlbumChatCommentId(albumChatCommentId)
+            .orElse(Collections.emptyList())
+            .stream()
+            .map(AlbumChatCommentDetail::new)
+            .collect(Collectors.toList());
     }
 }

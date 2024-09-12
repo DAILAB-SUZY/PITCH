@@ -7,12 +7,12 @@ import org.cosmic.backend.domain.albumChat.domains.AlbumLike;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AlbumChatAlbumLikeResponse {
+public class AlbumChatAlbumLikeDetail {
     private Long userId;
     private String userName;
     private String profilePicture;
 
-    public AlbumChatAlbumLikeResponse(AlbumLike albumLike) {
+    public AlbumChatAlbumLikeDetail(AlbumLike albumLike) {
         this.userId = albumLike.getUser().getUserId();
         this.userName = albumLike.getUser().getUsername();
         this.profilePicture = albumLike.getUser().getProfilePicture();

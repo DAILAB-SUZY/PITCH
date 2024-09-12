@@ -3,9 +3,8 @@ package org.cosmic.backend.domain.albumChat.apis;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.transaction.Transactional;
 import org.cosmic.backend.domain.albumChat.applications.AlbumChatCommentService;
-import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDto;
-import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentReq;
-import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentResponse;
+import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDetail;
+import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentRequest;
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatCommentException;
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatException;
 import org.cosmic.backend.domain.albumChat.exceptions.NotMatchAlbumChatException;
@@ -47,7 +46,7 @@ public class AlbumChatCommentApi {
     @GetMapping("/album/{albumId}/comment")
     @Transactional
     @ApiResponse(responseCode = "404", description = "Not Found Album")
-    public List<AlbumChatCommentResponse> getCommentByAlbumChatId(@PathVariable Long albumId) {
+    public List<AlbumChatCommentDetail> getCommentByAlbumChatId(@PathVariable Long albumId) {
         return commentService.getCommentsByAlbumId(albumId);
     }
 
@@ -62,9 +61,9 @@ public class AlbumChatCommentApi {
     @PostMapping("/album/{albumId}/comment")
     @Transactional
     @ApiResponse(responseCode = "404", description = "Not Found User or Album")
-    public AlbumChatCommentDto albumChatCommentCreate(@PathVariable Long albumId,
-        @RequestBody AlbumChatCommentReq comment,@AuthenticationPrincipal Long userId) {
-        return commentService.albumChatCommentCreate(albumId,comment,userId);
+    public ResponseEntity<List<AlbumChatCommentDetail>> albumChatCommentCreate(@PathVariable Long albumId,
+       @RequestBody AlbumChatCommentRequest comment, @AuthenticationPrincipal Long userId) {
+        return ResponseEntity.ok(commentService.albumChatCommentCreate(albumId,comment,userId));
     }
 
     /**
@@ -81,10 +80,9 @@ public class AlbumChatCommentApi {
     @Transactional
     @ApiResponse(responseCode = "400", description = "Not Match Album or User")
     @ApiResponse(responseCode = "404", description = "Not Found AlbumChatComment Or User")
-    public ResponseEntity<?> albumChatCommentUpdate(@PathVariable Long albumId,@PathVariable Long albumChatCommentId
-        , @RequestBody AlbumChatCommentReq comment, @AuthenticationPrincipal Long userId) {
-        commentService.albumChatCommentUpdate(albumId,albumChatCommentId,comment,userId);
-        return ResponseEntity.ok("성공");
+    public ResponseEntity<List<AlbumChatCommentDetail>> albumChatCommentUpdate(@PathVariable Long albumId, @PathVariable Long albumChatCommentId
+        , @RequestBody AlbumChatCommentRequest comment, @AuthenticationPrincipal Long userId) {
+        return ResponseEntity.ok(commentService.albumChatCommentUpdate(albumId,albumChatCommentId,comment,userId));
     }
 
     /**
@@ -98,8 +96,7 @@ public class AlbumChatCommentApi {
     @Transactional
     @ApiResponse(responseCode = "404", description = "Not Found AlbumChatComment")
     //TODO NOTMATCHUSER오류 추가
-    public ResponseEntity<?> albumChatCommentDelete(@PathVariable Long albumChatCommentId) {
-        commentService.albumChatCommentDelete(albumChatCommentId);
-        return ResponseEntity.ok("성공");
+    public ResponseEntity<List<AlbumChatCommentDetail>> albumChatCommentDelete(@PathVariable Long albumChatCommentId) {
+        return ResponseEntity.ok(commentService.albumChatCommentDelete(albumChatCommentId));
     }
 }

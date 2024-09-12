@@ -6,23 +6,16 @@ import org.cosmic.backend.domain.playList.domains.Album;
 
 @Data
 @NoArgsConstructor
-public class AlbumChatResponse {
+public class AlbumChatDetail {
     private Long albumId;
     private String cover;
     private String title;
     private String artistName;
 
-    public AlbumChatResponse(Album album) {
+    public AlbumChatDetail(Album album) {
         this.albumId = album.getAlbumId();
         this.cover = album.getCover();
         this.title = album.getTitle();
         this.artistName = album.getArtist().getArtistName();
-    }
-
-    public AlbumChatResponse(Long albumId, String cover, String title, String artistName) {
-        this.albumId = albumId;
-        this.cover = cover;
-        this.title = title;
-        this.artistName = artistName;
     }
 }

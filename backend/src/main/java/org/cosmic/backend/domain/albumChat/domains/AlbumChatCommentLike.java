@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.cosmic.backend.domain.albumChat.dtos.commentlike.AlbumChatCommentLikeIdResponse;
 import org.cosmic.backend.domain.user.domains.User;
 @Data
 @NoArgsConstructor
@@ -26,11 +25,4 @@ public class AlbumChatCommentLike {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public static AlbumChatCommentLikeIdResponse toIdResponse(AlbumChatCommentLike save) {
-        return AlbumChatCommentLikeIdResponse.builder()
-                .albumChatCommentId(save.albumChatComment.getAlbumChatCommentId())
-                .userId(save.user.getUserId())
-                .build();
-
-    }
 }

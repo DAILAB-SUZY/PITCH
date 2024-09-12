@@ -2,8 +2,7 @@ package org.cosmic.backend.domain.albumChat.apis;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.cosmic.backend.domain.albumChat.applications.AlbumChatCommentLikeService;
-import org.cosmic.backend.domain.albumChat.dtos.commentlike.AlbumChatCommentLikeIdResponse;
-import org.cosmic.backend.domain.albumChat.dtos.commentlike.AlbumChatCommentLikeResponse;
+import org.cosmic.backend.domain.albumChat.dtos.commentlike.AlbumChatCommentLikeDetail;
 import org.cosmic.backend.domain.albumChat.exceptions.ExistCommentLikeException;
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatCommentException;
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundCommentLikeException;
@@ -42,9 +41,9 @@ public class AlbumChatCommentLikeApi {//댓글 마다의 좋아요
      */
     @GetMapping("/album/{albumId}/comment/{albumChatCommentId}/commentLike")
     @ApiResponse(responseCode = "404", description = "Not Found AlbumChatComment")
-    public List<AlbumChatCommentLikeResponse> albumChatCommentLikeGetByAlbumChatCommentId
+    public ResponseEntity<List<AlbumChatCommentLikeDetail>> albumChatCommentLikeGetByAlbumChatCommentId
         (@PathVariable Long albumChatCommentId) {
-        return likeService.getAlbumChatCommentLikeByAlbumChatCommentId(albumChatCommentId);
+        return ResponseEntity.ok(likeService.getAlbumChatCommentLikeByAlbumChatCommentId(albumChatCommentId));
     }
 
     /**
@@ -59,9 +58,9 @@ public class AlbumChatCommentLikeApi {//댓글 마다의 좋아요
     @PostMapping("/album/{albumId}/comment/{albumChatCommentId}/commentLike")
     @ApiResponse(responseCode = "404", description = "Not Found User or AlbumChatComment")
     @ApiResponse(responseCode = "409", description = "CommentLike Already Exists")
-    public AlbumChatCommentLikeIdResponse albumChatCommentLikeCreate(
+    public ResponseEntity<List<AlbumChatCommentLikeDetail>> albumChatCommentLikeCreate(
         @PathVariable Long albumChatCommentId, @AuthenticationPrincipal Long userId) {
-        return likeService.albumChatCommentLikeCreate(userId,albumChatCommentId);
+        return ResponseEntity.ok(likeService.albumChatCommentLikeCreate(userId,albumChatCommentId));
     }
 
     /**
@@ -73,10 +72,9 @@ public class AlbumChatCommentLikeApi {//댓글 마다의 좋아요
      */
     @DeleteMapping("/album/{albumId}/comment/{albumChatCommentId}/commentLike")
     @ApiResponse(responseCode = "404", description = "Not Found CommentLike")
-    public ResponseEntity<?> albumChatCommentLikeDelete(
+    public ResponseEntity<List<AlbumChatCommentLikeDetail>> albumChatCommentLikeDelete(
         @PathVariable Long albumChatCommentId,@AuthenticationPrincipal Long userId) {
-        likeService.albumChatCommentLikeDelete(albumChatCommentId,userId);
-        return ResponseEntity.ok("성공");
-    }
+        return ResponseEntity.ok(likeService.albumChatCommentLikeDelete(albumChatCommentId,userId));
+    }//몇개인지만 준다.
 }
 
