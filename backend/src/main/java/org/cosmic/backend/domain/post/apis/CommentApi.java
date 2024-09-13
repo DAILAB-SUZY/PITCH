@@ -60,7 +60,7 @@ public class CommentApi {
      */
     @PostMapping("/")
     @ApiResponse(responseCode = "404", description = "Not Found User or Post")
-    public ResponseEntity<CommentDetail> createComment(@RequestBody CreateCommentRequest comment, @PathVariable Long postId, @AuthenticationPrincipal Long userId) {
+    public ResponseEntity<List<CommentDetail>> createComment(@RequestBody CreateCommentRequest comment, @PathVariable Long postId, @AuthenticationPrincipal Long userId) {
         return ResponseEntity.ok(commentService.createComment(comment.getContent(), postId, userId));
     }
 
@@ -92,5 +92,11 @@ public class CommentApi {
     public ResponseEntity<?> deleteComment(@PathVariable Long commentId, @AuthenticationPrincipal Long userId) {
         commentService.deleteComment(commentId, userId);
         return ResponseEntity.ok(null);
+    }
+
+    @PostMapping("/{commentId}/like")
+    @ApiResponse(responseCode = "404", description = "Not Found Comment")
+    public ResponseEntity<CommentDetail> likeComment(@PathVariable Long commentId, @AuthenticationPrincipal Long userId) {
+        return ResponseEntity.ok(commentService.likeComment(commentId, userId));
     }
 }

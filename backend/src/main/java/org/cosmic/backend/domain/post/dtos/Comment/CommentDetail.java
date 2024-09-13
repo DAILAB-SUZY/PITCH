@@ -16,5 +16,6 @@ public class CommentDetail {
     private Long id;
     private String content;
     private Instant createdAt;
+    private Long likes;
     private UserDetail author;
 }

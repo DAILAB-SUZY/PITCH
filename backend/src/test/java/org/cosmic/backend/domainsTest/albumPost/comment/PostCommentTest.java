@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class PostCommentTest extends AlbumPostBaseTest {
@@ -45,6 +46,14 @@ public class PostCommentTest extends AlbumPostBaseTest {
 
     @Test
     @Order(4)
+    public void commentLikeTest() throws Exception {
+        params.put("commentId", post.getPostComments().get(0).getCommentId());
+        mockMvcHelper(HttpMethod.POST,urlGenerator.buildUrl(baseUrl+"{commentId}/like", params),null, validToken)
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @Order(5)
     public void deleteCommentTest() throws Exception {
         params.put("commentId", post.getPostComments().get(0).getCommentId());
         mockMvcHelper(HttpMethod.DELETE,urlGenerator.buildUrl(baseUrl+"{commentId}", params),null,validToken)
