@@ -3,10 +3,9 @@ package org.cosmic.backend.domain.post.apis;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.post.applications.CommentService;
-import org.cosmic.backend.domain.post.dtos.Comment.CommentDto;
-import org.cosmic.backend.domain.post.dtos.Comment.CommentReq;
-import org.cosmic.backend.domain.post.dtos.Comment.CreateCommentReq;
-import org.cosmic.backend.domain.post.dtos.Comment.UpdateCommentReq;
+import org.cosmic.backend.domain.post.dtos.Comment.CommentDetail;
+import org.cosmic.backend.domain.post.dtos.Comment.CreateCommentRequest;
+import org.cosmic.backend.domain.post.dtos.Comment.UpdateCommentRequest;
 import org.cosmic.backend.domain.post.exceptions.NotFoundCommentException;
 import org.cosmic.backend.domain.post.exceptions.NotFoundPostException;
 import org.cosmic.backend.domain.post.exceptions.NotMatchPostException;
@@ -46,8 +45,8 @@ public class CommentApi {
      */
     @GetMapping("/")
     @ApiResponse(responseCode = "404", description = "Not Found Post")
-    public List<CommentReq> getCommentsByPostId(@PathVariable Long postId) {
-        return commentService.getCommentsByPostId(postId);
+    public ResponseEntity<List<CommentDetail>> getCommentsByPostId(@PathVariable Long postId) {
+        return ResponseEntity.ok(commentService.getCommentsByPostId(postId));
     }
 
     /**
@@ -61,8 +60,8 @@ public class CommentApi {
      */
     @PostMapping("/")
     @ApiResponse(responseCode = "404", description = "Not Found User or Post")
-    public CommentDto createComment(@RequestBody CreateCommentReq comment, @PathVariable Long postId, @AuthenticationPrincipal Long userId) {
-        return commentService.createComment(comment.getContent(), postId, userId);
+    public ResponseEntity<List<CommentDetail>> createComment(@RequestBody CreateCommentRequest comment, @PathVariable Long postId, @AuthenticationPrincipal Long userId) {
+        return ResponseEntity.ok(commentService.createComment(comment.getContent(), postId, userId));
     }
 
     /**
@@ -77,9 +76,8 @@ public class CommentApi {
      */
     @PostMapping("/{commentId}")
     @ApiResponse(responseCode = "404", description = "Not Found Post or Comment")
-    public ResponseEntity<?> updateComment(@RequestBody UpdateCommentReq comment, @PathVariable Long commentId, @AuthenticationPrincipal Long userId) {
-        commentService.updateComment(comment.getContent(), commentId, userId);
-        return ResponseEntity.ok("성공");
+    public ResponseEntity<CommentDetail> updateComment(@RequestBody UpdateCommentRequest comment, @PathVariable Long commentId, @AuthenticationPrincipal Long userId) {
+        return ResponseEntity.ok(commentService.updateComment(comment.getContent(), commentId, userId));
     }
 
     /**
@@ -93,6 +91,12 @@ public class CommentApi {
     @ApiResponse(responseCode = "404", description = "Not Found Comment")
     public ResponseEntity<?> deleteComment(@PathVariable Long commentId, @AuthenticationPrincipal Long userId) {
         commentService.deleteComment(commentId, userId);
-        return ResponseEntity.ok("성공");
+        return ResponseEntity.ok(null);
+    }
+
+    @PostMapping("/{commentId}/like")
+    @ApiResponse(responseCode = "404", description = "Not Found Comment")
+    public ResponseEntity<CommentDetail> likeComment(@PathVariable Long commentId, @AuthenticationPrincipal Long userId) {
+        return ResponseEntity.ok(commentService.likeComment(commentId, userId));
     }
 }

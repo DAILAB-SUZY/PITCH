@@ -1,6 +1,5 @@
 package org.cosmic.backend.domain.post.applications;
 
-import jakarta.persistence.EntityManager;
 import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundArtistException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
@@ -8,6 +7,7 @@ import org.cosmic.backend.domain.playList.exceptions.NotMatchAlbumException;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
 import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
 import org.cosmic.backend.domain.post.dtos.Post.AlbumDto;
+import org.cosmic.backend.domain.post.dtos.Post.PostDetail;
 import org.cosmic.backend.domain.post.dtos.Post.PostDto;
 import org.cosmic.backend.domain.post.dtos.Post.PostReq;
 import org.cosmic.backend.domain.post.entities.Post;
@@ -17,7 +17,6 @@ import org.cosmic.backend.domain.post.exceptions.NotMatchUserException;
 import org.cosmic.backend.domain.post.repositories.PostRepository;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,9 +33,6 @@ public class PostService {
     private final UsersRepository userRepository;
     private final ArtistRepository artistRepository;
     private final AlbumRepository albumRepository;
-
-    @Autowired
-    private EntityManager entityManager;
 
     /**
      * PostService의 생성자입니다.
@@ -78,11 +74,11 @@ public class PostService {
      *
      * @throws NotFoundPostException 게시물을 찾을 수 없을 때 발생합니다.
      */
-    public PostReq getPostById(Long postId) {
+    public PostDetail getPostById(Long postId) {
         if (postRepository.findById(postId).isEmpty()) {
             throw new NotFoundPostException();
         }
-        return Post.toPostReq(postRepository.findById(postId).get());
+        return Post.toPostDetail(postRepository.findById(postId).get());
     }
 
     /**

@@ -5,8 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.cosmic.backend.domain.post.dtos.Comment.CommentDetail;
 import org.cosmic.backend.domain.post.dtos.Comment.CommentDto;
-import org.cosmic.backend.domain.post.dtos.Comment.CommentReq;
 import org.cosmic.backend.domain.post.dtos.Reply.ReplyDto;
 import org.cosmic.backend.domain.post.dtos.Reply.UpdateReplyReq;
 import org.cosmic.backend.domain.user.domains.User;
@@ -49,12 +49,11 @@ public class PostComment {
     @OneToMany(mappedBy = "postComment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostCommentLike> postCommentLikes;
 
-    public static CommentReq toCommentReq(PostComment postComment) {
-        return CommentReq.builder()
-                .userId(postComment.getUser().getUserId())
-                .commentId(postComment.getCommentId())
-                .content(postComment.getContent())
-                .createTime(postComment.getUpdateTime())
+    public static CommentDetail toCommentDetail(PostComment comment) {
+        return CommentDetail.builder()
+                .id(comment.commentId)
+                .content(comment.content)
+                .author(User.toUserDetail(comment.getUser()))
                 .build();
     }
 

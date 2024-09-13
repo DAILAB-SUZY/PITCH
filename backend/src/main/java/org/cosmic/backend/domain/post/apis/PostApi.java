@@ -57,8 +57,8 @@ public class PostApi {
      */
     @GetMapping("/{postId}")
     @ApiResponse(responseCode = "404", description = "Not Found Post")
-    public PostReq getPostById(@PathVariable Long postId) {
-        return postService.getPostById(postId);
+    public ResponseEntity<PostDetail> getPostById(@PathVariable Long postId) {
+        return ResponseEntity.ok(postService.getPostById(postId));
     }
 
     /**

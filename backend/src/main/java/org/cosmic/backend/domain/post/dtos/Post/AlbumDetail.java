@@ -1,4 +1,4 @@
-package org.cosmic.backend.domain.user.dtos;
+package org.cosmic.backend.domain.post.dtos.Post;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDetail {
+public class AlbumDetail {
     private Long id;
-    private String username;
-    private String profilePicture;
+    private String title;
+    private String cover;
+    private String genre;
 }
