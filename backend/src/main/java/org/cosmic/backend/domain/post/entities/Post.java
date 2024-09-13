@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.cosmic.backend.domain.playList.domains.Album;
+import org.cosmic.backend.domain.post.dtos.Post.PostDetail;
 import org.cosmic.backend.domain.post.dtos.Post.PostDto;
 import org.cosmic.backend.domain.post.dtos.Post.PostReq;
 import org.cosmic.backend.domain.user.domains.User;
@@ -43,6 +44,18 @@ public class Post {
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostLike> postLikes;
+
+    public static PostDetail toPostDetail(Post post) {
+        return PostDetail.builder()
+                .postId(post.postId)
+                .content(post.content)
+                .createAt(post.create_time)
+                .updateAt(post.update_time)
+                .album(Album.toAlbumDetail(post.album))
+                .author(User.toUserDetail(post.user))
+                .comments(post.postComments.stream().map(PostComment::toCommentDetail).toList())
+                .build();
+    }
 
     public static PostReq toPostReq(Post post) {
         return PostReq.builder()

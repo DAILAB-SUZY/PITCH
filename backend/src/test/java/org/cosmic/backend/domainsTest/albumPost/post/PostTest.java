@@ -50,6 +50,7 @@ public class PostTest extends AlbumPostBaseTest {
         Long postId = postRepository.findByUser_UserId(user.getUserId()).get(1).getPostId();
         params.put("postId", postId);
         mockMvcHelper(HttpMethod.GET,urlGenerator.buildUrl(baseUrl + "{postId}", params),null,validToken)
+                .andDo(print())
                 .andExpect(status().isOk());
     }
 

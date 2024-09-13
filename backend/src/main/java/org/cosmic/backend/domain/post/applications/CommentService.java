@@ -54,6 +54,9 @@ public class CommentService {
      * @throws NotFoundPostException 게시글이 존재하지 않을 경우 발생합니다.
      */
     public List<CommentDetail> getCommentsByPostId(Long postId) {
+        if (!postRepository.existsById(postId)){
+            throw new NotFoundPostException("Post Not Found");
+        }
         return postCommentRepository.findAllWithLikesByPostId(postId);
     }
 
