@@ -40,6 +40,10 @@ body {
   /* min-width: 320px;
   min-height: 100vh; */
 }
+
+::-webkit-scrollbar {
+  display: none;
+}
 /* a {
   font-weight: 500;
   color: #646cff;

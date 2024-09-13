@@ -1,8 +1,6 @@
 import styled from "styled-components";
 import { colors } from "../../styles/color";
 import logo from "../../img/logo.png";
-import Nav from "../components/Nav";
-import PlaylistCircle from "../components/PlaylistCircle";
 import AlbumPostCard from "../components/AlbumPostCard";
 import { useRef, useState } from "react";
 
@@ -12,15 +10,23 @@ const Container = styled.div`
   justify-content: flex-start;
   align-items: center;
   overflow-y: scroll;
-  overflow-x: hidden;
   height: 100vh; //auto;
   width: 100vw;
   background-color: white;
   color: black;
 `;
 
+// const Header = styled.div`
+//   width: 100vw;
+//   height: 400px;
+//   margin-bottom: 20px;
+//   display: flex;
+//   align-items: center;
+//   justify-content: flex-end;
+//   flex-direction: column;
+// `;
+
 const Header = styled.div`
-  overflow-x: hidden;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -28,7 +34,7 @@ const Header = styled.div`
 `;
 
 const Body = styled.div`
-  margin-top: 110px;
+  margin-top: 100px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -43,16 +49,6 @@ const PlaylistArea = styled.div`
 `;
 
 const AlbumPostArea = styled.div`
-  width: 100vw;
-  height: auto;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  flex-direction: column;
-  background-color: white;
-`;
-
-const RowAlignArea = styled.div`
   width: 100vw;
   height: auto;
   display: flex;
@@ -97,29 +93,16 @@ const BackgroundBlur = styled.div`
   /* display: none; */
   transition: all 0.5s;
 `;
-function HomePage() {
+function AlbumPostPage() {
   return (
     <Container>
-      <Header>
-        <Nav page={1}></Nav>
-      </Header>
-      <Body>
-        <PlaylistArea>
-          <PlaylistCircle></PlaylistCircle>
-        </PlaylistArea>
-        <AlbumPostArea>
-          <Title fontSize="22px" margin="20px 0px 0px 20px">
-            Album Post
-          </Title>
-          <RowAlignArea>
-            <AlbumPostCard song={"cover1"}></AlbumPostCard>
-            <AlbumPostCard song={"cover1"}></AlbumPostCard>
-            <AlbumPostCard song={"cover1"}></AlbumPostCard>
-          </RowAlignArea>
-        </AlbumPostArea>
-      </Body>
+      <AlbumPostArea>
+        <AlbumPostCard song={"cover1"}></AlbumPostCard>
+        <AlbumPostCard song={"cover1"}></AlbumPostCard>
+        <AlbumPostCard song={"cover1"}></AlbumPostCard>
+      </AlbumPostArea>
     </Container>
   );
 }
 
-export default HomePage;
+export default AlbumPostPage;

@@ -1,15 +1,16 @@
 import styled from "styled-components";
 import { colors } from "../../styles/color";
 import { useRef, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import cover1 from "../../img/newjeans.png";
 import cover2 from "../../img/aespa.webp";
 
 const AlbumPostContainer = styled.div`
-  width: 320px;
+  width: 350px;
   margin: 20px 0px;
   height: auto;
   background-color: ${colors.BG_grey};
-  border-radius: 20px;
+  border-radius: 10px;
   /* overflow: hidden; */
   position: relative;
   z-index: 1;
@@ -37,11 +38,11 @@ const ImageArea = styled.div`
   top: 0px;
   left: 0px;
   overflow: hidden;
-  width: 320px;
+  width: 350px;
   height: 200px;
   /* object-fit: cover; */
   z-index: 1;
-  border-radius: 20px 20px 0px 0px;
+  border-radius: 10px 10px 0px 0px;
 `;
 
 const GradientBG = styled.div`
@@ -55,7 +56,7 @@ const GradientBG = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 20px 20px 0px 0px;
+  border-radius: 10px 10px 0px 0px;
   background: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
   backdrop-filter: blur(0px);
 `;
@@ -87,8 +88,8 @@ const Text = styled.div<{
 
 const PostArea = styled.div<{ height: string }>`
   display: flex;
-  border-radius: 0 0 20px 20px;
-  width: 320px;
+  border-radius: 0 0 10px 10px;
+  width: 350px;
 
   height: auto;
   /* overflow: hidden; */
@@ -185,7 +186,7 @@ const GradientText = styled.div`
 `;
 
 interface AlbumPostProps {
-  postClick: () => void;
+  onClick?: () => void;
   song: string;
 }
 
@@ -193,7 +194,7 @@ const AlbumPost = (props: AlbumPostProps) => {
   const contentHeight = useRef<HTMLDivElement>(null);
   const textHeight = useRef<HTMLDivElement>(null);
 
-  const { postClick, song } = props;
+  const { song } = props;
   // const [songname, setSongname] = useState("");
   // setSongname(song);
   const getCover = (name: string) => {
@@ -203,17 +204,11 @@ const AlbumPost = (props: AlbumPostProps) => {
   };
   console.log("song:" + song);
 
-  const changeViewMore = () => {
-    const contentHeightStyle = window.getComputedStyle(contentHeight.current as HTMLDivElement);
-    const textHeightStyle = window.getComputedStyle(textHeight.current as HTMLDivElement);
-
-    if (contentHeightStyle.getPropertyValue("height") === "36px") {
-      contentHeight.current?.style.setProperty("height", textHeightStyle.getPropertyValue("height"));
-    } else if (contentHeightStyle.getPropertyValue("height") === textHeightStyle.getPropertyValue("height"))
-      contentHeight.current?.style.setProperty("height", "36px");
-    postClick();
-    console.log("id:" + song);
-  };
+  const navigate = useNavigate();
+  // const postClick = () => {
+  //   navigate("/AlbumPostPage");
+  //   console.log("GoToPost");
+  // };
 
   return (
     <AlbumPostContainer>
@@ -221,7 +216,7 @@ const AlbumPost = (props: AlbumPostProps) => {
         <ImageArea>
           <img
             src={cover1}
-            width="320px"
+            width="350px"
             height="320px"
             object-fit="cover"
             // z-index="1"
@@ -237,7 +232,7 @@ const AlbumPost = (props: AlbumPostProps) => {
           </Text>
         </TitleTextArea>
       </AlbumTitleArea>
-      <PostArea>
+      <PostArea onClick={console.log("click")}>
         <ProfileArea>
           <ProfileImage></ProfileImage>
           <ProfileTextArea>
@@ -265,8 +260,8 @@ const AlbumPost = (props: AlbumPostProps) => {
         </PostContentArea>
 
         <ButtonArea>
-          <Text fontFamily="Rg" fontSize="14px" color="grey" onClick={changeViewMore}>
-            더보기
+          <Text fontFamily="Rg" fontSize="14px" color="grey">
+            ...
           </Text>
         </ButtonArea>
       </PostArea>

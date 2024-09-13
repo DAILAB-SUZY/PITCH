@@ -1,13 +1,14 @@
 import styled from "styled-components";
-import BottomNav from "../components/BottomNav";
+import Nav from "../components/Nav";
 import AlbumChatBox from "../components/AlbumChatCard";
 import { useNavigate } from "react-router-dom";
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: start;
+  justify-content: flex-start;
   align-items: center;
+  overflow-y: scroll;
   height: 100vh;
   width: 100vw;
   background-color: white;
@@ -15,12 +16,18 @@ const Container = styled.div`
 `;
 
 const Header = styled.div`
-  width: 90vw;
-  height: 10vh;
   display: flex;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  justify-content: space-between;
-  flex-direction: row;
+`;
+
+const Body = styled.div`
+  margin-top: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
 `;
 
 const HeaderTilteArea = styled.div`
@@ -128,18 +135,6 @@ const ChatBox = styled.div`
   height: 110px;
 `;
 
-const BottomNavArea = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 2;
-  background-color: white;
-`;
-
 const Title = styled.div<{ fontSize: string; margin: string }>`
   font-size: ${(props) => props.fontSize};
   margin: ${(props) => props.margin};
@@ -162,6 +157,9 @@ function AlbumChatPage() {
   return (
     <Container>
       <Header>
+        <Nav page={3}></Nav>
+      </Header>
+      <Body>
         <HeaderTilteArea>
           <Title fontSize="40px">Album Chat&nbsp;&nbsp;&nbsp;</Title>
           <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 16 16">
@@ -174,40 +172,37 @@ function AlbumChatPage() {
             +
           </Text>
         </PostButton>
-      </Header>
-      <AlbumInfoArea>
-        <AlbumCover></AlbumCover>
-        <AlbumDescriptArea>
-          <AlbumNameArea>
-            <Title fontSize="25px" margin="10px">
-              I've IVE
-            </Title>
-            <Text fontSize="15px" margin="10px">
-              댄스/발라드
-            </Text>
-          </AlbumNameArea>
-          <ArtistInfoArea>
-            <ArtistCircle></ArtistCircle>
-            <Text fontSize="25px" margin="10px">
-              IVE
-            </Text>
-          </ArtistInfoArea>
-        </AlbumDescriptArea>
-      </AlbumInfoArea>
-      <ChatHeader>
-        <Title fontSize="35px">CHAT</Title>
-      </ChatHeader>
-      <ChatArea>
-        <ChatBox>
-          {items.map((item, index) => (
-            <AlbumChatBox></AlbumChatBox>
-          ))}
-        </ChatBox>
-      </ChatArea>
-      <Line></Line>
-      <BottomNavArea>
-        <BottomNav></BottomNav>
-      </BottomNavArea>
+        <AlbumInfoArea>
+          <AlbumCover></AlbumCover>
+          <AlbumDescriptArea>
+            <AlbumNameArea>
+              <Title fontSize="25px" margin="10px">
+                I've IVE
+              </Title>
+              <Text fontSize="15px" margin="10px">
+                댄스/발라드
+              </Text>
+            </AlbumNameArea>
+            <ArtistInfoArea>
+              <ArtistCircle></ArtistCircle>
+              <Text fontSize="25px" margin="10px">
+                IVE
+              </Text>
+            </ArtistInfoArea>
+          </AlbumDescriptArea>
+        </AlbumInfoArea>
+        <ChatHeader>
+          <Title fontSize="35px">CHAT</Title>
+        </ChatHeader>
+        <ChatArea>
+          <ChatBox>
+            {items.map((item, index) => (
+              <AlbumChatBox></AlbumChatBox>
+            ))}
+          </ChatBox>
+        </ChatArea>
+        <Line></Line>
+      </Body>
     </Container>
   );
 }

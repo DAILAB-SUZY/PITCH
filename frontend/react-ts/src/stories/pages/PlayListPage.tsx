@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { colors } from "../../styles/color";
 import logo from "../../img/logo.png";
-import BottomNav from "../components/BottomNav";
+import BottomNav from "../components/Nav";
 import PlaylistCircle from "../components/PlaylistCircle";
 import PlayListCard from "../components/PlayListCard";
 import profile from "../../img/cat.webp";
@@ -122,9 +122,6 @@ function PlayListPage() {
       <PlayListArea>
         <PlayListCard></PlayListCard>
       </PlayListArea>
-      <BottomNavArea>
-        <BottomNav></BottomNav>
-      </BottomNavArea>
     </Container>
   );
 }

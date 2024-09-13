@@ -38,7 +38,7 @@ function App() {
         <Route path="/PlayListPage" element={<PlayListPage />} />
         <Route path="/AlbumChatPage" element={<AlbumChatPage />} />
         <Route path="/AlbumChatPostPage" element={<AlbumChatPostPage />} />
-        <Route path="/MusicProfile" element={<MusicProfilePage />} />
+        <Route path="/MusicProfilePage" element={<MusicProfilePage />} />
       </Routes>
     </BrowserRouter>
   );
