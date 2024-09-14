@@ -1,7 +1,7 @@
 package org.cosmic.backend.domainsTest;
 
 import lombok.extern.log4j.Log4j2;
-import org.cosmic.backend.domain.auth.dtos.UserLogin;
+import org.cosmic.backend.domain.auth.dtos.UserLoginDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,8 +22,8 @@ public class BaseSetting {
     private final ObjectMapper mapper=new ObjectMapper();
     private ResultActions resultActions;
 
-    protected UserLogin loginUser(String email) throws Exception {
-        UserLogin userLogin = UserLogin.builder()
+    protected UserLoginDetail loginUser(String email) throws Exception {
+        UserLoginDetail userLogin = UserLoginDetail.builder()
                 .email(email)
                 .password("12345678")
                 .build();
@@ -31,8 +31,8 @@ public class BaseSetting {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(userLogin)));
         MvcResult result = resultActions.andReturn();
-        String validToken = mapper.readValue(result.getResponse().getContentAsString(), UserLogin.class).getToken();
-        return UserLogin.builder()
+        String validToken = mapper.readValue(result.getResponse().getContentAsString(), UserLoginDetail.class).getToken();
+        return UserLoginDetail.builder()
                 .email(email)
                 .token(validToken)
                 .build();

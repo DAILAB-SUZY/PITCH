@@ -1,7 +1,7 @@
 package org.cosmic.backend.domainsTest.musicDNA;
 
 import lombok.extern.log4j.Log4j2;
-import org.cosmic.backend.domain.auth.dtos.UserLogin;
+import org.cosmic.backend.domain.auth.dtos.UserLoginDetail;
 import org.cosmic.backend.domain.musicDna.dtos.DnaDetail;
 import org.cosmic.backend.domain.musicDna.dtos.DnaDto;
 import org.cosmic.backend.domain.musicDna.repositorys.MusicDnaRepository;
@@ -57,7 +57,7 @@ public class MusicDNAControllerTest extends BaseSetting {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         User user=userRepository.findByEmail_Email("test1@example.com").get();
         user.setPassword(encoder.encode(user.getPassword()));
-        UserLogin userLogin = loginUser("test1@example.com");
+        UserLoginDetail userLogin = loginUser("test1@example.com");
         DnaDto dnaDTO=new DnaDto();
         dnaDTO.setDna(Arrays.asList(new DnaDetail(1L),new DnaDetail(2L),
             new DnaDetail(3L),new DnaDetail(4L)));
@@ -72,7 +72,7 @@ public class MusicDNAControllerTest extends BaseSetting {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         User user=userRepository.findByEmail_Email("test1@example.com").get();
         user.setPassword(encoder.encode(user.getPassword()));
-        UserLogin userLogin = loginUser("test1@example.com");
+        UserLoginDetail userLogin = loginUser("test1@example.com");
         DnaDto dnaDTO=new DnaDto();
         dnaDTO.setDna(Arrays.asList(new DnaDetail(1L),new DnaDetail(2L),
                 new DnaDetail(3L)));

@@ -1,7 +1,7 @@
 package org.cosmic.backend.domainsTest.bestAlbum;
 
 import lombok.extern.log4j.Log4j2;
-import org.cosmic.backend.domain.auth.dtos.UserLogin;
+import org.cosmic.backend.domain.auth.dtos.UserLoginDetail;
 import org.cosmic.backend.domain.bestAlbum.domains.UserBestAlbum;
 import org.cosmic.backend.domain.bestAlbum.dtos.BestAlbumDetail;
 import org.cosmic.backend.domain.bestAlbum.dtos.BestAlbumListRequest;
@@ -51,7 +51,7 @@ public class SaveBestAlbumTest extends BaseSetting {
     public void bestAlbumSaveTest() throws Exception {
         User user=userRepository.findByEmail_Email("test1@example.com").get();
         user.setPassword(encoder.encode(user.getPassword()));
-        UserLogin userLogin = loginUser("test1@example.com");
+        UserLoginDetail userLogin = loginUser("test1@example.com");
         Album album1=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
         Album album2=albumRepository.findByTitleAndArtist_ArtistName("lilac","IU").get();
 
@@ -88,7 +88,7 @@ public class SaveBestAlbumTest extends BaseSetting {
 
         User user=userRepository.findByEmail_Email("test1@example.com").get();
         user.setPassword(encoder.encode(user.getPassword()));
-        UserLogin userLogin = loginUser("test1@example.com");
+        UserLoginDetail userLogin = loginUser("test1@example.com");
         Album album1=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
         Album album2=albumRepository.findByTitleAndArtist_ArtistName("lilac","IU").get();
 

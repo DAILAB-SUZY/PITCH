@@ -1,7 +1,7 @@
 package org.cosmic.backend.domainsTest.albumChat.albumLike;
 
 import lombok.extern.log4j.Log4j2;
-import org.cosmic.backend.domain.auth.dtos.UserLogin;
+import org.cosmic.backend.domain.auth.dtos.UserLoginDetail;
 import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
 import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
@@ -50,7 +50,7 @@ public class DeleteAlbumLikeTest extends BaseSetting {
     public void albumlikeDeleteTest() throws Exception {
         User user=userRepository.findByEmail_Email("test1@example.com").get();
         user.setPassword(encoder.encode(user.getPassword()));
-        UserLogin userLogin = loginUser("test1@example.com");
+        UserLoginDetail userLogin = loginUser("test1@example.com");
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
 
 
@@ -69,7 +69,7 @@ public class DeleteAlbumLikeTest extends BaseSetting {
     public void notMatchAlbumlikeDeleteTest() throws Exception {
         User user=userRepository.findByEmail_Email("test1@example.com").get();
         user.setPassword(encoder.encode(user.getPassword()));
-        UserLogin userLogin = loginUser("test1@example.com");
+        UserLoginDetail userLogin = loginUser("test1@example.com");
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
         params.clear();
         params.put("albumId",album.getAlbumId());

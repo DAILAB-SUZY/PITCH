@@ -1,7 +1,7 @@
 package org.cosmic.backend.domainsTest.favoriteArtist;
 
 import lombok.extern.log4j.Log4j2;
-import org.cosmic.backend.domain.auth.dtos.UserLogin;
+import org.cosmic.backend.domain.auth.dtos.UserLoginDetail;
 import org.cosmic.backend.domain.favoriteArtist.dtos.FavoriteRequest;
 import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.playList.domains.Artist;
@@ -46,7 +46,7 @@ public class GiveFavoriteArtistTest extends BaseSetting {
     public void favoriteArtistGiveTest() throws Exception {
         User user=userRepository.findByEmail_Email("test1@example.com").get();
         user.setPassword(encoder.encode(user.getPassword()));
-        UserLogin userLogin = loginUser("test1@example.com");
+        UserLoginDetail userLogin = loginUser("test1@example.com");
         Artist artist=artistRepository.findByArtistName("bibi").get();
         Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
         Track track=trackRepository.findByTitle("bam").get();

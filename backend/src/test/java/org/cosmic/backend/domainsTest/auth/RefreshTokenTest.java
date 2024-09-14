@@ -1,6 +1,6 @@
 package org.cosmic.backend.domainsTest.auth;
 
-import org.cosmic.backend.domain.auth.dtos.UserLogin;
+import org.cosmic.backend.domain.auth.dtos.UserLoginDetail;
 import org.cosmic.backend.domain.user.domains.Email;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.EmailRepository;
@@ -62,7 +62,7 @@ public class RefreshTokenTest {
 
         mockMvc.perform(post("/api/auth/signin")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(UserLogin.builder()
+                        .content(mapper.writeValueAsString(UserLoginDetail.builder()
                                 .email("testw1@example.com")
                                 .password("123456")
                                 .build()

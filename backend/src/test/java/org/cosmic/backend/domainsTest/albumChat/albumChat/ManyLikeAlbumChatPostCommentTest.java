@@ -3,7 +3,7 @@ package org.cosmic.backend.domainsTest.albumChat.albumChat;
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDetail;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentRequest;
-import org.cosmic.backend.domain.auth.dtos.UserLogin;
+import org.cosmic.backend.domain.auth.dtos.UserLoginDetail;
 import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
 import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
@@ -55,11 +55,11 @@ public class ManyLikeAlbumChatPostCommentTest extends BaseSetting {
         public void manyLikeAlbumChatCommentTest() throws Exception {
             User user=userRepository.findByEmail_Email("test1@example.com").get();
             user.setPassword(encoder.encode(user.getPassword()));
-            UserLogin userLogin = loginUser("test1@example.com");
+            UserLoginDetail userLogin = loginUser("test1@example.com");
 
             User user2=userRepository.findByEmail_Email("test2@example.com").get();
             user2.setPassword(encoder.encode(user2.getPassword()));
-            UserLogin userLogin2 = loginUser("test2@example.com");
+            UserLoginDetail userLogin2 = loginUser("test2@example.com");
 
             Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
             AlbumChatCommentRequest albumChatCommentReq=AlbumChatCommentRequest.createAlbumChatCommentReq(
