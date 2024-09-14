@@ -11,9 +11,9 @@ import org.cosmic.backend.domain.musicDna.domains.MusicDna;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDnaResponse {
-    private String DNA;
+    private String dnaName;
 
-    public UserDnaResponse(MusicDna DNA) {
-        this.DNA = DNA.getName();
+    public UserDnaResponse(MusicDna Dna) {
+        this.dnaName = Dna.getName();
     }
 }

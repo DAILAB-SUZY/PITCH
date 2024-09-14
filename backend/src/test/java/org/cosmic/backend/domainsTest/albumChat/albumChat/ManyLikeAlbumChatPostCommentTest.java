@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
@@ -107,15 +108,15 @@ public class ManyLikeAlbumChatPostCommentTest extends BaseSetting {
             mockMvcHelper(HttpMethod.POST,url,null,userLogin2.getToken())//user2
                     .andExpect(status().isOk());
 
-
             params.clear();
             params.put("albumId",album.getAlbumId());
             url=urlGenerator.buildUrl("/api/album/{albumId}?sorted=manylike",params);
             resultActions=mockMvcHelper(HttpMethod.GET,url,null,userLogin.getToken());
             jsonResponse=resultActions.andReturn().getResponse().getContentAsString();
-            albumChatCommentDetails = objectMapper.readValue(jsonResponse, new TypeReference<List<AlbumChatCommentDetail>>() {});
+            List<AlbumChatCommentDetail> albumChatCommentDetail3 = objectMapper.readValue(jsonResponse, new TypeReference<List<AlbumChatCommentDetail>>() {});
 
-
+            assertEquals(2, albumChatCommentDetail3.get(0).getAlbumChatCommentId());
+            assertEquals(1, albumChatCommentDetail3.get(1).getAlbumChatCommentId());
         }
     }
 
