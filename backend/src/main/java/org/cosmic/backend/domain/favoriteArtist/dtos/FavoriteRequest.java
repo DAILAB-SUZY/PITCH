@@ -9,13 +9,13 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FavoriteReq {
+public class FavoriteRequest {
     private Long artistId;
     private Long albumId;
     private String cover;
     private Long trackId;
-    public static FavoriteReq createFavoriteReq(Long artistId,Long albumId,Long trackId,String cover) {
-        return  FavoriteReq.builder()
+    public static FavoriteRequest createFavoriteReq(Long artistId, Long albumId, Long trackId, String cover) {
+        return  FavoriteRequest.builder()
                 .artistId(artistId)
                 .albumId(albumId)
                 .trackId(trackId)

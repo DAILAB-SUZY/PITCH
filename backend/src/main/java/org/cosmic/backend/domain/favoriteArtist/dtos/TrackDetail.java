@@ -10,11 +10,11 @@ import org.cosmic.backend.domain.playList.domains.Track;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class TrackData {
+public class TrackDetail {
     private Long trackId;
     private String trackName;
 
-    public TrackData(Track track) {
+    public TrackDetail(Track track) {
         this.trackId = track.getTrackId();
         this.trackName = track.getTitle();
     }
