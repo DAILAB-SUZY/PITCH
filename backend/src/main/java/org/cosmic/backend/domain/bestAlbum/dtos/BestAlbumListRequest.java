@@ -10,10 +10,10 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class BestAlbumListDto {
+public class BestAlbumListRequest {
     private List<BestAlbumDetail> bestalbum;
-    public static BestAlbumListDto createBestAlbumListDto(List<BestAlbumDetail> bestalbum) {
-        return  BestAlbumListDto.builder()
+    public static BestAlbumListRequest createBestAlbumListDto(List<BestAlbumDetail> bestalbum) {
+        return  BestAlbumListRequest.builder()
                 .bestalbum(bestalbum)
                 .build();
     }

@@ -3,9 +3,9 @@ package org.cosmic.backend.domain.bestAlbum.apis;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.transaction.Transactional;
 import org.cosmic.backend.domain.bestAlbum.applications.BestAlbumService;
-import org.cosmic.backend.domain.bestAlbum.dtos.AlbumGiveDto;
-import org.cosmic.backend.domain.bestAlbum.dtos.BestAlbumGiveDto;
-import org.cosmic.backend.domain.bestAlbum.dtos.BestAlbumListDto;
+import org.cosmic.backend.domain.bestAlbum.dtos.AlbumInfoDetail;
+import org.cosmic.backend.domain.bestAlbum.dtos.BestAlbumDetail;
+import org.cosmic.backend.domain.bestAlbum.dtos.BestAlbumListRequest;
 import org.cosmic.backend.domain.bestAlbum.exceptions.ExistBestAlbumException;
 import org.cosmic.backend.domain.bestAlbum.exceptions.NotMatchBestAlbumException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundArtistException;
@@ -44,8 +44,8 @@ public class BestAlbumApi {
     @Transactional
     @GetMapping("/bestAlbum")
     @ApiResponse(responseCode = "404", description = "Not Found User")
-    public List<BestAlbumGiveDto> bestAlbumGive(@AuthenticationPrincipal Long userId) {
-        return bestAlbumService.open(userId);
+    public ResponseEntity<List<BestAlbumDetail>> bestAlbumGive(@AuthenticationPrincipal Long userId) {
+        return ResponseEntity.ok(bestAlbumService.open(userId));
     }
 
     /**
@@ -61,15 +61,15 @@ public class BestAlbumApi {
     @PostMapping("/bestAlbum/{albumId}")
     @ApiResponse(responseCode = "404", description = "Not Found User or Album")
     @ApiResponse(responseCode = "409", description = "Exist BestAlbum")
-    public ResponseEntity<?> bestAlbumAdd(@PathVariable Long albumId,@AuthenticationPrincipal Long userId) {
-        bestAlbumService.add(userId,albumId);
-        return ResponseEntity.ok("성공");
+    public ResponseEntity<List<BestAlbumDetail>> bestAlbumAdd(@PathVariable Long albumId,@AuthenticationPrincipal Long userId) {
+
+        return ResponseEntity.ok(bestAlbumService.add(userId,albumId));
     }
 
     /**
      * 사용자의 좋아요 앨범 목록을 업데이트합니다.
      *
-     * @param bestAlbumlistDto 사용자 ID와 새로 저장할 좋아요 앨범 목록을 포함한 DTO 객체
+     * @param bestAlbumlistRequest 사용자 ID와 새로 저장할 좋아요 앨범 목록을 포함한 DTO 객체
      * @return 성공 메시지
      * @throws NotFoundUserException 사용자를 찾을 수 없는 경우 발생합니다.
      * @throws NotFoundAlbumException 앨범을 찾을 수 없는 경우 발생합니다.
@@ -79,9 +79,8 @@ public class BestAlbumApi {
     @PostMapping("/bestAlbum")
     @ApiResponse(responseCode = "400", description = "Not Match BestAlbum")
     @ApiResponse(responseCode = "404", description = "Not Found User or Album")
-    public ResponseEntity<?> bestAlbumSave(@RequestBody BestAlbumListDto bestAlbumlistDto,@AuthenticationPrincipal Long userId) {
-        bestAlbumService.save(userId,bestAlbumlistDto.getBestalbum());
-        return ResponseEntity.ok("성공");
+    public ResponseEntity<List<BestAlbumDetail>> bestAlbumSave(@RequestBody BestAlbumListRequest bestAlbumlistRequest, @AuthenticationPrincipal Long userId) {
+        return ResponseEntity.ok(bestAlbumService.save(userId, bestAlbumlistRequest.getBestalbum()));
     }
 
     /**
@@ -93,8 +92,8 @@ public class BestAlbumApi {
      */
     @GetMapping("bestAlbum/artist/{artistName}")
     @ApiResponse(responseCode = "404", description = "Not Match Artist Name")
-    public List<AlbumGiveDto> artistSearch(@PathVariable String artistName) {
-        return bestAlbumService.searchArtist(artistName);
+    public ResponseEntity<List<AlbumInfoDetail>> artistSearch(@PathVariable String artistName) {
+        return ResponseEntity.ok(bestAlbumService.searchArtist(artistName));
     }
 
     /**
@@ -106,8 +105,8 @@ public class BestAlbumApi {
      */
     @GetMapping("/bestAlbum/album/{albumName}")
     @ApiResponse(responseCode = "404", description = "Not Match Album Title")
-    public List<AlbumGiveDto> albumSearch(@PathVariable String albumName) {
-        return bestAlbumService.searchAlbum(albumName);
+    public ResponseEntity<List<AlbumInfoDetail>> albumSearch(@PathVariable String albumName) {
+        return ResponseEntity.ok(bestAlbumService.searchAlbum(albumName));
     }
     //앨범 찾기 앨범이름
 }
