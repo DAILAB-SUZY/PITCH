@@ -59,7 +59,6 @@ public class DeleteAlbumLikeTest extends BaseSetting {
         String url=urlGenerator.buildUrl("/api/album/{albumId}/albumLike",params);
         mockMvcHelper(HttpMethod.POST,url,null,userLogin.getToken())
                 .andExpect(status().isOk());
-
         mockMvcHelper(HttpMethod.DELETE,url,null,userLogin.getToken())
                 .andExpect(status().isOk());
     }

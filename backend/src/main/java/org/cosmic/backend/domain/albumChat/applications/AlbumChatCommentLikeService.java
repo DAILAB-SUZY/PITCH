@@ -22,6 +22,7 @@ public class AlbumChatCommentLikeService {
     private final AlbumChatCommentLikeRepository albumChatCommentlikeRepository;
     private final UsersRepository usersRepository;
     private final AlbumChatCommentRepository albumChatCommentRepository;
+    private final AlbumChatCommentLikeRepository albumChatCommentLikeRepository;
 
     /**
      * AlbumChatCommentLikeService 생성자.
@@ -30,10 +31,11 @@ public class AlbumChatCommentLikeService {
      * @param usersRepository 사용자 리포지토리 주입
      * @param albumChatCommentRepository 앨범 챗 댓글 리포지토리 주입
      */
-    public AlbumChatCommentLikeService(AlbumChatCommentLikeRepository albumChatCommentlikeRepository, UsersRepository usersRepository, AlbumChatCommentRepository albumChatCommentRepository) {
+    public AlbumChatCommentLikeService(AlbumChatCommentLikeRepository albumChatCommentlikeRepository, UsersRepository usersRepository, AlbumChatCommentRepository albumChatCommentRepository, AlbumChatCommentLikeRepository albumChatCommentLikeRepository) {
         this.albumChatCommentlikeRepository = albumChatCommentlikeRepository;
         this.usersRepository = usersRepository;
         this.albumChatCommentRepository = albumChatCommentRepository;
+        this.albumChatCommentLikeRepository = albumChatCommentLikeRepository;
     }
 
     /**
@@ -73,10 +75,10 @@ public class AlbumChatCommentLikeService {
         if(albumChatCommentlikeRepository.findByAlbumChatComment_AlbumChatCommentIdAndUser_UserId(albumChatCommentId, userId).isPresent()) {
             throw new ExistCommentLikeException();
         }
-        AlbumChatCommentLike.builder()
-            .user(usersRepository.findByUserId(userId).get())
-            .albumChatComment(albumChatCommentRepository.findById(albumChatCommentId).get())
-            .build();
+        albumChatCommentLikeRepository.save(AlbumChatCommentLike.builder()
+                .user(usersRepository.findByUserId(userId).get())
+                .albumChatComment(albumChatCommentRepository.findById(albumChatCommentId).get())
+                .build());
 
         return albumChatCommentlikeRepository.findByAlbumChatComment_AlbumChatCommentId(albumChatCommentId)
                 .stream()

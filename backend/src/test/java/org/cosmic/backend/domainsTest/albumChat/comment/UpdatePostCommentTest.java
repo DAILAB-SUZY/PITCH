@@ -66,11 +66,10 @@ public class UpdatePostCommentTest extends BaseSetting {
         String url=urlGenerator.buildUrl("/api/album/{albumId}/comment",params);
         ResultActions resultActions=mockMvcHelper(HttpMethod.POST,url,albumChatCommentReq,userLogin.getToken())
                 .andExpect(status().isOk());
-        MvcResult result = resultActions.andReturn();
-        String content = result.getResponse().getContentAsString();
-        ObjectMapper mapper = new ObjectMapper();
-        List<AlbumChatCommentDetail> response= mapper.readValue(content,new TypeReference<List<AlbumChatCommentDetail>>() {});
-        Long albumChatCommentId = response.get(0).getAlbumChatCommentId();
+        String jsonResponse=resultActions.andReturn().getResponse().getContentAsString();
+        List<AlbumChatCommentDetail> albumChatCommentDetails =
+                mapper.readValue(jsonResponse, new TypeReference<List<AlbumChatCommentDetail>>() {});
+        Long albumChatCommentId=albumChatCommentDetails.get(0).getAlbumChatCommentId();
 
         albumChatCommentReq=AlbumChatCommentRequest.createAlbumChatCommentReq(
             "hi",null);

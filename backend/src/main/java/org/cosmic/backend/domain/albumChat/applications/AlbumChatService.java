@@ -3,6 +3,7 @@ package org.cosmic.backend.domain.albumChat.applications;
 import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumChatDetail;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDetail;
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatException;
+import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatCommentLikeRepository;
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatCommentRepository;
 import org.cosmic.backend.domain.playList.dtos.AlbumDto;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
@@ -20,14 +21,16 @@ import java.util.stream.Collectors;
 public class AlbumChatService {
     private final AlbumRepository albumRepository;
     private final AlbumChatCommentRepository albumChatCommentRepository;
+    private final AlbumChatCommentLikeRepository albumChatCommentLikeRepository;
     /**
      * AlbumChatService 생성자.
      *
      * @param albumChatCommentRepository AlbumChatCommentRepository 주입
      */
-    public AlbumChatService(AlbumRepository albumRepository, AlbumChatCommentRepository albumChatCommentRepository) {
+    public AlbumChatService(AlbumRepository albumRepository, AlbumChatCommentRepository albumChatCommentRepository,AlbumChatCommentLikeRepository albumChatCommentLikeRepository) {
         this.albumRepository = albumRepository;
         this.albumChatCommentRepository = albumChatCommentRepository;
+        this.albumChatCommentLikeRepository = albumChatCommentLikeRepository;
     }
 
     /**
@@ -55,7 +58,6 @@ public class AlbumChatService {
         if(albumRepository.findById(albumId).isEmpty()) {
             throw new NotFoundAlbumChatException();
         }
-
         return albumChatCommentRepository.findByAlbumIdOrderByCountAlbumChatCommentLikes(albumId)
                 .orElse(Collections.emptyList())
                 .stream()

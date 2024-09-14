@@ -10,6 +10,7 @@ import org.cosmic.backend.globals.annotations.ApiCommonResponses;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -58,6 +59,9 @@ public class AlbumChatApi {
         @PathVariable("albumId")Long albumId,@RequestParam String sorted) {
         if(sorted.equals("manylike"))
         {
+            List<AlbumChatCommentDetail> a=new ArrayList<>();
+            a=albumChatService.getAlbumChatCommentByManyLikeId(albumId);
+            System.out.println(a);
             return albumChatService.getAlbumChatCommentByManyLikeId(albumId);
         }
         return null;
