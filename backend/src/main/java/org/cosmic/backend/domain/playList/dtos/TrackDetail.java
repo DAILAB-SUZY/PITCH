@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class TrackGiveDto {
+public class TrackDetail {
     String title;
     String artistName;
 }

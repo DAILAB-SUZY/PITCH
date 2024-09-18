@@ -63,7 +63,7 @@ public class CreatePlaylistTest extends BaseSetting {
         user.setPassword(encoder.encode(user.getPassword()));
         UserLoginDetail userLogin = loginUser("test1@example.com");
         Track track=trackRepository.findByTitle("bam").get();
-        PlaylistDto playlistdto=new PlaylistDto(List.of(new PlaylistDetail(track.getTrackId())));
+        PlaylistDto playlistdto=new PlaylistDto(List.of((track.getTrackId())));
 
         //postRequest("/api/playlist",null,null,null,playlistdto,userLogin.getToken()).andExpect(status().isOk());
         mockMvcHelper(HttpMethod.POST,"/api/playlist",playlistdto,userLogin.getToken()).andExpect(status().isOk());

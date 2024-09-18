@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.cosmic.backend.domain.playList.dtos.PlaylistGiveDto;
+import org.cosmic.backend.domain.playList.dtos.PlaylistDetail;
 
 @Data
 @NoArgsConstructor
@@ -33,11 +33,10 @@ public class Playlist_Track {//N:M을 이어줄 연결다리
     @Column(name="`order`")
     private Integer order = 0;
 
-    public static PlaylistGiveDto toGiveDto(Playlist_Track playlist_track) {
-        return PlaylistGiveDto.builder()
+    public static PlaylistDetail toGiveDetail(Playlist_Track playlist_track) {
+        return PlaylistDetail.builder()
                 .playlistId(playlist_track.getPlaylist().getPlaylistId())
                 .trackId(playlist_track.getTrack().getTrackId())
-                .userId(playlist_track.getPlaylist().getUser().getUserId())
                 .title(playlist_track.getTrack().getTitle())
                 .artistName(playlist_track.getTrack().getArtist().getArtistName())
                 .build();

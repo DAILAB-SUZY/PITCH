@@ -3,9 +3,7 @@ package org.cosmic.backend.domain.playList.apis;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.transaction.Transactional;
 import org.cosmic.backend.domain.playList.applications.PlaylistService;
-import org.cosmic.backend.domain.playList.dtos.PlaylistDto;
-import org.cosmic.backend.domain.playList.dtos.PlaylistGiveDto;
-import org.cosmic.backend.domain.playList.dtos.TrackGiveDto;
+import org.cosmic.backend.domain.playList.dtos.*;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundArtistException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundTrackException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
@@ -43,9 +41,9 @@ public class PlaylistApi {
      */
     @Transactional
     @GetMapping("/playlist")
-    @ApiResponse(responseCode = "404", description = "Not Found User")
-    public List<PlaylistGiveDto> dataGive(@PathVariable Long userId) {
-        return playlistService.open(userId);
+    @ApiResponse(responseCode = "404", description = "Not Found User")//어떤 사용자의 플레이리스트 보여주는
+    public ResponseEntity<List<PlaylistDetail>> dataGive(@PathVariable Long userId) {
+        return ResponseEntity.ok(playlistService.open(userId));
     }
 
     /**
@@ -59,10 +57,9 @@ public class PlaylistApi {
      */
     @PostMapping("/playlist")
     @Transactional
-    @ApiResponse(responseCode = "404", description = "Not Found User or Track")
-    public ResponseEntity<?> savePlaylistData(@RequestBody PlaylistDto playlist,@AuthenticationPrincipal Long userId) {
-        playlistService.save(userId, playlist.getPlaylist());
-        return ResponseEntity.ok("성공");
+    @ApiResponse(responseCode = "404", description = "Not Found User or Track")//새로 저장
+    public ResponseEntity<List<PlaylistDetail>> savePlaylistData(@RequestBody PlaylistDto playlist, @AuthenticationPrincipal Long userId) {
+        return ResponseEntity.ok(playlistService.save(userId, playlist));
     }
 
     /**
@@ -76,8 +73,8 @@ public class PlaylistApi {
     @GetMapping("/playlist/artist/{artistName}")
     @Transactional
     @ApiResponse(responseCode = "400", description = "Not Match Artist Name")
-    public List<TrackGiveDto> artistSearch(@PathVariable String artistName) {
-        return playlistService.artistSearch(artistName);
+    public ResponseEntity<List<TrackDetail>> artistSearch(@PathVariable String artistName) {
+        return ResponseEntity.ok(playlistService.artistSearch(artistName));
     }
 
     /**
@@ -91,7 +88,7 @@ public class PlaylistApi {
     @GetMapping("/playlist/track/{trackName}")
     @Transactional
     @ApiResponse(responseCode = "404", description = "Not Match Track Title")
-    public List<TrackGiveDto> trackSearch(@PathVariable String trackName) {
-        return playlistService.trackSearch(trackName);
+    public ResponseEntity<List<TrackDetail>> trackSearch(@PathVariable String trackName) {
+        return ResponseEntity.ok(playlistService.trackSearch(trackName));
     }
 }
