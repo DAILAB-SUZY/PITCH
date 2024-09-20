@@ -76,7 +76,7 @@ public class CommentApi {
      */
     @PostMapping("/{commentId}")
     @ApiResponse(responseCode = "404", description = "Not Found Post or Comment")
-    public ResponseEntity<CommentDetail> updateComment(@RequestBody UpdateCommentRequest comment, @PathVariable Long commentId, @AuthenticationPrincipal Long userId) {
+    public ResponseEntity<List<CommentDetail>> updateComment(@RequestBody UpdateCommentRequest comment, @PathVariable Long commentId, @AuthenticationPrincipal Long userId) {
         return ResponseEntity.ok(commentService.updateComment(comment.getContent(), commentId, userId));
     }
 
@@ -89,14 +89,13 @@ public class CommentApi {
      */
     @DeleteMapping("/{commentId}")
     @ApiResponse(responseCode = "404", description = "Not Found Comment")
-    public ResponseEntity<?> deleteComment(@PathVariable Long commentId, @AuthenticationPrincipal Long userId) {
-        commentService.deleteComment(commentId, userId);
-        return ResponseEntity.ok(null);
+    public ResponseEntity<List<CommentDetail>> deleteComment(@PathVariable Long commentId, @PathVariable Long postId, @AuthenticationPrincipal Long userId) {
+        return ResponseEntity.ok(commentService.deleteComment(commentId, postId, userId));
     }
 
     @PostMapping("/{commentId}/like")
     @ApiResponse(responseCode = "404", description = "Not Found Comment")
-    public ResponseEntity<CommentDetail> likeComment(@PathVariable Long commentId, @AuthenticationPrincipal Long userId) {
-        return ResponseEntity.ok(commentService.likeComment(commentId, userId));
+    public ResponseEntity<List<CommentDetail>> likeComment(@PathVariable Long commentId, @PathVariable Long postId, @AuthenticationPrincipal Long userId) {
+        return ResponseEntity.ok(commentService.likeComment(commentId, postId, userId));
     }
 }

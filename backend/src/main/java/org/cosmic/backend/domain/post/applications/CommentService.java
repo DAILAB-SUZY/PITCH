@@ -57,7 +57,7 @@ public class CommentService {
         if (!postRepository.existsById(postId)){
             throw new NotFoundPostException("Post Not Found");
         }
-        return postCommentRepository.findAllWithLikesByPostId(postId);
+        return postCommentRepository.findByPost_PostId(postId).stream().map(PostComment::toCommentDetail).toList();
     }
 
     /**
@@ -80,7 +80,7 @@ public class CommentService {
                 .post(post)
                 .build());
 
-        return postCommentRepository.findAllWithLikesByPostId(postId);
+        return postCommentRepository.findByPost_PostId(postId).stream().map(PostComment::toCommentDetail).toList();
     }
 
     /**
@@ -93,7 +93,7 @@ public class CommentService {
      * @throws NotMatchPostException 댓글이 게시글과 일치하지 않을 경우 발생합니다.
      */
     @Transactional
-    public CommentDetail updateComment(String content, Long postId, Long userId) {
+    public List<CommentDetail> updateComment(String content, Long postId, Long userId) {
         PostComment postComment = postCommentRepository.findById(postId).orElseThrow(NotFoundCommentException::new);
         if (!postComment.getUser().getUserId().equals(userId)) {
             throw new NotMatchUserException();
@@ -102,7 +102,8 @@ public class CommentService {
             throw new NotMatchPostException();
         }
         postComment.setContent(content);
-        return PostComment.toCommentDetail(postCommentRepository.save(postComment));
+        postCommentRepository.save(postComment);
+        return postCommentRepository.findByPost_PostId(postId).stream().map(PostComment::toCommentDetail).toList();
     }
 
     /**
@@ -112,16 +113,17 @@ public class CommentService {
      * @throws NotFoundCommentException 댓글이 존재하지 않을 경우 발생합니다.
      */
     @Transactional
-    public void deleteComment(Long commentId, Long userId) {
+    public List<CommentDetail> deleteComment(Long commentId, Long postId, Long userId) {
         PostComment postComment = postCommentRepository.findById(commentId).orElseThrow(NotFoundCommentException::new);
         if(!postComment.getUser().getUserId().equals(userId)) {
             throw new NotMatchUserException();
         }
         postCommentRepository.deleteById(commentId);
+        return postCommentRepository.findByPost_PostId(postId).stream().map(PostComment::toCommentDetail).toList();
     }
 
     @Transactional
-    public CommentDetail likeComment(Long commentId, Long userId) {
+    public List<CommentDetail> likeComment(Long commentId, Long postId, Long userId) {
         PostComment postComment = postCommentRepository.findById(commentId).orElseThrow(NotFoundPostException::new);
         User user = userRepository.findById(userId).orElseThrow(NotFoundUserException::new);
 
@@ -130,6 +132,6 @@ public class CommentService {
         }
 
         postCommentLikeRepository.save(PostCommentLike.builder().postComment(postComment).user(user).build());
-        return PostComment.toCommentDetail(postComment);
+        return postCommentRepository.findByPost_PostId(postId).stream().map(PostComment::toCommentDetail).toList();
     }
 }

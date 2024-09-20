@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.cosmic.backend.domain.post.dtos.Comment.LikeUserDto;
 import org.cosmic.backend.domain.user.domains.User;
 @Data
 @NoArgsConstructor
@@ -23,4 +24,10 @@ public class PostCommentLike {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    public static LikeUserDto toLikeUserDto(PostCommentLike postCommentLike) {
+        return LikeUserDto.builder()
+                .id(postCommentLike.user.getUserId())
+                .build();
+    }
 }
