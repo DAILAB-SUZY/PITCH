@@ -63,6 +63,7 @@ public class AlbumChatCommentApi {
     @ApiResponse(responseCode = "404", description = "Not Found User or Album")
     public ResponseEntity<List<AlbumChatCommentDetail>> albumChatCommentCreate(@PathVariable Long albumId,
        @RequestBody AlbumChatCommentRequest comment, @AuthenticationPrincipal Long userId) {
+        System.out.println("********하이요"+commentService.albumChatCommentCreate(albumId,comment,userId).get(0).getCreateAt());
         return ResponseEntity.ok(commentService.albumChatCommentCreate(albumId,comment,userId));
     }
 

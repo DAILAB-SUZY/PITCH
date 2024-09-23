@@ -5,8 +5,10 @@ import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDetail;
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatException;
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatCommentLikeRepository;
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatCommentRepository;
+import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.playList.dtos.AlbumDto;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
+import org.cosmic.backend.domain.post.exceptions.NotFoundAlbumException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

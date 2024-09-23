@@ -89,7 +89,10 @@ public class UserService {
      */
     public UserLoginDetail getByCredentials(String email, String password) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        log.info(usersRepository.findAll());
         User user = usersRepository.findByEmail_Email(email).orElseThrow(CredentialNotMatchException::new);
+        System.out.println("&&&&&&"+user.getPassword());
+        System.out.println("&&&&&&"+password);
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new CredentialNotMatchException();
         }

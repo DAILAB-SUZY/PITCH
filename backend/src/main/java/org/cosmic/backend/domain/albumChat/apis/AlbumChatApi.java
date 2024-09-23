@@ -60,11 +60,9 @@ public class AlbumChatApi {
         if(sorted.equals("manylike"))
         {
             List<AlbumChatCommentDetail> a=new ArrayList<>();
-            a=albumChatService.getAlbumChatCommentByManyLikeId(albumId);
-            System.out.println(a);
             return albumChatService.getAlbumChatCommentByManyLikeId(albumId);
         }
         return null;
-    }
+    }//query parameter로 many인지 origin
 
 }

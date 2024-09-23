@@ -76,12 +76,18 @@ public class AlbumChatCommentService {
         if(userRepository.findById(userId).isEmpty()) {
             throw new NotFoundUserException();
         }
+
+        Instant now = Instant.now();
         commentRepository.save(
             new AlbumChatComment(
                 comment.getContent()
-                ,Instant.now()
+                ,now
+                ,now
                 ,userRepository.findById(userId).get()
                 ,albumRepository.findById(albumId).get()));
+
+        List<AlbumChatComment> albumChatComment = commentRepository.findByAlbum_AlbumId(albumRepository.findById(albumId).get().getAlbumId()).get();
+        System.out.println("*******"+albumChatComment.get(0).getCreateTime());
 
         return commentRepository.findByAlbum_AlbumId(albumId)
                 .orElse(Collections.emptyList())

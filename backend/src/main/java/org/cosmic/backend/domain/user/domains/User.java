@@ -27,7 +27,7 @@ public class User {
     private Long userId;
 
     @OneToOne
-    @JoinColumn(name="email")  // 외래 키 컬럼명은 emails 테이블의 'email' 컬럼과 일치
+    @JoinColumn(name="email",nullable = false)  // 외래 키 컬럼명은 emails 테이블의 'email' 컬럼과 일치
     private Email email; // FK
 
     @Column(nullable=false)
@@ -41,7 +41,7 @@ public class User {
     private String profilePicture="base";
 
     @Builder.Default
-    @Column(nullable=false)
+    @Column()
     private Instant create_time =Instant.now();
 
     @ManyToOne
@@ -113,6 +113,7 @@ public class User {
         this.email=email;
         this.username=username;
         this.password=password;
+        this.create_time=Instant.now();
     }
 
     public static UserDetail toUserDetail(User user) {
@@ -121,5 +122,11 @@ public class User {
                 .username(user.username)
                 .profilePicture(user.profilePicture)
                 .build();
+    }
+    @PrePersist
+    public void prePersist() {
+        if (this.create_time == null) {
+            this.create_time = Instant.now();  // 저장되기 전에 create_time이 null이면 현재 시간으로 설정
+        }
     }
 }
