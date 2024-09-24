@@ -71,7 +71,11 @@ public class UserService {
         if (request.getPassword().length() < 8) {
             throw new NotMatchConditionException();
         }
-        User newUser = new User(emailOpt.get(), request.getName(), passwordEncoder.encode(request.getPassword()));
+        User newUser = User.builder()
+                .email(emailOpt.get())
+                .username(request.getName())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .build();
         usersRepository.save(newUser);
         Playlist playlist = Playlist.builder()
                 .user(newUser).build();
@@ -89,10 +93,8 @@ public class UserService {
      */
     public UserLoginDetail getByCredentials(String email, String password) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        log.info(usersRepository.findAll());
         User user = usersRepository.findByEmail_Email(email).orElseThrow(CredentialNotMatchException::new);
-        System.out.println("&&&&&&"+user.getPassword());
-        System.out.println("&&&&&&"+password);
+
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new CredentialNotMatchException();
         }
