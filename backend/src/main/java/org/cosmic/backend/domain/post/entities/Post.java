@@ -12,6 +12,7 @@ import org.cosmic.backend.domain.post.dtos.Post.PostReq;
 import org.cosmic.backend.domain.user.domains.User;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -40,10 +41,12 @@ public class Post {
     private Album album;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private List<PostComment> postComments;
+    @Builder.Default
+    private List<PostComment> postComments = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PostLike> postLikes;
+    @Builder.Default
+    private List<PostLike> postLikes = new ArrayList<>();
 
     public static PostDetail toPostDetail(Post post) {
         return PostDetail.builder()

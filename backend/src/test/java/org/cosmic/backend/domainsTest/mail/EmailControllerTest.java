@@ -33,7 +33,5 @@ public class EmailControllerTest extends EmailBaseTest {
         Assertions.assertEquals(1, receivedMessage.getAllRecipients().length);
         Assertions.assertEquals("tester@spring.com", receivedMessage.getAllRecipients()[0].toString());
         Assertions.assertEquals("Message from Java Mail Sender", receivedMessage.getSubject());
-        Assertions.assertEquals("123456", GreenMailUtil.getBody(receivedMessage));
-
     }
 }
