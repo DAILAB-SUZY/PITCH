@@ -8,12 +8,12 @@ import org.cosmic.backend.domain.playList.domains.Album;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AlbumGiveDto {
+public class AlbumInfoDetail {
     String title;
     String artistName;
     String cover;
 
-    public AlbumGiveDto(Album album) {
+    public AlbumInfoDetail(Album album) {
         this.title = album.getTitle();
         this.artistName = album.getArtist().getArtistName();
         this.cover = album.getCover();

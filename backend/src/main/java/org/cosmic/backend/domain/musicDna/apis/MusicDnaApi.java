@@ -3,8 +3,8 @@ package org.cosmic.backend.domain.musicDna.apis;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.transaction.Transactional;
 import org.cosmic.backend.domain.musicDna.applications.MusicDnaService;
+import org.cosmic.backend.domain.musicDna.dtos.DnaDetail;
 import org.cosmic.backend.domain.musicDna.dtos.DnaDto;
-import org.cosmic.backend.domain.musicDna.dtos.ListDna;
 import org.cosmic.backend.domain.musicDna.dtos.UserDnaResponse;
 import org.cosmic.backend.domain.musicDna.exceptions.NotMatchMusicDnaCountException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
@@ -41,8 +41,8 @@ public class MusicDnaApi {
      */
     @Transactional
     @GetMapping("/dna")
-    public List<ListDna> DnaGiveData() {
-        return musicDnaService.getAllDna();
+    public ResponseEntity<List<DnaDetail>> DnaGiveData() {
+        return ResponseEntity.ok(musicDnaService.getAllDna());
     }
 
     /**
@@ -57,9 +57,8 @@ public class MusicDnaApi {
     @PostMapping("/dna")
     @ApiResponse(responseCode = "400", description = "Need 4 MusicDna")
     @ApiResponse(responseCode = "404", description = "Not Found Emotion")
-    public ResponseEntity<?> userDnaSaveData(@RequestBody DnaDto dna,@AuthenticationPrincipal Long userId) {
-        musicDnaService.saveDNA(userId, dna.getDna());
-        return ResponseEntity.ok("성공");
+    public ResponseEntity<List<UserDnaResponse>> userDnaSaveData(@RequestBody DnaDto dna,@AuthenticationPrincipal Long userId) {
+        return ResponseEntity.ok(musicDnaService.saveDNA(userId, dna.getDna()));
     }
 
     /**
@@ -73,7 +72,7 @@ public class MusicDnaApi {
     @GetMapping("/dna/info")
     @Transactional
     @ApiResponse(responseCode = "404", description = "Not Found User")
-    public List<UserDnaResponse> userDnaGive(@AuthenticationPrincipal Long userId) {
-        return musicDnaService.getUserDna(userId);
+    public ResponseEntity<List<UserDnaResponse>> userDnaGive(@AuthenticationPrincipal Long userId) {
+        return ResponseEntity.ok(musicDnaService.getUserDna(userId));
     }
 }

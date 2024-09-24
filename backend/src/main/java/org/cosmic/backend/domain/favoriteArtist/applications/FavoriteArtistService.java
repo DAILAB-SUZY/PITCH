@@ -45,7 +45,7 @@ public class FavoriteArtistService {
      * @return 사용자가 즐겨찾는 아티스트 정보
      * @throws NotFoundUserException 사용자를 찾을 수 없는 경우 발생합니다.
      */
-    public FavoriteArtistDto favoriteArtistGiveData(Long userId) {
+    public FavoriteArtistDetail favoriteArtistGiveData(Long userId) {
         if(usersRepository.findById(userId).isEmpty()||favoriteArtistRepository.findByUser_UserId(userId).isEmpty()) {
             throw new NotFoundUserException();
         }
@@ -59,7 +59,7 @@ public class FavoriteArtistService {
      * @return 해당 아티스트의 앨범 및 트랙 데이터
      * @throws NotFoundArtistException 아티스트를 찾을 수 없는 경우 발생합니다.
      */
-    public List<ArtistData> artistSearchData(String artistName) {//artist이름 주면
+    public List<ArtistDetail> artistSearchData(String artistName) {//artist이름 주면
         if(artistRepository.findByArtistName(artistName).isEmpty()) {
             throw new NotFoundArtistException();
         }
@@ -74,13 +74,13 @@ public class FavoriteArtistService {
      * @return 해당 앨범의 트랙 데이터
      * @throws NotFoundAlbumException 앨범을 찾을 수 없는 경우 발생합니다.
      */
-    public List<AlbumData> albumSearchData(Long artistId,String albumName) {
+    public List<AlbumDetail> albumSearchData(Long artistId, String albumName) {
         if(albumRepository.findByTitleAndArtist_ArtistId(albumName,artistId).isEmpty()) {
             throw new NotFoundAlbumException();
         }
         return trackRepository.findByAlbum_TitleAndArtist_ArtistId(albumName, artistId)
                 .stream()
-                .map(AlbumData::new)
+                .map(AlbumDetail::new)
                 .toList();
     }
 
@@ -92,11 +92,11 @@ public class FavoriteArtistService {
      * @return 해당 트랙의 데이터
      * @throws NotFoundTrackException 트랙을 찾을 수 없는 경우 발생합니다.
      */
-    public TrackData trackSearchData(Long albumId,String trackName) {
+    public TrackDetail trackSearchData(Long albumId, String trackName) {
         if(trackRepository.findByTitleAndAlbum_AlbumId(trackName,albumId).isEmpty()) {
             throw new NotFoundTrackException();
         }
-        return new TrackData(trackRepository.findByTitleAndAlbum_AlbumId(trackName,albumId).get());
+        return new TrackDetail(trackRepository.findByTitleAndAlbum_AlbumId(trackName,albumId).get());
     }
 
     /**
@@ -107,7 +107,7 @@ public class FavoriteArtistService {
      * @throws NotFoundTrackException 트랙을 찾을 수 없는 경우 발생합니다.
      * @throws NotFoundAlbumException 앨범을 찾을 수 없는 경우 발생합니다.
      */
-    public void favoriteArtistSaveData(FavoriteReq favoriteArtist,Long userId) {
+    public FavoriteArtistDetail favoriteArtistSaveData(FavoriteRequest favoriteArtist, Long userId) {
         if(usersRepository.findById(userId).isEmpty()) {
             throw new NotFoundUserException();
         }
@@ -126,5 +126,7 @@ public class FavoriteArtistService {
                         .track(trackRepository.findById(favoriteArtist.getTrackId()).orElseThrow())
                         .user(user)
                                 .build());
+
+        return FavoriteArtist.toFavoriteArtistDto(favoriteArtistRepository.findByUser_UserId(userId).get());
     }
 }

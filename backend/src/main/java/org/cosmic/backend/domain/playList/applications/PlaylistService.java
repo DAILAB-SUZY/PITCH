@@ -4,9 +4,7 @@ import jakarta.transaction.Transactional;
 import org.cosmic.backend.domain.playList.domains.Playlist;
 import org.cosmic.backend.domain.playList.domains.Playlist_Track;
 import org.cosmic.backend.domain.playList.domains.Track;
-import org.cosmic.backend.domain.playList.dtos.PlaylistDetail;
-import org.cosmic.backend.domain.playList.dtos.PlaylistGiveDto;
-import org.cosmic.backend.domain.playList.dtos.TrackGiveDto;
+import org.cosmic.backend.domain.playList.dtos.*;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundArtistException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundTrackException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
@@ -53,23 +51,30 @@ public class PlaylistService {
      * 사용자 플레이리스트를 저장 또는 수정합니다.
      *
      * @param userId 사용자 ID
-     * @param newPlayList 새롭게 저장할 플레이리스트 세부 정보 목록
+     * @param tracks 새롭게 저장할 플레이리스트 세부 정보 목록
      *
      * @throws NotFoundUserException 사용자가 존재하지 않을 경우 발생합니다.
      * @throws NotFoundTrackException 플레이리스트에 포함된 트랙이 존재하지 않을 경우 발생합니다.
      */
     @Transactional
-    public void save(long userId, List<PlaylistDetail> newPlayList) {
+    public List<PlaylistDetail> save(long userId, PlaylistDto tracks) {
         if (usersRepository.findById(userId).isEmpty()) {
             throw new NotFoundUserException();
         }
+        List<Long> trackList=tracks.getTrackId();
+
         Playlist playList = playlistRepository.findByUser_UserId(userId).get(); // 사용자의 플레이리스트를 찾음
         playList.setUpdate_time(Instant.now());
         playlistTrackRepository.deleteByPlaylist_PlaylistId(playList.getPlaylistId());
-        playlistTrackRepository.saveAll(newPlayList.stream()
-                .map(track -> trackRepository.findById(track.getTrackId()).orElseThrow(NotFoundTrackException::new))
+        playlistTrackRepository.saveAll(trackList.stream()
+                .map(trackId -> trackRepository.findById(trackId)
+                        .orElseThrow(NotFoundTrackException::new))
                 .map(track -> Playlist_Track.builder().track(track).playlist(playList).build())
                 .toList());
+        return usersRepository.findById(userId).get().getPlaylist().getPlaylist_track()
+            .stream().map(Playlist_Track::toGiveDetail).toList();
+
+
     }
 
     /**
@@ -81,11 +86,12 @@ public class PlaylistService {
      * @throws NotFoundUserException 사용자가 존재하지 않을 경우 발생합니다.
      */
     @Transactional
-    public List<PlaylistGiveDto> open(Long userId) {
+    public List<PlaylistDetail> open(Long userId) {
         if (usersRepository.findById(userId).isEmpty()) {
             throw new NotFoundUserException();
         }
-        return usersRepository.findById(userId).get().getPlaylist().getPlaylist_track().stream().map(Playlist_Track::toGiveDto).toList();
+        return usersRepository.findById(userId).get().getPlaylist().getPlaylist_track()
+            .stream().map(Playlist_Track::toGiveDetail).toList();
     }
 
     /**
@@ -97,11 +103,12 @@ public class PlaylistService {
      * @throws NotFoundArtistException 아티스트가 존재하지 않을 경우 발생합니다.
      */
     @Transactional
-    public List<TrackGiveDto> artistSearch(String artistName) {
+    public List<TrackDetail> artistSearch(String artistName) {
         if (artistRepository.findByArtistName(artistName).isEmpty()) {
             throw new NotFoundArtistException();
         }
-        return trackRepository.findByArtist_ArtistName(artistName).stream().map(Track::toTrackGiveDto).toList(); // 트랙들을 모두 가져옴
+        return trackRepository.findByArtist_ArtistName(artistName)
+            .stream().map(Track::toTrackDetail).toList(); // 트랙들을 모두 가져옴
     }
 
     /**
@@ -113,11 +120,11 @@ public class PlaylistService {
      * @throws NotFoundTrackException 트랙이 존재하지 않을 경우 발생합니다.
      */
     @Transactional
-    public List<TrackGiveDto> trackSearch(String track) {
+    public List<TrackDetail> trackSearch(String track) {
         // TODO 여기에서는 equal 보다는 like가 맞지 않나?
         if (trackRepository.findByTitle(track).isEmpty()) {
             throw new NotFoundTrackException();
         }
-        return List.of(Track.toTrackGiveDto(trackRepository.findByTitle(track).get()));
+        return List.of(Track.toTrackDetail(trackRepository.findByTitle(track).get()));
     }
 }

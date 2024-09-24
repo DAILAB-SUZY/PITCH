@@ -1,5 +1,6 @@
 package org.cosmic.backend.domain.albumChat.dtos.comment;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,13 +11,14 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AlbumChatCommentReq {
+public class AlbumChatCommentRequest {
     private String content;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSSX", timezone = "UTC")
     private Instant createTime;
 
-    public static AlbumChatCommentReq createAlbumChatCommentReq(
+    public static AlbumChatCommentRequest createAlbumChatCommentReq(
          String content, Instant createTime) {
-        return  AlbumChatCommentReq.builder()
+        return  AlbumChatCommentRequest.builder()
                 .content(content)
                 .createTime(createTime)
                 .build();

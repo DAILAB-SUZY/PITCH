@@ -1,7 +1,7 @@
 package org.cosmic.backend.domainsTest.bestAlbum;
 
 import lombok.extern.log4j.Log4j2;
-import org.cosmic.backend.domain.auth.dtos.UserLogin;
+import org.cosmic.backend.domain.auth.dtos.UserLoginDetail;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
 import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
 import org.cosmic.backend.domain.playList.repositorys.TrackRepository;
@@ -49,7 +49,7 @@ public class SearchAlbumTest extends BaseSetting {
     public void albumNameSearchTest() throws Exception {
         User user=userRepository.findByEmail_Email("test1@example.com").get();
         user.setPassword(encoder.encode(user.getPassword()));
-        UserLogin userLogin = loginUser("test1@example.com");
+        UserLoginDetail userLogin = loginUser("test1@example.com");
         //TODO 앨범추가
         params.clear();
         params.put("albumName","bam");
@@ -63,7 +63,7 @@ public class SearchAlbumTest extends BaseSetting {
     public void artistNameSearchTest() throws Exception {
         User user=userRepository.findByEmail_Email("test1@example.com").get();
         user.setPassword(encoder.encode(user.getPassword()));
-        UserLogin userLogin = loginUser("test1@example.com");
+        UserLoginDetail userLogin = loginUser("test1@example.com");
 
         params.clear();
         params.put("albumName","bibi");

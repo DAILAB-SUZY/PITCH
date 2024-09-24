@@ -2,7 +2,7 @@ package org.cosmic.backend.domain.auth.apis;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.extern.log4j.Log4j2;
-import org.cosmic.backend.domain.auth.dtos.UserLogin;
+import org.cosmic.backend.domain.auth.dtos.UserLoginDetail;
 import org.cosmic.backend.domain.auth.exceptions.CredentialNotMatchException;
 import org.cosmic.backend.domain.user.applications.UserService;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
@@ -38,7 +38,7 @@ public class AuthApi {
      */
     @PostMapping("/auth/signin")
     @ApiResponse(responseCode = "401", description = "Email or Password is invalid")
-    public ResponseEntity<?> authenticate(@RequestBody UserLogin userLogin) {
+    public ResponseEntity<?> authenticate(@RequestBody UserLoginDetail userLogin) {
         return ResponseEntity.ok(userService.getByCredentials(userLogin.getEmail(), userLogin.getPassword()));
     }
 

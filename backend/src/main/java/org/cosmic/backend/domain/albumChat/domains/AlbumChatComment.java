@@ -4,10 +4,12 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDetail;
 import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.user.domains.User;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -37,17 +39,30 @@ public class AlbumChatComment {
     private Instant updateTime;
 
     @OneToMany(mappedBy = "albumChatComment", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<AlbumChatCommentLike> albumChatCommentLikes;
+    private List<AlbumChatCommentLike> albumChatCommentLikes=new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    public AlbumChatComment(String content, Instant updateTime, User user,Album album) {
+    public AlbumChatComment(String content,Instant createTime, Instant updateTime, User user,Album album) {
         this.album = album;
         this.content = content;
+        this.createTime=createTime;
         this.updateTime = updateTime;
         this.user=user;
+    }
+
+    public static AlbumChatCommentDetail toAlbumChatCommentDetail(AlbumChatComment albumChatComment) {
+        return AlbumChatCommentDetail.builder()
+                .albumChatCommentId(albumChatComment.getAlbumChatCommentId())
+                .author(User.toUserDetail(albumChatComment.user))
+                .content(albumChatComment.getContent())
+                .likes(albumChatComment.albumChatCommentLikes.stream()
+                    .map(AlbumChatCommentLike::toAlbumChatCommentLikeDetail).toList())
+                .createAt(albumChatComment.createTime)
+                .updateAt(albumChatComment.updateTime)
+                .build();
     }
 
     @Override
@@ -55,6 +70,7 @@ public class AlbumChatComment {
         return "AlbumChatComment{" +
                 "albumChatCommentId=" + albumChatCommentId +
                 ", content='" + content + '\'' +
+                ", createTime=" + createTime +
                 ", updateTime=" + updateTime +
                 ", user=" + (user != null ? user.getUserId() : "null") +
                 '}';

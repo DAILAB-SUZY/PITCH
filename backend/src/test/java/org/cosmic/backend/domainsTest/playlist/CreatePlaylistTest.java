@@ -1,7 +1,7 @@
 package org.cosmic.backend.domainsTest.playlist;
 
 import lombok.extern.log4j.Log4j2;
-import org.cosmic.backend.domain.auth.dtos.UserLogin;
+import org.cosmic.backend.domain.auth.dtos.UserLoginDetail;
 import org.cosmic.backend.domain.musicDna.repositorys.MusicDnaRepository;
 import org.cosmic.backend.domain.playList.domains.Track;
 import org.cosmic.backend.domain.playList.dtos.PlaylistDetail;
@@ -61,9 +61,9 @@ public class CreatePlaylistTest extends BaseSetting {
     public void playlistSaveTest() throws Exception {
         User user=userRepository.findByEmail_Email("test1@example.com").get();
         user.setPassword(encoder.encode(user.getPassword()));
-        UserLogin userLogin = loginUser("test1@example.com");
+        UserLoginDetail userLogin = loginUser("test1@example.com");
         Track track=trackRepository.findByTitle("bam").get();
-        PlaylistDto playlistdto=new PlaylistDto(List.of(new PlaylistDetail(track.getTrackId())));
+        PlaylistDto playlistdto=new PlaylistDto(List.of((track.getTrackId())));
 
         //postRequest("/api/playlist",null,null,null,playlistdto,userLogin.getToken()).andExpect(status().isOk());
         mockMvcHelper(HttpMethod.POST,"/api/playlist",playlistdto,userLogin.getToken()).andExpect(status().isOk());
@@ -75,7 +75,7 @@ public class CreatePlaylistTest extends BaseSetting {
     public void rightInfoFindTest() throws Exception {
         User user=userRepository.findByEmail_Email("test1@example.com").get();
         user.setPassword(encoder.encode(user.getPassword()));
-        UserLogin userLogin = loginUser("test1@example.com");
+        UserLoginDetail userLogin = loginUser("test1@example.com");
 
         Map<String,Object> params= new HashMap<>();
         params.put("trackName","bam");
@@ -92,7 +92,7 @@ public class CreatePlaylistTest extends BaseSetting {
     public void wrongInfoFindTest() throws Exception {
         User user=userRepository.findByEmail_Email("test1@example.com").get();
         user.setPassword(encoder.encode(user.getPassword()));
-        UserLogin userLogin = loginUser("test1@example.com");
+        UserLoginDetail userLogin = loginUser("test1@example.com");
 
         Map<String,Object> params= new HashMap<>();
         params.put("trackName","id");

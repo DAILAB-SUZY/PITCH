@@ -9,14 +9,14 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserLogin {
+public class UserLoginDetail {
     private String refreshToken;
     private String token;
     private String email;
     private String password;
     private Long id;
-    public static UserLogin createUserLogin(String email, String password) {
-        return  UserLogin.builder()
+    public static UserLoginDetail createUserLoginDetail(String email, String password) {
+        return  UserLoginDetail.builder()
                 .email(email)
                 .password(password)
                 .build();

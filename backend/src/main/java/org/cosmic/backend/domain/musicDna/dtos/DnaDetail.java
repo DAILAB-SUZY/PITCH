@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DnaDetail {
     private Long dnaKey;
+    private String dnaName;
 }

@@ -2,12 +2,15 @@ package org.cosmic.backend.domain.albumChat.apis;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.cosmic.backend.domain.albumChat.applications.AlbumChatService;
-import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentResponse;
+import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumChatDetail;
+import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDetail;
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatException;
+import org.cosmic.backend.domain.playList.dtos.AlbumDto;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,7 +30,20 @@ public class AlbumChatApi {
     public AlbumChatApi(AlbumChatService albumChatService) {
         this.albumChatService = albumChatService;
     }
-
+    /**
+     * 앨범 ID를 기반으로 해당 앨범의 앨범 챗 정보를 조회합니다.
+     * 사용자가 선택한 앨범의 관련 정보와 아티스트 정보를 반환합니다.
+     *
+     * @param album 조회할 앨범의 ID를 포함한
+     * @return AlbumChatResponse 조회된 앨범 챗 정보 및 아티스트 정보
+     * @throws NotFoundAlbumChatException 특정 앨범의 앨범 챗을 찾을 수 없는 경우 발생
+     */
+    @Transactional
+    @PostMapping("/open")
+    @ApiResponse(responseCode = "404", description = "Not Found AlbumChat")
+    public AlbumChatDetail getAlbumChatById(@RequestBody AlbumDto album) {
+        return albumChatService.getAlbumChatById(album);
+    }
     /**
      * 앨범 챗 ID를 기반으로 해당 앨범 챗의 댓글을 좋아요 수 순서대로 정렬하여 반환합니다.
      *
@@ -39,13 +55,14 @@ public class AlbumChatApi {
     @Transactional
     @GetMapping("/album/{albumId}")
     @ApiResponse(responseCode = "404", description = "Not Found Album")
-    public List<AlbumChatCommentResponse> getAlbumChatCommentByManyLikeId(
+    public List<AlbumChatCommentDetail> getAlbumChatCommentByManyLikeId(
         @PathVariable("albumId")Long albumId,@RequestParam String sorted) {
         if(sorted.equals("manylike"))
         {
+            List<AlbumChatCommentDetail> a=new ArrayList<>();
             return albumChatService.getAlbumChatCommentByManyLikeId(albumId);
         }
         return null;
-    }
+    }//query parameter로 many인지 origin
 
 }

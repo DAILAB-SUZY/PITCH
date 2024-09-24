@@ -2,7 +2,7 @@ package org.cosmic.backend.domain.user.applications;
 
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.auth.applications.TokenProvider;
-import org.cosmic.backend.domain.auth.dtos.UserLogin;
+import org.cosmic.backend.domain.auth.dtos.UserLoginDetail;
 import org.cosmic.backend.domain.auth.exceptions.CredentialNotMatchException;
 import org.cosmic.backend.domain.playList.domains.Playlist;
 import org.cosmic.backend.domain.playList.repositorys.PlaylistRepository;
@@ -87,14 +87,17 @@ public class UserService {
      *
      * @throws CredentialNotMatchException 이메일 또는 비밀번호가 일치하지 않을 때 발생합니다.
      */
-    public UserLogin getByCredentials(String email, String password) {
+    public UserLoginDetail getByCredentials(String email, String password) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        log.info(usersRepository.findAll());
         User user = usersRepository.findByEmail_Email(email).orElseThrow(CredentialNotMatchException::new);
+        System.out.println("&&&&&&"+user.getPassword());
+        System.out.println("&&&&&&"+password);
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new CredentialNotMatchException();
         }
 
-        return UserLogin.builder()
+        return UserLoginDetail.builder()
                 .refreshToken(tokenProvider.createRefreshToken(user))
                 .token(tokenProvider.create(user))
                 .email(email)
@@ -111,10 +114,10 @@ public class UserService {
      *
      * @throws CredentialNotMatchException 사용자를 찾을 수 없을 때 발생합니다.
      */
-    private UserLogin getByEmail(String email) {
+    private UserLoginDetail getByEmail(String email) {
         User user = usersRepository.findById(Long.parseLong(email)).orElseThrow(CredentialNotMatchException::new);
 
-        return UserLogin.builder()
+        return UserLoginDetail.builder()
                 .refreshToken(tokenProvider.createRefreshToken(user))
                 .token(tokenProvider.create(user))
                 .email(user.getEmail().getEmail())
@@ -130,7 +133,7 @@ public class UserService {
      *
      * @throws CredentialNotMatchException 리프레시 토큰이 유효하지 않거나 일치하지 않을 때 발생합니다.
      */
-    public UserLogin getUserByRefreshToken(String refreshToken) {
+    public UserLoginDetail getUserByRefreshToken(String refreshToken) {
         String email = tokenProvider.validateAndGetUserId(refreshToken);
         if (email == null) {
             throw new CredentialNotMatchException();

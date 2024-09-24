@@ -1,6 +1,5 @@
 package org.cosmic.backend.domain.playList.dtos;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,11 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PlaylistGiveDto {
-
-    Long playlistId;
-    Long trackId;
-    Long userId;
+public class TrackDetail {
     String title;
     String artistName;
 }

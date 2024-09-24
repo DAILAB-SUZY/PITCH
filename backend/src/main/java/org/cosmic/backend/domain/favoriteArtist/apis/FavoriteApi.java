@@ -42,8 +42,8 @@ public class FavoriteApi {
     @GetMapping("/favoriteArtist")
     @Transactional
     @ApiResponse(responseCode = "404", description = "Not Found User")
-    public FavoriteArtistDto favoriteArtistGiveData(@AuthenticationPrincipal Long userId) {
-        return favoriteartistService.favoriteArtistGiveData(userId);
+    public ResponseEntity<FavoriteArtistDetail> favoriteArtistGiveData(@AuthenticationPrincipal Long userId) {
+        return ResponseEntity.ok(favoriteartistService.favoriteArtistGiveData(userId));
     }
 
     /**
@@ -56,8 +56,8 @@ public class FavoriteApi {
     @GetMapping("/favoriteArtist/artist/{artistName}")
     @Transactional
     @ApiResponse(responseCode = "404", description = "Not Found Artist")
-    public List<ArtistData> artistSearchData(@PathVariable String artistName) {
-        return favoriteartistService.artistSearchData(artistName);
+    public ResponseEntity<List<ArtistDetail>> artistSearchData(@PathVariable String artistName) {
+        return ResponseEntity.ok(favoriteartistService.artistSearchData(artistName));
     }
 
     /**
@@ -70,8 +70,8 @@ public class FavoriteApi {
     @GetMapping("/favoriteArtist/artist/{artistId}/album/{albumName}")
     @Transactional
     @ApiResponse(responseCode = "404", description = "Not Found Album")
-    public List<AlbumData> albumSearchData(@PathVariable Long artistId,@PathVariable String albumName) {
-        return favoriteartistService.albumSearchData(artistId,albumName);
+    public ResponseEntity<List<AlbumDetail>> albumSearchData(@PathVariable Long artistId, @PathVariable String albumName) {
+        return ResponseEntity.ok(favoriteartistService.albumSearchData(artistId,albumName));
     }
 
     /**
@@ -85,8 +85,8 @@ public class FavoriteApi {
     @GetMapping("/favoriteArtist/album/{albumId}/track/{trackName}")
     @Transactional
     @ApiResponse(responseCode = "404", description = "Not Found Track")
-    public TrackData trackSearchData(@PathVariable Long albumId, @PathVariable String trackName) {
-        return favoriteartistService.trackSearchData(albumId,trackName);
+    public ResponseEntity<TrackDetail> trackSearchData(@PathVariable Long albumId, @PathVariable String trackName) {
+        return ResponseEntity.ok(favoriteartistService.trackSearchData(albumId,trackName));
     }
 
     /**
@@ -102,9 +102,8 @@ public class FavoriteApi {
     @PostMapping("/favoriteArtist")
     @Transactional
     @ApiResponse(responseCode = "404", description = "Not Found User Or Track Or Album Or Artist")
-    public ResponseEntity<?> favoriteArtistSaveData(@RequestBody FavoriteReq favoriteartist
+    public ResponseEntity<FavoriteArtistDetail> favoriteArtistSaveData(@RequestBody FavoriteRequest favoriteartist
         ,@AuthenticationPrincipal Long userId) {
-        favoriteartistService.favoriteArtistSaveData(favoriteartist,userId);
-        return ResponseEntity.ok("성공");
+        return ResponseEntity.ok(favoriteartistService.favoriteArtistSaveData(favoriteartist,userId));
     }
 }

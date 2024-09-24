@@ -1,11 +1,14 @@
 package org.cosmic.backend.domain.albumChat.applications;
 
-import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumChatResponse;
-import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentResponse;
+import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumChatDetail;
+import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDetail;
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatException;
+import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatCommentLikeRepository;
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatCommentRepository;
+import org.cosmic.backend.domain.playList.domains.Album;
+import org.cosmic.backend.domain.playList.dtos.AlbumDto;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
-import org.cosmic.backend.domain.post.dtos.Post.AlbumDto;
+import org.cosmic.backend.domain.post.exceptions.NotFoundAlbumException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,47 +23,47 @@ import java.util.stream.Collectors;
 public class AlbumChatService {
     private final AlbumRepository albumRepository;
     private final AlbumChatCommentRepository albumChatCommentRepository;
+    private final AlbumChatCommentLikeRepository albumChatCommentLikeRepository;
     /**
      * AlbumChatService 생성자.
      *
      * @param albumChatCommentRepository AlbumChatCommentRepository 주입
      */
-    public AlbumChatService(AlbumRepository albumRepository, AlbumChatCommentRepository albumChatCommentRepository) {
+    public AlbumChatService(AlbumRepository albumRepository, AlbumChatCommentRepository albumChatCommentRepository,AlbumChatCommentLikeRepository albumChatCommentLikeRepository) {
         this.albumRepository = albumRepository;
         this.albumChatCommentRepository = albumChatCommentRepository;
+        this.albumChatCommentLikeRepository = albumChatCommentLikeRepository;
     }
 
     /**
      * 주어진 앨범 ID에 해당하는 AlbumChat을 반환합니다.
      *
-     * @param album AlbumDto 객체로, 조회하려는 앨범id를 포함합니다.
      * @return 앨범 및 아티스트 정보를 포함한 AlbumChatResponse 객체
      * @throws NotFoundAlbumChatException 앨범 채팅을 찾을 수 없는 경우 발생
      */
     @Transactional
-    public AlbumChatResponse getAlbumChatById(AlbumDto album) {
+    public AlbumChatDetail getAlbumChatById(AlbumDto album) {
         if(albumRepository.findById(album.getAlbumId()).isEmpty()) {
             throw new NotFoundAlbumChatException();
         }
-        return new AlbumChatResponse(albumRepository.findById(album.getAlbumId()).get());
+        return new AlbumChatDetail(albumRepository.findById(album.getAlbumId()).get());
     }
     /**
      * 주어진 앨범 채팅 ID에 해당하는 댓글을 좋아요 순으로 정렬하여 반환합니다.
      *
      * @param albumId  앨범 Id
-     * @return 좋아요 순으로 정렬된 AlbumChatCommentResponse 객체의 리스트
+     * @return 좋아요 순으로 정렬된 AlbumChatCommentDetail 객체의 리스트
      * @throws NotFoundAlbumChatException 앨범 채팅을 찾을 수 없는 경우 발생
      */
     @Transactional
-    public List<AlbumChatCommentResponse> getAlbumChatCommentByManyLikeId(Long albumId) {
+    public List<AlbumChatCommentDetail> getAlbumChatCommentByManyLikeId(Long albumId) {
         if(albumRepository.findById(albumId).isEmpty()) {
             throw new NotFoundAlbumChatException();
         }
-
         return albumChatCommentRepository.findByAlbumIdOrderByCountAlbumChatCommentLikes(albumId)
                 .orElse(Collections.emptyList())
                 .stream()
-                .map(AlbumChatCommentResponse::new)
+                .map(AlbumChatCommentDetail::new)
                 .collect(Collectors.toList());
     }
 }

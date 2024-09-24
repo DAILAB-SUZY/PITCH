@@ -1,9 +1,11 @@
 package org.cosmic.backend.domainsTest.albumChat.albumChat;
 
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.log4j.Log4j2;
-import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDto;
-import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentReq;
-import org.cosmic.backend.domain.auth.dtos.UserLogin;
+import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDetail;
+import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentRequest;
+import org.cosmic.backend.domain.auth.dtos.UserLoginDetail;
 import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
 import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
@@ -13,29 +15,34 @@ import org.cosmic.backend.domain.user.repositorys.EmailRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.cosmic.backend.domainsTest.BaseSetting;
 import org.cosmic.backend.domainsTest.UrlGenerator;
+import org.cosmic.backend.globals.configs.JacksonConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.shaded.com.fasterxml.jackson.core.type.TypeReference;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.time.Instant;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @Log4j2
 public class ManyLikeAlbumChatPostCommentTest extends BaseSetting {
-    final ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper objectMapper= new ObjectMapper();  // Autowired로 주입
+
     @Autowired
     UsersRepository userRepository;
     @Autowired
@@ -46,82 +53,82 @@ public class ManyLikeAlbumChatPostCommentTest extends BaseSetting {
     AlbumRepository albumRepository;
     @Autowired
     TrackRepository trackRepository;
-    UrlGenerator urlGenerator=new UrlGenerator();
-    Map<String,Object> params= new HashMap<>();
+    UrlGenerator urlGenerator = new UrlGenerator();
+    Map<String, Object> params = new HashMap<>();
+    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @Test
     @Transactional
     @Sql("/data/albumChat.sql")
-    public void manyLikeAlbumChatCommentTest() throws Exception {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        User user=userRepository.findByEmail_Email("test1@example.com").get();
-        user.setPassword(encoder.encode(user.getPassword()));
-        UserLogin userLogin = loginUser("test1@example.com");
+        public void manyLikeAlbumChatCommentTest() throws Exception {
+            User user=userRepository.findByEmail_Email("test1@example.com").get();
+            user.setPassword(encoder.encode(user.getPassword()));
+            UserLoginDetail userLogin = loginUser("test1@example.com");
 
-        User user2=userRepository.findByEmail_Email("test2@example.com").get();
-        user2.setPassword(encoder.encode(user2.getPassword()));
-        UserLogin userLogin2 = loginUser("test2@example.com");
+            User user2=userRepository.findByEmail_Email("test2@example.com").get();
+            user2.setPassword(encoder.encode(user2.getPassword()));
+            UserLoginDetail userLogin2 = loginUser("test2@example.com");
 
-        Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
-
-        AlbumChatCommentReq albumChatCommentReq=AlbumChatCommentReq.createAlbumChatCommentReq(
-            "안녕",null);
-
-        params.clear();
-        params.put("albumId",album.getAlbumId());
-        String url=urlGenerator.buildUrl("/api/album/{albumId}/comment",params);
-        ResultActions resultActions=mockMvcHelper(HttpMethod.POST,url,albumChatCommentReq,userLogin.getToken())
-            .andExpect(status().isOk());
-
-        MvcResult result = resultActions.andReturn();
-        String content = result.getResponse().getContentAsString();
-        AlbumChatCommentDto albumChatCommentDto2 = mapper.readValue(content, AlbumChatCommentDto.class);
-        Long albumChatCommentId1 = albumChatCommentDto2.getAlbumChatCommentId();
-
-        params.clear();
-        params.put("albumId",album.getAlbumId());
-        params.put("albumChatCommentId",albumChatCommentId1);
-        url=urlGenerator.buildUrl("/api/album/{albumId}/comment/{albumChatCommentId}/commentLike",params);
-        mockMvcHelper(HttpMethod.POST,url,null,userLogin.getToken())
+            System.out.println("********"+Instant.now());
+            Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
+            AlbumChatCommentRequest albumChatCommentReq=AlbumChatCommentRequest.createAlbumChatCommentReq(
+                "안녕",null);
+            params.clear();
+            params.put("albumId",album.getAlbumId());
+            String url=urlGenerator.buildUrl("/api/album/{albumId}/comment",params);
+            System.out.println("********입니다"+Instant.now());
+            ResultActions resultActions=mockMvcHelper(HttpMethod.POST,url,albumChatCommentReq,userLogin.getToken())
                 .andExpect(status().isOk());
+            String jsonResponse=resultActions.andReturn().getResponse().getContentAsString();
 
-        //---
 
-        params.clear();
-        params.put("albumId",album.getAlbumId());
-        url=urlGenerator.buildUrl("/api/album/{albumId}/comment",params);
-        resultActions=mockMvcHelper(HttpMethod.POST,url,albumChatCommentReq,userLogin.getToken())
+
+            List<AlbumChatCommentDetail> albumChatCommentDetails =
+                objectMapper.readValue(jsonResponse, new TypeReference<List<AlbumChatCommentDetail>>() {});
+            Long albumChatCommentId=albumChatCommentDetails.get(0).getAlbumChatCommentId();
+
+            params.clear();
+            params.put("albumId",album.getAlbumId());
+            params.put("albumChatCommentId",albumChatCommentId);
+            url=urlGenerator.buildUrl("/api/album/{albumId}/comment/{albumChatCommentId}/commentLike",params);
+            mockMvcHelper(HttpMethod.POST,url,null,userLogin.getToken())
+                    .andExpect(status().isOk());
+
+            //---
+
+            params.clear();
+            params.put("albumId",album.getAlbumId());
+            url=urlGenerator.buildUrl("/api/album/{albumId}/comment",params);
+            resultActions=mockMvcHelper(HttpMethod.POST,url,albumChatCommentReq,userLogin.getToken())
                 .andExpect(status().isOk());
-        result = resultActions.andReturn();
-        content = result.getResponse().getContentAsString();
-        AlbumChatCommentDto albumChatCommentDto = mapper.readValue(content, AlbumChatCommentDto.class);
-        Long albumChatCommentId2 = albumChatCommentDto.getAlbumChatCommentId();
+            jsonResponse=resultActions.andReturn().getResponse().getContentAsString();
+            albumChatCommentDetails = objectMapper.readValue(jsonResponse, new TypeReference<List<AlbumChatCommentDetail>>() {});
+            Long albumChatCommentId2=albumChatCommentDetails.get(1).getAlbumChatCommentId();
 
 
-        params.clear();
-        params.put("albumId",album.getAlbumId());
-        params.put("albumChatCommentId",albumChatCommentId2);
-        url=urlGenerator.buildUrl("/api/album/{albumId}/comment/{albumChatCommentId}/commentLike",params);
-        mockMvcHelper(HttpMethod.POST,url,null,userLogin.getToken())//user1
-                .andExpect(status().isOk());
+            params.clear();
+            params.put("albumId",album.getAlbumId());
+            params.put("albumChatCommentId",albumChatCommentId2);
+            url=urlGenerator.buildUrl("/api/album/{albumId}/comment/{albumChatCommentId}/commentLike",params);
+            mockMvcHelper(HttpMethod.POST,url,null,userLogin.getToken())//user1
+                    .andExpect(status().isOk());
 
-        params.clear();
-        params.put("albumId",album.getAlbumId());
-        params.put("albumChatCommentId",albumChatCommentId2);
-        url=urlGenerator.buildUrl("/api/album/{albumId}/comment/{albumChatCommentId}/commentLike",params);
-        mockMvcHelper(HttpMethod.POST,url,null,userLogin2.getToken())//user2
-                .andExpect(status().isOk());
+            params.clear();
+            params.put("albumId",album.getAlbumId());
+            params.put("albumChatCommentId",albumChatCommentId2);
+            url=urlGenerator.buildUrl("/api/album/{albumId}/comment/{albumChatCommentId}/commentLike",params);
+            mockMvcHelper(HttpMethod.POST,url,null,userLogin2.getToken())//user2
+                    .andExpect(status().isOk());
 
+            params.clear();
+            params.put("albumId",album.getAlbumId());
+            url=urlGenerator.buildUrl("/api/album/{albumId}?sorted=manylike",params);
+            resultActions=mockMvcHelper(HttpMethod.GET,url,null,userLogin.getToken());
+            jsonResponse=resultActions.andReturn().getResponse().getContentAsString();
+            List<AlbumChatCommentDetail> albumChatCommentDetail3 = objectMapper.readValue(jsonResponse, new TypeReference<List<AlbumChatCommentDetail>>() {});
 
-        params.clear();
-        params.put("albumId",album.getAlbumId());
-        url=urlGenerator.buildUrl("/api/album/{albumId}?sorted=manylike",params);
-        System.out.println("*******"+url);
-        mockMvcHelper(HttpMethod.GET,url,null,userLogin.getToken())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].albumChatCommentId", is(2)))
-                .andExpect(jsonPath("$[1].albumChatCommentId", is(1)));
-
+            assertEquals(2, albumChatCommentDetail3.get(0).getAlbumChatCommentId());
+            assertEquals(1, albumChatCommentDetail3.get(1).getAlbumChatCommentId());
         }
     }
 

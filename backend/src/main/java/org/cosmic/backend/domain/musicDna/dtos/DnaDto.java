@@ -12,5 +12,5 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class DnaDto {
-    private List<DnaDetail> dna;
+    private List<Long> dna;
 }

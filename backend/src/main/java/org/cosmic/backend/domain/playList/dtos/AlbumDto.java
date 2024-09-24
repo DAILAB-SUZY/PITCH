@@ -6,10 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class TrackGiveDto {
-    String title;
-    String artistName;
+public class AlbumDto {
+    private Long albumId;
 }
