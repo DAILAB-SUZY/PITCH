@@ -25,6 +25,11 @@ repositories {
 ext {
     set('snippetsDir', file("build/generated-snippets"))
 }
+ext.profile = (!project.hasProperty('profile') || !profile) ? 'local' : profile
+
+jar {
+    enabled = false
+}
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -69,4 +74,12 @@ tasks.named('test') {
 tasks.named('asciidoctor') {
     inputs.dir snippetsDir
     dependsOn test
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDirs "src/main/resources", "src/main/resources-${profile}"
+        }
+    }
 }
