@@ -47,10 +47,10 @@ public class SecurityConfig{
                     SessionCreationPolicy.STATELESS
             )).authorizeHttpRequests(authorize ->
                 authorize
-                .requestMatchers("/user/**").permitAll()
-                .requestMatchers("/auth/**").permitAll()
+                .requestMatchers("/api/user").permitAll()
+                .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/example").permitAll()
-                .requestMatchers("/mail/**").permitAll()
+                .requestMatchers("/api/mail/**").permitAll()
                 .requestMatchers("/api/**").permitAll()
                 .requestMatchers("/swagger-ui/**").permitAll()
                 .requestMatchers("/v3/api-docs/**").permitAll()
