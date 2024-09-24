@@ -15,7 +15,37 @@ public interface AlbumChatCommentRepository extends JpaRepository<AlbumChatComme
             "FROM AlbumChatComment acc " +
             "LEFT JOIN acc.albumChatCommentLikes acl " +
             "WHERE acc.album.albumId = :albumid " +
+            "AND acc.parentAlbumChatCommentId IS NULL " +
             "GROUP BY acc " +
-            "ORDER BY COUNT(acl) DESC")
-    Optional<List<AlbumChatComment>> findByAlbumIdOrderByCountAlbumChatCommentLikes(Long albumid);//key로 찾기
+            "ORDER BY COUNT(acl) DESC " +
+            "LIMIT 10 " +
+            "OFFSET :count"
+    )
+    Optional<List<AlbumChatComment>> findByAlbumIdOrderByCountAlbumChatCommentLikes(Long albumid,int count);//key로 찾기
+
+    @Query(
+            "SELECT acc " +
+            "FROM AlbumChatComment acc " +
+            "WHERE acc.album.albumId=:albumid " +
+            "AND acc.parentAlbumChatCommentId IS NULL " +
+            "ORDER BY acc.createTime DESC" +
+            " LIMIT 10 " +
+            " OFFSET :count "
+    )
+    Optional<List<AlbumChatComment>> findByAlbumIdOrderByRecentAlbumChatCommentLikes(Long albumid,int count);
+
+    @Query(
+            "SELECT acc " +
+                    "FROM AlbumChatComment acc " +
+                    "WHERE acc.album.albumId=:albumid " +
+                    "AND acc.parentAlbumChatCommentId IN(" +
+                    "SELECT rep " +
+                    "FROM AlbumChatComment rep" +
+                    " WHERE rep.albumChatCommentId=:albumChatCommentId" +
+                    ") " +
+                    "ORDER BY acc.createTime DESC"
+    )
+    Optional<List<AlbumChatComment>> findByAlbumIdOrderByReply(Long albumChatCommentId);
+
+
 }

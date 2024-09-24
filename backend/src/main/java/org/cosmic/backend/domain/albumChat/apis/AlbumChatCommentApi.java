@@ -3,6 +3,7 @@ package org.cosmic.backend.domain.albumChat.apis;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.transaction.Transactional;
 import org.cosmic.backend.domain.albumChat.applications.AlbumChatCommentService;
+import org.cosmic.backend.domain.albumChat.applications.AlbumChatService;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDetail;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentRequest;
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatCommentException;
@@ -37,17 +38,20 @@ public class AlbumChatCommentApi {
     }
 
     /**
-     * 특정 앨범 챗 ID로 댓글 목록을 조회하는 API.
+     * 앨범 챗 ID를 기반으로 해당 앨범 챗의 댓글을 좋아요 수 순서대로 정렬하여 반환합니다.
      *
-     * @param albumId 조회할 앨범 챗 ID를 포함한 DTO
-     * @return List<AlbumChatCommentResponse> 조회된 댓글 목록
-     * @throws NotFoundAlbumChatException 앨범 챗이 존재하지 않을 경우 발생
+     * @param albumId 조회할 앨범 ID
+     * @return List<AlbumChatCommentResponse> 좋아요 수 순서로 정렬된 앨범 챗 댓글 목록
+     * @throws NotFoundAlbumChatException 특정 앨범의 앨범 챗을 찾을 수 없는 경우 발생
      */
+
+    @org.springframework.transaction.annotation.Transactional
     @GetMapping("/album/{albumId}/comment")
-    @Transactional
     @ApiResponse(responseCode = "404", description = "Not Found Album")
-    public List<AlbumChatCommentDetail> getCommentByAlbumChatId(@PathVariable Long albumId) {
-        return commentService.getCommentsByAlbumId(albumId);
+    public ResponseEntity<List<AlbumChatCommentDetail>> getAlbumChatComment(
+        @PathVariable("albumId") Long albumId, @RequestParam String sorted, @RequestParam int count) {
+        return ResponseEntity.ok(commentService.getAlbumChatComment(albumId,sorted,count));
+
     }
 
     /**
@@ -63,7 +67,6 @@ public class AlbumChatCommentApi {
     @ApiResponse(responseCode = "404", description = "Not Found User or Album")
     public ResponseEntity<List<AlbumChatCommentDetail>> albumChatCommentCreate(@PathVariable Long albumId,
        @RequestBody AlbumChatCommentRequest comment, @AuthenticationPrincipal Long userId) {
-        System.out.println("********하이요"+commentService.albumChatCommentCreate(albumId,comment,userId).get(0).getCreateAt());
         return ResponseEntity.ok(commentService.albumChatCommentCreate(albumId,comment,userId));
     }
 
@@ -97,7 +100,8 @@ public class AlbumChatCommentApi {
     @Transactional
     @ApiResponse(responseCode = "404", description = "Not Found AlbumChatComment")
     //TODO NOTMATCHUSER오류 추가
-    public ResponseEntity<List<AlbumChatCommentDetail>> albumChatCommentDelete(@PathVariable Long albumChatCommentId) {
-        return ResponseEntity.ok(commentService.albumChatCommentDelete(albumChatCommentId));
+    public ResponseEntity<List<AlbumChatCommentDetail>> albumChatCommentDelete(
+        @PathVariable Long albumId,@PathVariable Long albumChatCommentId,@RequestParam String sorted, @RequestParam int count) {
+        return ResponseEntity.ok(commentService.albumChatCommentDelete(albumId,albumChatCommentId,sorted,count));
     }
 }

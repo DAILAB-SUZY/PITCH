@@ -20,17 +20,15 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AlbumChatCommentDetail implements Serializable {
+public class AlbumChatReplyDetail implements Serializable {
     private Long albumChatCommentId;
     private String content;
     private Instant createAt;
     private Instant updateAt;
-
     private List<AlbumChatCommentLikeDetail> likes;
-    private List<AlbumChatReplyDetail> comments;
     private UserDetail author;
 
-    public AlbumChatCommentDetail(AlbumChatComment albumChatComment) {
+    public AlbumChatReplyDetail(AlbumChatComment albumChatComment) {
         this.albumChatCommentId = albumChatComment.getAlbumChatCommentId();
         this.content = albumChatComment.getContent();
         this.createAt = albumChatComment.getCreateTime();

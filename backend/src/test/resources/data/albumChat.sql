@@ -35,3 +35,18 @@ VALUES(
           (SELECT Artist.artist_id FROM Artist WHERE artist_name='bibi'),
           CURRENT_TIMESTAMP
       );
+
+
+INSERT INTO album_chat_comment(content, album_id, user_id)
+VALUES(
+          'HI',
+          (SELECT album.album_id FROM album where album.title = 'bam'),
+          (SELECT users.user_id FROM users where users.email = 'test1@example.com')
+      );
+
+INSERT INTO album_chat_comment(content, album_id, user_id)
+VALUES(
+          'Heloo',
+          (SELECT album.album_id FROM album where album.title = 'bam'),
+          (SELECT users.user_id FROM users where users.email = 'test2@example.com')
+      );

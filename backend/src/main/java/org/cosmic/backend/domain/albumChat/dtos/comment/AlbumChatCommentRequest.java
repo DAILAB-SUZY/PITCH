@@ -13,14 +13,19 @@ import java.time.Instant;
 @Builder
 public class AlbumChatCommentRequest {
     private String content;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSSX", timezone = "UTC")
     private Instant createTime;
+    private String sorted;
+    private int count;
+    private Long parentAlbumChatCommentId;
 
     public static AlbumChatCommentRequest createAlbumChatCommentReq(
-         String content, Instant createTime) {
+         String content, Instant createTime,String sorted,int count,Long parentAlbumChatCommentId) {
         return  AlbumChatCommentRequest.builder()
                 .content(content)
                 .createTime(createTime)
+                .sorted(sorted)
+                .count(count)
+                .parentAlbumChatCommentId(parentAlbumChatCommentId)
                 .build();
     }
 }
