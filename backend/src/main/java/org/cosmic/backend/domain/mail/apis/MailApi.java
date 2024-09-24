@@ -11,7 +11,6 @@ import org.cosmic.backend.domain.mail.dtos.VerificationForm;
 import org.cosmic.backend.domain.mail.exceptions.ExistEmailException;
 import org.cosmic.backend.domain.mail.exceptions.IntervalNotEnoughException;
 import org.cosmic.backend.domain.mail.utils.ApacheMathRandomCodeGenerator;
-import org.cosmic.backend.domain.mail.utils.MailContentGenerator;
 import org.cosmic.backend.domain.user.exceptions.NotMatchPasswordException;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
 import org.springframework.http.ResponseEntity;

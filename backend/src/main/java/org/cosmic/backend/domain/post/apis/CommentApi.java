@@ -1,6 +1,7 @@
 package org.cosmic.backend.domain.post.apis;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.post.applications.CommentService;
 import org.cosmic.backend.domain.post.dtos.Comment.CommentDetail;
@@ -24,6 +25,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/album/post/{postId}/comment")
 @ApiCommonResponses
+@Tag(name = "앨범 포스트 관련 API", description = "앨범 포스트 및 댓글/대댓글/좋아요")
 public class CommentApi {
     private final CommentService commentService;
 

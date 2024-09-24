@@ -1,6 +1,7 @@
 package org.cosmic.backend.domain.post.apis;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.cosmic.backend.domain.playList.dtos.ArtistDto;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundArtistException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
@@ -22,6 +23,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/album/post")
 @ApiCommonResponses
+@Tag(name = "앨범 포스트 관련 API", description = "앨범 포스트 및 댓글/대댓글/좋아요")
 public class PostApi {
     private final PostService postService;
 
@@ -43,7 +45,7 @@ public class PostApi {
      */
     @GetMapping("/")
     @ApiResponse(responseCode = "404", description = "Not Found User")
-    public List<PostReq> giveAllPosts(@RequestParam Long userId) {
+    public List<PostDetail> giveAllPosts(@RequestParam Long userId) {
         return postService.getAllPosts(userId);
     }
 
@@ -71,8 +73,8 @@ public class PostApi {
      */
     @PostMapping("/")
     @ApiResponse(responseCode = "404", description = "Not Found Album")
-    public PostDto createPost(@RequestBody CreatePost post, @AuthenticationPrincipal Long userId) {
-        return postService.createPost(post.getContent(), post.getAlbumId(), userId);
+    public ResponseEntity<PostDetail> createPost(@RequestBody CreatePost post, @AuthenticationPrincipal Long userId) {
+        return ResponseEntity.ok(postService.createPost(post.getContent(), post.getAlbumId(), userId));
     }
 
     /**
@@ -85,9 +87,8 @@ public class PostApi {
      */
     @PostMapping("/{postId}")
     @ApiResponse(responseCode = "404", description = "Not Found Post")
-    public ResponseEntity<?> updatePost(@RequestBody UpdatePost post, @PathVariable Long postId, @AuthenticationPrincipal Long userId) {
-        postService.updatePost(post.getContent(), postId, userId);
-        return ResponseEntity.ok("성공");
+    public ResponseEntity<PostDetail> updatePost(@RequestBody UpdatePost post, @PathVariable Long postId, @AuthenticationPrincipal Long userId) {
+        return ResponseEntity.ok(postService.updatePost(post.getContent(), postId, userId));
     }
 
     /**
@@ -101,7 +102,7 @@ public class PostApi {
     @ApiResponse(responseCode = "404", description = "Not Found Post")
     public ResponseEntity<?> deletePost(@PathVariable Long postId, @AuthenticationPrincipal Long userId) {
         postService.deletePost(postId, userId);
-        return ResponseEntity.ok("성공");
+        return ResponseEntity.ok("post deleted successfully");
     }
 
     /**

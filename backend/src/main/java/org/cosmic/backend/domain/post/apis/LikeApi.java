@@ -3,6 +3,7 @@ package org.cosmic.backend.domain.post.apis;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.post.applications.LikeService;
 import org.cosmic.backend.domain.post.dtos.Like.LikeReq;
@@ -26,6 +27,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/album/post/{postId}/like")
 @ApiCommonResponses
+@Tag(name = "앨범 포스트 관련 API", description = "앨범 포스트 및 댓글/대댓글/좋아요")
 public class LikeApi {
     private final LikeService likeService;
 

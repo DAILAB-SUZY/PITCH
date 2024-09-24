@@ -8,8 +8,6 @@ import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
 import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
 import org.cosmic.backend.domain.post.dtos.Post.AlbumDto;
 import org.cosmic.backend.domain.post.dtos.Post.PostDetail;
-import org.cosmic.backend.domain.post.dtos.Post.PostDto;
-import org.cosmic.backend.domain.post.dtos.Post.PostReq;
 import org.cosmic.backend.domain.post.entities.Post;
 import org.cosmic.backend.domain.post.exceptions.NotFoundAlbumException;
 import org.cosmic.backend.domain.post.exceptions.NotFoundPostException;
@@ -57,12 +55,12 @@ public class PostService {
      *
      * @throws NotFoundUserException 사용자를 찾을 수 없을 때 발생합니다.
      */
-    public List<PostReq> getAllPosts(Long userId) {
+    public List<PostDetail> getAllPosts(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(NotFoundUserException::new);
 
         return user.getPosts()
                 .stream()
-                .map(Post::toPostReq)
+                .map(Post::toPostDetail)
                 .toList();
     }
 
@@ -90,7 +88,7 @@ public class PostService {
      * @throws NotMatchAlbumException 게시물에 해당하는 앨범을 찾을 수 없을 때 발생합니다.
      */
     @Transactional
-    public PostDto createPost(String content, Long albumId, Long userId) {
+    public PostDetail createPost(String content, Long albumId, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(NotFoundUserException::new);
         Album album = albumRepository.findById(albumId).orElseThrow(NotMatchAlbumException::new);
         Post post = postRepository.save(Post.builder()
@@ -98,7 +96,7 @@ public class PostService {
                 .user(user)
                 .album(album)
                 .build());
-        return Post.toPostDto(post);
+        return Post.toPostDetail(post);
     }
 
     /**
@@ -108,14 +106,14 @@ public class PostService {
      * @throws NotFoundPostException 게시물을 찾을 수 없을 때 발생합니다.
      */
     @Transactional
-    public void updatePost(String content, Long postId, Long userId) {
+    public PostDetail updatePost(String content, Long postId, Long userId) {
         Post updatedPost = postRepository.findById(postId).orElseThrow(NotFoundPostException::new);
         if(!updatedPost.getUser().getUserId().equals(userId)) {
             throw new NotMatchUserException();
         }
         updatedPost.setContent(content);
         updatedPost.setUpdate_time(Instant.now());
-        postRepository.save(updatedPost);
+        return Post.toPostDetail(postRepository.save(updatedPost));
     }
 
     /**
