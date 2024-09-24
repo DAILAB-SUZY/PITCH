@@ -1,6 +1,5 @@
 package org.cosmic.backend.domainsTest.mail;
 
-import com.icegreen.greenmail.util.GreenMailUtil;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.cosmic.backend.domain.mail.dtos.EmailAddress;

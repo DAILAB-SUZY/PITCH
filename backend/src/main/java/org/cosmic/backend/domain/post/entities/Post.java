@@ -7,8 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.post.dtos.Post.PostDetail;
-import org.cosmic.backend.domain.post.dtos.Post.PostDto;
-import org.cosmic.backend.domain.post.dtos.Post.PostReq;
 import org.cosmic.backend.domain.user.domains.User;
 
 import java.time.Instant;
@@ -57,20 +55,6 @@ public class Post {
                 .album(Album.toAlbumDetail(post.album))
                 .author(User.toUserDetail(post.user))
                 .comments(post.postComments.stream().map(PostComment::toCommentDetail).toList())
-                .build();
-    }
-
-    public static PostReq toPostReq(Post post) {
-        return PostReq.builder()
-                .postId(post.getPostId())
-                .content(post.getContent())
-                .update_time(post.getUpdate_time())
-                .build();
-    }
-
-    public static PostDto toPostDto(Post post) {
-        return PostDto.builder()
-                .postId(post.getPostId())
                 .build();
     }
 }
