@@ -4,15 +4,16 @@ import org.cosmic.backend.domain.albumChat.domains.AlbumChatComment;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDetail;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentRequest;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatReplyDetail;
+import org.cosmic.backend.domain.albumChat.dtos.commentlike.AlbumChatCommentLikeDetail;
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatCommentException;
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatException;
 import org.cosmic.backend.domain.albumChat.exceptions.NotMatchAlbumChatException;
+import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatCommentLikeRepository;
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatCommentRepository;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
 import org.cosmic.backend.domain.post.exceptions.NotMatchUserException;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +31,7 @@ import java.util.stream.Collectors;
 public class AlbumChatCommentService {
     private final AlbumRepository albumRepository;
     private final AlbumChatCommentRepository commentRepository;
+    private final AlbumChatCommentLikeRepository commentLikeRepository;
     private final UsersRepository userRepository;
 
     /**
@@ -41,10 +43,11 @@ public class AlbumChatCommentService {
      */
     public AlbumChatCommentService
     (AlbumRepository albumRepository, AlbumChatCommentRepository commentRepository,
-     UsersRepository userRepository) {
+     UsersRepository userRepository,AlbumChatCommentLikeRepository commentLikeRepository) {
         this.albumRepository = albumRepository;
         this.commentRepository = commentRepository;
         this.userRepository = userRepository;
+        this.commentLikeRepository = commentLikeRepository;
     }
 
     /**
@@ -71,6 +74,29 @@ public class AlbumChatCommentService {
     }
 
     @Transactional
+    public List<AlbumChatCommentDetail> getReplyAndCommentLike(List<AlbumChatCommentDetail> albumChatCommentDetails
+        ,Long albumId){
+        for(int i=0; i<albumChatCommentDetails.size(); i++) {
+            List<AlbumChatReplyDetail> albumChatReplyDetails=commentRepository
+                    .findByAlbumIdOrderByReply(albumId,albumChatCommentDetails.get(i).getAlbumChatCommentId())
+                    .orElse(Collections.emptyList())
+                    .stream()
+                    .map(AlbumChatReplyDetail::new)
+                    .collect(Collectors.toList());
+            albumChatCommentDetails.get(i).setComments(albumChatReplyDetails);
+
+            List<AlbumChatCommentLikeDetail> albumChatCommentLikeDetails=commentLikeRepository
+                    .findByAlbumChatComment_AlbumChatCommentId(albumChatCommentDetails.get(i).getAlbumChatCommentId())
+                    .stream()
+                    .map(AlbumChatCommentLikeDetail::new)
+                    .collect(Collectors.toList());
+            albumChatCommentDetails.get(i).setLikes(albumChatCommentLikeDetails);
+        }
+        return albumChatCommentDetails;
+    }
+
+
+    @Transactional
     public List<AlbumChatCommentDetail> getAlbumChatCommentByManyLikeId(Long albumId, int count) {
         List<AlbumChatCommentDetail> albumChatCommentDetails= commentRepository
             .findByAlbumIdOrderByCountAlbumChatCommentLikes(albumId,10*count)
@@ -78,27 +104,18 @@ public class AlbumChatCommentService {
             .stream()
             .map(AlbumChatCommentDetail::new)
             .collect(Collectors.toList());
-
-        for(int i=0; i<albumChatCommentDetails.size(); i++) {
-            List<AlbumChatReplyDetail> albumChatReplyDetails=commentRepository
-                .findByAlbumIdOrderByReply(albumChatCommentDetails.get(i).getAlbumChatCommentId())
-                .orElse(Collections.emptyList())
-                .stream()
-                .map(AlbumChatReplyDetail::new)
-                .collect(Collectors.toList());
-            albumChatCommentDetails.get(i).setComments(albumChatReplyDetails);
-        }
-        return albumChatCommentDetails;
+        return getReplyAndCommentLike(albumChatCommentDetails,albumId);
     }
 
     @Transactional
     public List<AlbumChatCommentDetail> getAlbumChatCommentRecentId(Long albumId,int count) {
-        return commentRepository
+        List<AlbumChatCommentDetail> albumChatCommentDetails= commentRepository
             .findByAlbumIdOrderByRecentAlbumChatCommentLikes(albumId,10*count)
             .orElse(Collections.emptyList())
             .stream()
             .map(AlbumChatCommentDetail::new)
             .collect(Collectors.toList());
+        return getReplyAndCommentLike(albumChatCommentDetails,albumId);
     }
 
     /**

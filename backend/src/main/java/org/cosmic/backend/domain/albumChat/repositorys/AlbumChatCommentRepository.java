@@ -3,6 +3,7 @@ package org.cosmic.backend.domain.albumChat.repositorys;
 import org.cosmic.backend.domain.albumChat.domains.AlbumChatComment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,16 +37,10 @@ public interface AlbumChatCommentRepository extends JpaRepository<AlbumChatComme
 
     @Query(
             "SELECT acc " +
-                    "FROM AlbumChatComment acc " +
-                    "WHERE acc.album.albumId=:albumid " +
-                    "AND acc.parentAlbumChatCommentId IN(" +
-                    "SELECT rep " +
-                    "FROM AlbumChatComment rep" +
-                    " WHERE rep.albumChatCommentId=:albumChatCommentId" +
-                    ") " +
-                    "ORDER BY acc.createTime DESC"
+            "FROM AlbumChatComment acc " +
+            "WHERE acc.album.albumId = :albumId " +
+            "AND acc.parentAlbumChatCommentId = :albumChatCommentId " +
+            "ORDER BY acc.createTime DESC"
     )
-    Optional<List<AlbumChatComment>> findByAlbumIdOrderByReply(Long albumChatCommentId);
-
-
+    Optional<List<AlbumChatComment>> findByAlbumIdOrderByReply(@Param("albumId") Long albumId, @Param("albumChatCommentId") Long albumChatCommentId);
 }

@@ -50,6 +50,7 @@ public class AlbumChatCommentApi {
     @ApiResponse(responseCode = "404", description = "Not Found Album")
     public ResponseEntity<List<AlbumChatCommentDetail>> getAlbumChatComment(
         @PathVariable("albumId") Long albumId, @RequestParam String sorted, @RequestParam int count) {
+
         return ResponseEntity.ok(commentService.getAlbumChatComment(albumId,sorted,count));
 
     }
