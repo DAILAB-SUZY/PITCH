@@ -5,16 +5,19 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.cosmic.backend.domain.post.dtos.Comment.ChildCommentDetail;
 import org.cosmic.backend.domain.post.dtos.Comment.CommentDetail;
 import org.cosmic.backend.domain.post.dtos.Comment.CommentDto;
-import org.cosmic.backend.domain.post.dtos.Comment.LikeUserDto;
 import org.cosmic.backend.domain.post.dtos.Reply.ReplyDto;
 import org.cosmic.backend.domain.post.dtos.Reply.UpdateReplyReq;
 import org.cosmic.backend.domain.user.domains.User;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -59,8 +62,25 @@ public class PostComment {
                 .createdAt(comment.createTime)
                 .updatedAt(comment.updateTime)
                 .author(User.toUserDetail(comment.getUser()))
-                .likes(comment.postCommentLikes.stream().map(PostCommentLike::toLikeUserDto).toList())
+                .likes(comment.postCommentLikes.stream().map(like -> User.toUserDetail(like.getUser())).toList())
                 .build();
+    }
+
+    public static List<CommentDetail> toCommentDetails(List<PostComment> comments) {
+        Map<PostComment, List<PostComment>> groupedByParent = comments.stream().sorted(Comparator.comparing(PostComment::getCreateTime))
+                .collect(Collectors.groupingBy(PostComment::getParentComment));
+
+        return groupedByParent.entrySet().stream()
+                .map(entry -> {
+                    PostComment parent = entry.getKey();
+                    List<ChildCommentDetail> childComments = entry.getValue().stream()
+                            .map(PostComment::toChildCommentDetail)
+                            .toList();
+                    CommentDetail commentDetail = PostComment.toCommentDetail(parent);
+                    commentDetail.setChildComments(childComments);
+                    return commentDetail;
+                })
+                .toList();
     }
 
     public static CommentDto toCommentDto(PostComment postComment) {
@@ -82,6 +102,14 @@ public class PostComment {
     public static ReplyDto toReplyDto(PostComment postComment) {
         return ReplyDto.builder()
                 .replyId(postComment.commentId)
+                .build();
+    }
+
+    public static ChildCommentDetail toChildCommentDetail(PostComment postComment) {
+        return ChildCommentDetail.builder()
+                .id(postComment.commentId)
+                .content(postComment.content)
+                .author(User.toUserDetail(postComment.getUser()))
                 .build();
     }
 }

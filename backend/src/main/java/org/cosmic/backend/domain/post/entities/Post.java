@@ -66,7 +66,7 @@ public class Post {
                 .updateAt(post.update_time)
                 .album(Album.toAlbumDetail(post.album))
                 .author(User.toUserDetail(post.user))
-                .comments(post.postComments.stream().map(PostComment::toCommentDetail).toList())
+                .comments(PostComment.toCommentDetails(post.postComments))
                 .likes(post.postLikes.stream().map(like -> User.toUserDetail(like.getUser())).toList())
                 .build();
     }

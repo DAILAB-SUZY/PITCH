@@ -57,7 +57,7 @@ public class CommentService {
         if (!postRepository.existsById(postId)){
             throw new NotFoundPostException("Post Not Found");
         }
-        return postCommentRepository.findByPost_PostId(postId).stream().map(PostComment::toCommentDetail).toList();
+        return PostComment.toCommentDetails(postCommentRepository.findByPost_PostId(postId));
     }
 
     /**
@@ -70,17 +70,22 @@ public class CommentService {
      * @throws NotFoundUserException 사용자가 존재하지 않을 경우 발생합니다.
      */
     @Transactional
-    public List<CommentDetail> createComment(String content, Long postId, Long userId) {
+    public List<CommentDetail> createComment(Long parent_id, String content, Long postId, Long userId) {
         Post post = postRepository.findById(postId).orElseThrow(NotFoundPostException::new);
         User user = userRepository.findById(userId).orElseThrow(NotFoundUserException::new);
 
+        PostComment parent = null;
+        if(parent_id != null) {
+            parent = postCommentRepository.findById(parent_id).orElseThrow(NotFoundPostException::new);
+        }
         postCommentRepository.save(PostComment.builder()
                 .content(content)
+                .parentComment(parent)
                 .user(user)
                 .post(post)
                 .build());
 
-        return postCommentRepository.findByPost_PostId(postId).stream().map(PostComment::toCommentDetail).toList();
+        return PostComment.toCommentDetails(postCommentRepository.findByPost_PostId(postId));
     }
 
     /**
@@ -103,7 +108,7 @@ public class CommentService {
         }
         postComment.setContent(content);
         postCommentRepository.save(postComment);
-        return postCommentRepository.findByPost_PostId(postId).stream().map(PostComment::toCommentDetail).toList();
+        return PostComment.toCommentDetails(postCommentRepository.findByPost_PostId(postId));
     }
 
     /**
@@ -119,7 +124,7 @@ public class CommentService {
             throw new NotMatchUserException();
         }
         postCommentRepository.deleteById(commentId);
-        return postCommentRepository.findByPost_PostId(postId).stream().map(PostComment::toCommentDetail).toList();
+        return PostComment.toCommentDetails(postCommentRepository.findByPost_PostId(postId));
     }
 
     @Transactional

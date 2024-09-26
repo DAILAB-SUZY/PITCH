@@ -6,19 +6,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.cosmic.backend.domain.user.dtos.UserDetail;
 
-import java.time.Instant;
-import java.util.List;
-
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class CommentDetail {
+@NoArgsConstructor
+public class ChildCommentDetail {
     private Long id;
     private String content;
-    private Instant createdAt;
-    private Instant updatedAt;
-    private List<UserDetail> likes;
-    private List<ChildCommentDetail> childComments;
     private UserDetail author;
 }
