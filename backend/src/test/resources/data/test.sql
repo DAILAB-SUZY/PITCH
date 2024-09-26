@@ -41,26 +41,26 @@ VALUES
     ('https://www.google.com/url?sa=i&url=https%3A%2F%2Fnamu.wiki%2Fw%2FHow%2520Sweet&psig=AOvVaw35qICCVABCRHPQ3HTstgdM&ust=1727438923943000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCOD_2s3J4IgDFQAAAAAdAAAAABAJ', '2023-09-04 13:30:00', 'Fan Favorites', 4),
     ('https://www.google.com/url?sa=i&url=https%3A%2F%2Fnamu.wiki%2Fw%2FHow%2520Sweet&psig=AOvVaw35qICCVABCRHPQ3HTstgdM&ust=1727438923943000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCOD_2s3J4IgDFQAAAAAdAAAAABAJ', '2023-09-05 14:00:00', 'Master Mix', 5);
 
-INSERT INTO public.track (title, album_id, artist_id)
+INSERT INTO public.track (title, album_id, artist_id,track_cover)
 VALUES
-    ('Hit Song 1', 1, 1),
-    ('Hit Song 2', 1, 1),
-    ('Sing Along 1', 2, 2),
-    ('Sing Along 2', 2, 2),
-    ('Chill Track 1', 3, 3),
-    ('Chill Track 2', 3, 3),
-    ('Fan Favorite 1', 4, 4),
-    ('Fan Favorite 2', 4, 4),
-    ('Master Beat 1', 5, 5),
-    ('Master Beat 2', 5, 5);
+    ('Hit Song 1', 1, 1,'https://www.google.com/url?sa=i&url=https%3A%2F%2Fnamu.wiki%2Fw%2FHow%2520Sweet&psig=AOvVaw35qICCVABCRHPQ3HTstgdM&ust=1727438923943000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCOD_2s3J4IgDFQAAAAAdAAAAABAJ'),
+    ('Hit Song 2', 1, 1,'https://www.google.com/url?sa=i&url=https%3A%2F%2Fnamu.wiki%2Fw%2FHow%2520Sweet&psig=AOvVaw35qICCVABCRHPQ3HTstgdM&ust=1727438923943000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCOD_2s3J4IgDFQAAAAAdAAAAABAJ'),
+    ('Sing Along 1', 2, 2,'https://www.google.com/url?sa=i&url=https%3A%2F%2Fnamu.wiki%2Fw%2FHow%2520Sweet&psig=AOvVaw35qICCVABCRHPQ3HTstgdM&ust=1727438923943000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCOD_2s3J4IgDFQAAAAAdAAAAABAJ'),
+    ('Sing Along 2', 2, 2,'https://www.google.com/url?sa=i&url=https%3A%2F%2Fnamu.wiki%2Fw%2FHow%2520Sweet&psig=AOvVaw35qICCVABCRHPQ3HTstgdM&ust=1727438923943000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCOD_2s3J4IgDFQAAAAAdAAAAABAJ'),
+    ('Chill Track 1', 3, 3,'https://www.google.com/url?sa=i&url=https%3A%2F%2Fnamu.wiki%2Fw%2FHow%2520Sweet&psig=AOvVaw35qICCVABCRHPQ3HTstgdM&ust=1727438923943000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCOD_2s3J4IgDFQAAAAAdAAAAABAJ'),
+    ('Chill Track 2', 3, 3,'https://www.google.com/url?sa=i&url=https%3A%2F%2Fnamu.wiki%2Fw%2FHow%2520Sweet&psig=AOvVaw35qICCVABCRHPQ3HTstgdM&ust=1727438923943000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCOD_2s3J4IgDFQAAAAAdAAAAABAJ'),
+    ('Fan Favorite 1', 4, 4,'https://www.google.com/url?sa=i&url=https%3A%2F%2Fnamu.wiki%2Fw%2FHow%2520Sweet&psig=AOvVaw35qICCVABCRHPQ3HTstgdM&ust=1727438923943000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCOD_2s3J4IgDFQAAAAAdAAAAABAJ'),
+    ('Fan Favorite 2', 4, 4,'https://www.google.com/url?sa=i&url=https%3A%2F%2Fnamu.wiki%2Fw%2FHow%2520Sweet&psig=AOvVaw35qICCVABCRHPQ3HTstgdM&ust=1727438923943000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCOD_2s3J4IgDFQAAAAAdAAAAABAJ'),
+    ('Master Beat 1', 5, 5,'https://www.google.com/url?sa=i&url=https%3A%2F%2Fnamu.wiki%2Fw%2FHow%2520Sweet&psig=AOvVaw35qICCVABCRHPQ3HTstgdM&ust=1727438923943000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCOD_2s3J4IgDFQAAAAAdAAAAABAJ'),
+    ('Master Beat 2', 5, 5,'https://www.google.com/url?sa=i&url=https%3A%2F%2Fnamu.wiki%2Fw%2FHow%2520Sweet&psig=AOvVaw35qICCVABCRHPQ3HTstgdM&ust=1727438923943000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCOD_2s3J4IgDFQAAAAAdAAAAABAJ');
 
 INSERT INTO public.playlist (update_time, user_id)
 VALUES
-    ('2023-09-06 15:00:00', 1),
-    ('2023-09-07 16:00:00', 2),
-    ('2023-09-08 17:00:00', 3),
-    ('2023-09-09 18:00:00', 4),
-    ('2023-09-10 19:00:00', 5);
+    ('2024-09-06 15:00:00', 1),
+    ('2024-09-07 16:00:00', 2),
+    ('2024-09-08 17:00:00', 3),
+    ('2024-09-26 18:00:00', 4),
+    ('2024-09-26 19:00:00', 5);
 
 INSERT INTO Playlist_Track (id, track_order, playlist_id, track_id)
 VALUES

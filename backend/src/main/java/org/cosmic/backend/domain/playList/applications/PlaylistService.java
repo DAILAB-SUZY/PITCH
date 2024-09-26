@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -133,21 +134,23 @@ public class PlaylistService {
                 .map(FollowerPlaylistDetail::new)
                 .collect(Collectors.toList());
 
-        for(int i=0;i<followerPlaylistDetails.size();i++){
-            Playlist playlist=playlistTrackRepository.findByPlaylist_PlaylistId(followerPlaylistDetails.get(i).getPlaylistId()).get().get(i).getPlaylist();
-            List<String>trackCover=new ArrayList<>();
-            for(int j=0;j<playlist.getPlaylist_track().size();j++)
-            {
-                trackCover.add(playlist.getPlaylist_track().get(j).getTrack().getTrackCover());
+        for (int i = 0; i < followerPlaylistDetails.size(); i++) {
+            // Playlist ID로 해당 플레이리스트에 속한 트랙을 가져옴
+            List<Playlist_Track> playlistTracks = playlistTrackRepository.findByPlaylist_PlaylistId(followerPlaylistDetails.get(i).getPlaylistId())
+                    .orElse(Collections.emptyList());
+
+            List<String> trackCover = new ArrayList<>();
+
+            // 각 트랙의 앨범 커버를 리스트에 추가
+            for (Playlist_Track playlistTrack : playlistTracks) {
+                trackCover.add(playlistTrack.getTrack().getTrackCover());
             }
+
+            // 트랙 커버를 FollowerPlaylistDetail에 설정
             followerPlaylistDetails.get(i).setAlbumCover(trackCover);
-            //플레이리스트를 주면 그 안에 노래들을 꺼내는식으로
-            //각각의 플레이리스트마다의 노래앨범커버를 가져온다.
         }
 
         return followerPlaylistDetails;
-        //보이는것들은 24시간이내에 업데이트된 것들만 보여야함.
-        //5개만 주기.
     }
 
     /**
