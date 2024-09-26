@@ -127,6 +127,7 @@ public class FavoriteArtistService {
         favoriteArtistRepository.save(FavoriteArtist.builder()
                         .artist(artistRepository.findById(favoriteArtist.getArtistId()).orElseThrow())
                         .track(trackRepository.findById(favoriteArtist.getTrackId()).orElseThrow())
+                        .album(albumRepository.findById(favoriteArtist.getAlbumId()).orElseThrow())
                         .user(user)
                                 .build());
 

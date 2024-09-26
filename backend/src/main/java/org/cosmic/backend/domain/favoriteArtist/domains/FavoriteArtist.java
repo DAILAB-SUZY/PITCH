@@ -35,7 +35,7 @@ public class FavoriteArtist {
     private Track track;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Album album;
+    private Album album=new Album();
 
 
     public static FavoriteArtistDetail toFavoriteArtistDto(FavoriteArtist favoriteArtist){

@@ -13,6 +13,7 @@ import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.EmailRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.cosmic.backend.domainsTest.BaseSetting;
+import org.cosmic.backend.domainsTest.UrlGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -21,6 +22,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -39,6 +43,8 @@ public class GiveFavoriteArtistTest extends BaseSetting {
     @Autowired
     TrackRepository trackRepository;
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    UrlGenerator urlGenerator=new UrlGenerator();
+    Map<String,Object> params= new HashMap<>();
 
     @Test
     @Transactional
@@ -55,7 +61,9 @@ public class GiveFavoriteArtistTest extends BaseSetting {
             (artist.getArtistId(),album.getAlbumId(),track.getTrackId(),album.getAlbumCover());
         mockMvcHelper(HttpMethod.POST,"/api/favoriteArtist", favoriteRequest,userLogin.getToken());
 
-        mockMvcHelper(HttpMethod.GET,"/api/user/{userId}/favoriteArtist",null,userLogin.getToken())
+        params.put("userId",user.getUserId());
+        String url=urlGenerator.buildUrl("/api/user/{userId}/favoriteArtist",params);
+        mockMvcHelper(HttpMethod.GET,url,null,userLogin.getToken())
             .andExpect(status().isOk());
     }
 }
