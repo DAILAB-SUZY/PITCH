@@ -70,7 +70,7 @@ public class BestAlbumService {
      * @throws ExistBestAlbumException 이미 사용자의 좋아요 목록에 해당 앨범이 존재하는 경우 발생합니다.
      */
     @Transactional
-    public List<BestAlbumDetail> add(long userId, Long albumId) {
+    public List<BestAlbumDetail> add(int score,Long userId, Long albumId) {
         if(usersRepository.findById(userId).isEmpty()) {
             throw new NotFoundUserException();
         }
@@ -82,7 +82,7 @@ public class BestAlbumService {
         }
         User newuser = usersRepository.findById(userId).get();
         Album album=albumRepository.findById(albumId).get();
-        UserBestAlbum userBestAlbum =UserBestAlbum.builder().album(album).user(newuser).build();
+        UserBestAlbum userBestAlbum =UserBestAlbum.builder().album(album).user(newuser).score(score).build();
         userBestAlbumRepository.save(userBestAlbum);
 
         return userBestAlbumRepository.findByUser_UserId(userId)

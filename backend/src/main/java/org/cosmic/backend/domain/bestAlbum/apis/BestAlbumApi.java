@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.transaction.Transactional;
 import org.cosmic.backend.domain.bestAlbum.applications.BestAlbumService;
 import org.cosmic.backend.domain.bestAlbum.dtos.AlbumInfoDetail;
+import org.cosmic.backend.domain.bestAlbum.dtos.AlbumScoreDto;
 import org.cosmic.backend.domain.bestAlbum.dtos.BestAlbumDetail;
 import org.cosmic.backend.domain.bestAlbum.dtos.BestAlbumListRequest;
 import org.cosmic.backend.domain.bestAlbum.exceptions.ExistBestAlbumException;
@@ -61,9 +62,10 @@ public class BestAlbumApi {
     @PostMapping("/bestAlbum/{albumId}")
     @ApiResponse(responseCode = "404", description = "Not Found User or Album")
     @ApiResponse(responseCode = "409", description = "Exist BestAlbum")
-    public ResponseEntity<List<BestAlbumDetail>> bestAlbumAdd(@PathVariable Long albumId,@AuthenticationPrincipal Long userId) {
+    public ResponseEntity<List<BestAlbumDetail>> bestAlbumAdd(
+            @RequestBody AlbumScoreDto albumScoreDto, @PathVariable Long albumId, @AuthenticationPrincipal Long userId) {
 
-        return ResponseEntity.ok(bestAlbumService.add(userId,albumId));
+        return ResponseEntity.ok(bestAlbumService.add(albumScoreDto.getScore(),userId,albumId));
     }
 
     /**

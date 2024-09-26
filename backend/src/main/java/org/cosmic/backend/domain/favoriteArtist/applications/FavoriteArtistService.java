@@ -63,7 +63,10 @@ public class FavoriteArtistService {
         if(artistRepository.findByArtistName(artistName).isEmpty()) {
             throw new NotFoundArtistException();
         }
-        return albumRepository.findAllArtistDataByArtistId(artistName);
+        return artistRepository.findByArtistName(artistName)
+                .stream()
+                .map(ArtistDetail::new)
+                .toList();
     }
 
     /**
@@ -78,7 +81,7 @@ public class FavoriteArtistService {
         if(albumRepository.findByTitleAndArtist_ArtistId(albumName,artistId).isEmpty()) {
             throw new NotFoundAlbumException();
         }
-        return trackRepository.findByAlbum_TitleAndArtist_ArtistId(albumName, artistId)
+        return albumRepository.findAllByTitle(albumName)
                 .stream()
                 .map(AlbumDetail::new)
                 .toList();

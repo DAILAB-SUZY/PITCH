@@ -30,4 +30,7 @@ public class UserBestAlbum {
     @Builder.Default
     @Column(name="`order`")
     private Integer order = 0;
+
+    @Builder.Default
+    private int score = 0;
 }

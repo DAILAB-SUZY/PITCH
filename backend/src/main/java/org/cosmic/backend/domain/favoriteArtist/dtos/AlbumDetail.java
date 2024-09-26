@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.playList.domains.Track;
 
 @Data
@@ -12,11 +13,13 @@ import org.cosmic.backend.domain.playList.domains.Track;
 @NoArgsConstructor
 public class AlbumDetail {
     private Long albumId;
-    private String trackName;
+    private String albumName;
+    private String albumCover;
     //앨범 정보들.
 
-    public AlbumDetail(Track track) {
-        this.albumId = track.getAlbum().getAlbumId();
-        this.trackName = track.getTitle();
+    public AlbumDetail(Album album) {
+        this.albumId = album.getAlbumId();
+        this.albumCover=album.getAlbumCover();
+        this.albumName=album.getTitle();
     }
 }

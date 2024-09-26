@@ -11,15 +11,18 @@ public class BestAlbumDetail {
     Long albumId;
     String albumName;
     String albumCover;
+    int score;
 
     public BestAlbumDetail(UserBestAlbum userBestAlbum) {
         this.albumId = userBestAlbum.getAlbum().getAlbumId();
         this.albumName = userBestAlbum.getAlbum().getTitle();
         this.albumCover = userBestAlbum.getAlbum().getAlbumCover();
+        this.score=userBestAlbum.getScore();
     }
-    public BestAlbumDetail(Long albumId, String albumName, String cover) {
+    public BestAlbumDetail(Long albumId, String albumName, String cover,int score) {
         this.albumId = albumId;
         this.albumName = albumName;
         this.albumCover = cover;
+        this.score=score;
     }
 }

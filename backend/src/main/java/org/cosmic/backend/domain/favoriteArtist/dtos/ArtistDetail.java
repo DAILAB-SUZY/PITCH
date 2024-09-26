@@ -3,6 +3,7 @@ package org.cosmic.backend.domain.favoriteArtist.dtos;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.cosmic.backend.domain.playList.domains.Artist;
 
 import java.time.Instant;
 
@@ -12,8 +13,15 @@ import java.time.Instant;
 public class ArtistDetail {
     //해당 이름 가진 아티스트 정보들을 줌
     private Long artistId;
-    private String albumName;
-    private String cover;
+    //private String albumName;
+    private String artistCover;
     private String artistName;
-    private Instant time;
+    //private Instant time;
+
+    public ArtistDetail(Artist artist) {
+        this.artistId = artist.getArtistId();
+        this.artistCover = artist.getArtistCover();
+        this.artistName = artist.getArtistName();
+    }
 }
+

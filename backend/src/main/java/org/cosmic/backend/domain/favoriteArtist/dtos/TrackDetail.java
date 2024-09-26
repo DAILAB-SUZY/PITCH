@@ -13,9 +13,11 @@ import org.cosmic.backend.domain.playList.domains.Track;
 public class TrackDetail {
     private Long trackId;
     private String trackName;
+    private String trackCover;
 
     public TrackDetail(Track track) {
         this.trackId = track.getTrackId();
         this.trackName = track.getTitle();
+        this.trackCover=track.getTrackCover();
     }
 }
