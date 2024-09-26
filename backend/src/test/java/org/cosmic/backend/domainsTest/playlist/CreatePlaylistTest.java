@@ -65,7 +65,6 @@ public class CreatePlaylistTest extends BaseSetting {
         Track track=trackRepository.findByTitle("bam").get();
         PlaylistDto playlistdto=new PlaylistDto(List.of((track.getTrackId())));
 
-        //postRequest("/api/playlist",null,null,null,playlistdto,userLogin.getToken()).andExpect(status().isOk());
         mockMvcHelper(HttpMethod.POST,"/api/playlist",playlistdto,userLogin.getToken()).andExpect(status().isOk());
     }
 
@@ -82,9 +81,7 @@ public class CreatePlaylistTest extends BaseSetting {
 
         String url=urlGenerator.buildUrl("/api/playlist/track/{trackName}",params);
         mockMvcHelper(HttpMethod.GET,url,null,userLogin.getToken()).andExpect(status().isOk());
-        //postRequest("/api/playlist/track/{trackName}",null,null,"bam",null,userLogin.getToken()).andExpect(status().isOk());
-        //mockMvcGetHelper("/api/playlist/track/{trackName}","bam",userLogin.getToken()).andExpect(status().isOk());
-    }
+   }
 
     @Test
     @Transactional
@@ -99,8 +96,5 @@ public class CreatePlaylistTest extends BaseSetting {
 
         String url=urlGenerator.buildUrl("/api/playlist/track/{trackName}",params);
         mockMvcHelper(HttpMethod.GET,url,null,userLogin.getToken()).andExpect(status().isNotFound());
-
-        //postRequest("/api/playlist/track/{trackName}",null,null,"id",null,userLogin.getToken()).andExpect(status().isNotFound());
-        //mockMvcGetHelper("/api/playlist/track/{trackName}","id",userLogin.getToken()).andExpect(status().isNotFound());
     }
 }

@@ -3,6 +3,7 @@ package org.cosmic.backend.domainsTest.bestAlbum;
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.auth.dtos.UserLoginDetail;
 import org.cosmic.backend.domain.bestAlbum.domains.UserBestAlbum;
+import org.cosmic.backend.domain.bestAlbum.dtos.AlbumScoreDto;
 import org.cosmic.backend.domain.bestAlbum.dtos.BestAlbumDetail;
 import org.cosmic.backend.domain.bestAlbum.dtos.BestAlbumListRequest;
 import org.cosmic.backend.domain.playList.domains.Album;
@@ -61,24 +62,28 @@ public class SaveBestAlbumTest extends BaseSetting {
         userBestAlbum.setAlbum(album1);
 
         bestalbumListRequest.setBestalbum(Arrays.asList(
-            new BestAlbumDetail(album1.getAlbumId(),album1.getTitle(),album1.getAlbumCover()),
-            new BestAlbumDetail(album2.getAlbumId(),album2.getTitle(),album2.getAlbumCover())));
+            new BestAlbumDetail(album1.getAlbumId(),album1.getTitle(),album1.getAlbumCover(),1),
+            new BestAlbumDetail(album2.getAlbumId(),album2.getTitle(),album2.getAlbumCover(),2)));
 
+        AlbumScoreDto albumScoreDto=AlbumScoreDto.createAlbumScoreDto(1);
         params.clear();
         params.put("albumId",album1.getAlbumId());
         String url=urlGenerator.buildUrl("/api/bestAlbum/{albumId}",params);
-        mockMvcHelper(HttpMethod.POST,url,null,userLogin.getToken()).andExpect(status().isOk());
+        mockMvcHelper(HttpMethod.POST,url,albumScoreDto,userLogin.getToken()).andExpect(status().isOk());
 
         params.clear();
         params.put("albumId",album2.getAlbumId());
         url=urlGenerator.buildUrl("/api/bestAlbum/{albumId}",params);
-        mockMvcHelper(HttpMethod.POST,url,null,userLogin.getToken()).andExpect(status().isOk());
+        mockMvcHelper(HttpMethod.POST,url,albumScoreDto,userLogin.getToken()).andExpect(status().isOk());
 
         BestAlbumListRequest bestAlbumListRequest = BestAlbumListRequest.createBestAlbumListDto
             (bestalbumListRequest.getBestalbum());
         mockMvcHelper(HttpMethod.POST,"/api/bestAlbum", bestAlbumListRequest,userLogin.getToken());
 
-        mockMvcHelper(HttpMethod.GET,"/api/bestAlbum",null,userLogin.getToken()).andExpect(status().isOk());
+        params.clear();
+        params.put("userId",user.getUserId());
+        url=urlGenerator.buildUrl("/api/user/{userId}/bestAlbum",params);
+        mockMvcHelper(HttpMethod.GET,url,null,userLogin.getToken()).andExpect(status().isOk());
 }
 
     @Test
@@ -94,13 +99,14 @@ public class SaveBestAlbumTest extends BaseSetting {
 
         BestAlbumListRequest bestalbumListRequest =new BestAlbumListRequest();
         bestalbumListRequest.setBestalbum(Arrays.asList(
-                new BestAlbumDetail(album1.getAlbumId(),album1.getTitle(),album1.getAlbumCover()),
-                new BestAlbumDetail(album2.getAlbumId(),album2.getTitle(),album2.getAlbumCover())));
+                new BestAlbumDetail(album1.getAlbumId(),album1.getTitle(),album1.getAlbumCover(),1),
+                new BestAlbumDetail(album2.getAlbumId(),album2.getTitle(),album2.getAlbumCover(),2)));
 
+        AlbumScoreDto albumScoreDto=AlbumScoreDto.createAlbumScoreDto(1);
         params.clear();
         params.put("albumId",album1.getAlbumId());
         String url=urlGenerator.buildUrl("/api/bestAlbum/{albumId}",params);
-        mockMvcHelper(HttpMethod.POST,url,null,userLogin.getToken()).andExpect(status().isOk());
+        mockMvcHelper(HttpMethod.POST,url,albumScoreDto,userLogin.getToken()).andExpect(status().isOk());
 
         BestAlbumListRequest bestAlbumListRequest = BestAlbumListRequest.createBestAlbumListDto
                 (bestalbumListRequest.getBestalbum());
