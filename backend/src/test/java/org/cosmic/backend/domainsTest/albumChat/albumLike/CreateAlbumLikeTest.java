@@ -11,6 +11,8 @@ import org.cosmic.backend.domain.user.repositorys.EmailRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.cosmic.backend.domainsTest.BaseSetting;
 import org.cosmic.backend.domainsTest.UrlGenerator;
+import org.cosmic.backend.domainsTest.albumChat.AlbumChatBaseTest;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -28,67 +30,35 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @Log4j2
-public class CreateAlbumLikeTest extends BaseSetting {
-    @Autowired
-    UsersRepository userRepository;
-    @Autowired
-    EmailRepository emailRepository;
-    @Autowired
-    ArtistRepository artistRepository;
-    @Autowired
-    AlbumRepository albumRepository;
-    @Autowired
-    TrackRepository trackRepository;
+public class CreateAlbumLikeTest extends AlbumChatBaseTest {
+    private final String baseUrl = super.baseUrl;
 
-    UrlGenerator urlGenerator=new UrlGenerator();
-    Map<String,Object> params= new HashMap<>();
-    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    @Test
+    @Order(1)
+    public void albumLikeCreateTest() throws Exception {
+        mockMvcHelper(HttpMethod.POST,urlGenerator.buildUrl(baseUrl+"/albumLike",params),null,validToken)
+            .andExpect(status().isOk());
+    }
+    @Test
+    @Order(2)
+    public void albumLikesGiveTest() throws Exception {
+        mockMvcHelper(HttpMethod.GET,urlGenerator.buildUrl(baseUrl+"/albumLike",params),null,validToken)
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    @Order(3)
+    public void albumlikeExistTest() throws Exception {
+        mockMvcHelper(HttpMethod.POST,urlGenerator.buildUrl(baseUrl+"/albumLike",params),null,validToken)
+                .andExpect(status().isConflict());
+    }
 
     @Test
     @Transactional
-    @Sql("/data/albumChat.sql")
-    public void albumLikeCreateTest() throws Exception {
-        User user=userRepository.findByEmail_Email("test1@example.com").get();
-        user.setPassword(encoder.encode(user.getPassword()));
-        UserLoginDetail userLogin = loginUser("test1@example.com");
-        Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
-
-        params.clear();
-        params.put("albumId",album.getAlbumId());
-        String url=urlGenerator.buildUrl("/api/album/{albumId}/albumLike",params);
-        mockMvcHelper(HttpMethod.POST,url,null,userLogin.getToken())
+    @Order(4)
+    public void albumlikeDeleteTest() throws Exception {
+        mockMvcHelper(HttpMethod.DELETE,urlGenerator.buildUrl(baseUrl+"/albumLike",params),null,validToken)
                 .andExpect(status().isOk());
     }
 
-    @Test
-    @Transactional
-    @Sql("/data/albumChat.sql")
-    public void notMatchAlbumLikeCreateTest() throws Exception {
-        User user=userRepository.findByEmail_Email("test1@example.com").get();
-        user.setPassword(encoder.encode(user.getPassword()));
-        UserLoginDetail userLogin = loginUser("test1@example.com");
-
-        params.clear();
-        params.put("albumId",100L);
-        String url=urlGenerator.buildUrl("/api/album/{albumId}/albumLike",params);
-        mockMvcHelper(HttpMethod.POST,url,null,userLogin.getToken())
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    @Transactional
-    @Sql("/data/albumChat.sql")
-    public void albumlikeExistTest() throws Exception {
-        User user=userRepository.findByEmail_Email("test1@example.com").get();
-        user.setPassword(encoder.encode(user.getPassword()));
-        UserLoginDetail userLogin = loginUser("test1@example.com");
-        Album album=albumRepository.findByTitleAndArtist_ArtistName("bam","bibi").get();
-
-        params.clear();
-        params.put("albumId",album.getAlbumId());
-        String url=urlGenerator.buildUrl("/api/album/{albumId}/albumLike",params);
-        mockMvcHelper(HttpMethod.POST,url,null,userLogin.getToken());
-        mockMvcHelper(HttpMethod.POST,url,null,userLogin.getToken())
-                .andExpect(status().isConflict());
-    }
 }

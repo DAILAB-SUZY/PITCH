@@ -45,12 +45,13 @@ public class AlbumChatComment {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public AlbumChatComment(String content,Instant createTime, Instant updateTime, User user,Album album) {
+    public AlbumChatComment(String content,Instant createTime, Instant updateTime, User user,Album album,Long parentAlbumChatCommentId) {
         this.album = album;
         this.content = content;
         this.createTime=createTime;
         this.updateTime = updateTime;
         this.user=user;
+        this.parentAlbumChatCommentId=parentAlbumChatCommentId;
     }
 
     public static AlbumChatCommentDetail toAlbumChatCommentDetail(AlbumChatComment albumChatComment) {
