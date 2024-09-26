@@ -13,11 +13,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Success",
-                content = {
-                        @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                        schema = @Schema(implementation = String.class))
-                }),
         @ApiResponse(responseCode = "400", description = "Bad Request",
                 content = {
                         @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
