@@ -42,9 +42,9 @@ public class BestAlbumApi {
      * @throws NotFoundUserException 사용자를 찾을 수 없는 경우 발생합니다.
      */
     @Transactional
-    @GetMapping("/bestAlbum")
+    @GetMapping("/user/{userId}/bestAlbum")
     @ApiResponse(responseCode = "404", description = "Not Found User")
-    public ResponseEntity<List<BestAlbumDetail>> bestAlbumGive(@AuthenticationPrincipal Long userId) {
+    public ResponseEntity<List<BestAlbumDetail>> bestAlbumGive(@PathVariable Long userId) {
         return ResponseEntity.ok(bestAlbumService.open(userId));
     }
 

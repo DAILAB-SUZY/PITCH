@@ -14,7 +14,7 @@ public class AlbumDetail {
 
     public AlbumDetail(Album album) {
         this.albumId = album.getAlbumId();
-        this.cover = album.getCover();
+        this.cover = album.getAlbumCover();
         this.title = album.getTitle();
         this.artistName = album.getArtist().getArtistName();
     }

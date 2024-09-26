@@ -13,6 +13,7 @@ public class FavoriteArtistDetail {
     private String artistName;
     private String albumName;
     private String trackName;
-    private String cover;
-    //좋아하는 아티스트, 앨범, 노래 커버 주기.
+    private String artistCover;
+    private String albumCover;
+    private String trackCover;
 }

@@ -69,10 +69,10 @@ public class MusicDnaApi {
      *
      * @throws NotFoundUserException 사용자를 찾을 수 없을 때 발생합니다.
      */
-    @GetMapping("/dna/info")
+    @GetMapping("/dna/user/{userId}")
     @Transactional
     @ApiResponse(responseCode = "404", description = "Not Found User")
-    public ResponseEntity<List<UserDnaResponse>> userDnaGive(@AuthenticationPrincipal Long userId) {
+    public ResponseEntity<List<UserDnaResponse>> userDnaGive(@PathVariable Long userId) {
         return ResponseEntity.ok(musicDnaService.getUserDna(userId));
     }
 }

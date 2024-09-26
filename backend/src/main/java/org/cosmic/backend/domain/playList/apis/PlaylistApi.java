@@ -7,10 +7,13 @@ import org.cosmic.backend.domain.playList.dtos.*;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundArtistException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundTrackException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
+import org.cosmic.backend.domain.user.dtos.UserDetail;
+import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,14 +24,16 @@ import java.util.List;
 @RequestMapping("/api/")
 public class PlaylistApi {
     private final PlaylistService playlistService;
+    private final UsersRepository usersRepository;
 
     /**
      * PlaylistApi의 생성자입니다.
      *
      * @param playlistService 플레이리스트 관련 비즈니스 로직을 처리하는 서비스 클래스
      */
-    public PlaylistApi(PlaylistService playlistService) {
+    public PlaylistApi(PlaylistService playlistService, UsersRepository usersRepository) {
         this.playlistService = playlistService;
+        this.usersRepository = usersRepository;
     }
 
     /**
@@ -40,10 +45,34 @@ public class PlaylistApi {
      * @throws NotFoundUserException 사용자를 찾을 수 없을 때 발생합니다.
      */
     @Transactional
-    @GetMapping("/playlist")
+    @GetMapping("/user/{userId}/playlist") //TODO 누구꺼인지 알아야하니까 userId를 받긴 해야겠더라.
     @ApiResponse(responseCode = "404", description = "Not Found User")//어떤 사용자의 플레이리스트 보여주는
     public ResponseEntity<List<PlaylistDetail>> dataGive(@PathVariable Long userId) {
         return ResponseEntity.ok(playlistService.open(userId));
+    }
+
+    @Transactional
+    @GetMapping("/FollowerPlaylist")
+    @ApiResponse(responseCode = "404", description = "Not Found User")//어떤 사용자의 플레이리스트 보여주는
+    public ResponseEntity<List<FollowerPlaylistDetail>> followerDataGive(@PathVariable Long userId) {
+
+        List<FollowerPlaylistDetail> followerPlaylistDetails=new ArrayList<>();
+        FollowerPlaylistDetail followerPlaylistDetail=new FollowerPlaylistDetail();
+        followerPlaylistDetail.setPlaylistId(1L);
+        UserDetail userDetail=UserDetail.builder()
+                .id(1L)
+                .profilePicture("base")
+                .username("junho")
+                .build();
+        followerPlaylistDetail.setAuthor(userDetail);
+        List<String> cover=new ArrayList<>();
+        cover.add("super nova");
+        cover.add("new jeans");
+        followerPlaylistDetail.setAlbumCover(cover);
+        followerPlaylistDetails.add(followerPlaylistDetail);
+        return ResponseEntity.ok(followerPlaylistDetails);
+
+        //return ResponseEntity.ok(playlistService.followDataOpen(userId));
     }
 
     /**

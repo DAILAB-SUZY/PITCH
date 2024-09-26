@@ -10,16 +10,16 @@ import org.cosmic.backend.domain.bestAlbum.domains.UserBestAlbum;
 public class BestAlbumDetail {
     Long albumId;
     String albumName;
-    String cover;
+    String albumCover;
 
     public BestAlbumDetail(UserBestAlbum userBestAlbum) {
         this.albumId = userBestAlbum.getAlbum().getAlbumId();
         this.albumName = userBestAlbum.getAlbum().getTitle();
-        this.cover = userBestAlbum.getAlbum().getCover();
+        this.albumCover = userBestAlbum.getAlbum().getAlbumCover();
     }
     public BestAlbumDetail(Long albumId, String albumName, String cover) {
         this.albumId = albumId;
         this.albumName = albumName;
-        this.cover = cover;
+        this.albumCover = cover;
     }
 }

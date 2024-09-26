@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 public class AlbumDetail {
     private Long id;
     private String title;
-    private String cover;
+    private String albumCover;
     private String genre;
 }

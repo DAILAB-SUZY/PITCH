@@ -1,6 +1,7 @@
 package org.cosmic.backend.domain.playList.applications;
 
 import jakarta.transaction.Transactional;
+import org.cosmic.backend.domain.albumChat.dtos.commentlike.AlbumChatCommentLikeDetail;
 import org.cosmic.backend.domain.playList.domains.Playlist;
 import org.cosmic.backend.domain.playList.domains.Playlist_Track;
 import org.cosmic.backend.domain.playList.domains.Track;
@@ -13,10 +14,15 @@ import org.cosmic.backend.domain.playList.repositorys.PlaylistRepository;
 import org.cosmic.backend.domain.playList.repositorys.PlaylistTrackRepository;
 import org.cosmic.backend.domain.playList.repositorys.TrackRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 플레이리스트 관련 비즈니스 로직을 처리하는 서비스 클래스입니다.
@@ -93,7 +99,41 @@ public class PlaylistService {
         return usersRepository.findById(userId).get().getPlaylist().getPlaylist_track()
             .stream().map(Playlist_Track::toGiveDetail).toList();
     }
+    @Transactional
+    public List<FollowerPlaylistDetail> followDataOpen(Long userId) {//해당 사용자와 follower인 사람들꺼
+        if (usersRepository.findById(userId).isEmpty()) {
+            throw new NotFoundUserException();
+        }
+        List<FollowerPlaylistDetail> followerPlaylistDetails=new ArrayList<>();
+/*
+        //follower레포에서 일단 follower들을 모두 찾겠지 그 뒤에 user로 플레이리스트 찾는것을 하게될거야.
+        List<Long>followerIds=new ArrayList<>();
+        followerIds.add(1L);
+        followerIds.add(2L);
+        LocalDateTime timeBoundary = LocalDateTime.now().minusHours(24);
+        Pageable pageable = PageRequest.of(0, 5);
 
+        followerPlaylistDetails=playlistRepository.findRecentPlaylistsByUsers(followerIds, timeBoundary, pageable)
+            .stream()
+            .map(FollowerPlaylistDetail::new)
+            .collect(Collectors.toList());
+
+        for(int i=0;i<followerPlaylistDetails.size();i++){
+            Playlist playlist=playlistTrackRepository.findByPlaylist_PlaylistId(followerPlaylistDetails.get(i).getPlaylistId()).get().get(i).getPlaylist();
+            List<String>trackCover=new ArrayList<>();
+            for(int j=0;j<playlist.getPlaylist_track().size();j++)
+            {
+                trackCover.add(playlist.getPlaylist_track().get(j).getTrack().getTrackCover());
+            }
+            followerPlaylistDetails.get(i).setAlbumCover(trackCover);
+            //플레이리스트를 주면 그 안에 노래들을 꺼내는식으로
+            //각각의 플레이리스트마다의 노래앨범커버를 가져온다.
+        }
+*/
+        return followerPlaylistDetails;
+        //보이는것들은 24시간이내에 업데이트된 것들만 보여야함.
+        //5개만 주기.
+    }
     /**
      * 아티스트 이름으로 트랙을 검색합니다.
      *

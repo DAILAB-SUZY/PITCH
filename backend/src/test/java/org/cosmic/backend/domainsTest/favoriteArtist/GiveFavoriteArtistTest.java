@@ -52,10 +52,10 @@ public class GiveFavoriteArtistTest extends BaseSetting {
         Track track=trackRepository.findByTitle("bam").get();
 
         FavoriteRequest favoriteRequest = FavoriteRequest.createFavoriteReq
-            (artist.getArtistId(),album.getAlbumId(),track.getTrackId(),album.getCover());
+            (artist.getArtistId(),album.getAlbumId(),track.getTrackId(),album.getAlbumCover());
         mockMvcHelper(HttpMethod.POST,"/api/favoriteArtist", favoriteRequest,userLogin.getToken());
 
-        mockMvcHelper(HttpMethod.GET,"/api/favoriteArtist",null,userLogin.getToken())
+        mockMvcHelper(HttpMethod.GET,"/api/user/{userId}/favoriteArtist",null,userLogin.getToken())
             .andExpect(status().isOk());
     }
 }

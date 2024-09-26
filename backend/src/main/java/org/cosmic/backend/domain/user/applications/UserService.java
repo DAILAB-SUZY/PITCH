@@ -4,16 +4,23 @@ import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.auth.applications.TokenProvider;
 import org.cosmic.backend.domain.auth.dtos.UserLoginDetail;
 import org.cosmic.backend.domain.auth.exceptions.CredentialNotMatchException;
+import org.cosmic.backend.domain.bestAlbum.applications.BestAlbumService;
+import org.cosmic.backend.domain.favoriteArtist.applications.FavoriteArtistService;
+import org.cosmic.backend.domain.musicDna.applications.MusicDnaService;
+import org.cosmic.backend.domain.musicDna.repositorys.MusicDnaRepository;
+import org.cosmic.backend.domain.playList.applications.PlaylistService;
 import org.cosmic.backend.domain.playList.domains.Playlist;
 import org.cosmic.backend.domain.playList.repositorys.PlaylistRepository;
 import org.cosmic.backend.domain.user.domains.Email;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.dtos.JoinRequest;
+import org.cosmic.backend.domain.user.dtos.MusicProfileDetail;
 import org.cosmic.backend.domain.user.exceptions.NotExistEmailException;
 import org.cosmic.backend.domain.user.exceptions.NotMatchConditionException;
 import org.cosmic.backend.domain.user.exceptions.NotMatchPasswordException;
 import org.cosmic.backend.domain.user.repositorys.EmailRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,11 +34,27 @@ import java.util.Optional;
 @Log4j2
 @Service
 public class UserService {
-    private final TokenProvider tokenProvider;
-    private final UsersRepository usersRepository;
-    private final EmailRepository emailRepository;
-    private final RedisTemplate<String, String> redisTemplate;
-    private final PlaylistRepository playlistRepository;
+    @Autowired
+    private TokenProvider tokenProvider;
+    @Autowired
+    private UsersRepository usersRepository;
+    @Autowired
+    private EmailRepository emailRepository;
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
+    @Autowired
+    private PlaylistRepository playlistRepository;
+    @Autowired
+    private MusicDnaRepository musicDnaRepository;
+
+    @Autowired
+    private MusicDnaService musicDnaService;
+    @Autowired
+    private PlaylistService playlistService;
+    @Autowired
+    private BestAlbumService bestAlbumService;
+    @Autowired
+    private FavoriteArtistService favoriteArtistService;
 
     /**
      * UserService의 생성자입니다.
@@ -42,13 +65,6 @@ public class UserService {
      * @param redisTemplate Redis 템플릿을 이용해 데이터를 저장/조회하는 클래스
      * @param playlistRepository 플레이리스트 데이터를 처리하는 리포지토리
      */
-    public UserService(TokenProvider tokenProvider, UsersRepository usersRepository, EmailRepository emailRepository, RedisTemplate<String, String> redisTemplate, PlaylistRepository playlistRepository) {
-        this.tokenProvider = tokenProvider;
-        this.usersRepository = usersRepository;
-        this.emailRepository = emailRepository;
-        this.redisTemplate = redisTemplate;
-        this.playlistRepository = playlistRepository;
-    }
 
     /**
      * 사용자를 등록합니다.
@@ -143,4 +159,16 @@ public class UserService {
         redisTemplate.opsForValue().getAndDelete(email);
         return getByEmail(email);
     }
+
+    public MusicProfileDetail openMusicProfile(Long userId)
+    {
+        //특정 유저의 뮤직프로필을 들어갔을때
+        MusicProfileDetail musicProfileDetail=new MusicProfileDetail();
+        musicProfileDetail.setUserDna(musicDnaService.getUserDna(userId));//유저의 dna가져오기
+        musicProfileDetail.setPlaylist(playlistService.open(userId));//유저의 플레이리스트 가져오기
+        musicProfileDetail.setBestAlbum(bestAlbumService.open(userId));//유저의 bestalbum리스트 가져오기(cover만 필요)
+        musicProfileDetail.setFavoriteArtist(favoriteArtistService.favoriteArtistGiveData(userId));//favoriteArtist가져오기
+        return musicProfileDetail;
+    }
+
 }

@@ -61,8 +61,8 @@ public class SaveBestAlbumTest extends BaseSetting {
         userBestAlbum.setAlbum(album1);
 
         bestalbumListRequest.setBestalbum(Arrays.asList(
-            new BestAlbumDetail(album1.getAlbumId(),album1.getTitle(),album1.getCover()),
-            new BestAlbumDetail(album2.getAlbumId(),album2.getTitle(),album2.getCover())));
+            new BestAlbumDetail(album1.getAlbumId(),album1.getTitle(),album1.getAlbumCover()),
+            new BestAlbumDetail(album2.getAlbumId(),album2.getTitle(),album2.getAlbumCover())));
 
         params.clear();
         params.put("albumId",album1.getAlbumId());
@@ -94,8 +94,8 @@ public class SaveBestAlbumTest extends BaseSetting {
 
         BestAlbumListRequest bestalbumListRequest =new BestAlbumListRequest();
         bestalbumListRequest.setBestalbum(Arrays.asList(
-                new BestAlbumDetail(album1.getAlbumId(),album1.getTitle(),album1.getCover()),
-                new BestAlbumDetail(album2.getAlbumId(),album2.getTitle(),album2.getCover())));
+                new BestAlbumDetail(album1.getAlbumId(),album1.getTitle(),album1.getAlbumCover()),
+                new BestAlbumDetail(album2.getAlbumId(),album2.getTitle(),album2.getAlbumCover())));
 
         params.clear();
         params.put("albumId",album1.getAlbumId());

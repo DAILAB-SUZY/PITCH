@@ -6,14 +6,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.cosmic.backend.domain.user.applications.UserService;
 import org.cosmic.backend.domain.user.dtos.JoinRequest;
+import org.cosmic.backend.domain.user.dtos.MusicProfileDetail;
 import org.cosmic.backend.domain.user.exceptions.NotExistEmailException;
 import org.cosmic.backend.domain.user.exceptions.NotMatchPasswordException;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 사용자(User) 관련 API를 제공하는 REST 컨트롤러입니다.
@@ -56,5 +54,10 @@ public class UserApi {
     public ResponseEntity<String> userRegister(@Valid @RequestBody JoinRequest request) {
         userService.userRegister(request);
         return ResponseEntity.ok("success for signup");
+    }
+
+    @PostMapping("/user/{userId}/musicProfile")
+    public ResponseEntity<MusicProfileDetail> userMusicProfile(@PathVariable Long userId) {
+        return ResponseEntity.ok(userService.openMusicProfile(userId));
     }
 }

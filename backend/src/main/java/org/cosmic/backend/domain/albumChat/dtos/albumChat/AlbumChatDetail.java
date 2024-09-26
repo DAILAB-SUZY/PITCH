@@ -26,7 +26,7 @@ public class AlbumChatDetail {
 
     public AlbumChatDetail(Album album) {
         this.albumId = album.getAlbumId();
-        this.cover = album.getCover();
+        this.cover = album.getAlbumCover();
         this.title = album.getTitle();
         this.artistName = album.getArtist().getArtistName();
         this.comments=album.getAlbumChatComments().stream().map(AlbumChatComment::toAlbumChatCommentDetail).toList();

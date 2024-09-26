@@ -52,7 +52,7 @@ public class SaveFavoriteArtistTest extends BaseSetting {
         Track track=trackRepository.findByTitle("bam").get();
 
         FavoriteRequest favoriteRequest = FavoriteRequest.createFavoriteReq
-                (artist.getArtistId(),album.getAlbumId(),track.getTrackId(),album.getCover());
+                (artist.getArtistId(),album.getAlbumId(),track.getTrackId(),album.getAlbumCover());
         mockMvcHelper(HttpMethod.POST,"/api/favoriteArtist", favoriteRequest,userLogin.getToken()).andExpect(status().isOk());
     }
 }

@@ -18,6 +18,6 @@ public interface AlbumRepository extends JpaRepository<Album,Long> {
     @Query("SELECT A.album FROM org.cosmic.backend.domain.bestAlbum.domains.UserBestAlbum A WHERE A.user.userId = :userId ")
     List<Album> findAlbumByUserId(Long userId);
 
-    @Query("SELECT new org.cosmic.backend.domain.favoriteArtist.dtos.ArtistDetail(A.artist.artistId, A.title, A.cover, A.artist.artistName, A.createdDate) FROM Album A WHERE A.artist.artistName = :artistName")
+    @Query("SELECT new org.cosmic.backend.domain.favoriteArtist.dtos.ArtistDetail(A.artist.artistId, A.title, A.albumCover, A.artist.artistName, A.createdDate) FROM Album A WHERE A.artist.artistName = :artistName")
     List<ArtistDetail> findAllArtistDataByArtistId(String artistName);
 }

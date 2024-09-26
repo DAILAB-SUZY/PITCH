@@ -34,7 +34,7 @@ public class Album {//앨범과 트랙은 1:N관계이며 앨범과 아티스트
     private String title;//앨범 제목
 
     @Column(nullable=false)
-    private String cover;
+    private String albumCover;
 
     @ManyToMany(fetch = FetchType.LAZY)
     private Set<Genre> genre;
@@ -67,7 +67,7 @@ public class Album {//앨범과 트랙은 1:N관계이며 앨범과 아티스트
         return AlbumDetail.builder()
                 .id(album.albumId)
                 .title(album.title)
-                .cover(album.cover)
+                .cover(album.albumCover)
                 .genre(album.genre.toString())
                 .build();
     }
@@ -75,7 +75,7 @@ public class Album {//앨범과 트랙은 1:N관계이며 앨범과 아티스트
         return AlbumChatDetail.builder()
                 .albumId(album.albumId)
                 .title(album.title)
-                .cover(album.cover)
+                .cover(album.albumCover)
                 .genre(album.genre.toString())
                 .artistName(album.getArtist().getArtistName())
                 .comments(album.albumChatComments.stream().map(AlbumChatComment::toAlbumChatCommentDetail).toList())
@@ -88,7 +88,7 @@ public class Album {//앨범과 트랙은 1:N관계이며 앨범과 아티스트
         return "Album{" +
                 "albumId=" + albumId +
                 ", title='" + title + '\'' +
-                ", cover='" + cover + '\'' +
+                ", albumCover='" + albumCover + '\'' +
                 ", genre='" + genre + '\'' +
                 ", createdDate=" + createdDate +
                 ", artist=" + (artist != null ? artist.getArtistId() : "null") +
