@@ -3,8 +3,10 @@ package org.cosmic.backend.domain.post.applications;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.post.dtos.Like.LikeReq;
 import org.cosmic.backend.domain.post.dtos.Like.LikeResponse;
+import org.cosmic.backend.domain.post.dtos.Post.PostAndCommentsDetail;
 import org.cosmic.backend.domain.post.entities.Post;
 import org.cosmic.backend.domain.post.entities.PostLike;
+import org.cosmic.backend.domain.post.entities.PostLikePK;
 import org.cosmic.backend.domain.post.exceptions.ExistLikeException;
 import org.cosmic.backend.domain.post.exceptions.NotFoundLikeException;
 import org.cosmic.backend.domain.post.exceptions.NotFoundPostException;
@@ -95,5 +97,18 @@ public class LikeService {
         postLikeRepository.findByPost_PostIdAndUser_UserId(post_id, user_id).ifPresentOrElse(postLikeRepository::delete, () -> {
             throw new NotFoundLikeException();
         });
+    }
+
+    @Transactional
+    public PostAndCommentsDetail likeOrUnlikePost(Long postId, Long userId) {
+        Post post = postRepository.findById(postId).orElseThrow(NotFoundPostException::new);
+        User user = usersRepository.findById(userId).orElseThrow(NotFoundUserException::new);
+        PostLikePK postLikePK = PostLikePK.builder().post(postId).user(userId).build();
+        if(postLikeRepository.existsById(postLikePK)){
+            postLikeRepository.deleteById(postLikePK);
+            return Post.toPostAndCommentDetail(post);
+        }
+        postLikeRepository.save(PostLike.builder().post(post).user(user).build());
+        return Post.toPostAndCommentDetail(post);
     }
 }
