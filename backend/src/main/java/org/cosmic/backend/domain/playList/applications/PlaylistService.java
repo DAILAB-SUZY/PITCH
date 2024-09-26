@@ -72,7 +72,7 @@ public class PlaylistService {
         }
         List<Long> trackList = tracks.getTrackId();
         Playlist playList = playlistRepository.findByUser_UserId(userId).get();
-        playList.setUpdate_time(Instant.now());
+        playList.setUpdateTime(Instant.now());
         playlistTrackRepository.deleteByPlaylist_PlaylistId(playList.getPlaylistId());
         playlistTrackRepository.saveAll(trackList.stream()
                 .map(trackId -> trackRepository.findById(trackId)
@@ -114,18 +114,24 @@ public class PlaylistService {
             throw new NotFoundUserException();
         }
         List<FollowerPlaylistDetail> followerPlaylistDetails=new ArrayList<>();
-/*
+
         //follower레포에서 일단 follower들을 모두 찾겠지 그 뒤에 user로 플레이리스트 찾는것을 하게될거야.
+
         List<Long>followerIds=new ArrayList<>();
+
         followerIds.add(1L);
         followerIds.add(2L);
-        LocalDateTime timeBoundary = LocalDateTime.now().minusHours(24);
-        Pageable pageable = PageRequest.of(0, 5);
+        followerIds.add(3L);
+        followerIds.add(4L);
+        followerIds.add(5L);
 
-        followerPlaylistDetails=playlistRepository.findRecentPlaylistsByUsers(followerIds, timeBoundary, pageable)
-            .stream()
-            .map(FollowerPlaylistDetail::new)
-            .collect(Collectors.toList());
+        Instant timeBoundary = Instant.now().minusSeconds(60 * 60 * 24); // 24시간 이전 시간 계산
+        Pageable pageable = PageRequest.of(0, 5); // 페이징 처리: 5개의 플레이리스트만 가져옴
+
+        followerPlaylistDetails = playlistRepository.findRecentPlaylistsByFollowers(followerIds, timeBoundary, pageable)
+                .stream()
+                .map(FollowerPlaylistDetail::new)
+                .collect(Collectors.toList());
 
         for(int i=0;i<followerPlaylistDetails.size();i++){
             Playlist playlist=playlistTrackRepository.findByPlaylist_PlaylistId(followerPlaylistDetails.get(i).getPlaylistId()).get().get(i).getPlaylist();
@@ -138,7 +144,7 @@ public class PlaylistService {
             //플레이리스트를 주면 그 안에 노래들을 꺼내는식으로
             //각각의 플레이리스트마다의 노래앨범커버를 가져온다.
         }
-*/
+
         return followerPlaylistDetails;
         //보이는것들은 24시간이내에 업데이트된 것들만 보여야함.
         //5개만 주기.

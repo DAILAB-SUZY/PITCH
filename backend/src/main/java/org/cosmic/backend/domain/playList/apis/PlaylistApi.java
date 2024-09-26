@@ -68,27 +68,12 @@ public class PlaylistApi {
      * @throws NotFoundUserException 사용자를 찾을 수 없을 때 발생합니다.
      */
     @Transactional
-    @GetMapping("/FollowerPlaylist")
+    @GetMapping("/FollowerPlaylist/user/{userId}")
     @ApiResponse(responseCode = "404", description = "Not Found User")
     @Operation(summary = "팔로우한 유저들의 플레이리스트 정보 제공")
     public ResponseEntity<List<FollowerPlaylistDetail>> followerDataGive(@PathVariable Long userId) {
-        List<FollowerPlaylistDetail> followerPlaylistDetails = new ArrayList<>();
-        FollowerPlaylistDetail followerPlaylistDetail = new FollowerPlaylistDetail();
-        followerPlaylistDetail.setPlaylistId(1L);
-        UserDetail userDetail = UserDetail.builder()
-                .id(1L)
-                .profilePicture("base")
-                .username("junho")
-                .build();
-        followerPlaylistDetail.setAuthor(userDetail);
-        List<String> cover = new ArrayList<>();
-        cover.add("super nova");
-        cover.add("new jeans");
-        followerPlaylistDetail.setAlbumCover(cover);
-        followerPlaylistDetails.add(followerPlaylistDetail);
-        return ResponseEntity.ok(followerPlaylistDetails);
-
-        // 실제 서비스 로직으로 대체 가능: return ResponseEntity.ok(playlistService.followDataOpen(userId));
+        System.out.println("+++++++"+playlistService.followDataOpen(userId));
+       return ResponseEntity.ok(playlistService.followDataOpen(userId));
     }
 
     /**
