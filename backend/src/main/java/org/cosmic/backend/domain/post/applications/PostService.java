@@ -7,6 +7,7 @@ import org.cosmic.backend.domain.playList.exceptions.NotMatchAlbumException;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
 import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
 import org.cosmic.backend.domain.post.dtos.Post.AlbumDto;
+import org.cosmic.backend.domain.post.dtos.Post.PostAndCommentsDetail;
 import org.cosmic.backend.domain.post.dtos.Post.PostDetail;
 import org.cosmic.backend.domain.post.entities.Post;
 import org.cosmic.backend.domain.post.exceptions.NotFoundAlbumException;
@@ -15,6 +16,9 @@ import org.cosmic.backend.domain.post.exceptions.NotMatchUserException;
 import org.cosmic.backend.domain.post.repositories.PostRepository;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,6 +68,12 @@ public class PostService {
                 .toList();
     }
 
+    public List<PostDetail> getPosts(Integer page, Integer limit) {
+        Pageable pageable = PageRequest.of(page, limit);
+        Page<PostDetail> postDetails = postRepository.findAll(pageable).map(Post::toPostDetail);
+        return postDetails.getContent();
+    }
+
     /**
      * 특정 게시물 ID로 게시물을 조회합니다.
      *
@@ -72,11 +82,11 @@ public class PostService {
      *
      * @throws NotFoundPostException 게시물을 찾을 수 없을 때 발생합니다.
      */
-    public PostDetail getPostById(Long postId) {
+    public PostAndCommentsDetail getPostById(Long postId) {
         if (postRepository.findById(postId).isEmpty()) {
             throw new NotFoundPostException();
         }
-        return Post.toPostDetail(postRepository.findById(postId).get());
+        return Post.toPostAndCommentDetail(postRepository.findById(postId).get());
     }
 
     /**
@@ -88,7 +98,7 @@ public class PostService {
      * @throws NotMatchAlbumException 게시물에 해당하는 앨범을 찾을 수 없을 때 발생합니다.
      */
     @Transactional
-    public PostDetail createPost(String content, Long albumId, Long userId) {
+    public PostAndCommentsDetail createPost(String content, Long albumId, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(NotFoundUserException::new);
         Album album = albumRepository.findById(albumId).orElseThrow(NotMatchAlbumException::new);
         Post post = postRepository.save(Post.builder()
@@ -96,7 +106,7 @@ public class PostService {
                 .user(user)
                 .album(album)
                 .build());
-        return Post.toPostDetail(post);
+        return Post.toPostAndCommentDetail(post);
     }
 
     /**
@@ -106,14 +116,14 @@ public class PostService {
      * @throws NotFoundPostException 게시물을 찾을 수 없을 때 발생합니다.
      */
     @Transactional
-    public PostDetail updatePost(String content, Long postId, Long userId) {
+    public PostAndCommentsDetail updatePost(String content, Long postId, Long userId) {
         Post updatedPost = postRepository.findById(postId).orElseThrow(NotFoundPostException::new);
         if(!updatedPost.getUser().getUserId().equals(userId)) {
             throw new NotMatchUserException();
         }
         updatedPost.setContent(content);
         updatedPost.setUpdate_time(Instant.now());
-        return Post.toPostDetail(postRepository.save(updatedPost));
+        return Post.toPostAndCommentDetail(postRepository.save(updatedPost));
     }
 
     /**
@@ -124,12 +134,13 @@ public class PostService {
      * @throws NotFoundPostException 게시물을 찾을 수 없을 때 발생합니다.
      */
     @Transactional
-    public void deletePost(Long postId, Long userId) {
+    public List<PostDetail> deletePost(Long postId, Long userId) {
         Post post = postRepository.findById(postId).orElseThrow(NotFoundPostException::new);
         if(!post.getUser().getUserId().equals(userId)) {
             throw new NotMatchUserException();
         }
         postRepository.delete(post);
+        return postRepository.findAll(PageRequest.of(0, 10)).map(Post::toPostDetail).getContent();
     }
 
     /**

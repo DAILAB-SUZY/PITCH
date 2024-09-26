@@ -27,7 +27,7 @@ public class PostCommentLike {
 
     public static LikeUserDto toLikeUserDto(PostCommentLike postCommentLike) {
         return LikeUserDto.builder()
-                .id(postCommentLike.user.getUserId())
+                .user_id(postCommentLike.user.getUserId())
                 .build();
     }
 }
