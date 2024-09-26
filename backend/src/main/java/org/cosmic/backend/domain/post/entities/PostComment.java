@@ -5,13 +5,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.cosmic.backend.domain.post.dtos.Comment.CommentDetail;
 import org.cosmic.backend.domain.post.dtos.Comment.CommentDto;
-import org.cosmic.backend.domain.post.dtos.Comment.CommentReq;
+import org.cosmic.backend.domain.post.dtos.Comment.LikeUserDto;
 import org.cosmic.backend.domain.post.dtos.Reply.ReplyDto;
 import org.cosmic.backend.domain.post.dtos.Reply.UpdateReplyReq;
 import org.cosmic.backend.domain.user.domains.User;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -47,14 +49,17 @@ public class PostComment {
     private User user;
 
     @OneToMany(mappedBy = "postComment", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PostCommentLike> postCommentLikes;
+    @Builder.Default
+    private List<PostCommentLike> postCommentLikes = new ArrayList<>();
 
-    public static CommentReq toCommentReq(PostComment postComment) {
-        return CommentReq.builder()
-                .userId(postComment.getUser().getUserId())
-                .commentId(postComment.getCommentId())
-                .content(postComment.getContent())
-                .createTime(postComment.getUpdateTime())
+    public static CommentDetail toCommentDetail(PostComment comment) {
+        return CommentDetail.builder()
+                .id(comment.commentId)
+                .content(comment.content)
+                .createdAt(comment.createTime)
+                .updatedAt(comment.updateTime)
+                .author(User.toUserDetail(comment.getUser()))
+                .likes(comment.postCommentLikes.stream().map(PostCommentLike::toLikeUserDto).toList())
                 .build();
     }
 

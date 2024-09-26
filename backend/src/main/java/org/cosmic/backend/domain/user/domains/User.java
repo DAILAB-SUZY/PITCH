@@ -5,9 +5,10 @@ import lombok.*;
 import org.cosmic.backend.domain.favoriteArtist.domains.FavoriteArtist;
 import org.cosmic.backend.domain.musicDna.domains.MusicDna;
 import org.cosmic.backend.domain.playList.domains.Playlist;
+import org.cosmic.backend.domain.post.entities.Post;
 import org.cosmic.backend.domain.post.entities.PostComment;
 import org.cosmic.backend.domain.post.entities.PostLike;
-import org.cosmic.backend.domain.post.entities.Post;
+import org.cosmic.backend.domain.user.dtos.UserDetail;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ public class User {
     private Long userId;
 
     @OneToOne
-    @JoinColumn(name="email")  // 외래 키 컬럼명은 emails 테이블의 'email' 컬럼과 일치
+    @JoinColumn(name="email",nullable = false)  // 외래 키 컬럼명은 emails 테이블의 'email' 컬럼과 일치
     private Email email; // FK
 
     @Column(nullable=false)
@@ -40,7 +41,7 @@ public class User {
     private String profilePicture="base";
 
     @Builder.Default
-    @Column(nullable=false)
+    @Column()
     private Instant create_time =Instant.now();
 
     @ManyToOne
@@ -65,17 +66,17 @@ public class User {
     @OneToOne(mappedBy = "user")
     private FavoriteArtist favoriteArtist;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<Post> posts=new ArrayList<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Post> posts = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<PostComment> postComments =new ArrayList<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostComment> postComments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<PostLike> postLikes =new ArrayList<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostLike> postLikes = new ArrayList<>();
 
     @Override
     public String toString() {
@@ -112,5 +113,20 @@ public class User {
         this.email=email;
         this.username=username;
         this.password=password;
+        this.create_time=Instant.now();
+    }
+
+    public static UserDetail toUserDetail(User user) {
+        return UserDetail.builder()
+                .id(user.userId)
+                .username(user.username)
+                .profilePicture(user.profilePicture)
+                .build();
+    }
+    @PrePersist
+    public void prePersist() {
+        if (this.create_time == null) {
+            this.create_time = Instant.now();  // 저장되기 전에 create_time이 null이면 현재 시간으로 설정
+        }
     }
 }

@@ -4,18 +4,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.transaction.Transactional;
 import org.cosmic.backend.domain.favoriteArtist.applications.FavoriteArtistService;
 import org.cosmic.backend.domain.favoriteArtist.dtos.*;
-import org.cosmic.backend.domain.playList.dtos.ArtistDto;
-import org.cosmic.backend.domain.user.dtos.UserDto;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundArtistException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundTrackException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.post.exceptions.NotFoundAlbumException;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,7 +23,7 @@ import java.util.List;
  *
  */
 @RestController
-@RequestMapping("/api/favoriteArtist")
+@RequestMapping("/api/")
 @ApiCommonResponses
 public class FavoriteApi {
     private final FavoriteArtistService favoriteartistService;
@@ -39,57 +35,58 @@ public class FavoriteApi {
     /**
      * 사용자가 즐겨찾는 아티스트 정보를 반환합니다.
      *
-     * @param user 사용자의 ID를 포함하는 DTO 객체
+     * @param userId 사용자의 ID를 포함하는 DTO 객체
      * @return 사용자가 즐겨찾는 아티스트 정보
      * @throws NotFoundUserException 사용자를 찾을 수 없는 경우 발생합니다.
      */
-    @PostMapping("/give")
+    @GetMapping("/user/{userId}/favoriteArtist")
     @Transactional
     @ApiResponse(responseCode = "404", description = "Not Found User")
-    public FavoriteArtistDto favoriteArtistGiveData(@RequestBody UserDto user) {
-        return favoriteartistService.favoriteArtistGiveData(user.getUserId());
+    public ResponseEntity<FavoriteArtistDetail> favoriteArtistGiveData(@PathVariable Long userId) {
+        return ResponseEntity.ok(favoriteartistService.favoriteArtistGiveData(userId));
     }
 
     /**
      * 주어진 아티스트 이름으로 관련된 앨범 및 트랙 데이터를 검색합니다.
      *
-     * @param artist 아티스트의 이름을 포함하는 DTO 객체
+     * @param artistName 아티스트의 이름을 포함하는 DTO 객체
      * @return 해당 아티스트의 앨범 및 트랙 데이터 리스트
      * @throws NotFoundArtistException 아티스트를 찾을 수 없는 경우 발생합니다.
      */
-    @PostMapping("/searchartist")
+    @GetMapping("/favoriteArtist/artist/{artistName}")
     @Transactional
     @ApiResponse(responseCode = "404", description = "Not Found Artist")
-    public List<ArtistData> artistSearchData(@RequestBody ArtistDto artist) {
-        return favoriteartistService.artistSearchData(artist.getArtistName());
+    public ResponseEntity<List<ArtistDetail>> artistSearchData(@PathVariable String artistName) {
+        return ResponseEntity.ok(favoriteartistService.artistSearchData(artistName));
     }
 
     /**
      * 주어진 앨범 이름과 아티스트 ID로 관련된 트랙 데이터를 검색합니다.
      *
-     * @param album 앨범의 이름과 아티스트의 ID를 포함하는 요청 객체
+     * @param artistId,albumName 앨범의 이름과 아티스트의 ID를 포함하는 요청 객체
      * @return 해당 앨범의 트랙 데이터 리스트
      * @throws NotFoundAlbumException 앨범을 찾을 수 없는 경우 발생합니다.
      */
-    @PostMapping("/searchalbum")
+    @GetMapping("/favoriteArtist/artist/{artistId}/album/{albumName}")
     @Transactional
     @ApiResponse(responseCode = "404", description = "Not Found Album")
-    public List<AlbumData> albumSearchData(@RequestBody AlbumRequest album) {
-        return favoriteartistService.albumSearchData(album.getArtistId(), album.getAlbumName());
+    public ResponseEntity<List<AlbumDetail>> albumSearchData(@PathVariable Long artistId, @PathVariable String albumName) {
+        return ResponseEntity.ok(favoriteartistService.albumSearchData(artistId,albumName));
     }
 
     /**
      * 주어진 앨범 ID와 트랙 이름으로 트랙 데이터를 검색합니다.
      *
-     * @param track 앨범의 ID와 트랙의 이름을 포함하는 요청 객체
+     * @param albumId,trackName 앨범의 ID와 트랙의 이름을 포함하는 요청 객체
      * @return 해당 트랙의 데이터
      * @throws NotFoundTrackException 트랙을 찾을 수 없는 경우 발생합니다.
      */
-    @PostMapping("/searchtrack")
+
+    @GetMapping("/favoriteArtist/album/{albumId}/track/{trackName}")
     @Transactional
     @ApiResponse(responseCode = "404", description = "Not Found Track")
-    public TrackData trackSearchData(@RequestBody TrackRequest track) {
-        return favoriteartistService.trackSearchData(track.getAlbumId(), track.getTrackName());
+    public ResponseEntity<TrackDetail> trackSearchData(@PathVariable Long albumId, @PathVariable String trackName) {
+        return ResponseEntity.ok(favoriteartistService.trackSearchData(albumId,trackName));
     }
 
     /**
@@ -102,11 +99,11 @@ public class FavoriteApi {
      * @throws NotFoundAlbumException 앨범 정보를 찾을 수 없는 경우 발생합니다.
      * @throws NotFoundArtistException 아티스트 정보를 찾을 수 없는 경우 발생합니다.
      */
-    @PostMapping("/save")
+    @PostMapping("/favoriteArtist")
     @Transactional
     @ApiResponse(responseCode = "404", description = "Not Found User Or Track Or Album Or Artist")
-    public ResponseEntity<?> favoriteArtistSaveData(@RequestBody FavoriteReq favoriteartist) {
-        favoriteartistService.favoriteArtistSaveData(favoriteartist);
-        return ResponseEntity.ok("성공");
+    public ResponseEntity<FavoriteArtistDetail> favoriteArtistSaveData(@RequestBody FavoriteRequest favoriteartist
+        ,@AuthenticationPrincipal Long userId) {
+        return ResponseEntity.ok(favoriteartistService.favoriteArtistSaveData(favoriteartist,userId));
     }
 }

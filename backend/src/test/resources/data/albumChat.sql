@@ -26,12 +26,29 @@ VALUES (
            CURRENT_TIMESTAMP
        );
 
-INSERT INTO Artist(artist_name)VALUES('bibi');
+-- Artist 테이블에 데이터 삽입
+INSERT INTO Artist(artist_name) VALUES('bibi');
 
-INSERT INTO Album(title,cover,artist_id,created_date)
-VALUES(
-          'bam',
-          'base',
-          (SELECT Artist.artist_id FROM Artist WHERE artist_name='bibi'),
-          CURRENT_TIMESTAMP
-      );
+-- Album 테이블에 데이터 삽입
+INSERT INTO Album(title,album_cover, artist_id, created_date)
+VALUES (
+           'bam',
+            'base',
+           (SELECT Artist.artist_id FROM Artist WHERE artist_name='bibi'),
+           CURRENT_TIMESTAMP
+       );
+
+-- AlbumChatComment 데이터 삽입
+INSERT INTO album_chat_comment(content, album_id, user_id)
+VALUES (
+           'HI',
+           (SELECT album.album_id FROM album WHERE album.title = 'bam'),
+           (SELECT users.user_id FROM users WHERE users.email = 'test1@example.com')
+       );
+
+INSERT INTO album_chat_comment(content, album_id, user_id)
+VALUES (
+           'Heloo',
+           (SELECT album.album_id FROM album WHERE album.title = 'bam'),
+           (SELECT users.user_id FROM users WHERE users.email = 'test2@example.com')
+       );

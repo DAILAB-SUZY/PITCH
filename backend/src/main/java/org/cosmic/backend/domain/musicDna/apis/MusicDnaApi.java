@@ -3,18 +3,15 @@ package org.cosmic.backend.domain.musicDna.apis;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.transaction.Transactional;
 import org.cosmic.backend.domain.musicDna.applications.MusicDnaService;
+import org.cosmic.backend.domain.musicDna.dtos.DnaDetail;
 import org.cosmic.backend.domain.musicDna.dtos.DnaDto;
-import org.cosmic.backend.domain.musicDna.dtos.ListDna;
 import org.cosmic.backend.domain.musicDna.dtos.UserDnaResponse;
 import org.cosmic.backend.domain.musicDna.exceptions.NotMatchMusicDnaCountException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
-import org.cosmic.backend.domain.user.dtos.UserDto;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,7 +20,7 @@ import java.util.List;
  * 사용자와 관련된 음악 DNA 데이터를 저장하고 조회하는 기능을 포함합니다.
  */
 @RestController
-@RequestMapping("/api/dna")
+@RequestMapping("/api/")
 @ApiCommonResponses
 public class MusicDnaApi {
     private final MusicDnaService musicDnaService;
@@ -43,9 +40,9 @@ public class MusicDnaApi {
      * @return 모든 DNA 데이터를 포함하는 리스트
      */
     @Transactional
-    @PostMapping("/give")
-    public List<ListDna> DnaGiveData() {
-        return musicDnaService.getAllDna();
+    @GetMapping("/dna")
+    public ResponseEntity<List<DnaDetail>> DnaGiveData() {
+        return ResponseEntity.ok(musicDnaService.getAllDna());
     }
 
     /**
@@ -57,26 +54,25 @@ public class MusicDnaApi {
      * @throws NotFoundUserException 유저 정보가 일치하지 않을 때 발생합니다.
      * @throws NotMatchMusicDnaCountException DNA 데이터가 4개 이상일 때 발생합니다.
      */
-    @PostMapping("/save")
+    @PostMapping("/dna")
     @ApiResponse(responseCode = "400", description = "Need 4 MusicDna")
     @ApiResponse(responseCode = "404", description = "Not Found Emotion")
-    public ResponseEntity<?> userDnaSaveData(@RequestBody DnaDto dna) {
-        musicDnaService.saveDNA(dna.getKey(), dna.getDna());
-        return ResponseEntity.ok("성공");
+    public ResponseEntity<List<UserDnaResponse>> userDnaSaveData(@RequestBody DnaDto dna,@AuthenticationPrincipal Long userId) {
+        return ResponseEntity.ok(musicDnaService.saveDNA(userId, dna.getDna()));
     }
 
     /**
      * 사용자의 DNA 데이터를 조회합니다.
      *
-     * @param user 사용자 정보를 포함한 DTO 객체
+     * @param userId 사용자 정보를 포함한 DTO 객체
      * @return 사용자 DNA 데이터를 포함한 응답 리스트
      *
      * @throws NotFoundUserException 사용자를 찾을 수 없을 때 발생합니다.
      */
-    @PostMapping("/info")
+    @GetMapping("/dna/user/{userId}")
     @Transactional
     @ApiResponse(responseCode = "404", description = "Not Found User")
-    public List<UserDnaResponse> userDnaGive(@RequestBody UserDto user) {
-        return musicDnaService.getUserDna(user);
+    public ResponseEntity<List<UserDnaResponse>> userDnaGive(@PathVariable Long userId) {
+        return ResponseEntity.ok(musicDnaService.getUserDna(userId));
     }
 }

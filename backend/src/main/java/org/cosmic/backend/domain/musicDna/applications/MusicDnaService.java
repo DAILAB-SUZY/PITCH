@@ -2,13 +2,11 @@ package org.cosmic.backend.domain.musicDna.applications;
 
 import jakarta.transaction.Transactional;
 import org.cosmic.backend.domain.musicDna.dtos.DnaDetail;
-import org.cosmic.backend.domain.musicDna.dtos.ListDna;
 import org.cosmic.backend.domain.musicDna.dtos.UserDnaResponse;
 import org.cosmic.backend.domain.musicDna.exceptions.NotMatchMusicDnaCountException;
 import org.cosmic.backend.domain.musicDna.repositorys.MusicDnaRepository;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.user.domains.User;
-import org.cosmic.backend.domain.user.dtos.UserDto;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.springframework.stereotype.Service;
 
@@ -46,7 +44,7 @@ public class MusicDnaService {
      * @throws NotMatchMusicDnaCountException DNA 데이터의 수가 지정된 수(MAX_DNA_SIZE)보다 큰 경우 발생합니다.
      */
     @Transactional
-    public void saveDNA(Long userId, List<DnaDetail> dna) {
+    public List<UserDnaResponse> saveDNA(Long userId, List<Long> dna) {
         if (usersRepository.findById(userId).isEmpty()) {
             throw new NotFoundUserException();
         }
@@ -54,8 +52,12 @@ public class MusicDnaService {
             throw new NotMatchMusicDnaCountException();
         }
         User user = usersRepository.findById(userId).get();
-        user.setDNAs(musicDnaRepository.findAllById(dna.stream().map(DnaDetail::getDnaKey).toList()));
+        user.setDNAs(musicDnaRepository.findAllById(dna));
         usersRepository.save(user);
+        return usersRepository.findById(userId).get().getDNAs()
+                .stream()
+                .map(UserDnaResponse::new)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -64,26 +66,26 @@ public class MusicDnaService {
      * @return 모든 DNA 데이터를 포함하는 리스트
      */
     @Transactional
-    public List<ListDna> getAllDna() {
+    public List<DnaDetail> getAllDna() {
         return musicDnaRepository.findAll().stream()
-                .map(dna -> new ListDna(dna.getDnaId(), dna.getName()))
+                .map(dna -> new DnaDetail(dna.getDnaId(), dna.getName()))
                 .collect(Collectors.toList());
     }
 
     /**
      * 주어진 사용자 ID로 사용자 DNA 데이터를 조회합니다.
      *
-     * @param user 사용자 정보를 포함한 DTO 객체
+     * @param userId 사용자 정보를 포함한 DTO 객체
      * @return 사용자 DNA 데이터를 포함한 응답 리스트
      *
      * @throws NotFoundUserException 사용자가 존재하지 않을 경우 발생합니다.
      */
     @Transactional
-    public List<UserDnaResponse> getUserDna(UserDto user) {
-        if (usersRepository.findById(user.getUserId()).isEmpty()) {
+    public List<UserDnaResponse> getUserDna(Long userId) {
+        if (usersRepository.findById(userId).isEmpty()) {
             throw new NotFoundUserException();
         }
-        return usersRepository.findById(user.getUserId()).get().getDNAs()
+        return usersRepository.findById(userId).get().getDNAs()
                 .stream()
                 .map(UserDnaResponse::new)
                 .collect(Collectors.toList());

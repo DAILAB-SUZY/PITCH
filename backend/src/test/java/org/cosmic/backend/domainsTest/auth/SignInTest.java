@@ -1,7 +1,7 @@
 package org.cosmic.backend.domainsTest.auth;
 
 import lombok.extern.log4j.Log4j2;
-import org.cosmic.backend.domain.auth.dtos.UserLogin;
+import org.cosmic.backend.domain.auth.dtos.UserLoginDetail;
 import org.cosmic.backend.domain.user.domains.Email;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.EmailRepository;
@@ -55,9 +55,9 @@ class SignInTest {
                 .username("goodwill")
                 .password(encoder.encode("123456"))
                 .build());
-        mockMvc.perform(post("/auth/signin")
+        mockMvc.perform(post("/api/auth/signin")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(UserLogin.builder()
+                        .content(mapper.writeValueAsString(UserLoginDetail.builder()
                                 .email("testboy9@example.com")
                                 .password("123456")
                                 .build()
@@ -71,9 +71,9 @@ class SignInTest {
     @Test
     @Order(2)
     public void notMatchTest() throws Exception {
-        mockMvc.perform(post("/auth/signin")
+        mockMvc.perform(post("/api/auth/signin")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(UserLogin.builder()
+                        .content(mapper.writeValueAsString(UserLoginDetail.builder()
                                 .email("test4@example.com")
                                 .password("123457")
                                 .build()
@@ -84,9 +84,9 @@ class SignInTest {
 
     @Test
     public void notMatchEmailTest() throws Exception {
-        mockMvc.perform(post("/auth/signin")
+        mockMvc.perform(post("/api/auth/signin")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(UserLogin.builder()
+                        .content(mapper.writeValueAsString(UserLoginDetail.builder()
                                 .email("tesswoman@example.com")
                                 .password("123456")
                                 .build()
@@ -94,4 +94,5 @@ class SignInTest {
                 ).andDo(print())
                 .andExpect(status().isUnauthorized());
     }
+
 }

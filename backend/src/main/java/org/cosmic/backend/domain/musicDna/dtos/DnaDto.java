@@ -11,10 +11,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class DnaDto {//사용자로부터 데이터를 받을 것임.
-    private Long key;
-    private List<DnaDetail> dna;
-    public DnaDto(Long key) {
-        this.key = key;
-    }
+public class DnaDto {
+    private List<Long> dna;
 }

@@ -127,6 +127,7 @@ public class VerifyTest {
         Assertions.assertThat(user.getUsername()).isEqualTo("dongyul");//인증코드가 일치하게 들어가야함
 
     }
+
     @Test
     @DisplayName("null값 없는지 확인")
     void checkNull() {

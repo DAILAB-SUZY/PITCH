@@ -1,6 +1,6 @@
 package org.cosmic.backend.domain.playList.repositorys;
 
-import org.cosmic.backend.domain.favoriteArtist.dtos.ArtistData;
+import org.cosmic.backend.domain.favoriteArtist.dtos.ArtistDetail;
 import org.cosmic.backend.domain.playList.domains.Album;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -18,6 +18,6 @@ public interface AlbumRepository extends JpaRepository<Album,Long> {
     @Query("SELECT A.album FROM org.cosmic.backend.domain.bestAlbum.domains.UserBestAlbum A WHERE A.user.userId = :userId ")
     List<Album> findAlbumByUserId(Long userId);
 
-    @Query("SELECT new org.cosmic.backend.domain.favoriteArtist.dtos.ArtistData(A.artist.artistId, A.title, A.cover, A.artist.artistName, A.createdDate) FROM Album A WHERE A.artist.artistName = :artistName")
-    List<ArtistData> findAllArtistDataByArtistId(String artistName);
+    @Query("SELECT new org.cosmic.backend.domain.favoriteArtist.dtos.ArtistDetail(A.artist.artistId, A.albumCover, A.artist.artistName) FROM Album A WHERE A.artist.artistName = :artistName")
+    List<ArtistDetail> findAllArtistDataByArtistId(String artistName);
 }

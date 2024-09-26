@@ -1,6 +1,5 @@
 package org.cosmic.backend.domain.favoriteArtist.repositorys;
 
-import org.cosmic.backend.domain.albumChat.domains.AlbumChatCommentLike;
 import org.cosmic.backend.domain.favoriteArtist.domains.FavoriteArtist;
 import org.cosmic.backend.domain.favoriteArtist.domains.FavoriteArtistPK;
 import org.springframework.data.jpa.repository.JpaRepository;

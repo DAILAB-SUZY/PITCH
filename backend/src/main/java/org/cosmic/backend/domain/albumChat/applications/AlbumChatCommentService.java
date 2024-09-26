@@ -1,21 +1,24 @@
 package org.cosmic.backend.domain.albumChat.applications;
 
 import org.cosmic.backend.domain.albumChat.domains.AlbumChatComment;
-import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentCreateReq;
-import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDto;
-import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentResponse;
-import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentUpdateReq;
+import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDetail;
+import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentRequest;
+import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatReplyDetail;
+import org.cosmic.backend.domain.albumChat.dtos.commentlike.AlbumChatCommentLikeDetail;
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatCommentException;
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatException;
 import org.cosmic.backend.domain.albumChat.exceptions.NotMatchAlbumChatException;
+import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatCommentLikeRepository;
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatCommentRepository;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
 import org.cosmic.backend.domain.post.exceptions.NotMatchUserException;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,6 +31,7 @@ import java.util.stream.Collectors;
 public class AlbumChatCommentService {
     private final AlbumRepository albumRepository;
     private final AlbumChatCommentRepository commentRepository;
+    private final AlbumChatCommentLikeRepository commentLikeRepository;
     private final UsersRepository userRepository;
 
     /**
@@ -39,28 +43,79 @@ public class AlbumChatCommentService {
      */
     public AlbumChatCommentService
     (AlbumRepository albumRepository, AlbumChatCommentRepository commentRepository,
-     UsersRepository userRepository) {
+     UsersRepository userRepository,AlbumChatCommentLikeRepository commentLikeRepository) {
         this.albumRepository = albumRepository;
         this.commentRepository = commentRepository;
         this.userRepository = userRepository;
+        this.commentLikeRepository = commentLikeRepository;
     }
 
     /**
-     * 특정 앨범 챗 ID로 댓글 목록을 조회합니다.
+     * 주어진 앨범 채팅 ID에 해당하는 댓글을 좋아요 순으로 정렬하여 반환합니다.
      *
-     * @param albumChatId 조회할 앨범 챗 ID
-     * @return List<AlbumChatCommentResponse> 조회된 댓글 목록
-     * @throws NotFoundAlbumChatException 앨범 챗이 존재하지 않을 경우 발생
+     * @param albumId  앨범 Id
+     * @return 좋아요 순으로 정렬된 AlbumChatCommentDetail 객체의 리스트
+     * @throws NotFoundAlbumChatException 앨범 채팅을 찾을 수 없는 경우 발생
      */
-    public List<AlbumChatCommentResponse> getCommentsByAlbumId(Long albumChatId) {
-        if(albumRepository.findById(albumChatId).isEmpty()) {
+    @Transactional
+    public List<AlbumChatCommentDetail> getAlbumChatComment(Long albumId,String sorted, int count) {
+        if(albumRepository.findById(albumId).isEmpty()) {
             throw new NotFoundAlbumChatException();
         }
-        return commentRepository.findByAlbum_AlbumId(albumChatId)
+        List<AlbumChatCommentDetail> albumChatCommentDetails=new ArrayList<>();
+        if (sorted.equals("manylike")) {
+            albumChatCommentDetails=getAlbumChatCommentByManyLikeId(albumId,count);
+            //10개씩
+        }
+        else if (sorted.equals("recent")) {
+            albumChatCommentDetails=getAlbumChatCommentRecentId(albumId, count);
+        }
+        return albumChatCommentDetails;
+    }
+
+    @Transactional
+    public List<AlbumChatCommentDetail> getReplyAndCommentLike(List<AlbumChatCommentDetail> albumChatCommentDetails
+        ,Long albumId){
+        for(int i=0; i<albumChatCommentDetails.size(); i++) {
+            List<AlbumChatReplyDetail> albumChatReplyDetails=commentRepository
+                    .findByAlbumIdOrderByReply(albumId,albumChatCommentDetails.get(i).getAlbumChatCommentId())
+                    .orElse(Collections.emptyList())
+                    .stream()
+                    .map(AlbumChatReplyDetail::new)
+                    .collect(Collectors.toList());
+            albumChatCommentDetails.get(i).setComments(albumChatReplyDetails);
+
+            List<AlbumChatCommentLikeDetail> albumChatCommentLikeDetails=commentLikeRepository
+                    .findByAlbumChatComment_AlbumChatCommentId(albumChatCommentDetails.get(i).getAlbumChatCommentId())
+                    .stream()
+                    .map(AlbumChatCommentLikeDetail::new)
+                    .collect(Collectors.toList());
+            albumChatCommentDetails.get(i).setLikes(albumChatCommentLikeDetails);
+        }
+        return albumChatCommentDetails;
+    }
+
+
+    @Transactional
+    public List<AlbumChatCommentDetail> getAlbumChatCommentByManyLikeId(Long albumId, int count) {
+        List<AlbumChatCommentDetail> albumChatCommentDetails= commentRepository
+            .findByAlbumIdOrderByCountAlbumChatCommentLikes(albumId,10*count)
             .orElse(Collections.emptyList())
             .stream()
-            .map(AlbumChatCommentResponse::new)
+            .map(AlbumChatCommentDetail::new)
             .collect(Collectors.toList());
+        return getReplyAndCommentLike(albumChatCommentDetails,albumId);
+    }
+
+    @Transactional
+    public List<AlbumChatCommentDetail> getAlbumChatCommentRecentId(Long albumId,int count) {
+        List<AlbumChatCommentDetail> albumChatCommentDetails= commentRepository
+            .findByAlbumIdOrderByRecentAlbumChatCommentLikes(albumId,10*count)
+            .orElse(Collections.emptyList())
+            .stream()
+            .map(AlbumChatCommentDetail::new)
+            .collect(Collectors.toList());
+        return getReplyAndCommentLike(albumChatCommentDetails,albumId);
     }
 
     /**
@@ -71,20 +126,23 @@ public class AlbumChatCommentService {
      * @throws NotFoundAlbumChatException 앨범 챗이 존재하지 않을 경우 발생
      * @throws NotFoundUserException 사용자가 존재하지 않을 경우 발생
      */
-    public AlbumChatCommentDto albumChatCommentCreate(AlbumChatCommentCreateReq comment) {
-        if(albumRepository.findById(comment.getAlbumId()).isEmpty()) {
+    public List<AlbumChatCommentDetail> albumChatCommentCreate(Long albumId, AlbumChatCommentRequest comment, Long userId) {
+        if(albumRepository.findById(albumId).isEmpty()) {
             throw new NotFoundAlbumChatException();
         }
-        if(userRepository.findById(comment.getUserId()).isEmpty()) {
+        if(userRepository.findById(userId).isEmpty()) {
             throw new NotFoundUserException();
         }
-        AlbumChatComment commentEntity = commentRepository.save(
-                new AlbumChatComment(
-                    comment.getContent()
-                    ,Instant.now()
-                    ,userRepository.findById(comment.getUserId()).get()
-                    ,albumRepository.findById(comment.getAlbumId()).get()));
-        return new AlbumChatCommentDto(commentEntity);
+        commentRepository.save(
+            new AlbumChatComment(
+                comment.getContent()
+                ,Instant.now()
+                ,Instant.now()
+                ,userRepository.findById(userId).get()
+                ,albumRepository.findById(albumId).get()
+                ,comment.getParentAlbumChatCommentId()
+            ));
+        return getAlbumChatComment(albumId,comment.getSorted(), comment.getCount());
     }
 
     /**
@@ -96,35 +154,43 @@ public class AlbumChatCommentService {
      * @throws NotMatchAlbumChatException 댓글이 속한 앨범 챗이 일치하지 않을 경우 발생
      * @throws NotMatchUserException 수정하려는 사용자와 기존 댓글 생성한 사용자가 다를때 발생
      */
-    public void albumChatCommentUpdate(AlbumChatCommentUpdateReq comment) {
-        if(commentRepository.findById(comment.getAlbumChatCommentId()).isEmpty()) {
+    public List<AlbumChatCommentDetail> albumChatCommentUpdate(Long albumId, Long albumChatCommentId
+        ,AlbumChatCommentRequest comment, Long userId) {
+        if(commentRepository.findById(albumChatCommentId).isEmpty()) {
             throw new NotFoundAlbumChatCommentException();
         }
-        if(userRepository.findById(comment.getUserId()).isEmpty()) {
+        if(userRepository.findById(userId).isEmpty()) {
             throw new NotFoundUserException();
         }
-        AlbumChatComment updatedComment = commentRepository.findById(comment.getAlbumChatCommentId()).get();
-        if(!updatedComment.getAlbum().getAlbumId().equals(comment.getAlbumId())) {
+        AlbumChatComment updatedComment = commentRepository.findById(albumChatCommentId).get();
+        if(!updatedComment.getAlbum().getAlbumId().equals(albumId)) {
             throw new NotMatchAlbumChatException();
         }
-        if(!updatedComment.getUser().getUserId().equals(comment.getUserId())) {
+        if(!updatedComment.getUser().getUserId().equals(userId)) {
             throw new NotMatchUserException();
         }
         updatedComment.setContent(comment.getContent());
         commentRepository.save(updatedComment);
         //사용자가 다를때 1!=2인데 바꾸려고하는경우
+
+        return getAlbumChatComment(albumId,comment.getSorted(), comment.getCount());
     }
     /**
      * 앨범 챗 댓글을 삭제합니다. 댓글 삭제하면 해당 댓글에 붙어있던 좋아요, 대댓글 등 모두 삭제됩니다.
      *
-     * @param commentDto 삭제할 댓글 정보가 담긴 AlbumChatCommentDto객체
+     * @param albumChatCommentId 삭제할 댓글 정보가 담긴 AlbumChatCommentDto객체
      * @throws NotFoundAlbumChatCommentException 댓글이 존재하지 않을 경우 발생
      */
-    public void albumChatCommentDelete(AlbumChatCommentDto commentDto) {
-        if(commentRepository.findById(commentDto.getAlbumChatCommentId()).isEmpty()) {
+    public List<AlbumChatCommentDetail> albumChatCommentDelete(Long albumId,Long albumChatCommentId,String sorted,int count) {
+        if(commentRepository.findById(albumChatCommentId).isEmpty()) {
             throw new NotFoundAlbumChatCommentException();
         }
         //TODO 삭제하려는 사용자와 해당 글 올린 사용자와 다를때
-        commentRepository.deleteById(commentDto.getAlbumChatCommentId());
+        commentRepository.deleteById(albumChatCommentId);
+
+        return getAlbumChatComment(albumId,sorted,count);
     }
+
+    //reply들 가져오기
+
 }

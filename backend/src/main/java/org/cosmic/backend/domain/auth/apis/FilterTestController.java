@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class FilterTestController {
-    @GetMapping("/example")
+    @GetMapping("/api/example")
     public String protectedEndpoint() {
         return "Access granted to protected url!";
     }

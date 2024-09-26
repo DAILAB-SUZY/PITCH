@@ -2,18 +2,17 @@ package org.cosmic.backend.domain.bestAlbum.applications;
 
 import jakarta.transaction.Transactional;
 import org.cosmic.backend.domain.bestAlbum.domains.UserBestAlbum;
-import org.cosmic.backend.domain.bestAlbum.dtos.AlbumGiveDto;
+import org.cosmic.backend.domain.bestAlbum.dtos.AlbumInfoDetail;
 import org.cosmic.backend.domain.bestAlbum.dtos.BestAlbumDetail;
-import org.cosmic.backend.domain.bestAlbum.dtos.BestAlbumGiveDto;
+import org.cosmic.backend.domain.bestAlbum.exceptions.ExistBestAlbumException;
+import org.cosmic.backend.domain.bestAlbum.exceptions.NotMatchBestAlbumException;
 import org.cosmic.backend.domain.bestAlbum.repositorys.UserBestAlbumRepository;
 import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundArtistException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
-import org.cosmic.backend.domain.post.exceptions.NotFoundAlbumException;
-import org.cosmic.backend.domain.bestAlbum.exceptions.ExistBestAlbumException;
-import org.cosmic.backend.domain.bestAlbum.exceptions.NotMatchBestAlbumException;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
 import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
+import org.cosmic.backend.domain.post.exceptions.NotFoundAlbumException;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.springframework.stereotype.Service;
@@ -50,14 +49,14 @@ public class BestAlbumService {
      * @throws NotFoundUserException 사용자를 찾을 수 없는 경우 발생합니다.
      */
     @Transactional
-    public List<BestAlbumGiveDto> open(Long userId) {
+    public List<BestAlbumDetail> open(Long userId) {
         if(usersRepository.findById(userId).isEmpty()) {
             throw new NotFoundUserException();
         }
         return userBestAlbumRepository.findByUser_UserId(userId)
                 .orElse(Collections.emptyList())
                 .stream()
-                .map(BestAlbumGiveDto::new)
+                .map(BestAlbumDetail::new)
                 .collect(Collectors.toList());
     }
 
@@ -71,7 +70,7 @@ public class BestAlbumService {
      * @throws ExistBestAlbumException 이미 사용자의 좋아요 목록에 해당 앨범이 존재하는 경우 발생합니다.
      */
     @Transactional
-    public void add(long userId, Long albumId) {
+    public List<BestAlbumDetail> add(int score,Long userId, Long albumId) {
         if(usersRepository.findById(userId).isEmpty()) {
             throw new NotFoundUserException();
         }
@@ -83,8 +82,14 @@ public class BestAlbumService {
         }
         User newuser = usersRepository.findById(userId).get();
         Album album=albumRepository.findById(albumId).get();
-        UserBestAlbum userBestAlbum =UserBestAlbum.builder().album(album).user(newuser).build();
+        UserBestAlbum userBestAlbum =UserBestAlbum.builder().album(album).user(newuser).score(score).build();
         userBestAlbumRepository.save(userBestAlbum);
+
+        return userBestAlbumRepository.findByUser_UserId(userId)
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(BestAlbumDetail::new)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -98,7 +103,7 @@ public class BestAlbumService {
      * @throws NotMatchBestAlbumException 사용자의 기존 좋아요 앨범 목록과 일치하지 않는 경우 발생합니다.
      */
     @Transactional
-    public void save(long userId, List<BestAlbumDetail> bestAlbumList) {
+    public List<BestAlbumDetail> save(long userId, List<BestAlbumDetail> bestAlbumList) {
         //TODO NotMatchBestAlbum 예외처리 관련 최적화 필요
         if(usersRepository.findById(userId).isEmpty()) {
             throw new NotFoundUserException();
@@ -122,6 +127,11 @@ public class BestAlbumService {
                 })
                 .toList()
         );
+        return userBestAlbumRepository.findByUser_UserId(userId)
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(BestAlbumDetail::new)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -132,13 +142,13 @@ public class BestAlbumService {
      * @throws NotFoundArtistException 아티스트를 찾을 수 없는 경우 발생합니다.
      */
     @Transactional
-    public List<AlbumGiveDto> searchArtist (String artistName) {//해당 아티스트가 가지고 있는 모든 앨범들의 정보를 줌
+    public List<AlbumInfoDetail> searchArtist (String artistName) {//해당 아티스트가 가지고 있는 모든 앨범들의 정보를 줌
         if(artistRepository.findByArtistName(artistName).isEmpty()) {
             throw new NotFoundArtistException();
         }
         return albumRepository.findAllByArtist_ArtistName(artistName)
                 .stream()
-                .map(AlbumGiveDto::new)
+                .map(AlbumInfoDetail::new)
                 .toList();//트랙들을 모두 가져옴
     }
 
@@ -150,13 +160,13 @@ public class BestAlbumService {
      * @throws NotFoundAlbumException 앨범을 찾을 수 없는 경우 발생합니다.
      */
     @Transactional
-    public List<AlbumGiveDto> searchAlbum (String albumTitle) {//해당 앨범이름을 가진 모든 앨범들의 정보를 줌
+    public List<AlbumInfoDetail> searchAlbum (String albumTitle) {//해당 앨범이름을 가진 모든 앨범들의 정보를 줌
         if(albumRepository.findAllByTitle(albumTitle).isEmpty()) {
             throw new NotFoundAlbumException();
         }
         return albumRepository.findAllByTitle(albumTitle)
                 .stream()
-                .map(AlbumGiveDto::new)
+                .map(AlbumInfoDetail::new)
                 .toList();
     }
 }

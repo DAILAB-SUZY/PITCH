@@ -10,10 +10,8 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 public class PlaylistDto {
-    private Long id;
-    private List<PlaylistDetail> playlist;
-    public PlaylistDto(Long userId,final List<PlaylistDetail> playlist) {
-        this.id = userId;
-        this.playlist = playlist;
+    private List<Long> trackId;
+    public PlaylistDto(final List<Long> trackId) {
+        this.trackId=trackId;
     }
 }

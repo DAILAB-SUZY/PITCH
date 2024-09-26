@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.cosmic.backend.domain.playList.dtos.TrackGiveDto;
+import org.cosmic.backend.domain.playList.dtos.TrackDetail;
 
 import java.util.List;
 
@@ -35,6 +35,8 @@ public class Track {//여기엔 모든 노래들이 담길 것임. 담길 때 �
     @JoinColumn(name="album_id")
     private Album album;
 
+    private String trackCover;
+
     //아티스트와 1:N관계
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="artist_id")
@@ -45,10 +47,11 @@ public class Track {//여기엔 모든 노래들이 담길 것임. 담길 때 �
         this.title = title;
         this.artist = artist;
         this.album = album;
+        this.trackCover=trackCover;
     }
 
-    public static TrackGiveDto toTrackGiveDto(Track track) {
-        return TrackGiveDto.builder()
+    public static TrackDetail toTrackDetail(Track track) {
+        return TrackDetail.builder()
                 .title(track.getTitle())
                 .artistName(track.getArtist().getArtistName())
                 .build();

@@ -3,6 +3,10 @@ package org.cosmic.backend.domain.playList.domains;
 import jakarta.persistence.*;
 import lombok.*;
 import org.cosmic.backend.domain.albumChat.domains.AlbumChatComment;
+import org.cosmic.backend.domain.albumChat.domains.AlbumChatCommentLike;
+import org.cosmic.backend.domain.albumChat.domains.AlbumLike;
+import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumChatDetail;
+import org.cosmic.backend.domain.post.dtos.Post.AlbumDetail;
 import org.cosmic.backend.domain.post.dtos.Post.AlbumDto;
 import org.cosmic.backend.domain.post.entities.Post;
 
@@ -30,7 +34,7 @@ public class Album {//앨범과 트랙은 1:N관계이며 앨범과 아티스트
     private String title;//앨범 제목
 
     @Column(nullable=false)
-    private String cover;
+    private String albumCover;
 
     @ManyToMany(fetch = FetchType.LAZY)
     private Set<Genre> genre;
@@ -55,12 +59,36 @@ public class Album {//앨범과 트랙은 1:N관계이며 앨범과 아티스트
     @OneToMany(mappedBy = "album")
     private List<AlbumChatComment> albumChatComments;
 
+    @OneToMany(mappedBy = "album")
+    @Builder.Default
+    private List<AlbumLike>albumLike=new ArrayList<>();
+
+    public static AlbumDetail toAlbumDetail(Album album) {
+        return AlbumDetail.builder()
+                .id(album.albumId)
+                .title(album.title)
+                .albumCover(album.albumCover)
+                .genre(album.genre.toString())
+                .build();
+    }
+    public static AlbumChatDetail toAlbumChatDetail(Album album) {
+        return AlbumChatDetail.builder()
+                .albumId(album.albumId)
+                .title(album.title)
+                .cover(album.albumCover)
+                .genre(album.genre.toString())
+                .artistName(album.getArtist().getArtistName())
+                .comments(album.albumChatComments.stream().map(AlbumChatComment::toAlbumChatCommentDetail).toList())
+                .albumLike(album.albumLike.stream().map(AlbumLike::toAlbumChatAlbumLikeDetail).toList())
+                .build();
+    }
+
     @Override
     public String toString() {
         return "Album{" +
                 "albumId=" + albumId +
                 ", title='" + title + '\'' +
-                ", cover='" + cover + '\'' +
+                ", albumCover='" + albumCover + '\'' +
                 ", genre='" + genre + '\'' +
                 ", createdDate=" + createdDate +
                 ", artist=" + (artist != null ? artist.getArtistId() : "null") +

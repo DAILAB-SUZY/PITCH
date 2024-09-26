@@ -14,7 +14,7 @@ VALUES (
 
 INSERT INTO Artist(artist_name)VALUES('bibi');
 
-INSERT INTO Album(title,cover,artist_id,created_date)
+INSERT INTO Album(title,album_cover,artist_id,created_date)
 VALUES(
           'bam',
           'base',
@@ -23,7 +23,7 @@ VALUES(
       );
 INSERT INTO Artist(artist_name)VALUES('IU');
 
-INSERT INTO Album(title,cover,artist_id,created_date)
+INSERT INTO Album(title,album_cover,artist_id,created_date)
 VALUES(
           'lilac',
           'base',

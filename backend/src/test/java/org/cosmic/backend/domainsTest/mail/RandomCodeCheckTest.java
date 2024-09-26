@@ -31,7 +31,7 @@ public class RandomCodeCheckTest extends EmailBaseTest{
         emailRepository.save(Email.builder().email("test6@example.com").verificationCode("123456").build());
 
         try {
-            mockMvc.perform(post("/mail/verify")
+            mockMvc.perform(post("/api/mail/verify")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(new VerificationForm("test7@example.com", "123457"))))
                     .andDo(print())
@@ -48,7 +48,7 @@ public class RandomCodeCheckTest extends EmailBaseTest{
         emailRepository.save(Email.builder().email("test8@example.com").verificationCode("123456").build());
 
         try {
-            mockMvc.perform(post("/mail/verify")
+            mockMvc.perform(post("/api/mail/verify")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(new VerificationForm("test8@example.com", "123457"))))
                     .andDo(print())

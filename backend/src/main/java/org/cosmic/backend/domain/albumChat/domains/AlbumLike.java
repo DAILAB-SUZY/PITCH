@@ -5,9 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.cosmic.backend.domain.albumChat.dtos.albumlike.AlbumLikeReq;
+import org.cosmic.backend.domain.albumChat.dtos.albumlike.AlbumChatAlbumLikeDetail;
+import org.cosmic.backend.domain.albumChat.dtos.commentlike.AlbumChatCommentLikeDetail;
 import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.user.domains.User;
+
+import java.time.Instant;
 
 @Data
 @NoArgsConstructor
@@ -28,10 +31,13 @@ public class AlbumLike {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public static AlbumLikeReq toLikeReq(AlbumLike like) {
-        return AlbumLikeReq.builder()
-                .albumId(like.getAlbum().getAlbumId())
-                .userId(like.getUser().getUserId())
+    @Column(name = "update_time")
+    private Instant updateTime;
+
+    public static AlbumChatAlbumLikeDetail toAlbumChatAlbumLikeDetail(AlbumLike albumLike) {
+        return AlbumChatAlbumLikeDetail.builder()
+                .author(User.toUserDetail(albumLike.user))
+                .updateAt(albumLike.updateTime)
                 .build();
     }
 }

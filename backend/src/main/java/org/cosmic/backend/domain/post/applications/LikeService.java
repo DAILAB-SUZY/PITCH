@@ -3,17 +3,20 @@ package org.cosmic.backend.domain.post.applications;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.post.dtos.Like.LikeReq;
 import org.cosmic.backend.domain.post.dtos.Like.LikeResponse;
+import org.cosmic.backend.domain.post.entities.Post;
 import org.cosmic.backend.domain.post.entities.PostLike;
-import org.cosmic.backend.domain.post.entities.PostLikePK;
 import org.cosmic.backend.domain.post.exceptions.ExistLikeException;
 import org.cosmic.backend.domain.post.exceptions.NotFoundLikeException;
 import org.cosmic.backend.domain.post.exceptions.NotFoundPostException;
 import org.cosmic.backend.domain.post.repositories.PostLikeRepository;
 import org.cosmic.backend.domain.post.repositories.PostRepository;
+import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 좋아요 관련 비즈니스 로직을 처리하는 서비스 클래스입니다.
@@ -47,10 +50,8 @@ public class LikeService {
      * @throws NotFoundPostException 게시글이 존재하지 않을 경우 발생합니다.
      */
     public List<LikeResponse> getLikesByPostId(Long postId) {
-        if (postRepository.findById(postId).isEmpty()) {
-            throw new NotFoundPostException();
-        }
-        return postLikeRepository.findByPost_PostId(postId)
+        Post post = postRepository.findById(postId).orElseThrow(NotFoundLikeException::new);
+        return post.getPostLikes()
                 .stream()
                 .map(PostLike::toLikeResponse)
                 .toList();
@@ -67,19 +68,17 @@ public class LikeService {
      * @throws NotFoundUserException 사용자가 존재하지 않을 경우 발생합니다.
      * @throws ExistLikeException 해당 사용자가 이미 게시글에 좋아요를 남겼을 경우 발생합니다.
      */
+    @Transactional
     public LikeReq createLike(Long userId, Long postId) {
-        if (postRepository.findById(postId).isEmpty()) {
-            throw new NotFoundPostException();
-        }
-        if (usersRepository.findById(userId).isEmpty()) {
-            throw new NotFoundUserException();
-        }
-        if (postLikeRepository.findByPost_PostIdAndUser_UserId(postId, userId).isPresent()) {
+        Post post = postRepository.findById(postId).orElseThrow(NotFoundPostException::new);
+        User user = usersRepository.findById(userId).orElseThrow(NotFoundUserException::new);
+        Optional<PostLike> postLike = postLikeRepository.findByPost_PostIdAndUser_UserId(postId, userId);
+        if (postLike.isPresent()) {
             throw new ExistLikeException(); // 409 Conflict
         }
         return PostLike.toLikeReq(postLikeRepository.save(PostLike.builder()
-                .user(usersRepository.findById(userId).get())
-                .post(postRepository.findById(postId).get())
+                .user(user)
+                .post(post)
                 .build()));
     }
 
@@ -91,10 +90,10 @@ public class LikeService {
      *
      * @throws NotFoundLikeException 좋아요가 존재하지 않을 경우 발생합니다.
      */
+    @Transactional
     public void deleteLike(Long user_id, Long post_id) {
-        if (postLikeRepository.findByPost_PostIdAndUser_UserId(post_id, user_id).isEmpty()) {
+        postLikeRepository.findByPost_PostIdAndUser_UserId(post_id, user_id).ifPresentOrElse(postLikeRepository::delete, () -> {
             throw new NotFoundLikeException();
-        }
-        postLikeRepository.deleteById(PostLikePK.builder().user(user_id).post(post_id).build());
+        });
     }
 }

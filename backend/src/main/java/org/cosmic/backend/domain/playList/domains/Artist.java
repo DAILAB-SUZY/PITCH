@@ -25,6 +25,8 @@ public class Artist {//
     @Column(name="artist_name")
     private String artistName;
 
+    private String artistCover;
+
     //아티스트 1 앨범 N
     @OneToMany(mappedBy = "artist")
     @Builder.Default
@@ -46,6 +48,7 @@ public class Artist {//
         return "Artist{" +
                 "artistId=" + artistId +
                 ", artistName='" + artistName + '\'' +
+                ", artistCover='" + artistCover + '\'' +
                 '}';
     }
 }

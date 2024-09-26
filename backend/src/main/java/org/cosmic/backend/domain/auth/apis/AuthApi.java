@@ -1,11 +1,16 @@
 package org.cosmic.backend.domain.auth.apis;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
-import org.cosmic.backend.domain.auth.dtos.UserLogin;
+import org.cosmic.backend.domain.auth.dtos.UserLoginDetail;
 import org.cosmic.backend.domain.auth.exceptions.CredentialNotMatchException;
 import org.cosmic.backend.domain.user.applications.UserService;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,8 +19,9 @@ import org.springframework.web.bind.annotation.*;
  */
 @Log4j2
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/")
 @ApiCommonResponses
+@Tag(name = "인증관련 API", description = "로그인 및 회원가입")
 public class AuthApi {
     private final UserService userService;
 
@@ -36,9 +42,11 @@ public class AuthApi {
      *
      * @throws CredentialNotMatchException 사용자를 찾을 수 없을 때 발생합니다.
      */
-    @PostMapping("/signin")
+    @PostMapping("/auth/signin")
     @ApiResponse(responseCode = "401", description = "Email or Password is invalid")
-    public ResponseEntity<?> authenticate(@RequestBody UserLogin userLogin) {
+    @ApiResponse(responseCode = "200", content = {@Content(schema=@Schema(contentMediaType = MediaType.APPLICATION_JSON_VALUE, implementation=UserLoginDetail.class))})
+    @Operation(summary = "로그인 API", description = "사용자 정보로 로그인하여 JWT 토큰을 발행합니다.")
+    public ResponseEntity<UserLoginDetail> authenticate(@RequestBody UserLoginDetail userLogin) {
         return ResponseEntity.ok(userService.getByCredentials(userLogin.getEmail(), userLogin.getPassword()));
     }
 
@@ -51,9 +59,11 @@ public class AuthApi {
      *
      * @throws CredentialNotMatchException 리프레시 토큰이 유효하지 않거나 일치하지 않을 때 발생합니다.
      */
-    @PostMapping("/reissued")
+    @PostMapping("/auth/reissued")
     @ApiResponse(responseCode = "401", description = "RefreshToken is invalid")
-    public ResponseEntity<?> reissued(@RequestHeader("Refresh-Token") String refreshToken) {
+    @ApiResponse(responseCode = "200", content = {@Content(schema=@Schema(contentMediaType = MediaType.APPLICATION_JSON_VALUE, implementation=UserLoginDetail.class))})
+    @Operation(summary = "토큰 갱신 API", description = "refresh-Token을 가지고 JWT 토큰을 재발행합니다.")
+    public ResponseEntity<UserLoginDetail> reissued(@RequestHeader("Refresh-Token") String refreshToken) {
         return ResponseEntity.ok(userService.getUserByRefreshToken(refreshToken));
     }
 }

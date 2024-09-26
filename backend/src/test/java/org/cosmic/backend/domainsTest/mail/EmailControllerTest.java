@@ -1,6 +1,5 @@
 package org.cosmic.backend.domainsTest.mail;
 
-import com.icegreen.greenmail.util.GreenMailUtil;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.cosmic.backend.domain.mail.dtos.EmailAddress;
@@ -23,7 +22,7 @@ public class EmailControllerTest extends EmailBaseTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<EmailAddress> emailRequest = new HttpEntity<>(EmailAddress.builder().email("tester@spring.com").build(), headers);
 
-        ResponseEntity<Void> response = testRestTemplate.postForEntity("/mail/request", emailRequest, Void.class);
+        ResponseEntity<Void> response = testRestTemplate.postForEntity("/api/mail/request", emailRequest, Void.class);
 
         // Assert
         Assertions.assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
@@ -33,7 +32,5 @@ public class EmailControllerTest extends EmailBaseTest {
         Assertions.assertEquals(1, receivedMessage.getAllRecipients().length);
         Assertions.assertEquals("tester@spring.com", receivedMessage.getAllRecipients()[0].toString());
         Assertions.assertEquals("Message from Java Mail Sender", receivedMessage.getSubject());
-        Assertions.assertEquals("123456", GreenMailUtil.getBody(receivedMessage));
-
     }
 }

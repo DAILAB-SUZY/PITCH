@@ -2,7 +2,7 @@ package org.cosmic.backend.domainsTest.auth;
 
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.auth.applications.JwtAuthenticationFilter;
-import org.cosmic.backend.domain.auth.dtos.UserLogin;
+import org.cosmic.backend.domain.auth.dtos.UserLoginDetail;
 import org.cosmic.backend.domain.user.domains.Email;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.EmailRepository;
@@ -57,20 +57,20 @@ public class ServletFilterTest {
                 .username("goodwill")
                 .password(encoder.encode("123456"))
                 .build());
-        UserLogin userLogin = UserLogin.builder()
+        UserLoginDetail userLogin = UserLoginDetail.builder()
                 .email("testq1@example.com")
                 .password("123456")
                 .build();
 
-        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/auth/signin")
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/signin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(userLogin)))
                 .andExpect(status().isOk());
 
         MvcResult result = resultActions.andReturn();
-        validToken = mapper.readValue(result.getResponse().getContentAsString(), UserLogin.class).getToken();
+        validToken = mapper.readValue(result.getResponse().getContentAsString(), UserLoginDetail.class).getToken();
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/example")
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/example")
                         .header("Authorization", "Bearer " + validToken)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
@@ -90,22 +90,22 @@ public class ServletFilterTest {
                 .username("goodwill")
                 .password(encoder.encode("123456"))
                 .build());
-        UserLogin userLogin = UserLogin.builder()
+        UserLoginDetail userLogin = UserLoginDetail.builder()
                 .email("testn1@example.com")
                 .password("123456")
                 .build();
 
-        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/auth/signin")
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/signin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(userLogin)))
                 .andExpect(status().isOk());
 
         MvcResult result = resultActions.andReturn();
-        validToken = mapper.readValue(result.getResponse().getContentAsString(), UserLogin.class).getToken();
+        validToken = mapper.readValue(result.getResponse().getContentAsString(), UserLoginDetail.class).getToken();
 
         String invalidToken = "Bearerinvalid.token.jwt";
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/example")
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/example")
                         .header("Authorization", "Bearer " + invalidToken)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
