@@ -14,7 +14,6 @@ import org.cosmic.backend.domain.playList.repositorys.PlaylistRepository;
 import org.cosmic.backend.domain.user.domains.Email;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.dtos.JoinRequest;
-import org.cosmic.backend.domain.user.dtos.MusicProfileDetail;
 import org.cosmic.backend.domain.user.exceptions.NotExistEmailException;
 import org.cosmic.backend.domain.user.exceptions.NotMatchConditionException;
 import org.cosmic.backend.domain.user.exceptions.NotMatchPasswordException;
@@ -28,12 +27,16 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 /**
- * 사용자(User) 관련 비즈니스 로직을 처리하는 서비스 클래스입니다.
- * 사용자 등록, 인증, 로그인, 리프레시 토큰 처리 기능을 제공합니다.
+ * <p>사용자(User) 관련 비즈니스 로직을 처리하는 서비스 클래스입니다.</p>
+ *
+ * <p>이 서비스는 사용자 등록, 인증, 로그인, 리프레시 토큰 처리 기능을 제공합니다.</p>
+ *
  */
+
 @Log4j2
 @Service
 public class UserService {
+
     @Autowired
     private TokenProvider tokenProvider;
     @Autowired
@@ -57,17 +60,7 @@ public class UserService {
     private FavoriteArtistService favoriteArtistService;
 
     /**
-     * UserService의 생성자입니다.
-     *
-     * @param tokenProvider 토큰 관련 기능을 제공하는 클래스
-     * @param usersRepository 사용자 데이터를 처리하는 리포지토리
-     * @param emailRepository 이메일 데이터를 처리하는 리포지토리
-     * @param redisTemplate Redis 템플릿을 이용해 데이터를 저장/조회하는 클래스
-     * @param playlistRepository 플레이리스트 데이터를 처리하는 리포지토리
-     */
-
-    /**
-     * 사용자를 등록합니다.
+     * <p>사용자를 등록합니다.</p>
      *
      * @param request 회원 가입 요청 정보를 포함한 객체
      *
@@ -75,7 +68,7 @@ public class UserService {
      * @throws NotExistEmailException 이메일이 등록되지 않았거나 인증되지 않은 경우 발생합니다.
      * @throws NotMatchConditionException 비밀번호 조건이 충족되지 않을 때 발생합니다.
      */
-    public void userRegister(JoinRequest request){
+    public void userRegister(JoinRequest request) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         if (!request.getPassword().equals(request.getCheckPassword())) {
             throw new NotMatchPasswordException();
@@ -99,7 +92,7 @@ public class UserService {
     }
 
     /**
-     * 사용자의 이메일과 비밀번호로 인증 후 사용자 정보를 반환합니다.
+     * <p>사용자의 이메일과 비밀번호로 인증 후 사용자 정보를 반환합니다.</p>
      *
      * @param email 사용자의 이메일
      * @param password 사용자의 비밀번호
@@ -125,7 +118,7 @@ public class UserService {
     }
 
     /**
-     * 이메일을 이용해 사용자 정보를 반환합니다.
+     * <p>이메일을 이용해 사용자 정보를 반환합니다.</p>
      *
      * @param email 사용자의 이메일
      * @return 사용자의 로그인 정보를 포함한 객체
@@ -144,7 +137,7 @@ public class UserService {
     }
 
     /**
-     * 리프레시 토큰을 이용해 사용자 정보를 반환합니다.
+     * <p>리프레시 토큰을 이용해 사용자 정보를 반환합니다.</p>
      *
      * @param refreshToken 리프레시 토큰
      * @return 리프레시 토큰을 통해 인증된 사용자의 로그인 정보를 포함한 객체
@@ -159,16 +152,4 @@ public class UserService {
         redisTemplate.opsForValue().getAndDelete(email);
         return getByEmail(email);
     }
-
-    public MusicProfileDetail openMusicProfile(Long userId)
-    {
-        //특정 유저의 뮤직프로필을 들어갔을때
-        MusicProfileDetail musicProfileDetail=new MusicProfileDetail();
-        musicProfileDetail.setUserDna(musicDnaService.getUserDna(userId));//유저의 dna가져오기
-        musicProfileDetail.setPlaylist(playlistService.open(userId));//유저의 플레이리스트 가져오기
-        musicProfileDetail.setBestAlbum(bestAlbumService.open(userId));//유저의 bestalbum리스트 가져오기(cover만 필요)
-        musicProfileDetail.setFavoriteArtist(favoriteArtistService.favoriteArtistGiveData(userId));//favoriteArtist가져오기
-        return musicProfileDetail;
-    }
-
 }
