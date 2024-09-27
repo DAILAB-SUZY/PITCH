@@ -25,13 +25,13 @@ VALUES
     ('2023-09-04 13:00:00', 'pass1234', 'profile4.jpg', 'music_fan', 4, 5, 6, 7, 'fan@example.com'),
     ('2023-09-05 14:00:00', 'secret123', 'profile5.jpg', 'track_master', 5, 6, 7, 8, 'master@example.com');
 
-INSERT INTO public.artist (artist_name,artist_cover)
+INSERT INTO public.artist (artist_id,artist_name,artist_cover)
 VALUES
-    ('John Band','https://www.google.com/url?sa=i&url=https%3A%2F%2Fnamu.wiki%2Fw%2FNew%2520Jeans%2528%25EC%259D%258C%25EB%25B0%2598%2529&psig=AOvVaw2Ez7FDosUoTnCd1DPfqkvA&ust=1727440454080000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCOi-j6jP4IgDFQAAAAAdAAAAABAJ'),
-    ('Jane Singer','https://www.google.com/url?sa=i&url=https%3A%2F%2Fnamu.wiki%2Fw%2FNew%2520Jeans%2528%25EC%259D%258C%25EB%25B0%2598%2529&psig=AOvVaw2Ez7FDosUoTnCd1DPfqkvA&ust=1727440454080000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCOi-j6jP4IgDFQAAAAAdAAAAABAJ'),
-    ('ABC Collective','https://www.google.com/url?sa=i&url=https%3A%2F%2Fnamu.wiki%2Fw%2FNew%2520Jeans%2528%25EC%259D%258C%25EB%25B0%2598%2529&psig=AOvVaw2Ez7FDosUoTnCd1DPfqkvA&ust=1727440454080000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCOi-j6jP4IgDFQAAAAAdAAAAABAJ'),
-    ('Fan Beats','https://www.google.com/url?sa=i&url=https%3A%2F%2Fnamu.wiki%2Fw%2FNew%2520Jeans%2528%25EC%259D%258C%25EB%25B0%2598%2529&psig=AOvVaw2Ez7FDosUoTnCd1DPfqkvA&ust=1727440454080000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCOi-j6jP4IgDFQAAAAAdAAAAABAJ'),
-    ('Master DJ','https://www.google.com/url?sa=i&url=https%3A%2F%2Fnamu.wiki%2Fw%2FNew%2520Jeans%2528%25EC%259D%258C%25EB%25B0%2598%2529&psig=AOvVaw2Ez7FDosUoTnCd1DPfqkvA&ust=1727440454080000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCOi-j6jP4IgDFQAAAAAdAAAAABAJ');
+    (1,'John Band','https://www.google.com/url?sa=i&url=https%3A%2F%2Fnamu.wiki%2Fw%2FNew%2520Jeans%2528%25EC%259D%258C%25EB%25B0%2598%2529&psig=AOvVaw2Ez7FDosUoTnCd1DPfqkvA&ust=1727440454080000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCOi-j6jP4IgDFQAAAAAdAAAAABAJ'),
+    (2,'Jane Singer','https://www.google.com/url?sa=i&url=https%3A%2F%2Fnamu.wiki%2Fw%2FNew%2520Jeans%2528%25EC%259D%258C%25EB%25B0%2598%2529&psig=AOvVaw2Ez7FDosUoTnCd1DPfqkvA&ust=1727440454080000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCOi-j6jP4IgDFQAAAAAdAAAAABAJ'),
+    (3,'ABC Collective','https://www.google.com/url?sa=i&url=https%3A%2F%2Fnamu.wiki%2Fw%2FNew%2520Jeans%2528%25EC%259D%258C%25EB%25B0%2598%2529&psig=AOvVaw2Ez7FDosUoTnCd1DPfqkvA&ust=1727440454080000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCOi-j6jP4IgDFQAAAAAdAAAAABAJ'),
+    (4,'Fan Beats','https://www.google.com/url?sa=i&url=https%3A%2F%2Fnamu.wiki%2Fw%2FNew%2520Jeans%2528%25EC%259D%258C%25EB%25B0%2598%2529&psig=AOvVaw2Ez7FDosUoTnCd1DPfqkvA&ust=1727440454080000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCOi-j6jP4IgDFQAAAAAdAAAAABAJ'),
+    (5,'Master DJ','https://www.google.com/url?sa=i&url=https%3A%2F%2Fnamu.wiki%2Fw%2FNew%2520Jeans%2528%25EC%259D%258C%25EB%25B0%2598%2529&psig=AOvVaw2Ez7FDosUoTnCd1DPfqkvA&ust=1727440454080000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCOi-j6jP4IgDFQAAAAAdAAAAABAJ');
 
 INSERT INTO public.album (album_cover, created_date, title, artist_id)
 VALUES
