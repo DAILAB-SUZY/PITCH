@@ -15,5 +15,7 @@ import lombok.NoArgsConstructor;
 public class Genre {
     //TODO: 장르 기본 SQL로 설정하던지 하는 게 좋을 듯
     @Id
+    private Long genreId;
+
     private String name;
 }

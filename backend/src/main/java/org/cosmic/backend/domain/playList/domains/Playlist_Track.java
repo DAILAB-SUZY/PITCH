@@ -12,7 +12,7 @@ import org.cosmic.backend.domain.playList.dtos.PlaylistDetail;
 @AllArgsConstructor
 @Entity
 @Builder
-@Table(name="`Playlist_Track`")
+@Table(name="Playlist_Track")
 public class Playlist_Track {//N:M을 이어줄 연결다리
 
     @Id
@@ -30,8 +30,8 @@ public class Playlist_Track {//N:M을 이어줄 연결다리
 
     //TODO: order 관련 서비스를 다시 만들어야 함
     @Builder.Default
-    @Column(name="`order`")
-    private Integer order = 0;
+    @Column(name="track_order")
+    private Integer trackOrder = 0;
 
     public static PlaylistDetail toGiveDetail(Playlist_Track playlist_track) {
         return PlaylistDetail.builder()

@@ -1,9 +1,10 @@
 package org.cosmic.backend.domain.albumChat.apis;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.cosmic.backend.domain.albumChat.applications.AlbumChatService;
 import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumChatDetail;
-import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDetail;
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatException;
 import org.cosmic.backend.domain.playList.dtos.AlbumDto;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
@@ -11,40 +12,43 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 /**
- * AlbumChatApi 클래스는 앨범챗 페이지와 관련된 API를 제공합니다.
- * 사용자는 이 API를 통해 앨범챗 열기, 좋아요 순으로 댓글 정렬 등의 기능을 수행할 수 있습니다.
+ * <p>AlbumChatApi 클래스는 앨범챗 페이지와 관련된 API를 제공합니다.</p>
+ *
+ * <p>이 API를 통해 사용자는 특정 앨범의 앨범챗을 열고, 좋아요 순으로 댓글을 정렬하는 등의 기능을 수행할 수 있습니다.</p>
+ *
  */
 @RestController
 @RequestMapping("/api/")
 @ApiCommonResponses
+@Tag(name = "앨범 챗 관련 API", description = "앨범 챗 댓글/대댓글/좋아요 제공")
 public class AlbumChatApi {
+
     private final AlbumChatService albumChatService;
 
     /**
-     * AlbumChatApi 생성자.
+     * <p>AlbumChatApi 생성자입니다.</p>
      *
-     * @param albumChatService AlbumChatService 주입
+     * @param albumChatService 앨범챗 관련 비즈니스 로직을 처리하는 서비스 클래스
      */
     public AlbumChatApi(AlbumChatService albumChatService) {
         this.albumChatService = albumChatService;
     }
 
     /**
-     * 앨범 ID를 기반으로 해당 앨범의 앨범 챗 정보를 조회합니다.
-     * 사용자가 선택한 앨범의 관련 정보와 아티스트 정보를 반환합니다.
+     * <p>특정 앨범의 앨범챗을 엽니다.</p>
      *
-     * @param album 조회할 앨범의 ID를 포함한
-     * @return AlbumChatResponse 조회된 앨범 챗 정보 및 아티스트 정보
-     * @throws NotFoundAlbumChatException 특정 앨범의 앨범 챗을 찾을 수 없는 경우 발생
+     * @param album 앨범 정보를 포함한 DTO 객체
+     * @return 해당 앨범의 앨범챗 데이터를 포함한 {@link ResponseEntity}
+     *
+     * @throws NotFoundAlbumChatException 앨범챗을 찾을 수 없을 때 발생합니다.
      */
     @Transactional
     @PostMapping("/open")
     @ApiResponse(responseCode = "404", description = "Not Found AlbumChat")
+    @Operation(summary = "특정 앨범의 앨범챗 열기")
     public ResponseEntity<AlbumChatDetail> getAlbumChatById(@RequestBody AlbumDto album) {
         return ResponseEntity.ok(albumChatService.getAlbumChatById(album));
     }
-
 }

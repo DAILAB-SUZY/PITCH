@@ -24,26 +24,29 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * AlbumChatCommentService 클래스는 앨범 챗의 댓글 관리 기능을 제공합니다.
- * 댓글 조회, 생성, 수정, 삭제와 관련된 비즈니스 로직을 처리합니다.
+ * <p>AlbumChatCommentService 클래스는 앨범 챗의 댓글 관리 기능을 제공합니다.</p>
+ *
+ * <p>댓글 조회, 생성, 수정, 삭제와 관련된 비즈니스 로직을 처리합니다.</p>
+ *
  */
 @Service
 public class AlbumChatCommentService {
+
     private final AlbumRepository albumRepository;
     private final AlbumChatCommentRepository commentRepository;
     private final AlbumChatCommentLikeRepository commentLikeRepository;
     private final UsersRepository userRepository;
 
     /**
-     * AlbumChatCommentService 생성자.
+     * <p>AlbumChatCommentService 생성자입니다.</p>
      *
-     * @param albumRepository 앨범 저장소 주입
-     * @param commentRepository 댓글 저장소 주입
-     * @param userRepository 사용자 저장소 주입
+     * @param albumRepository 앨범 저장소
+     * @param commentRepository 댓글 저장소
+     * @param userRepository 사용자 저장소
+     * @param commentLikeRepository 댓글 좋아요 저장소
      */
-    public AlbumChatCommentService
-    (AlbumRepository albumRepository, AlbumChatCommentRepository commentRepository,
-     UsersRepository userRepository,AlbumChatCommentLikeRepository commentLikeRepository) {
+    public AlbumChatCommentService(AlbumRepository albumRepository, AlbumChatCommentRepository commentRepository,
+                                   UsersRepository userRepository, AlbumChatCommentLikeRepository commentLikeRepository) {
         this.albumRepository = albumRepository;
         this.commentRepository = commentRepository;
         this.userRepository = userRepository;
@@ -51,146 +54,174 @@ public class AlbumChatCommentService {
     }
 
     /**
-     * 주어진 앨범 채팅 ID에 해당하는 댓글을 좋아요 순으로 정렬하여 반환합니다.
+     * <p>특정 앨범의 앨범챗 댓글을 조회합니다.</p>
      *
-     * @param albumId  앨범 Id
-     * @return 좋아요 순으로 정렬된 AlbumChatCommentDetail 객체의 리스트
-     * @throws NotFoundAlbumChatException 앨범 채팅을 찾을 수 없는 경우 발생
+     * @param albumId 앨범 ID
+     * @param sorted 정렬 기준 (예: 좋아요 순, 최신 순)
+     * @param count 조회할 댓글 수
+     * @return 댓글 목록을 포함한 리스트
+     *
+     * @throws NotFoundAlbumChatException 앨범을 찾을 수 없을 때 발생합니다.
      */
     @Transactional
-    public List<AlbumChatCommentDetail> getAlbumChatComment(Long albumId,String sorted, int count) {
-        if(albumRepository.findById(albumId).isEmpty()) {
+    public List<AlbumChatCommentDetail> getAlbumChatComment(Long albumId, String sorted, int count) {
+        if (albumRepository.findById(albumId).isEmpty()) {
             throw new NotFoundAlbumChatException();
         }
-        List<AlbumChatCommentDetail> albumChatCommentDetails=new ArrayList<>();
+        List<AlbumChatCommentDetail> albumChatCommentDetails = new ArrayList<>();
         if (sorted.equals("manylike")) {
-            albumChatCommentDetails=getAlbumChatCommentByManyLikeId(albumId,count);
-            //10개씩
-        }
-        else if (sorted.equals("recent")) {
-            albumChatCommentDetails=getAlbumChatCommentRecentId(albumId, count);
+            albumChatCommentDetails = getAlbumChatCommentByManyLikeId(albumId, count);
+        } else if (sorted.equals("recent")) {
+            albumChatCommentDetails = getAlbumChatCommentRecentId(albumId, count);
         }
         return albumChatCommentDetails;
     }
 
+    /**
+     * <p>댓글 목록에 답글과 좋아요 정보를 추가합니다.</p>
+     *
+     * @param albumChatCommentDetails 댓글 목록
+     * @param albumId 앨범 ID
+     * @return 답글과 좋아요가 추가된 댓글 목록
+     */
     @Transactional
-    public List<AlbumChatCommentDetail> getReplyAndCommentLike(List<AlbumChatCommentDetail> albumChatCommentDetails
-        ,Long albumId){
-        for(int i=0; i<albumChatCommentDetails.size(); i++) {
-            List<AlbumChatReplyDetail> albumChatReplyDetails=commentRepository
-                    .findByAlbumIdOrderByReply(albumId,albumChatCommentDetails.get(i).getAlbumChatCommentId())
+    public List<AlbumChatCommentDetail> getReplyAndCommentLike(List<AlbumChatCommentDetail> albumChatCommentDetails, Long albumId) {
+        for (AlbumChatCommentDetail commentDetail : albumChatCommentDetails) {
+            List<AlbumChatReplyDetail> albumChatReplyDetails = commentRepository
+                    .findByAlbumIdOrderByReply(albumId, commentDetail.getAlbumChatCommentId())
                     .orElse(Collections.emptyList())
                     .stream()
                     .map(AlbumChatReplyDetail::new)
                     .collect(Collectors.toList());
-            albumChatCommentDetails.get(i).setComments(albumChatReplyDetails);
+            commentDetail.setComments(albumChatReplyDetails);
 
-            List<AlbumChatCommentLikeDetail> albumChatCommentLikeDetails=commentLikeRepository
-                    .findByAlbumChatComment_AlbumChatCommentId(albumChatCommentDetails.get(i).getAlbumChatCommentId())
+            List<AlbumChatCommentLikeDetail> albumChatCommentLikeDetails = commentLikeRepository
+                    .findByAlbumChatComment_AlbumChatCommentId(commentDetail.getAlbumChatCommentId())
                     .stream()
                     .map(AlbumChatCommentLikeDetail::new)
                     .collect(Collectors.toList());
-            albumChatCommentDetails.get(i).setLikes(albumChatCommentLikeDetails);
+            commentDetail.setLikes(albumChatCommentLikeDetails);
         }
         return albumChatCommentDetails;
     }
 
-
+    /**
+     * <p>좋아요 순으로 정렬된 앨범챗 댓글을 조회합니다.</p>
+     *
+     * @param albumId 앨범 ID
+     * @param count 조회할 댓글 수
+     * @return 댓글 목록을 포함한 리스트
+     */
     @Transactional
     public List<AlbumChatCommentDetail> getAlbumChatCommentByManyLikeId(Long albumId, int count) {
-        List<AlbumChatCommentDetail> albumChatCommentDetails= commentRepository
-            .findByAlbumIdOrderByCountAlbumChatCommentLikes(albumId,10*count)
-            .orElse(Collections.emptyList())
-            .stream()
-            .map(AlbumChatCommentDetail::new)
-            .collect(Collectors.toList());
-        return getReplyAndCommentLike(albumChatCommentDetails,albumId);
-    }
-
-    @Transactional
-    public List<AlbumChatCommentDetail> getAlbumChatCommentRecentId(Long albumId,int count) {
-        List<AlbumChatCommentDetail> albumChatCommentDetails= commentRepository
-            .findByAlbumIdOrderByRecentAlbumChatCommentLikes(albumId,10*count)
-            .orElse(Collections.emptyList())
-            .stream()
-            .map(AlbumChatCommentDetail::new)
-            .collect(Collectors.toList());
-        return getReplyAndCommentLike(albumChatCommentDetails,albumId);
+        List<AlbumChatCommentDetail> albumChatCommentDetails = commentRepository
+                .findByAlbumIdOrderByCountAlbumChatCommentLikes(albumId, 10 * count)
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(AlbumChatCommentDetail::new)
+                .collect(Collectors.toList());
+        return getReplyAndCommentLike(albumChatCommentDetails, albumId);
     }
 
     /**
-     * 새로운 앨범 챗 댓글을 생성합니다.
+     * <p>최신 순으로 정렬된 앨범챗 댓글을 조회합니다.</p>
      *
-     * @param comment 생성할 댓글 정보가 담긴 AlbumChatCommentCreateReq 객체
-     * @return AlbumChatCommentDto 생성된 댓글 정보
-     * @throws NotFoundAlbumChatException 앨범 챗이 존재하지 않을 경우 발생
-     * @throws NotFoundUserException 사용자가 존재하지 않을 경우 발생
+     * @param albumId 앨범 ID
+     * @param count 조회할 댓글 수
+     * @return 댓글 목록을 포함한 리스트
+     */
+    @Transactional
+    public List<AlbumChatCommentDetail> getAlbumChatCommentRecentId(Long albumId, int count) {
+        List<AlbumChatCommentDetail> albumChatCommentDetails = commentRepository
+                .findByAlbumIdOrderByRecentAlbumChatCommentLikes(albumId, 10 * count)
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(AlbumChatCommentDetail::new)
+                .collect(Collectors.toList());
+        return getReplyAndCommentLike(albumChatCommentDetails, albumId);
+    }
+
+    /**
+     * <p>새로운 앨범챗 댓글을 생성합니다.</p>
+     *
+     * @param albumId 앨범 ID
+     * @param comment 댓글 생성 요청 데이터
+     * @param userId 댓글을 작성한 사용자 ID
+     * @return 생성된 댓글 목록을 포함한 리스트
+     *
+     * @throws NotFoundAlbumChatException 앨범을 찾을 수 없을 때 발생합니다.
+     * @throws NotFoundUserException 사용자를 찾을 수 없을 때 발생합니다.
      */
     public List<AlbumChatCommentDetail> albumChatCommentCreate(Long albumId, AlbumChatCommentRequest comment, Long userId) {
-        if(albumRepository.findById(albumId).isEmpty()) {
+        if (albumRepository.findById(albumId).isEmpty()) {
             throw new NotFoundAlbumChatException();
         }
-        if(userRepository.findById(userId).isEmpty()) {
+        if (userRepository.findById(userId).isEmpty()) {
             throw new NotFoundUserException();
         }
         commentRepository.save(
-            new AlbumChatComment(
-                comment.getContent()
-                ,Instant.now()
-                ,Instant.now()
-                ,userRepository.findById(userId).get()
-                ,albumRepository.findById(albumId).get()
-                ,comment.getParentAlbumChatCommentId()
-            ));
-        return getAlbumChatComment(albumId,comment.getSorted(), comment.getCount());
+                new AlbumChatComment(
+                        comment.getContent(),
+                        Instant.now(),
+                        Instant.now(),
+                        userRepository.findById(userId).get(),
+                        albumRepository.findById(albumId).get(),
+                        comment.getParentAlbumChatCommentId()
+                ));
+        return getAlbumChatComment(albumId, comment.getSorted(), comment.getCount());
     }
 
     /**
-     * 기존 앨범 챗 댓글을 수정합니다.
+     * <p>앨범챗 댓글을 수정합니다.</p>
      *
-     * @param comment 수정할 댓글 정보가 담긴 AlbumChatCommentUpdateReq 객체
-     * @throws NotFoundAlbumChatCommentException 댓글이 존재하지 않을 경우 발생
-     * @throws NotFoundUserException 사용자가 존재하지 않을 경우 발생
-     * @throws NotMatchAlbumChatException 댓글이 속한 앨범 챗이 일치하지 않을 경우 발생
-     * @throws NotMatchUserException 수정하려는 사용자와 기존 댓글 생성한 사용자가 다를때 발생
+     * @param albumId 앨범 ID
+     * @param albumChatCommentId 수정할 댓글 ID
+     * @param comment 수정할 댓글 데이터
+     * @param userId 수정하는 사용자 ID
+     * @return 수정된 댓글 목록을 포함한 리스트
+     *
+     * @throws NotFoundAlbumChatCommentException 댓글을 찾을 수 없을 때 발생합니다.
+     * @throws NotFoundUserException 사용자를 찾을 수 없을 때 발생합니다.
+     * @throws NotMatchAlbumChatException 댓글과 앨범 ID가 일치하지 않을 때 발생합니다.
+     * @throws NotMatchUserException 댓글을 수정하려는 사용자가 원 작성자가 아닐 때 발생합니다.
      */
-    public List<AlbumChatCommentDetail> albumChatCommentUpdate(Long albumId, Long albumChatCommentId
-        ,AlbumChatCommentRequest comment, Long userId) {
-        if(commentRepository.findById(albumChatCommentId).isEmpty()) {
+    public List<AlbumChatCommentDetail> albumChatCommentUpdate(Long albumId, Long albumChatCommentId, AlbumChatCommentRequest comment, Long userId) {
+        if (commentRepository.findById(albumChatCommentId).isEmpty()) {
             throw new NotFoundAlbumChatCommentException();
         }
-        if(userRepository.findById(userId).isEmpty()) {
+        if (userRepository.findById(userId).isEmpty()) {
             throw new NotFoundUserException();
         }
         AlbumChatComment updatedComment = commentRepository.findById(albumChatCommentId).get();
-        if(!updatedComment.getAlbum().getAlbumId().equals(albumId)) {
+        if (!updatedComment.getAlbum().getAlbumId().equals(albumId)) {
             throw new NotMatchAlbumChatException();
         }
-        if(!updatedComment.getUser().getUserId().equals(userId)) {
+        if (!updatedComment.getUser().getUserId().equals(userId)) {
             throw new NotMatchUserException();
         }
         updatedComment.setContent(comment.getContent());
         commentRepository.save(updatedComment);
-        //사용자가 다를때 1!=2인데 바꾸려고하는경우
 
-        return getAlbumChatComment(albumId,comment.getSorted(), comment.getCount());
+        return getAlbumChatComment(albumId, comment.getSorted(), comment.getCount());
     }
+
     /**
-     * 앨범 챗 댓글을 삭제합니다. 댓글 삭제하면 해당 댓글에 붙어있던 좋아요, 대댓글 등 모두 삭제됩니다.
+     * <p>앨범챗 댓글을 삭제합니다.</p>
      *
-     * @param albumChatCommentId 삭제할 댓글 정보가 담긴 AlbumChatCommentDto객체
-     * @throws NotFoundAlbumChatCommentException 댓글이 존재하지 않을 경우 발생
+     * @param albumId 앨범 ID
+     * @param albumChatCommentId 삭제할 댓글 ID
+     * @param sorted 정렬 기준
+     * @param count 조회할 댓글 수
+     * @return 삭제된 후의 댓글 목록을 포함한 리스트
+     *
+     * @throws NotFoundAlbumChatCommentException 댓글을 찾을 수 없을 때 발생합니다.
      */
-    public List<AlbumChatCommentDetail> albumChatCommentDelete(Long albumId,Long albumChatCommentId,String sorted,int count) {
-        if(commentRepository.findById(albumChatCommentId).isEmpty()) {
+    public List<AlbumChatCommentDetail> albumChatCommentDelete(Long albumId, Long albumChatCommentId, String sorted, int count) {
+        if (commentRepository.findById(albumChatCommentId).isEmpty()) {
             throw new NotFoundAlbumChatCommentException();
         }
-        //TODO 삭제하려는 사용자와 해당 글 올린 사용자와 다를때
         commentRepository.deleteById(albumChatCommentId);
 
-        return getAlbumChatComment(albumId,sorted,count);
+        return getAlbumChatComment(albumId, sorted, count);
     }
-
-    //reply들 가져오기
-
 }
