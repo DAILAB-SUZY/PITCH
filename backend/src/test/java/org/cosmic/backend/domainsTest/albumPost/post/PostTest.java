@@ -16,7 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @Sql(scripts = {"/data/albumPost.sql", "/data/CreateCommentAndLike.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
 public class PostTest extends AlbumPostBaseTest {
-    final String baseUrl = "/api/album/post/";
+    final String baseUrl = "/api/album/post";
 
     @Autowired
     private AlbumRepository albumRepository;
@@ -39,7 +39,9 @@ public class PostTest extends AlbumPostBaseTest {
     @Order(2)
     public void searchPostByUserTest() throws Exception {
         params.put("userId", user.getUserId());
-        mockMvcHelper(HttpMethod.GET,urlGenerator.buildUrl(baseUrl+"?userId={userId}", params),null,validToken)
+        params.put("page", 0);
+        params.put("limit", 10);
+        mockMvcHelper(HttpMethod.GET,urlGenerator.buildUrl(baseUrl+"?userId={userId}&page={page}&limit={limit}", params),null,validToken)
                 .andDo(print())
                 .andExpect(status().isOk());
     }
@@ -47,9 +49,9 @@ public class PostTest extends AlbumPostBaseTest {
     @Test
     @Order(3)
     public void searchPostByIdTest() throws Exception {
-        Long postId = postRepository.findByUser_UserId(user.getUserId()).get(1).getPostId();
+        Long postId = postRepository.findByUser_UserId(user.getUserId()).get(0).getPostId();
         params.put("postId", postId);
-        mockMvcHelper(HttpMethod.GET,urlGenerator.buildUrl(baseUrl + "{postId}", params),null,validToken)
+        mockMvcHelper(HttpMethod.GET,urlGenerator.buildUrl(baseUrl + "/{postId}", params),null,validToken)
                 .andDo(print())
                 .andExpect(status().isOk());
     }
@@ -60,9 +62,9 @@ public class PostTest extends AlbumPostBaseTest {
         UpdatePost updatePost=UpdatePost.builder()
                 .content("밤양갱 노래 좋아졌다")
                 .build();
-        Long postId = postRepository.findByUser_UserId(user.getUserId()).get(1).getPostId();
+        Long postId = postRepository.findByUser_UserId(user.getUserId()).get(0).getPostId();
         params.replace("postId", postId);
-        mockMvcHelper(HttpMethod.POST,urlGenerator.buildUrl(baseUrl + "{postId}", params),updatePost,validToken)
+        mockMvcHelper(HttpMethod.POST,urlGenerator.buildUrl(baseUrl + "/{postId}", params),updatePost,validToken)
                 .andExpect(status().isOk());
     }
 
@@ -71,7 +73,7 @@ public class PostTest extends AlbumPostBaseTest {
     public void deletePostTest() throws Exception {
         deletedPostId = postRepository.findByUser_UserId(user.getUserId()).get(0).getPostId();
         params.replace("postId", deletedPostId);
-        mockMvcHelper(HttpMethod.DELETE,urlGenerator.buildUrl(baseUrl + "{postId}", params),null,validToken)
+        mockMvcHelper(HttpMethod.DELETE,urlGenerator.buildUrl(baseUrl + "/{postId}", params),null,validToken)
                 .andExpect(status().isOk());
     }
 
@@ -80,7 +82,7 @@ public class PostTest extends AlbumPostBaseTest {
     @DisplayName("Post삭제 시 Comment 삭제 테스트")
     public void deletePostCascadeCommentTest() throws Exception {
         params.replace("postId", deletedPostId);
-        mockMvcHelper(HttpMethod.GET,urlGenerator.buildUrl("/api/album/post/{postId}/comment/", params),null,validToken)
+        mockMvcHelper(HttpMethod.GET,urlGenerator.buildUrl("/api/album/post/{postId}/comment", params),null,validToken)
                 .andDo(print())
                 .andExpect(status().isNotFound());
     }
@@ -90,7 +92,7 @@ public class PostTest extends AlbumPostBaseTest {
     @DisplayName("Post삭제 시 Like 삭제 테스트")
     public void deletePostCascadeLikeTest() throws Exception {
         params.replace("postId", deletedPostId);
-        mockMvcHelper(HttpMethod.GET,urlGenerator.buildUrl("/api/album/post/{postId}/like/", params),null,validToken)
+        mockMvcHelper(HttpMethod.GET,urlGenerator.buildUrl("/api/album/post/{postId}/like", params),null,validToken)
                 .andDo(print())
                 .andExpect(status().isNotFound());
     }

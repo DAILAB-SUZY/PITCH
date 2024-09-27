@@ -10,5 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class CreateCommentRequest {
+    private Long parent_id;
     private String content;
 }

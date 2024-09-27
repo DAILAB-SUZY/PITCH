@@ -1,5 +1,9 @@
 package org.cosmic.backend.domain.post.apis;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
@@ -12,6 +16,7 @@ import org.cosmic.backend.domain.post.exceptions.NotFoundPostException;
 import org.cosmic.backend.domain.post.exceptions.NotMatchPostException;
 import org.cosmic.backend.domain.post.exceptions.NotMatchUserException;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +30,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/album/post/{postId}/comment")
 @ApiCommonResponses
+@ApiResponse(responseCode = "200", content = {
+        @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                array = @ArraySchema(schema = @Schema(implementation = CommentDetail.class)))
+})
 @Tag(name = "앨범 포스트 관련 API", description = "앨범 포스트 및 댓글/대댓글/좋아요")
 public class CommentApi {
     private final CommentService commentService;
@@ -45,8 +54,9 @@ public class CommentApi {
      *
      * @throws NotFoundPostException 게시글을 찾을 수 없을 때 발생합니다.
      */
-    @GetMapping("/")
+    @GetMapping("")
     @ApiResponse(responseCode = "404", description = "Not Found Post")
+    @Operation(summary = "댓글 목록 조회 API", description = "댓글 목록을 조회합니다. 대댓글을 포함합니다.")
     public ResponseEntity<List<CommentDetail>> getCommentsByPostId(@PathVariable Long postId) {
         return ResponseEntity.ok(commentService.getCommentsByPostId(postId));
     }
@@ -60,10 +70,11 @@ public class CommentApi {
      * @throws NotFoundPostException 게시글을 찾을 수 없을 때 발생합니다.
      * @throws NotFoundUserException 사용자를 찾을 수 없을 때 발생합니다.
      */
-    @PostMapping("/")
+    @PostMapping("")
     @ApiResponse(responseCode = "404", description = "Not Found User or Post")
+    @Operation(summary = "앨범 포스트 댓글 생성 API", description = "앨범 포스트에 대한 댓글을 생성합니다. 댓글은 parent_id에 null을, 대댓글은 parent_id에 댓글의 id를 넣습니다.")
     public ResponseEntity<List<CommentDetail>> createComment(@RequestBody CreateCommentRequest comment, @PathVariable Long postId, @AuthenticationPrincipal Long userId) {
-        return ResponseEntity.ok(commentService.createComment(comment.getContent(), postId, userId));
+        return ResponseEntity.ok(commentService.createComment(comment.getParent_id(), comment.getContent(), postId, userId));
     }
 
     /**
@@ -78,6 +89,7 @@ public class CommentApi {
      */
     @PostMapping("/{commentId}")
     @ApiResponse(responseCode = "404", description = "Not Found Post or Comment")
+    @Operation(summary = "앨범 포스트 댓글 수정 API", description = "앨범 포스트에 대한 댓글을 수정합니다.")
     public ResponseEntity<List<CommentDetail>> updateComment(@RequestBody UpdateCommentRequest comment, @PathVariable Long commentId, @AuthenticationPrincipal Long userId) {
         return ResponseEntity.ok(commentService.updateComment(comment.getContent(), commentId, userId));
     }
@@ -91,12 +103,14 @@ public class CommentApi {
      */
     @DeleteMapping("/{commentId}")
     @ApiResponse(responseCode = "404", description = "Not Found Comment")
+    @Operation(summary = "앨범 포스트 댓글 삭제 API", description = "앨범 포스트에 대한 댓글을 삭제합니다.")
     public ResponseEntity<List<CommentDetail>> deleteComment(@PathVariable Long commentId, @PathVariable Long postId, @AuthenticationPrincipal Long userId) {
         return ResponseEntity.ok(commentService.deleteComment(commentId, postId, userId));
     }
 
     @PostMapping("/{commentId}/like")
     @ApiResponse(responseCode = "404", description = "Not Found Comment")
+    @Operation(hidden = true)
     public ResponseEntity<List<CommentDetail>> likeComment(@PathVariable Long commentId, @PathVariable Long postId, @AuthenticationPrincipal Long userId) {
         return ResponseEntity.ok(commentService.likeComment(commentId, postId, userId));
     }

@@ -1,5 +1,6 @@
 package org.cosmic.backend.domain.post.apis;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
@@ -47,6 +48,7 @@ public class ReplyApi {
      */
     @GetMapping("/")
     @ApiResponse(responseCode = "404", description = "Not Found Comment")
+    @Operation(hidden = true)
     public List<UpdateReplyReq> getRepliesByCommentId(@PathVariable Long commentId) {
         return replyService.getRepliesByCommentId(commentId);
     }
@@ -62,6 +64,7 @@ public class ReplyApi {
      */
     @PostMapping("/")
     @ApiResponse(responseCode = "404", description = "Not Found Comment or User")
+    @Operation(hidden = true)
     public ReplyDto createReply(@RequestBody CreateReplyReq reply, @PathVariable Long commentId, @AuthenticationPrincipal Long userId) {
         return replyService.createReply(reply.getContent(), commentId, userId);
     }
@@ -79,6 +82,7 @@ public class ReplyApi {
     @PostMapping("/{replyId}")
     @ApiResponse(responseCode = "400", description = "Not Match User Or Comment")
     @ApiResponse(responseCode = "404", description = "Not Found Reply")
+    @Operation(hidden = true)
     public ResponseEntity<?> updateReply(@RequestBody UpdateReplyReq reply, @PathVariable Long commentId, @PathVariable Long replyId, @AuthenticationPrincipal Long userId) {
         replyService.updateReply(reply.getContent(), commentId, replyId, userId);
         return ResponseEntity.ok("성공");
@@ -93,6 +97,7 @@ public class ReplyApi {
      */
     @DeleteMapping("/{replyId}")
     @ApiResponse(responseCode = "404", description = "Not Found Reply")
+    @Operation(hidden = true)
     public ResponseEntity<?> deleteReply(@PathVariable Long replyId, @AuthenticationPrincipal Long userId) {
         replyService.deleteReply(replyId, userId);
         return ResponseEntity.ok("성공");

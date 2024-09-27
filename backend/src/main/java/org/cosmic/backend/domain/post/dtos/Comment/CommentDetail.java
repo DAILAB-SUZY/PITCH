@@ -18,6 +18,7 @@ public class CommentDetail {
     private String content;
     private Instant createdAt;
     private Instant updatedAt;
-    private List<LikeUserDto> likes;
+    private List<UserDetail> likes;
+    private List<ChildCommentDetail> childComments;
     private UserDetail author;
 }
