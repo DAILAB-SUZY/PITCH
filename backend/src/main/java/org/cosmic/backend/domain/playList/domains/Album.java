@@ -68,6 +68,7 @@ public class Album {//앨범과 트랙은 1:N관계이며 앨범과 아티스트
                 .id(album.albumId)
                 .title(album.title)
                 .albumCover(album.albumCover)
+                .artistName(album.artist.getArtistName())
                 .genre(album.genre.toString())
                 .build();
     }

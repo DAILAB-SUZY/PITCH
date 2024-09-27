@@ -13,5 +13,6 @@ public class AlbumDetail {
     private Long id;
     private String title;
     private String albumCover;
+    private String artistName;
     private String genre;
 }
