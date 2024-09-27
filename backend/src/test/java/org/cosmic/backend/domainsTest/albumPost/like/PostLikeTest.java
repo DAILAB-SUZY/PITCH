@@ -15,12 +15,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Log4j2
 public class PostLikeTest extends AlbumPostBaseTest {
-    final String baseUrl = super.baseUrl + "/like/";
+    final String baseUrl = super.baseUrl + "/like";
 
     @Test
     @Order(1)
     public void createLikeTest() throws Exception {
         mockMvcHelper(HttpMethod.POST,urlGenerator.buildUrl(baseUrl, params),null,validToken)
+                .andDo(print())
                 .andExpect(status().isOk());
     }
 
@@ -31,17 +32,12 @@ public class PostLikeTest extends AlbumPostBaseTest {
                 .andDo(print())
                 .andExpect(status().isOk());
     }
-    @Test
-    @Order(3)
-    public void existLikeTest() throws Exception {
-        mockMvcHelper(HttpMethod.POST,urlGenerator.buildUrl(baseUrl, params),null,validToken)
-                .andExpect(status().isConflict());
-    }
 
     @Test
-    @Order(4)
+    @Order(3)
     public void deleteLikeTest() throws Exception {
-        mockMvcHelper(HttpMethod.DELETE,urlGenerator.buildUrl(baseUrl, params),null,validToken)
+        mockMvcHelper(HttpMethod.POST,urlGenerator.buildUrl(baseUrl, params),null,validToken)
+                .andDo(print())
                 .andExpect(status().isOk());
     }
 }

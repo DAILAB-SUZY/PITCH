@@ -54,12 +54,14 @@ public class PostApi {
             array = @ArraySchema(schema = @Schema(implementation = PostDetail.class))))
     @Operation(summary = "앨범 포스트 조회 API", description = "page번호와 limt개수를 이용해 앨범 포스트를 조회합니다.")
     public ResponseEntity<List<PostDetail>> giveAllPosts(
+            @Parameter(description = "유저 id", required = false)
+            @RequestParam Long userId,
             @Parameter(description = "페이지 번호(0부터 시작)", required = true)
             @RequestParam Integer page,
             @Parameter(description = "페이지 당 포스트 수", required = true)
             @RequestParam Integer limit
     ) {
-        return ResponseEntity.ok(postService.getPosts(page, limit));
+        return ResponseEntity.ok(postService.getPosts(userId, page, limit));
     }
 
     /**
