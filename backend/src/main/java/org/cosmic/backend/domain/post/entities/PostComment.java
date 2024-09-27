@@ -1,10 +1,7 @@
 package org.cosmic.backend.domain.post.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.cosmic.backend.domain.post.dtos.Comment.ChildCommentDetail;
 import org.cosmic.backend.domain.post.dtos.Comment.CommentDetail;
 import org.cosmic.backend.domain.post.dtos.Comment.CommentDto;
@@ -13,10 +10,7 @@ import org.cosmic.backend.domain.post.dtos.Reply.UpdateReplyReq;
 import org.cosmic.backend.domain.user.domains.User;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Data
@@ -25,6 +19,7 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name = "post_comment") // 테이블 이름 수정
 @Builder
+@EqualsAndHashCode(of = {"commentId", "parentComment"})
 public class PostComment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -67,8 +62,17 @@ public class PostComment {
     }
 
     public static List<CommentDetail> toCommentDetails(List<PostComment> comments) {
-        Map<PostComment, List<PostComment>> groupedByParent = comments.stream().sorted(Comparator.comparing(PostComment::getCreateTime))
-                .collect(Collectors.groupingBy(PostComment::getParentComment));
+        Map<PostComment, List<PostComment>> groupedByParent = new HashMap<>();
+        comments.stream()
+                .sorted(Comparator.comparing(PostComment::getCreateTime))
+                .forEach(comment -> {
+                    if(comment.getParentComment() == null || !groupedByParent.containsKey(comment.getParentComment())){
+                        groupedByParent.put(comment, new ArrayList<>());
+                    }
+                    else {
+                        groupedByParent.get(comment.getParentComment()).add(comment);
+                    }
+                });
 
         return groupedByParent.entrySet().stream()
                 .map(entry -> {
@@ -91,10 +95,7 @@ public class PostComment {
 
     public static UpdateReplyReq toUpdateReplyReq(PostComment postComment) {
         return UpdateReplyReq.builder()
-                .replyId(postComment.getCommentId())
-                .commentId(postComment.getParentComment().getCommentId())
                 .content(postComment.getContent())
-                .userId(postComment.getUser().getUserId())
                 .content(postComment.getContent())
                 .build();
     }

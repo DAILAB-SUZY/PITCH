@@ -101,14 +101,16 @@ public class LikeService {
 
     @Transactional
     public PostAndCommentsDetail likeOrUnlikePost(Long postId, Long userId) {
-        Post post = postRepository.findById(postId).orElseThrow(NotFoundPostException::new);
-        User user = usersRepository.findById(userId).orElseThrow(NotFoundUserException::new);
-        PostLikePK postLikePK = PostLikePK.builder().post(postId).user(userId).build();
-        if(postLikeRepository.existsById(postLikePK)){
-            postLikeRepository.deleteById(postLikePK);
-            return Post.toPostAndCommentDetail(post);
+        if(postLikeRepository.existsByPost_PostIdAndUser_UserId(postId, userId)){
+            postLikeRepository.deleteByPost_PostIdAndUser_UserId(postId, userId);
         }
-        postLikeRepository.save(PostLike.builder().post(post).user(user).build());
-        return Post.toPostAndCommentDetail(post);
+        else{
+            postLikeRepository.save(PostLike.builder()
+                    .post(postRepository.findById(postId).orElseThrow(NotFoundPostException::new))
+                    .user(usersRepository.findById(userId).orElseThrow(NotFoundUserException::new))
+                    .build());
+        }
+        postLikeRepository.flush();
+        return Post.toPostAndCommentDetail(postRepository.findById(postId).orElseThrow(NotFoundPostException::new));
     }
 }
