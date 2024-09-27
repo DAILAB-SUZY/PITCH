@@ -1,17 +1,14 @@
 package org.cosmic.backend.domain.bestAlbum.apis;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import org.cosmic.backend.domain.bestAlbum.applications.BestAlbumService;
 import org.cosmic.backend.domain.bestAlbum.dtos.AlbumInfoDetail;
 import org.cosmic.backend.domain.bestAlbum.dtos.AlbumScoreDto;
 import org.cosmic.backend.domain.bestAlbum.dtos.BestAlbumDetail;
 import org.cosmic.backend.domain.bestAlbum.dtos.BestAlbumListRequest;
-import org.cosmic.backend.domain.bestAlbum.exceptions.ExistBestAlbumException;
-import org.cosmic.backend.domain.bestAlbum.exceptions.NotMatchBestAlbumException;
-import org.cosmic.backend.domain.playList.exceptions.NotFoundArtistException;
-import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
-import org.cosmic.backend.domain.post.exceptions.NotFoundAlbumException;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,95 +17,106 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * BestAlbumApi는 사용자의 좋아요 앨범 목록을 관리하고, 앨범과 아티스트를 검색하는 API 엔드포인트를 제공합니다.
+ * <p> BestAlbumApi는 사용자의 좋아요 앨범 목록을 관리하고, 앨범과 아티스트를 검색하는 API 엔드포인트를 제공합니다. </p>
  *
- * 이 컨트롤러는 사용자의 좋아요 앨범 목록 조회, 앨범 추가, 좋아요 앨범 목록 저장, 아티스트 및 앨범 검색 기능을 제공합니다.
+ * <p> 이 컨트롤러는 다음과 같은 기능을 제공합니다: </p>
+ * <ul>
+ *     <li>사용자의 좋아요 앨범 목록 조회</li>
+ *     <li>사용자에게 앨범 추가</li>
+ *     <li>좋아요 앨범 목록 저장 또는 순서 수정</li>
+ *     <li>아티스트 및 앨범 검색</li>
+ * </ul>
  *
  */
 @RestController
 @RequestMapping("/api/")
 @ApiCommonResponses
+@Tag(name = "베스트 앨범 관련 API", description = "베스트 앨범 정보 제공 및 저장")
 public class BestAlbumApi {
+
     private final BestAlbumService bestAlbumService;
 
+    /**
+     * BestAlbumApi의 생성자.
+     *
+     * @param bestAlbumService 베스트 앨범 서비스 클래스의 인스턴스
+     */
     public BestAlbumApi(BestAlbumService bestAlbumService) {
         this.bestAlbumService = bestAlbumService;
     }
 
     /**
-     * 사용자가 좋아요 한 앨범 목록을 반환합니다.
+     * <p>특정 유저의 베스트 앨범 목록을 제공합니다.</p>
      *
-     * @param userId 사용자의 ID를 포함한 DTO 객체
-     * @return 사용자가 좋아요 한 앨범 목록
-     * @throws NotFoundUserException 사용자를 찾을 수 없는 경우 발생합니다.
+     * @param userId 유저의 ID
+     * @return 유저의 베스트 앨범 목록
      */
     @Transactional
     @GetMapping("/user/{userId}/bestAlbum")
     @ApiResponse(responseCode = "404", description = "Not Found User")
+    @Operation(summary = "특정 유저의 베스트 앨범 제공")
     public ResponseEntity<List<BestAlbumDetail>> bestAlbumGive(@PathVariable Long userId) {
         return ResponseEntity.ok(bestAlbumService.open(userId));
     }
 
     /**
-     * 사용자의 좋아요 앨범 목록에 새 앨범을 추가합니다.
+     * <p>특정 유저에게 베스트 앨범을 추가합니다.</p>
      *
-     * @param userId 사용자의 ID와 추가할 앨범의 ID를 포함한 DTO 객체
-     * @return 성공 메시지
-     * @throws NotFoundUserException 사용자를 찾을 수 없는 경우 발생합니다.
-     * @throws NotFoundAlbumException 앨범을 찾을 수 없는 경우 발생합니다.
-     * @throws ExistBestAlbumException 이미 사용자의 좋아요 목록에 해당 앨범이 존재하는 경우 발생합니다.
+     * @param albumScoreDto 추가할 앨범에 대한 점수 정보
+     * @param albumId 추가할 앨범의 ID
+     * @param userId 유저의 ID
+     * @return 업데이트된 베스트 앨범 목록
      */
     @Transactional
     @PostMapping("/bestAlbum/{albumId}")
     @ApiResponse(responseCode = "404", description = "Not Found User or Album")
     @ApiResponse(responseCode = "409", description = "Exist BestAlbum")
+    @Operation(summary = "특정 유저에게 베스트 앨범 1개 추가")
     public ResponseEntity<List<BestAlbumDetail>> bestAlbumAdd(
             @RequestBody AlbumScoreDto albumScoreDto, @PathVariable Long albumId, @AuthenticationPrincipal Long userId) {
 
-        return ResponseEntity.ok(bestAlbumService.add(albumScoreDto.getScore(),userId,albumId));
+        return ResponseEntity.ok(bestAlbumService.add(albumScoreDto.getScore(), userId, albumId));
     }
 
     /**
-     * 사용자의 좋아요 앨범 목록을 업데이트합니다.
+     * <p>특정 유저의 베스트 앨범 정보 순서를 수정하거나 저장합니다.</p>
      *
-     * @param bestAlbumlistRequest 사용자 ID와 새로 저장할 좋아요 앨범 목록을 포함한 DTO 객체
-     * @return 성공 메시지
-     * @throws NotFoundUserException 사용자를 찾을 수 없는 경우 발생합니다.
-     * @throws NotFoundAlbumException 앨범을 찾을 수 없는 경우 발생합니다.
-     * @throws NotMatchBestAlbumException 사용자의 기존 좋아요 앨범 목록과 일치하지 않는 경우 발생합니다.
+     * @param bestAlbumlistRequest 수정할 앨범 목록의 요청 정보
+     * @param userId 유저의 ID
+     * @return 수정된 베스트 앨범 목록
      */
     @Transactional
     @PostMapping("/bestAlbum")
     @ApiResponse(responseCode = "400", description = "Not Match BestAlbum")
     @ApiResponse(responseCode = "404", description = "Not Found User or Album")
+    @Operation(summary = "특정 유저에게 베스트 앨범 정보 순서 수정 또는 저장")
     public ResponseEntity<List<BestAlbumDetail>> bestAlbumSave(@RequestBody BestAlbumListRequest bestAlbumlistRequest, @AuthenticationPrincipal Long userId) {
         return ResponseEntity.ok(bestAlbumService.save(userId, bestAlbumlistRequest.getBestalbum()));
     }
 
     /**
-     * 주어진 아티스트 이름으로 모든 앨범 정보를 검색합니다.
+     * <p>아티스트 이름을 통해 해당 아티스트의 앨범 정보를 검색합니다.</p>
      *
-     * @param artistName 아티스트의 이름을 포함한 DTO 객체
-     * @return 해당 아티스트가 가진 앨범들의 정보
-     * @throws NotFoundArtistException 아티스트를 찾을 수 없는 경우 발생합니다.
+     * @param artistName 검색할 아티스트 이름
+     * @return 해당 아티스트의 앨범 목록
      */
     @GetMapping("bestAlbum/artist/{artistName}")
     @ApiResponse(responseCode = "404", description = "Not Match Artist Name")
+    @Operation(summary = "아티스트 이름 검색을 통한 앨범 정보 불러옴")
     public ResponseEntity<List<AlbumInfoDetail>> artistSearch(@PathVariable String artistName) {
         return ResponseEntity.ok(bestAlbumService.searchArtist(artistName));
     }
 
     /**
-     * 주어진 앨범 제목으로 모든 앨범 정보를 검색합니다.
+     * <p>앨범 이름을 통해 해당 앨범 정보를 검색합니다.</p>
      *
-     * @param albumName 앨범의 제목을 포함한 DTO 객체
-     * @return 해당 제목을 가진 모든 앨범들의 정보
-     * @throws NotFoundAlbumException 앨범을 찾을 수 없는 경우 발생합니다.
+     * @param albumName 검색할 앨범 이름
+     * @return 해당 앨범의 정보 목록
      */
     @GetMapping("/bestAlbum/album/{albumName}")
     @ApiResponse(responseCode = "404", description = "Not Match Album Title")
+    @Operation(summary = "앨범 이름 검색을 통한 앨범 정보 불러옴")
     public ResponseEntity<List<AlbumInfoDetail>> albumSearch(@PathVariable String albumName) {
         return ResponseEntity.ok(bestAlbumService.searchAlbum(albumName));
     }
-    //앨범 찾기 앨범이름
 }

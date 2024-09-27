@@ -34,9 +34,9 @@ public class FavoriteArtist {
     @ManyToOne(fetch = FetchType.LAZY)
     private Track track;
 
+    @Builder.Default
     @ManyToOne(fetch = FetchType.LAZY)
-    private Album album=new Album();
-
+    private Album album = new Album(); // @Builder.Default 추가
 
     public static FavoriteArtistDetail toFavoriteArtistDto(FavoriteArtist favoriteArtist){
         return FavoriteArtistDetail.builder()

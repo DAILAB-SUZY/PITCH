@@ -15,64 +15,70 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * AlbumChatCommentLikeService 클래스는 앨범 챗 댓글에 대한 좋아요 기능을 관리하는 서비스 클래스입니다.
+ * <p>AlbumChatCommentLikeService 클래스는 앨범 챗 댓글에 대한 좋아요 기능을 관리하는 서비스 클래스입니다.</p>
+ *
+ * <p>이 서비스는 댓글에 대한 좋아요의 생성, 조회, 삭제 기능을 제공합니다.</p>
+ *
  */
 @Service
 public class AlbumChatCommentLikeService {
-    private final AlbumChatCommentLikeRepository albumChatCommentlikeRepository;
+
+    private final AlbumChatCommentLikeRepository albumChatCommentLikeRepository;
     private final UsersRepository usersRepository;
     private final AlbumChatCommentRepository albumChatCommentRepository;
-    private final AlbumChatCommentLikeRepository albumChatCommentLikeRepository;
 
     /**
-     * AlbumChatCommentLikeService 생성자.
+     * <p>AlbumChatCommentLikeService 생성자입니다.</p>
      *
-     * @param albumChatCommentlikeRepository 앨범 챗 댓글 좋아요 리포지토리 주입
-     * @param usersRepository 사용자 리포지토리 주입
-     * @param albumChatCommentRepository 앨범 챗 댓글 리포지토리 주입
+     * @param albumChatCommentLikeRepository 앨범 챗 댓글 좋아요 리포지토리
+     * @param usersRepository 사용자 리포지토리
+     * @param albumChatCommentRepository 앨범 챗 댓글 리포지토리
      */
-    public AlbumChatCommentLikeService(AlbumChatCommentLikeRepository albumChatCommentlikeRepository, UsersRepository usersRepository, AlbumChatCommentRepository albumChatCommentRepository, AlbumChatCommentLikeRepository albumChatCommentLikeRepository) {
-        this.albumChatCommentlikeRepository = albumChatCommentlikeRepository;
+    public AlbumChatCommentLikeService(AlbumChatCommentLikeRepository albumChatCommentLikeRepository,
+                                       UsersRepository usersRepository,
+                                       AlbumChatCommentRepository albumChatCommentRepository) {
+        this.albumChatCommentLikeRepository = albumChatCommentLikeRepository;
         this.usersRepository = usersRepository;
         this.albumChatCommentRepository = albumChatCommentRepository;
-        this.albumChatCommentLikeRepository = albumChatCommentLikeRepository;
     }
 
     /**
-     * 특정 앨범 챗 댓글 ID로 해당 댓글에 달린 좋아요 목록을 조회하는 메서드.
+     * <p>특정 앨범챗 댓글에 대한 좋아요 목록을 조회합니다.</p>
      *
-     * @param albumChatCommentId 조회할 앨범 챗 댓글 ID
-     * @return List<AlbumChatCommentLikeResponse> 좋아요 목록 반환
-     * @throws NotFoundAlbumChatCommentException 앨범 챗 댓글이 존재하지 않을 경우 발생
+     * @param albumChatCommentId 조회할 댓글 ID
+     * @return 좋아요 목록을 포함한 리스트
+     *
+     * @throws NotFoundAlbumChatCommentException 앨범챗 댓글을 찾을 수 없을 때 발생합니다.
      */
     public List<AlbumChatCommentLikeDetail> getAlbumChatCommentLikeByAlbumChatCommentId(Long albumChatCommentId) {
-        if(albumChatCommentRepository.findById(albumChatCommentId).isEmpty()) {
+        if (albumChatCommentRepository.findById(albumChatCommentId).isEmpty()) {
             throw new NotFoundAlbumChatCommentException();
         }
-        return albumChatCommentlikeRepository.findByAlbumChatComment_AlbumChatCommentId(albumChatCommentId)
-            .stream()
-            .map(AlbumChatCommentLikeDetail::new)
-            .collect(Collectors.toList());
+        return albumChatCommentLikeRepository.findByAlbumChatComment_AlbumChatCommentId(albumChatCommentId)
+                .stream()
+                .map(AlbumChatCommentLikeDetail::new)
+                .collect(Collectors.toList());
     }
 
     /**
-     * 앨범 챗 댓글에 새로운 좋아요를 생성하는 메서드.
+     * <p>특정 앨범챗 댓글에 새로운 좋아요를 생성합니다.</p>
      *
      * @param userId 좋아요를 생성하는 사용자 ID
-     * @param albumChatCommentId 좋아요를 달 앨범 챗 댓글 ID
-     * @return AlbumChatCommentLikeIdResponse 생성된 좋아요 ID를 담은 응답 객체
-     * @throws NotFoundAlbumChatCommentException 앨범 챗 댓글이 존재하지 않을 경우 발생
-     * @throws NotFoundUserException 사용자가 존재하지 않을 경우 발생
-     * @throws ExistCommentLikeException 이미 해당 사용자가 해당 댓글에 좋아요를 눌렀을 경우 발생
+     * @param albumChatCommentId 좋아요를 추가할 댓글 ID
+     * @return 생성된 좋아요 목록을 포함한 리스트
+     *
+     * @throws NotFoundUserException 사용자를 찾을 수 없을 때 발생합니다.
+     * @throws NotFoundAlbumChatCommentException 앨범챗 댓글을 찾을 수 없을 때 발생합니다.
+     * @throws ExistCommentLikeException 이미 존재하는 좋아요가 있을 때 발생합니다.
      */
     public List<AlbumChatCommentLikeDetail> albumChatCommentLikeCreate(Long userId, Long albumChatCommentId) {
-        if(albumChatCommentRepository.findById(albumChatCommentId).isEmpty()) {
+        if (albumChatCommentRepository.findById(albumChatCommentId).isEmpty()) {
             throw new NotFoundAlbumChatCommentException();
         }
-        if(usersRepository.findByUserId(userId).isEmpty()) {
+        if (usersRepository.findByUserId(userId).isEmpty()) {
             throw new NotFoundUserException();
         }
-        if(albumChatCommentlikeRepository.findByAlbumChatComment_AlbumChatCommentIdAndUser_UserId(albumChatCommentId, userId).isPresent()) {
+        if (albumChatCommentLikeRepository.findByAlbumChatComment_AlbumChatCommentIdAndUser_UserId(albumChatCommentId, userId).isPresent()) {
             throw new ExistCommentLikeException();
         }
         albumChatCommentLikeRepository.save(AlbumChatCommentLike.builder()
@@ -80,27 +86,30 @@ public class AlbumChatCommentLikeService {
                 .albumChatComment(albumChatCommentRepository.findById(albumChatCommentId).get())
                 .build());
 
-        return albumChatCommentlikeRepository.findByAlbumChatComment_AlbumChatCommentId(albumChatCommentId)
+        return albumChatCommentLikeRepository.findByAlbumChatComment_AlbumChatCommentId(albumChatCommentId)
                 .stream()
                 .map(AlbumChatCommentLikeDetail::new)
                 .collect(Collectors.toList());
     }
 
     /**
-     * 특정 좋아요 ID로 좋아요를 삭제하는 메서드.
+     * <p>특정 앨범챗 댓글에 대한 좋아요를 삭제합니다.</p>
      *
-     * @param albumChatCommentId 삭제할 좋아요 ID
-     * @throws NotFoundCommentLikeException 좋아요가 존재하지 않을 경우 발생
+     * @param albumChatCommentId 좋아요를 삭제할 댓글 ID
+     * @param userId 좋아요를 삭제하는 사용자 ID
+     * @return 삭제 후 남은 좋아요 목록을 포함한 리스트
+     *
+     * @throws NotFoundCommentLikeException 좋아요를 찾을 수 없을 때 발생합니다.
      */
     public List<AlbumChatCommentLikeDetail> albumChatCommentLikeDelete(Long albumChatCommentId, Long userId) {
-        if(albumChatCommentlikeRepository.findByAlbumChatComment_AlbumChatCommentIdAndUser_UserId(albumChatCommentId, userId).isEmpty()) {
+        if (albumChatCommentLikeRepository.findByAlbumChatComment_AlbumChatCommentIdAndUser_UserId(albumChatCommentId, userId).isEmpty()) {
             throw new NotFoundCommentLikeException();
         }
-        albumChatCommentlikeRepository.deleteByAlbumChatComment_AlbumChatCommentIdAndUser_UserId(albumChatCommentId, userId);
+        albumChatCommentLikeRepository.deleteByAlbumChatComment_AlbumChatCommentIdAndUser_UserId(albumChatCommentId, userId);
 
-        return albumChatCommentlikeRepository.findByAlbumChatComment_AlbumChatCommentId(albumChatCommentId)
-            .stream()
-            .map(AlbumChatCommentLikeDetail::new)
-            .collect(Collectors.toList());
+        return albumChatCommentLikeRepository.findByAlbumChatComment_AlbumChatCommentId(albumChatCommentId)
+                .stream()
+                .map(AlbumChatCommentLikeDetail::new)
+                .collect(Collectors.toList());
     }
 }

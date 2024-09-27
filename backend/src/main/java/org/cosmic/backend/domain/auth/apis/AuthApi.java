@@ -49,8 +49,7 @@ public class AuthApi {
     public ResponseEntity<UserLoginDetail> authenticate(@RequestBody UserLoginDetail userLogin) {
         return ResponseEntity.ok(userService.getByCredentials(userLogin.getEmail(), userLogin.getPassword()));
     }
-
-
+    
     /**
      * 리프레시 토큰을 이용해 사용자 정보를 반환합니다.
      *
