@@ -22,8 +22,6 @@ public class CreateSpotifyToken {
 
     // SpotifyApi 객체 초기화
     private void initSpotifyApi() {
-        System.out.println(clientId);
-        System.out.println(clientSecret);
         spotifyApi = new SpotifyApi.Builder()
                 .setClientId(clientId)
                 .setClientSecret(clientSecret)

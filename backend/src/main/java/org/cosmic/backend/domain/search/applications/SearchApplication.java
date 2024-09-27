@@ -19,9 +19,8 @@ public class SearchApplication {
         HttpStatus httpStatus = (HttpStatus) responseEntity.getStatusCode();
         int status = httpStatus.value(); //상태 코드가 들어갈 status 변수
         String response = responseEntity.getBody();
-        System.out.println("Response status: " + status);
-        System.out.println(response);
 
+        //검색 후 데이터 추출 후 DB 저장
         return response;
     }
 }
