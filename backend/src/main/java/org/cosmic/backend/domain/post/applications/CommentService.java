@@ -98,17 +98,14 @@ public class CommentService {
      * @throws NotMatchPostException 댓글이 게시글과 일치하지 않을 경우 발생합니다.
      */
     @Transactional
-    public List<CommentDetail> updateComment(String content, Long postId, Long userId) {
-        PostComment postComment = postCommentRepository.findById(postId).orElseThrow(NotFoundCommentException::new);
+    public List<CommentDetail> updateComment(String content, Long commentId, Long userId) {
+        PostComment postComment = postCommentRepository.findById(commentId).orElseThrow(NotFoundCommentException::new);
         if (!postComment.getUser().getUserId().equals(userId)) {
             throw new NotMatchUserException();
         }
-        if (!postComment.getPost().getPostId().equals(postId)) {
-            throw new NotMatchPostException();
-        }
         postComment.setContent(content);
-        postCommentRepository.save(postComment);
-        return PostComment.toCommentDetails(postCommentRepository.findByPost_PostId(postId));
+        postCommentRepository.saveAndFlush(postComment);
+        return PostComment.toCommentDetails(postCommentRepository.findByPost_PostId(commentId));
     }
 
     /**
