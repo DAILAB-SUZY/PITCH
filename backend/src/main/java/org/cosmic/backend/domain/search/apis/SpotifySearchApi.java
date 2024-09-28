@@ -1,5 +1,6 @@
 package org.cosmic.backend.domain.search.apis;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,9 +25,11 @@ public class SpotifySearchApi {
         return ResponseEntity.ok(createSpotifyToken.accesstoken());
     }
 
-    @GetMapping("/searchSpotify")
-    @Operation(summary = "특정 노래 검색")
-    public ResponseEntity<String> search(@RequestBody SearchRequest searchRequest){ //q는 검색어
-        return ResponseEntity.ok(searchApplication.search(searchRequest.getAccessToken(),searchRequest.getQ()));
+    //노래 검색
+    @GetMapping("/searchSpotify/track")
+    @Operation(summary = "특정 노래 조회")
+    public ResponseEntity<String> searchTrack(@RequestBody SearchRequest searchRequest) throws JsonProcessingException { //q는 검색어
+
+        return ResponseEntity.ok(searchApplication.searchTrack(searchRequest.getAccessToken(),searchRequest.getQ()));
     }
 }
