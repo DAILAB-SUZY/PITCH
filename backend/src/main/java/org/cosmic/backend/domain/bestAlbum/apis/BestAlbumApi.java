@@ -64,7 +64,7 @@ public class BestAlbumApi {
     @Operation(summary = "특정 유저의 베스트 앨범 조회", description = "특정 유저의 베스트 앨범 정보를 조회합니다.")
     public ResponseEntity<List<BestAlbumDetail>> bestAlbumGive(
         @Parameter(description = "유저 id")
-        @RequestParam Long userId)
+        @PathVariable Long userId)
     {
         return ResponseEntity.ok(bestAlbumService.open(userId));
     }
