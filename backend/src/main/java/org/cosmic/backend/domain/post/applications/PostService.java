@@ -68,12 +68,12 @@ public class PostService {
                 .toList();
     }
 
-    public List<PostDetail> getPosts(Long userId, Integer page, Integer limit) {
+    public List<PostAndCommentsDetail> getPosts(Long userId, Integer page, Integer limit) {
         Pageable pageable = PageRequest.of(page, limit);
         if (userId != null) {
-            return postRepository.findByUser_UserId(userId, pageable).map(Post::toPostDetail).getContent();
+            return postRepository.findByUser_UserId(userId, pageable).map(Post::toPostAndCommentDetail).getContent();
         }
-        Page<PostDetail> postDetails = postRepository.findAll(pageable).map(Post::toPostDetail);
+        Page<PostAndCommentsDetail> postDetails = postRepository.findAll(pageable).map(Post::toPostAndCommentDetail);
         return postDetails.getContent();
     }
 
