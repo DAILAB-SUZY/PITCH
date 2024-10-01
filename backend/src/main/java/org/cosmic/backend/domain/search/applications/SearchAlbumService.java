@@ -20,6 +20,8 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 @Service
 public class SearchAlbumService extends SearchService {
 
@@ -41,8 +43,6 @@ public class SearchAlbumService extends SearchService {
         String data=search(accessToken,q);
         JsonNode rootNode = mapper.readTree(data);
         List<SpotifySearchAlbumResponse> spotifySearchAlbumResponses = new ArrayList<>();
-        Artist artist=null;
-        Album album=null;
         try {
             JsonNode albumitemsNode = rootNode.path("albums").path("items");
 
@@ -73,24 +73,35 @@ public class SearchAlbumService extends SearchService {
                     spotifySearchArtistResponse.setArtistId(artistsNode.path("id").asText());
                     spotifySearchArtistResponse.setName(artistsNode.path("name").asText());
                     spotifySearchArtistResponse.setImages(null);
-                    spotifySearchArtistResponses.add(spotifySearchArtistResponse);
+                    spotifySearchAlbumResponse.setAlbumArtist(spotifySearchArtistResponse);
                 }
-                spotifySearchAlbumResponse.setArtists(spotifySearchArtistResponses);
                 spotifySearchAlbumResponses.add(spotifySearchAlbumResponse);
             }
 
-            for(int i=0;i<spotifySearchAlbumResponses.size();i++)
-            {
-                for(int j=0;j<spotifySearchAlbumResponses.get(i).getArtists().size();j++)
-                {
-                    artist=artistRepository.save(Artist.builder()
-                            .artistName(spotifySearchAlbumResponses.get(i).getArtists().get(j).getName())
-                            .artistCover(null)
-                            //.artistCover(spotifySearchAlbumResponses.get(i).getArtists().get(i).getImages().get(0).getUrl())
+            Artist artist1 = null;
+            for(int i=0;i<spotifySearchAlbumResponses.size();i++) {
+                //for (int j = 0; j < spotifySearchAlbumResponses.get(i).getAlbumArtist.size(); j++) {
+
+                    Optional<Artist> artist = artistRepository.findBySpotifyArtistId(spotifySearchAlbumResponses.get(i).getAlbumArtist().getArtistId());
+                    String datas = searchArtistImg(accessToken, spotifySearchAlbumResponses.get(i).getAlbumArtist().getArtistId());
+
+                    rootNode = mapper.readTree(datas);
+                    JsonNode artistNode = rootNode.path("images");
+                    String imgUrl = artistNode.get(0).path("url").asText();
+
+                    if (artist.isPresent())//Local DB에 spotify_artist_id 있는지 조회
+                    {
+                        //있다면 artist_cover 채워서 보내기
+                        artist.get().setArtistCover(String.valueOf(imgUrl));
+                        artistRepository.save(artist.get());
+                        continue;
+                    }//존재하면
+
+                    artist1 = artistRepository.save(Artist.builder()
+                            .artistName(spotifySearchAlbumResponses.get(i).getAlbumArtist().getName())
+                            .artistCover(imgUrl)
+                            .spotifyArtistId(spotifySearchAlbumResponses.get(i).getAlbumArtist().getArtistId())
                             .build());
-                }
-
-
 
                 // 문자열을 LocalDate로 변환
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -99,13 +110,18 @@ public class SearchAlbumService extends SearchService {
                 // LocalDate를 Instant로 변환 (UTC 기준)
                 Instant releaseDateInstant = localDate.atStartOfDay(ZoneId.of("UTC")).toInstant();
 
-                album=albumRepository.save(Album.builder()
-                        .albumCover(spotifySearchAlbumResponses.get(i).getImages().get(0).getUrl())
-                        .title(spotifySearchAlbumResponses.get(i).getName())
-                        .createdDate(releaseDateInstant)
-                        .artist(artist)
-                        .build()
-                );
+                Optional<Album> album = albumRepository.findBySpotifyAlbumId(spotifySearchAlbumResponses.get(i).getAlbumId());
+                if (!album.isPresent())//Local DB에 spotify_artist_id 있는지 조회
+                {
+                    Album album1 = albumRepository.save(Album.builder()
+                            .albumCover(spotifySearchAlbumResponses.get(i).getImages().get(0).getUrl())
+                            .title(spotifySearchAlbumResponses.get(i).getName())
+                            .createdDate(releaseDateInstant)
+                            .artist(artist1)
+                            .spotifyAlbumId(spotifySearchAlbumResponses.get(i).getAlbumId())
+                            .build()
+                    );
+                }
             }
 
         }

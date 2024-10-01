@@ -22,6 +22,34 @@ public class SearchArtistService extends SearchService {
         this.artistRepository = artistRepository;
     }
 
+    public String saveArtist(List<SpotifySearchArtistResponse> spotifySearchArtistResponses, String accessToken) throws JsonProcessingException {
+       ObjectMapper mapper = new ObjectMapper();
+        JsonNode rootNode = null;
+        for (int i = 0; i < spotifySearchArtistResponses.size(); i++) {
+            Optional<Artist> artist = artistRepository.findBySpotifyArtistId(spotifySearchArtistResponses.get(i).getArtistId());
+            if (artist.isPresent())//Local DB에 spotify_artist_id 있는지 조회
+            {
+                //있다면 artist_cover 채워서 보내기
+                artist.get().setArtistCover(String.valueOf(spotifySearchArtistResponses.get(i).getImages().get(0).getUrl()));
+                artistRepository.save(artist.get());
+                continue;
+            }//존재하면
+
+
+            String datas = searchArtistImg(accessToken, spotifySearchArtistResponses.get(i).getArtistId());
+
+            rootNode = mapper.readTree(datas);
+            JsonNode artistNode = rootNode.path("images");
+            String imgUrl = artistNode.get(0).path("url").asText();
+            Artist artist1 = artistRepository.save(Artist.builder()
+                    .artistName(spotifySearchArtistResponses.get(i).getName())
+                    .artistCover(imgUrl)
+                    .spotifyArtistId(spotifySearchArtistResponses.get(i).getArtistId())
+                    .build());
+        }
+        return rootNode.toString();
+    }
+
     public String searchArtist(String accessToken, String q) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         List<SpotifySearchArtistResponse> spotifySearchArtistResponses = new ArrayList<>();
@@ -50,39 +78,7 @@ public class SearchArtistService extends SearchService {
             spotifySearchArtistResponses.add(spotifySearchArtistResponse);
         }
 
-
-        /*
-        * Local DB에 spotify_artist_id 있는지 조회
-        있다면 artist_cover 채워서 보내기
-        없다면 spotify API 조회
-        조회 결과를 Artist 테이블에 저장
-        artist cover 채워서 보내기
-        * */
-
-
-        for (int i = 0; i < spotifySearchArtistResponses.size(); i++) {
-
-            Optional<Artist> artist = artistRepository.findBySpotifyArtistId(spotifySearchArtistResponses.get(i).getArtistId());
-            if (artist.isPresent())//Local DB에 spotify_artist_id 있는지 조회
-            {
-                //있다면 artist_cover 채워서 보내기
-                artist.get().setArtistCover(String.valueOf(spotifySearchArtistResponses.get(i).getImages().get(0).getUrl()));
-                artistRepository.save(artist.get());
-                continue;
-            }//존재하면
-
-
-            String datas = searchArtistImg(accessToken, spotifySearchArtistResponses.get(i).getArtistId());
-
-            rootNode = mapper.readTree(datas);
-            JsonNode artistNode = rootNode.path("images");
-            String imgUrl = artistNode.get(0).path("url").asText();
-            Artist artist1 = artistRepository.save(Artist.builder()
-                .artistName(spotifySearchArtistResponses.get(i).getName())
-                .artistCover(imgUrl)
-                .spotifyArtistId(spotifySearchArtistResponses.get(i).getArtistId())
-                .build());
-        }
+        String datas=saveArtist(spotifySearchArtistResponses,accessToken);
         return data;
     }
 }

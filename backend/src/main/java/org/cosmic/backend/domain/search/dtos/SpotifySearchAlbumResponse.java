@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SpotifySearchAlbumResponse {
-    private List<SpotifySearchArtistResponse> artists;
+    private SpotifySearchArtistResponse albumArtist;//앨범의 아티스트
     private String albumId;
     private List<Image> images;
     private String name;

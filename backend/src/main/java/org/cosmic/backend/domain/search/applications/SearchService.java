@@ -17,6 +17,8 @@ public class SearchService {
 
     public String search(String accessToken, String q)
     {
+        //db부터 먼저 확인한 뒤에 없다면.
+
         RestTemplate rest = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers = setting(accessToken,headers);
