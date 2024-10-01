@@ -51,9 +51,9 @@ public class PostApi {
     @GetMapping("")
     @ApiResponse(responseCode = "404", description = "Not Found User")
     @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-            array = @ArraySchema(schema = @Schema(implementation = PostDetail.class))))
+            array = @ArraySchema(schema = @Schema(implementation = PostAndCommentsDetail.class))))
     @Operation(summary = "앨범 포스트 조회 API", description = "page번호와 limt개수를 이용해 앨범 포스트를 조회합니다.")
-    public ResponseEntity<List<PostDetail>> giveAllPosts(
+    public ResponseEntity<List<PostAndCommentsDetail>> giveAllPosts(
             @Parameter(description = "유저 id")
             @RequestParam(required = false) Long userId,
             @Parameter(description = "페이지 번호(0부터 시작)", required = true)
