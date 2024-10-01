@@ -1,9 +1,12 @@
 package org.cosmic.backend.domain.favoriteArtist.apis;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.transaction.Transactional;
 import org.cosmic.backend.domain.favoriteArtist.applications.FavoriteArtistService;
 import org.cosmic.backend.domain.favoriteArtist.dtos.*;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundArtistException;
@@ -11,6 +14,7 @@ import org.cosmic.backend.domain.playList.exceptions.NotFoundTrackException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.post.exceptions.NotFoundAlbumException;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -49,10 +53,13 @@ public class FavoriteApi {
      * @throws NotFoundUserException 사용자를 찾을 수 없는 경우 발생합니다.
      */
     @GetMapping("/user/{userId}/favoriteArtist")
-    @Transactional
     @ApiResponse(responseCode = "404", description = "Not Found User")
-    @Operation(summary = "특정 유저의 favorite아티스트 제공")
-    public ResponseEntity<FavoriteArtistDetail> favoriteArtistGiveData(@PathVariable Long userId) {
+    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+            array = @ArraySchema(schema = @Schema(implementation = FavoriteArtistDetail.class))))
+    @Operation(summary = "favorite아티스트 조회",description = "특정 유저의 favorite아티스트 조회")
+    public ResponseEntity<FavoriteArtistDetail> favoriteArtistGiveData(
+            @Parameter(description = "유저 id")
+            @PathVariable Long userId) {
         return ResponseEntity.ok(favoriteartistService.favoriteArtistGiveData(userId));
     }
 
@@ -64,10 +71,13 @@ public class FavoriteApi {
      * @throws NotFoundArtistException 아티스트를 찾을 수 없는 경우 발생합니다.
      */
     @GetMapping("/favoriteArtist/artist/{artistName}")
-    @Transactional
     @ApiResponse(responseCode = "404", description = "Not Found Artist")
-    @Operation(summary = "아티스트 이름으로 아티스트 정보 제공")
-    public ResponseEntity<List<ArtistDetail>> artistSearchData(@PathVariable String artistName) {
+    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+            array = @ArraySchema(schema = @Schema(implementation = ArtistDetail.class))))
+    @Operation(summary = "아티스트 검색",description = "아티스트 이름으로 아티스트 정보 제공")
+    public ResponseEntity<List<ArtistDetail>> artistSearchData(
+            @Parameter(description = "아티스트 이름")
+            @PathVariable String artistName) {
         return ResponseEntity.ok(favoriteartistService.artistSearchData(artistName));
     }
 
@@ -80,10 +90,15 @@ public class FavoriteApi {
      * @throws NotFoundAlbumException 앨범을 찾을 수 없는 경우 발생합니다.
      */
     @GetMapping("/favoriteArtist/artist/{artistId}/album/{albumName}")
-    @Transactional
     @ApiResponse(responseCode = "404", description = "Not Found Album")
-    @Operation(summary = "앨범으로 앨범 정보 제공")
-    public ResponseEntity<List<AlbumDetail>> albumSearchData(@PathVariable Long artistId, @PathVariable String albumName) {
+    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+            array = @ArraySchema(schema = @Schema(implementation = ArtistDetail.class))))
+    @Operation(summary = "앨범 검색",description = "앨범으로 앨범 정보 제공")
+    public ResponseEntity<List<AlbumDetail>> albumSearchData(
+            @Parameter(description = "아티스트 id")
+            @PathVariable Long artistId,
+            @Parameter(description = "앨범 이름")
+            @PathVariable String albumName) {
         return ResponseEntity.ok(favoriteartistService.albumSearchData(artistId, albumName));
     }
 
@@ -96,10 +111,15 @@ public class FavoriteApi {
      * @throws NotFoundTrackException 트랙을 찾을 수 없는 경우 발생합니다.
      */
     @GetMapping("/favoriteArtist/album/{albumId}/track/{trackName}")
-    @Transactional
     @ApiResponse(responseCode = "404", description = "Not Found Track")
-    @Operation(summary = "노래로 노래 정보 제공")
-    public ResponseEntity<TrackDetail> trackSearchData(@PathVariable Long albumId, @PathVariable String trackName) {
+    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+            array = @ArraySchema(schema = @Schema(implementation = ArtistDetail.class))))
+    @Operation(summary = "노래 검색",description = "노래로 노래 정보 제공")
+    public ResponseEntity<TrackDetail> trackSearchData(
+            @Parameter(description = "앨범 id")
+            @PathVariable Long albumId,
+            @Parameter(description = "노래 이름")
+            @PathVariable String trackName) {
         return ResponseEntity.ok(favoriteartistService.trackSearchData(albumId, trackName));
     }
 
@@ -115,10 +135,14 @@ public class FavoriteApi {
      * @throws NotFoundArtistException 아티스트를 찾을 수 없는 경우 발생합니다.
      */
     @PostMapping("/favoriteArtist")
-    @Transactional
     @ApiResponse(responseCode = "404", description = "Not Found User Or Track Or Album Or Artist")
-    @Operation(summary = "특정 유저의 Favorite아티스트 정보 저장")
-    public ResponseEntity<FavoriteArtistDetail> favoriteArtistSaveData(@RequestBody FavoriteRequest favoriteartist, @AuthenticationPrincipal Long userId) {
+    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+            array = @ArraySchema(schema = @Schema(implementation = ArtistDetail.class))))
+    @Operation(summary = "favorite아티스트 저장",description = "특정 유저의 Favorite아티스트 정보 저장")
+    public ResponseEntity<FavoriteArtistDetail> favoriteArtistSaveData(
+            @Parameter(description = "favorite아티스트 등록 정보")
+            @RequestBody FavoriteRequest favoriteartist,
+            @AuthenticationPrincipal Long userId) {
         return ResponseEntity.ok(favoriteartistService.favoriteArtistSaveData(favoriteartist, userId));
     }
 }

@@ -1,6 +1,10 @@
 package org.cosmic.backend.domain.albumChat.apis;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
@@ -8,6 +12,7 @@ import org.cosmic.backend.domain.albumChat.applications.AlbumChatCommentService;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDetail;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentRequest;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -48,9 +53,16 @@ public class AlbumChatCommentApi {
     @Transactional
     @GetMapping("/album/{albumId}/comment")
     @ApiResponse(responseCode = "404", description = "Not Found Album")
-    @Operation(summary = "특정 앨범의 앨범챗 댓글 열기")
+    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+            array = @ArraySchema(schema = @Schema(implementation = AlbumChatCommentDetail.class))))
+    @Operation(summary = "댓글 조회",description = "특정 앨범의 앨범챗 댓글 조회")
     public ResponseEntity<List<AlbumChatCommentDetail>> getAlbumChatComment(
-            @PathVariable("albumId") Long albumId, @RequestParam String sorted, @RequestParam int count) {
+            @Parameter(description = "앨범 id")
+            @PathVariable("albumId") Long albumId,
+            @Parameter(description = "댓글 정렬")
+            @RequestParam String sorted,
+            @Parameter(description = "페이지 번호")
+            @RequestParam int count) {
         return ResponseEntity.ok(commentService.getAlbumChatComment(albumId, sorted, count));
     }
 
@@ -65,9 +77,15 @@ public class AlbumChatCommentApi {
     @PostMapping("/album/{albumId}/comment")
     @Transactional
     @ApiResponse(responseCode = "404", description = "Not Found User or Album")
-    @Operation(summary = "특정 앨범의 앨범챗 댓글 만들기")
+    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+            array = @ArraySchema(schema = @Schema(implementation = AlbumChatCommentDetail.class))))
+    @Operation(summary = "댓글 생성",description = "특정 앨범챗 댓글 생성")
     public ResponseEntity<List<AlbumChatCommentDetail>> albumChatCommentCreate(
-            @PathVariable Long albumId, @RequestBody AlbumChatCommentRequest comment, @AuthenticationPrincipal Long userId) {
+            @Parameter(description = "앨범id")
+            @PathVariable Long albumId,
+            @Parameter(description = "앨범챗 댓글 내용")
+            @RequestBody AlbumChatCommentRequest comment,
+            @AuthenticationPrincipal Long userId) {
         return ResponseEntity.ok(commentService.albumChatCommentCreate(albumId, comment, userId));
     }
 
@@ -84,10 +102,17 @@ public class AlbumChatCommentApi {
     @Transactional
     @ApiResponse(responseCode = "400", description = "Not Match Album or User")
     @ApiResponse(responseCode = "404", description = "Not Found AlbumChatComment Or User")
-    @Operation(summary = "특정 앨범의 앨범챗 댓글 수정")
+    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+            array = @ArraySchema(schema = @Schema(implementation = AlbumChatCommentDetail.class))))
+    @Operation(summary = "댓글 수정",description = "특정 앨범챗 댓글 수정")
     public ResponseEntity<List<AlbumChatCommentDetail>> albumChatCommentUpdate(
-            @PathVariable Long albumId, @PathVariable Long albumChatCommentId,
-            @RequestBody AlbumChatCommentRequest comment, @AuthenticationPrincipal Long userId) {
+            @Parameter(description = "앨범 id")
+            @PathVariable Long albumId,
+            @Parameter(description = "앨범챗 댓글 id")
+            @PathVariable Long albumChatCommentId,
+            @Parameter(description = "앨범챗 댓글 내용")
+            @RequestBody AlbumChatCommentRequest comment,
+            @AuthenticationPrincipal Long userId) {
         return ResponseEntity.ok(commentService.albumChatCommentUpdate(albumId, albumChatCommentId, comment, userId));
     }
 
@@ -105,8 +130,14 @@ public class AlbumChatCommentApi {
     @ApiResponse(responseCode = "404", description = "Not Found AlbumChatComment")
     @Operation(summary = "특정 앨범의 앨범챗 댓글 삭제")
     public ResponseEntity<List<AlbumChatCommentDetail>> albumChatCommentDelete(
-            @PathVariable Long albumId, @PathVariable Long albumChatCommentId,
-            @RequestParam String sorted, @RequestParam int count) {
+            @Parameter(description = "앨범 id")
+            @PathVariable Long albumId,
+            @Parameter(description = "앨범챗 댓글 id")
+            @PathVariable Long albumChatCommentId,
+            @Parameter(description = "댓글 정렬")
+            @RequestParam String sorted,
+            @Parameter(description = "페이지 번호")
+            @RequestParam int count) {
         return ResponseEntity.ok(commentService.albumChatCommentDelete(albumId, albumChatCommentId, sorted, count));
     }
 }

@@ -1,6 +1,10 @@
 package org.cosmic.backend.domain.bestAlbum.apis;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
@@ -10,6 +14,7 @@ import org.cosmic.backend.domain.bestAlbum.dtos.AlbumScoreDto;
 import org.cosmic.backend.domain.bestAlbum.dtos.BestAlbumDetail;
 import org.cosmic.backend.domain.bestAlbum.dtos.BestAlbumListRequest;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -54,8 +59,13 @@ public class BestAlbumApi {
     @Transactional
     @GetMapping("/user/{userId}/bestAlbum")
     @ApiResponse(responseCode = "404", description = "Not Found User")
-    @Operation(summary = "특정 유저의 베스트 앨범 제공")
-    public ResponseEntity<List<BestAlbumDetail>> bestAlbumGive(@PathVariable Long userId) {
+    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+            array = @ArraySchema(schema = @Schema(implementation = BestAlbumDetail.class))))
+    @Operation(summary = "특정 유저의 베스트 앨범 조회", description = "특정 유저의 베스트 앨범 정보를 조회합니다.")
+    public ResponseEntity<List<BestAlbumDetail>> bestAlbumGive(
+        @Parameter(description = "유저 id")
+        @PathVariable Long userId)
+    {
         return ResponseEntity.ok(bestAlbumService.open(userId));
     }
 
@@ -71,9 +81,16 @@ public class BestAlbumApi {
     @PostMapping("/bestAlbum/{albumId}")
     @ApiResponse(responseCode = "404", description = "Not Found User or Album")
     @ApiResponse(responseCode = "409", description = "Exist BestAlbum")
-    @Operation(summary = "특정 유저에게 베스트 앨범 1개 추가")
+    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+            array = @ArraySchema(schema = @Schema(implementation = BestAlbumDetail.class))))
+    @Operation(summary = "특정 유저에게 베스트 앨범 1개 추가",description = "특정 유저의 베스트앨범 리스트에 1개 앨범을 추가합니다.")
     public ResponseEntity<List<BestAlbumDetail>> bestAlbumAdd(
-            @RequestBody AlbumScoreDto albumScoreDto, @PathVariable Long albumId, @AuthenticationPrincipal Long userId) {
+            @Parameter(description = "별점")
+            @RequestBody AlbumScoreDto albumScoreDto,
+            @Parameter(description = "추가할 앨범id")
+            @PathVariable Long albumId,
+            @AuthenticationPrincipal Long userId
+            ) {
 
         return ResponseEntity.ok(bestAlbumService.add(albumScoreDto.getScore(), userId, albumId));
     }
@@ -89,8 +106,13 @@ public class BestAlbumApi {
     @PostMapping("/bestAlbum")
     @ApiResponse(responseCode = "400", description = "Not Match BestAlbum")
     @ApiResponse(responseCode = "404", description = "Not Found User or Album")
-    @Operation(summary = "특정 유저에게 베스트 앨범 정보 순서 수정 또는 저장")
-    public ResponseEntity<List<BestAlbumDetail>> bestAlbumSave(@RequestBody BestAlbumListRequest bestAlbumlistRequest, @AuthenticationPrincipal Long userId) {
+    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+            array = @ArraySchema(schema = @Schema(implementation = BestAlbumDetail.class))))
+    @Operation(summary = "베스트 앨범 수정",description = "특정 유저의 베스트 앨범 정보 순서 수정 또는 저장")
+    public ResponseEntity<List<BestAlbumDetail>> bestAlbumSave(
+            @Parameter(description = "베스트앨범 리스트")
+            @RequestBody BestAlbumListRequest bestAlbumlistRequest,
+            @AuthenticationPrincipal Long userId) {
         return ResponseEntity.ok(bestAlbumService.save(userId, bestAlbumlistRequest.getBestalbum()));
     }
 
@@ -102,8 +124,12 @@ public class BestAlbumApi {
      */
     @GetMapping("bestAlbum/artist/{artistName}")
     @ApiResponse(responseCode = "404", description = "Not Match Artist Name")
-    @Operation(summary = "아티스트 이름 검색을 통한 앨범 정보 불러옴")
-    public ResponseEntity<List<AlbumInfoDetail>> artistSearch(@PathVariable String artistName) {
+    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+            array = @ArraySchema(schema = @Schema(implementation = AlbumInfoDetail.class))))
+    @Operation(summary = "아티스트 검색",description ="아티스트 이름 검색을 통한 앨범 정보 조회" )
+    public ResponseEntity<List<AlbumInfoDetail>> artistSearch(
+            @Parameter(description = "아티스트 이름")
+            @PathVariable String artistName) {
         return ResponseEntity.ok(bestAlbumService.searchArtist(artistName));
     }
 
@@ -115,8 +141,12 @@ public class BestAlbumApi {
      */
     @GetMapping("/bestAlbum/album/{albumName}")
     @ApiResponse(responseCode = "404", description = "Not Match Album Title")
-    @Operation(summary = "앨범 이름 검색을 통한 앨범 정보 불러옴")
-    public ResponseEntity<List<AlbumInfoDetail>> albumSearch(@PathVariable String albumName) {
+    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+            array = @ArraySchema(schema = @Schema(implementation = AlbumInfoDetail.class))))
+    @Operation(summary = "앨범 검색",description ="앨범 이름 검색을 통한 앨범 정보 조회" )
+    public ResponseEntity<List<AlbumInfoDetail>> albumSearch(
+            @Parameter(description = "앨범 이름")
+            @PathVariable String albumName) {
         return ResponseEntity.ok(bestAlbumService.searchAlbum(albumName));
     }
 }

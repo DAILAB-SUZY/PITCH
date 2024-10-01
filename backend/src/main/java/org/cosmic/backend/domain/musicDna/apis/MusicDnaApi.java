@@ -1,6 +1,10 @@
 package org.cosmic.backend.domain.musicDna.apis;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
@@ -11,6 +15,7 @@ import org.cosmic.backend.domain.musicDna.dtos.UserDnaResponse;
 import org.cosmic.backend.domain.musicDna.exceptions.NotMatchMusicDnaCountException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -46,7 +51,9 @@ public class MusicDnaApi {
      * @return 모든 DNA 데이터를 포함하는 리스트
      */
     @GetMapping("/dna")
-    @Operation(summary = "dna정보만 제공")
+    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+            array = @ArraySchema(schema = @Schema(implementation = DnaDetail.class))))
+    @Operation(summary = "music dna 제공",description = "데이터베이스에 있는 모든 music dna정보들 제공")
     public ResponseEntity<List<DnaDetail>> DnaGiveData() {
         return ResponseEntity.ok(musicDnaService.getAllDna());
     }
@@ -64,8 +71,13 @@ public class MusicDnaApi {
     @PostMapping("/dna")
     @ApiResponse(responseCode = "400", description = "Need 4 MusicDna")
     @ApiResponse(responseCode = "404", description = "Not Found Emotion")
-    @Operation(summary = "dna정보 설정")
-    public ResponseEntity<List<UserDnaResponse>> userDnaSaveData(@RequestBody DnaDto dna, @AuthenticationPrincipal Long userId) {
+    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+            array = @ArraySchema(schema = @Schema(implementation = DnaDetail.class))))
+    @Operation(summary = "dna 설정",description = "유저의 music dna데이터 저장")
+    public ResponseEntity<List<UserDnaResponse>> userDnaSaveData(
+            @Parameter(description = "유저의 dna데이터")
+            @RequestBody DnaDto dna,
+            @AuthenticationPrincipal Long userId) {
         return ResponseEntity.ok(musicDnaService.saveDNA(userId, dna.getDna()));
     }
 
@@ -80,7 +92,9 @@ public class MusicDnaApi {
     @GetMapping("/dna/user/{userId}")
     @Transactional
     @ApiResponse(responseCode = "404", description = "Not Found User")
-    @Operation(summary = "특정 유저의 dna정보만 제공")
+    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+            array = @ArraySchema(schema = @Schema(implementation = DnaDetail.class))))
+    @Operation(summary = "유저 dna조회",description = "특정 유저의 dna정보들 조회")
     public ResponseEntity<List<UserDnaResponse>> userDnaGive(@PathVariable Long userId) {
         return ResponseEntity.ok(musicDnaService.getUserDna(userId));
     }

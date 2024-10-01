@@ -37,18 +37,18 @@ public class AlbumChatService {
     /**
      * <p>특정 앨범의 앨범챗 데이터를 조회합니다.</p>
      *
-     * @param album 앨범 정보를 포함한 DTO 객체
+     * @param albumId 앨범 Id
      * @return 앨범챗 세부 정보를 포함한 {@link AlbumChatDetail}
      *
      * @throws NotFoundAlbumChatException 앨범챗을 찾을 수 없을 때 발생합니다.
      */
     @Transactional
-    public AlbumChatDetail getAlbumChatById(AlbumDto album) {
-        if (albumRepository.findById(album.getAlbumId()).isEmpty()) {
+    public AlbumChatDetail getAlbumChatById(Long albumId) {
+        if (albumRepository.findById(albumId).isEmpty()) {
             throw new NotFoundAlbumChatException();
         }
-        AlbumChatDetail albumChatDetail = new AlbumChatDetail(albumRepository.findById(album.getAlbumId()).get());
-        List<AlbumChatCommentDetail> albumChatCommentDetails = albumChatCommentService.getAlbumChatCommentRecentId(album.getAlbumId(), 0);
+        AlbumChatDetail albumChatDetail = new AlbumChatDetail(albumRepository.findById(albumId).get());
+        List<AlbumChatCommentDetail> albumChatCommentDetails = albumChatCommentService.getAlbumChatCommentRecentId(albumId, 0);
         albumChatDetail.setComments(albumChatCommentDetails);
         return albumChatDetail;
     }
