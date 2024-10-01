@@ -30,6 +30,9 @@ public class Album {//앨범과 트랙은 1:N관계이며 앨범과 아티스트
     @Column(name="album_id")
     private Long albumId;
 
+    @Column(name="spotify_album_id",nullable=false)
+    private String spotifyAlbumId;
+
     @Column(nullable=false)
     private String title;//앨범 제목
 

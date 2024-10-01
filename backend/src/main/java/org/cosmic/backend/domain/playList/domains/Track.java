@@ -22,6 +22,9 @@ public class Track {//여기엔 모든 노래들이 담길 것임. 담길 때 �
     @Column(name="track_id")
     private Long trackId ;
 
+    @Column(name="spotify_track_id",nullable=false)
+    private String spotifyTrackId;
+
     @OneToOne(fetch = FetchType.EAGER)
     private Genre genre;
 

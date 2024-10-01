@@ -22,6 +22,9 @@ public class Artist {//
     @Column(name="artist_id")
     private Long artistId ;
 
+    @Column(name="spotify_artist_id",nullable=false)
+    private String spotifyArtistId;
+
     @Column(name="artist_name")
     private String artistName;
 
