@@ -17,7 +17,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @ContextConfiguration(initializers = PostgreSQLTestContainerTests.DataSourceInitializer.class)
 public class RepositoryBaseTest {
     @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:latest");
+    static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:latest");
 
     public static class DataSourceInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
         @Override

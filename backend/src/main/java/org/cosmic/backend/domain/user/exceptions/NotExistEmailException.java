@@ -1,13 +1,12 @@
 package org.cosmic.backend.domain.user.exceptions;
 
-import org.cosmic.backend.globals.exceptions.UnAuthorizationException;
+import org.cosmic.backend.globals.exceptions.NotFoundException;
 
-public class NotExistEmailException extends UnAuthorizationException {
+public class NotExistEmailException extends NotFoundException {
     public NotExistEmailException(String errorMessage) {
         super(errorMessage);
     }
-
     public NotExistEmailException(){
-        this("Not found email");
+        this(getNotExistEmailError());
     }
 }
