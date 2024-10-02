@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import InputBox from "../inputs/InputBox";
 import useStore from "../store/store";
 import { useState } from "react";
+// @ts-ignore
+import base64, { decode } from "js-base64";
 
 const Title = styled.div<{ fontSize: string; margin: string }>`
   font-size: ${(props) => props.fontSize};
@@ -76,38 +78,48 @@ function LoginPage() {
   const [typedEmail, setTypedEmail] = useState("");
   const [typedPassword, setTypedPassword] = useState("");
 
-  let loginUrl = "http://10.255.81.70:8030/auth/signin";
+  const server = "http://203.255.81.70:8030";
+  let loginUrl = server + "/api/auth/signin";
+  const { email, setEmail, name, setName, id, setId } = useStore();
   const Login = () => {
     const fetchDatas = async () => {
       console.log("로그인");
-      const response = await fetch(loginUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          refreshToken: null,
-          token: null,
-          email: typedEmail,
-          password: typedPassword,
-          id: 0,
-        }),
-      });
-      const data = await response.json();
-      console.log(response.status);
-      if (data.token) {
-        localStorage.setItem("login-token", data.token);
-        console.log(localStorage.getItem("login-token"));
+      try {
+        const response = await fetch(loginUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            refreshToken: null,
+            token: null,
+            email: typedEmail,
+            password: typedPassword,
+            id: 0,
+          }),
+        });
+        const data = await response.json();
+
+        if (response.status == 200) {
+          localStorage.setItem("login-token", data.token);
+          console.log(localStorage.getItem("login-token"));
+          localStorage.setItem("login-refreshToken", data.refreshToken);
+          console.log(localStorage.getItem("login-refreshToken"));
+          setEmail(data.email);
+          setId(data.id);
+          setName(data.username);
+          console.log(data);
+          const parseToken = JSON.parse(decode(data.token.split(".")[1]));
+          console.log("parsed Token: ", parseToken);
+          // // setName();
+
+          console.log("로그인 완료");
+          GoToHomePage();
+        } else console.log("로그인 실패");
+        console.error("Failed to fetch data:", response.status);
+      } catch (error) {
+        console.error("Error fetching the JSON file:", error);
       }
-      if (data.refreshToken) {
-        localStorage.setItem("login-refreshToken", data.refreshToken);
-        console.log(localStorage.getItem("login-refreshToken"));
-      }
-      if (response.status == 200) {
-        console.log("로그인 완료");
-        GoToHomePage();
-      } else console.log("로그인 실패");
-      console.log(data);
     };
     fetchDatas();
   };

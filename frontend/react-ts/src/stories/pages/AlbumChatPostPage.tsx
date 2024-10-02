@@ -49,9 +49,8 @@ const WriterTextArea = styled.div`
   justify-content: center;
 `;
 
-const Title = styled.div<{ fontSize: string; margin: string }>`
+const Title = styled.div<{ fontSize: string }>`
   font-size: ${(props) => props.fontSize};
-  margin: ${(props) => props.margin};
   font-family: "Bd";
 `;
 
@@ -81,7 +80,7 @@ function AlbumChatPostPage() {
           <Circle></Circle>
           <Title fontSize={"30px"}>AlbumPost</Title>
           <WriterTextArea>
-            <Title>by김준호</Title>
+            <Title fontSize="20px">by김준호</Title>
           </WriterTextArea>
         </RowAlignArea>
       </Header>

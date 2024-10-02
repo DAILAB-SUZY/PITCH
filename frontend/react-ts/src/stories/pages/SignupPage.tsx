@@ -128,13 +128,11 @@ function SignupPage() {
   const GoToLoginPage = () => {
     navigate("/Login");
   };
-  // const [itemid, setItemid] = useState('');
-  // const onChange = (event) => {
-  //   setItemid(event.target.value);
-  // }
-  let url = "http://10.255.81.70:8030/mail/request";
-  let checkCodeUrl = "http://10.255.81.70:8030/mail/verify";
-  let signUpUrl = "http://10.255.81.70:8030/user/register";
+
+  const server = "http://203.255.81.70:8030";
+  let url = server + "/api/mail/request";
+  let checkCodeUrl = server + "/api/mail/verify";
+  let signUpUrl = server + "/api/user";
 
   const emailcheck = () => {
     if (idError != "") return;

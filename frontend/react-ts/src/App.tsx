@@ -1,4 +1,3 @@
-import styled from "styled-components";
 import { Routes, Route, BrowserRouter, useNavigate } from "react-router-dom";
 import LoginPage from "./stories/pages/LoginPage";
 import StartPage from "./stories/pages/StartPage";
@@ -8,24 +7,10 @@ import PlayListPage from "./stories/pages/PlayListPage";
 import AlbumChatPage from "./stories/pages/AlbumChatPage";
 import AlbumChatPostPage from "./stories/pages/AlbumChatPostPage";
 import MusicProfilePage from "./stories/pages/MusicProfilePage";
+import MusicProfileEditPage from "./stories/pages/MusicProfileEditPage";
+import AlbumPostPage from "./stories/pages/AlbumPostPage";
+import AlbumPostEditPage from "./stories/pages/AlbumPostEditPage";
 import "./styles/reset.css";
-
-type titleType = {
-  fontSize: string;
-  margin: string;
-};
-
-const Title = styled.div<{ fontSize: string; margin: string }>`
-  font-size: ${(props) => props.fontSize};
-  margin: ${(props) => props.margin};
-`;
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-`;
 
 function App() {
   return (
@@ -39,6 +24,9 @@ function App() {
         <Route path="/AlbumChatPage" element={<AlbumChatPage />} />
         <Route path="/AlbumChatPostPage" element={<AlbumChatPostPage />} />
         <Route path="/MusicProfilePage" element={<MusicProfilePage />} />
+        <Route path="/MusicProfileEditPage" element={<MusicProfileEditPage />} />
+        <Route path="/AlbumPostPage" element={<AlbumPostPage />} />
+        <Route path="/AlbumPostEditPage" element={<AlbumPostEditPage />} />
       </Routes>
     </BrowserRouter>
   );

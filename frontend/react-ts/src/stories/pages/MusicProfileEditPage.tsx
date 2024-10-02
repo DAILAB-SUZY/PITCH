@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../../img/logo.png";
 import { colors } from "../../styles/color";
@@ -15,7 +15,6 @@ import cover4 from "../../img/weeknd.jpg";
 import cover5 from "../../img/oasis.jpeg";
 import cover6 from "../../img/aespa2.jpg";
 import aespaProfile from "../../img/aespaProfile.jpg";
-import useStore from "../store/store";
 
 const Container = styled.div`
   display: flex;
@@ -243,79 +242,37 @@ const PlaylistCardArea = styled.div`
   margin-bottom: 35px;
 `;
 
-const EditBtn = styled.div`
+const BtnArea = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 50px;
+  margin-bottom: 100px;
+`;
+
+const Btn = styled.div<{ bgColor: string }>`
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-evenly;
-  background-color: ${colors.BG_grey};
+  background-color: ${(props) => props.bgColor};
   width: 70px;
   height: 30px;
   border-radius: 15px;
   padding: 10px;
   box-sizing: border-box;
-  margin-bottom: 50px;
+  margin: 0px 20px;
   box-shadow: 0 0px 5px rgba(0, 0, 0, 0.1);
 `;
 
-function MusicProfilePage() {
+function MusicProfileEditPage() {
   const [tabBtn, setTabBtn] = useState(1);
   const navigate = useNavigate();
-  const GoToEditPage = () => {
-    navigate("/MusicProfileEditPage");
+  const GoToMusicProfilePage = () => {
+    navigate("/MusicProfilePage");
   };
-
-  const { email, setEmail, name, setName, id, setId } = useStore();
-
-  const server = "http://203.255.81.70:8030";
-  let musiProfileUrl = `${server}/api/user/${id}/musicProfile`;
-  const reissueTokenUrl = `${server}/api/auth/reissued`;
-
-  const fetchData = async () => {
-    const token = localStorage.getItem("login-token");
-    const refreshToken = localStorage.getItem("login-refreshToken");
-
-    if (token) {
-      try {
-        console.log("fetching...");
-        const response = await fetch(musiProfileUrl, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (response.ok) {
-          console.log("set PostList");
-          const data = await response.json();
-          console.log(data);
-        } else if (response.status === 401) {
-          console.log("reissuing Token");
-          const reissueToken = await fetch(reissueTokenUrl, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Refresh-Token": `${refreshToken}`,
-            },
-          });
-          const data = await reissueToken.json();
-          localStorage.setItem("login-token", data.token);
-          localStorage.setItem("login-refreshToken", data.refreshToken);
-          fetchData();
-        } else {
-          console.error("Failed to fetch data:", response.status);
-        }
-      } catch (error) {
-        console.error("Error fetching the JSON file:", error);
-      } finally {
-        console.log("finished");
-      }
-    }
-  };
-  useEffect(() => {
-    fetchData();
-  }, []);
   const playlistData = {
     id: 1,
     userName: "junho1231",
@@ -453,25 +410,18 @@ function MusicProfilePage() {
               <Title>Favorite Artist</Title>
               <FavoriteArtistCard FavoriteArtistData={FavoriteArtistData}></FavoriteArtistCard>
             </FavoriteArtistArea>
-            <EditBtn onClick={() => GoToEditPage()}>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="17"
-                height="17"
-                fill="currentColor"
-                className="bi bi-pencil-square"
-                viewBox="0 0 16 16"
-              >
-                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                <path
-                  fill-rule="evenodd"
-                  d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
-                />
-              </svg>
-              <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 4px">
-                수정
-              </Text>
-            </EditBtn>
+            <BtnArea>
+              <Btn bgColor={colors.BG_lightpink} onClick={() => GoToMusicProfilePage()}>
+                <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 4px">
+                  저장
+                </Text>
+              </Btn>
+              <Btn bgColor={colors.BG_grey} onClick={() => GoToMusicProfilePage()}>
+                <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 4px">
+                  취소
+                </Text>
+              </Btn>
+            </BtnArea>
           </>
         ) : (
           <></>
@@ -481,4 +431,4 @@ function MusicProfilePage() {
   );
 }
 
-export default MusicProfilePage;
+export default MusicProfileEditPage;
