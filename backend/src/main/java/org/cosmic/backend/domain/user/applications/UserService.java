@@ -112,7 +112,6 @@ public class UserService {
                 .refreshToken(tokenProvider.createRefreshToken(user))
                 .token(tokenProvider.create(user))
                 .email(email)
-                .password(user.getPassword())
                 .username(user.getUsername())
                 .id(user.getUserId())
                 .build();
