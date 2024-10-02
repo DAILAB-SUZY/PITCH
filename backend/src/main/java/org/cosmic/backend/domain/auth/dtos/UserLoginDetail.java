@@ -14,6 +14,7 @@ public class UserLoginDetail {
     private String token;
     private String email;
     private String password;
+    private String username;
     private Long id;
     public static UserLoginDetail createUserLoginDetail(String email, String password) {
         return  UserLoginDetail.builder()
