@@ -12,7 +12,7 @@ const Container = styled.div`
   overflow-y: scroll;
   height: 100vh; //auto;
   width: 100vw;
-  background-color: white;
+  background-color: ${colors.BG_grey};
   color: ${colors.Font_black};
 `;
 
@@ -23,7 +23,6 @@ const AlbumPostArea = styled.div`
   align-items: center;
   justify-content: flex-start;
   flex-direction: column;
-  background-color: white;
 `;
 
 const AlbumTitleArea = styled.div`
@@ -109,7 +108,41 @@ const ButtonArea = styled.div`
   background-color: ${colors.BG_grey};
 `;
 
-const PostArea = styled.div`
+const Line = styled.div`
+  width: 95vw;
+  height: 1px;
+  background-color: ${colors.Button_deactive};
+`;
+
+const SearchArea = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: auto;
+  margin: 10px;
+  background-color: ${colors.BG_grey};
+`;
+
+const ContentInput = styled.input`
+  width: 90vw;
+  height: 30px;
+  padding: 10px;
+  box-sizing: border-box;
+  background-color: ${colors.InputBox};
+  font-size: 15px;
+  border: 0;
+  border-radius: 7px;
+  outline: none;
+  color: ${colors.Font_black};
+
+  &::placeholder {
+    opacity: 0.7;
+  }
+`;
+
+const SearchResultArea = styled.div`
   display: flex;
   width: 100vw;
   height: 100%;
@@ -122,27 +155,6 @@ const PostArea = styled.div`
   box-sizing: border-box;
   background-color: ${colors.BG_grey};
   z-index: 10;
-`;
-
-const ProfileArea = styled.div`
-  display: flex;
-  width: 100%;
-  justify-content: flex-start;
-  align-items: center;
-  flex-direction: row;
-`;
-
-const ProfileTextArea = styled.div`
-  display: flex;
-  justify-content: flex-start;
-  align-items: flex-end;
-`;
-const ProfileName = styled.div`
-  display: flex;
-  font-size: 20px;
-  font-family: "Rg";
-  margin-left: 10px;
-  color: ${colors.Font_black};
 `;
 
 const PostContentArea = styled.div`
@@ -162,21 +174,6 @@ const PostContentArea = styled.div`
   margin: 10px 0px 20px 0px;
 
   transition: height ease 0.7s;
-`;
-const Line = styled.div`
-  width: 95vw;
-  height: 1px;
-  background-color: ${colors.Button_deactive};
-`;
-const ContentInput = styled.textarea`
-  width: 100%;
-  height: 100%;
-  padding: 10px;
-  background-color: ${colors.BG_grey};
-  font-size: 15px;
-  border: 0;
-  outline: none;
-  color: ${colors.Font_black};
 `;
 
 interface AlbumPost {
@@ -236,12 +233,12 @@ interface AlbumPost {
   ];
 }
 
-function AlbumPostEditPage() {
+function SearchPage() {
   //   const [albumPost, setAlbumPost] = useState<AlbumPost | null>(null);
-  const [postContent, setPostContent] = useState("내용을 입력해주세요");
+  const [searchKeyword, setSearchKeyword] = useState("");
   const { email, setEmail, name, setName, id, setId } = useStore();
 
-  const albumPost = {
+  let albumPost = {
     postId: "post01",
     content: "",
     createAt: "",
@@ -263,78 +260,88 @@ function AlbumPostEditPage() {
 
   const navigate = useNavigate();
   const GoToSearchPage = () => {
-    navigate("/SearchPage");
+    navigate("/Signup");
+  };
+
+  const server = "http://203.255.81.70:8030";
+  let searchUrl = `${server}/api/searchSpotify`;
+  const reissueTokenUrl = `${server}/api/auth/reissued`;
+  const fetchSearch = async () => {
+    const token = localStorage.getItem("login-token");
+    const refreshToken = localStorage.getItem("login-refreshToken");
+
+    if (token) {
+      try {
+        console.log(`searching ${searchKeyword}...`);
+        const response = await fetch(searchUrl, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            q: searchKeyword,
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+        } else if (response.status === 401) {
+          console.log("reissuing Token");
+          const reissueToken = await fetch(reissueTokenUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Refresh-Token": `${refreshToken}`,
+            },
+          });
+          const data = await reissueToken.json();
+          localStorage.setItem("login-token", data.token);
+          localStorage.setItem("login-refreshToken", data.refreshToken);
+          fetchSearch();
+        } else {
+          console.error("Failed to fetch data:", response.status);
+        }
+      } catch (error) {
+        console.error("Error fetching the JSON file:", error);
+      } finally {
+        console.log("finished");
+      }
+    }
   };
 
   return (
     <Container>
       <AlbumPostArea>
-        {/*  TODO: 스크롤 되다가 일부 남기고 멈추기 */}
-        {albumPost && (
-          <AlbumTitleArea
-            onClick={() => {
-              GoToSearchPage();
-            }}
-          >
-            <ImageArea>
-              <img
-                src={albumPost.album.albumCover}
-                width="100%"
-                object-fit="cover"
-                // z-index="1"
-              ></img>
-            </ImageArea>
-            <GradientBG> </GradientBG>
-            <TitleTextArea>
-              <Text fontFamily="Bd" fontSize="40px" margin="0px" color={colors.BG_white}>
-                {albumPost.album.title}
-              </Text>
-              <Text fontFamily="Rg" fontSize="20px" margin="0px 0px 2px 10px" color={colors.BG_white}>
-                {albumPost.album.artistName}
-              </Text>
-            </TitleTextArea>
-          </AlbumTitleArea>
-        )}
-        {!albumPost && (
-          <AlbumTitleArea
-            onClick={() => {
-              GoToSearchPage();
-            }}
-          >
-            <GradientBG> </GradientBG>
-            <TitleTextArea>
-              <Text fontFamily="Bd" fontSize="40px" margin="0px" color="white">
-                앨범을 선택해주세요
-              </Text>
-            </TitleTextArea>
-          </AlbumTitleArea>
-        )}
         <ButtonArea>
           <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 10px" color={colors.Font_black}>
             취소
           </Text>
           <Text fontFamily="Bd" fontSize="20px" margin="0px" color={colors.Font_black}>
-            Album Post
+            search
           </Text>
           <Text fontFamily="Rg" fontSize="15px" margin="0px 10px 0px 0px" color={colors.Font_black}>
             저장
           </Text>
         </ButtonArea>
         <Line></Line>
-        <PostArea>
-          <ProfileArea>
-            <ProfileTextArea>
-              <ProfileName>{name}</ProfileName>
-            </ProfileTextArea>
-          </ProfileArea>
-          <PostContentArea>
-            <ContentInput></ContentInput>
-          </PostContentArea>
-          <ButtonArea></ButtonArea>
-        </PostArea>
+        <SearchArea>
+          <form onSubmit={() => fetchSearch()}>
+            <ContentInput
+              placeholder="앨범의 제목을 입력하세요"
+              onChange={(e) => setSearchKeyword(e.target.value)}
+              // onSubmit={() => fetchSearch()}
+            ></ContentInput>
+          </form>
+        </SearchArea>
+
+        <SearchResultArea>
+          <PostContentArea></PostContentArea>
+        </SearchResultArea>
       </AlbumPostArea>
     </Container>
   );
 }
 
-export default AlbumPostEditPage;
+export default SearchPage;

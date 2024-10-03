@@ -143,15 +143,17 @@ function HomePage() {
 
   console.log("render-----------------------------");
   console.log(`albumpost: `, albumPostList);
-  console.log(`postPage: ${postPage}`);
+  console.log(`postPage: `, postPage);
 
   const server = "http://203.255.81.70:8030";
-  let albumPostUrl = `${server}/api/album/post?page=${postPage}&limit=5`;
+
+  const PlaylistUrl = `${server}/api/user/${id}/playlist`;
   const reissueTokenUrl = `${server}/api/auth/reissued`;
 
   // Intersection Observer용 ref
   const observerRef = useRef<HTMLDivElement | null>(null);
-
+  const token = localStorage.getItem("login-token");
+  const refreshToken = localStorage.getItem("login-refreshToken");
   interface AlbumPost {
     postId: number;
     content: string;
@@ -209,13 +211,52 @@ function HomePage() {
     ];
   }
 
+  // TODO: playlist fetching
+  const fetchPlaylist = async () => {
+    if (token) {
+      try {
+        console.log(`fetching Playlist...`);
+        const response = await fetch(PlaylistUrl, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+        } else if (response.status === 401) {
+          console.log("reissuing Token");
+          const reissueToken = await fetch(reissueTokenUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Refresh-Token": `${refreshToken}`,
+            },
+          });
+          const data = await reissueToken.json();
+          localStorage.setItem("login-token", data.token);
+          localStorage.setItem("login-refreshToken", data.refreshToken);
+          fetchPlaylist();
+        } else {
+          console.error("Failed to fetch data:", response.status);
+        }
+      } catch (error) {
+        console.error("Error fetching the JSON file:", error);
+      } finally {
+        console.log("finished");
+      }
+    }
+  };
+
   // 무한 스크롤 데이터를 가져오는 함수
   const fetchAlbumPosts = async () => {
-    const token = localStorage.getItem("login-token");
-    const refreshToken = localStorage.getItem("login-refreshToken");
     console.log("start fetching");
     console.log(`isLoading: ${isLoading}`);
-
+    let albumPostUrl = `${server}/api/album/post?page=${postPage}&limit=5`;
+    console.log(albumPostUrl);
     if (token && !isLoading) {
       setIsLoading(true);
       console.log(`fetching ${postPage} page Album Posts...`);
@@ -356,7 +397,6 @@ function HomePage() {
       </Header>
       <Body>
         <PlaylistArea>
-          {/* <PlaylistCircle></PlaylistCircle> */}
           <Title fontSize="22px" margin="20px 0px 0px 20px">
             Friend's Playlist
           </Title>

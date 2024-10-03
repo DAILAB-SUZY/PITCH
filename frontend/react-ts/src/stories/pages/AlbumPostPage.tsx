@@ -300,10 +300,10 @@ function AlbumPostPage() {
           </ImageArea>
           <GradientBG> </GradientBG>
           <TitleTextArea>
-            <Text fontFamily="Bd" fontSize="40px" margin="0px" color="black">
+            <Text fontFamily="Bd" fontSize="40px" margin="0px" color={colors.BG_white}>
               {albumPost.album.title}
             </Text>
-            <Text fontFamily="Rg" fontSize="20px" margin="0px 0px 2px 10px" color="black">
+            <Text fontFamily="Rg" fontSize="20px" margin="0px 0px 2px 10px" color={colors.BG_white}>
               {albumPost.album.artistName}
             </Text>
           </TitleTextArea>

@@ -10,6 +10,7 @@ import MusicProfilePage from "./stories/pages/MusicProfilePage";
 import MusicProfileEditPage from "./stories/pages/MusicProfileEditPage";
 import AlbumPostPage from "./stories/pages/AlbumPostPage";
 import AlbumPostEditPage from "./stories/pages/AlbumPostEditPage";
+import SearchPage from "./stories/pages/SearchPage";
 import "./styles/reset.css";
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
         <Route path="/MusicProfileEditPage" element={<MusicProfileEditPage />} />
         <Route path="/AlbumPostPage" element={<AlbumPostPage />} />
         <Route path="/AlbumPostEditPage" element={<AlbumPostEditPage />} />
+        <Route path="/SearchPage" element={<SearchPage />} />
       </Routes>
     </BrowserRouter>
   );

@@ -7,7 +7,7 @@ import InputBox from "../inputs/InputBox";
 import { useState } from "react";
 import useStore from "../store/store";
 
-const Title = styled.div<{ fontSize: string; margin: string }>`
+const Title = styled.div<{ fontSize?: string; margin?: string }>`
   font-size: ${(props) => props.fontSize};
   margin: ${(props) => props.margin};
   font-family: "Bd";
@@ -61,13 +61,15 @@ function SignupPage() {
   const [codecheckError, setCodecheckError] = useState("");
   const [noticeMail, setNoticeMail] = useState("");
 
+  const [password, setPassword] = useState("");
+
   // const email = UserInfoStore((state) => state.email)
   const email = useStore((state) => state.email);
   const setEmail = useStore((state) => state.setEmail);
   const name = useStore((state) => state.name);
   const setName = useStore((state) => state.setName);
-  const password = useStore((state) => state.password);
-  const setPassword = useStore((state) => state.setPassword);
+  // const password = useStore((state) => state.password);
+  // const setPassword = useStore((state) => state.setPassword);
 
   const idCheckHandler = async (email: string) => {
     const check = /[a-z0-9]+@[a-z]+\.[a-z]{2,3}/;
