@@ -185,7 +185,16 @@ public class SearchTrackService extends SearchService {
             spotifySearchTrackResponses.add(spotifySearchTrackResponse);
 
 
+            String datas = searchArtistImg(accessToken,spotifySearchTrackResponses.get(i).getTrackArtist().getArtistId());
 
+            rootNode = mapper.readTree(datas);
+            JsonNode trackArtistNode = rootNode.path("images");
+            String trackImgUrl = trackArtistNode.get(0).path("url").asText();
+            SpotifySearchArtistResponse artistResponse=new SpotifySearchArtistResponse();
+            artistResponse.setImageUrl(trackImgUrl);
+            artistResponse.setName(spotifySearchArtistResponse.getName());
+            artistResponse.setArtistId(spotifySearchArtistResponse.getArtistId());
+            spotifySearchTrackResponses.get(i).setTrackArtist(artistResponse);
 
 
 
@@ -195,6 +204,7 @@ public class SearchTrackService extends SearchService {
             spotifySearchAlbumResponse.setRelease_date(item.path("release_date").asText());
             spotifySearchAlbumResponse.setAlbumId(item.path("id").asText());
 
+            /*
             List<Image> images = new ArrayList<>();
             JsonNode imagesNode = item.path("images");
             for (JsonNode imageNode : imagesNode) {
@@ -204,7 +214,8 @@ public class SearchTrackService extends SearchService {
                         imageNode.path("width").asInt()
                 );
                 images.add(image);
-            }
+            }*/
+
             spotifySearchAlbumResponse.setImageUrl(item.path("images").get(0).path("url").asText());
 
 
@@ -220,6 +231,21 @@ public class SearchTrackService extends SearchService {
             spotifySearchTrackResponse.setAlbum(spotifySearchAlbumResponse);
             spotifySearchTrackResponses.add(spotifySearchTrackResponse);
             //아티스트
+
+            datas = searchArtistImg(accessToken, spotifySearchTrackResponses.get(i).getAlbum().getAlbumArtist().getArtistId());
+
+            rootNode = mapper.readTree(datas);
+            JsonNode albumArtistNode = rootNode.path("images");
+            String albumImgUrl = albumArtistNode.get(0).path("url").asText();
+
+
+            SpotifySearchArtistResponse artistResponse2=new SpotifySearchArtistResponse();
+            artistResponse2.setImageUrl(albumImgUrl);
+            artistResponse2.setName(spotifySearchArtistResponse.getName());
+            artistResponse2.setArtistId(spotifySearchArtistResponse.getArtistId());
+            spotifySearchTrackResponses.get(i).getAlbum().setAlbumArtist(artistResponse2);
+
+
         }
 
         //saveTrack(accessToken,spotifySearchTrackResponses);

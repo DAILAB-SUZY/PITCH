@@ -19,11 +19,11 @@ VALUES
 
 INSERT INTO public.users (user_id,create_time, password, profile_picture, username, dna1_id, dna2_id, dna3_id, dna4_id, email)
 VALUES
-    (1,'2023-09-01 10:00:00', '12345678', 'profile1.jpg', 'john_doe', 1, 2, 3, 4, 'john@example.com'),
-    (2,'2023-09-02 11:00:00', 'securepass456', 'profile2.jpg', 'jane_doe', 2, 3, 4, 5, 'jane@example.com'),
-    (3,'2023-09-03 12:00:00', 'mypassword789', 'profile3.jpg', 'user_abc', 3, 4, 5, 6, 'abc@example.com'),
-    (4,'2023-09-04 13:00:00', 'pass1234', 'profile4.jpg', 'music_fan', 4, 5, 6, 7, 'fan@example.com'),
-    (5,'2023-09-05 14:00:00', 'secret123', 'profile5.jpg', 'track_master', 5, 6, 7, 8, 'master@example.com');
+    (10101, '2023-09-01 10:00:00', '12345678', 'profile1.jpg', 'john_doe', 1, 2, 3, 4, 'john@example.com'),
+    (10102, '2023-09-02 11:00:00', 'securepass456', 'profile2.jpg', 'jane_doe', 2, 3, 4, 5, 'jane@example.com'),
+    ( 10103,'2023-09-03 12:00:00', 'mypassword789', 'profile3.jpg', 'user_abc', 3, 4, 5, 6, 'abc@example.com'),
+    ( 10104,'2023-09-04 13:00:00', 'pass1234', 'profile4.jpg', 'music_fan', 4, 5, 6, 7, 'fan@example.com'),
+    ( 10105,'2023-09-05 14:00:00', 'secret123', 'profile5.jpg', 'track_master', 5, 6, 7, 8, 'master@example.com');
 
 INSERT INTO public.artist (artist_id,artist_name,artist_cover,spotify_artist_id)
 VALUES
@@ -56,11 +56,11 @@ VALUES
 
 INSERT INTO public.playlist (update_time, user_id)
 VALUES
-    ('2024-09-06 15:00:00', 1),
-    ('2024-09-07 16:00:00', 2),
-    ('2024-09-08 17:00:00', 3),
-    ('2024-09-26 18:00:00', 4),
-    ('2024-09-26 19:00:00', 5);
+    ('2024-09-06 15:00:00', 10101),
+    ('2024-09-07 16:00:00', 10102),
+    ('2024-09-08 17:00:00', 10103),
+    ('2024-09-26 18:00:00', 10104),
+    ('2024-09-26 19:00:00', 10105);
 
 INSERT INTO Playlist_Track (id, track_order, playlist_id, track_id)
 VALUES
