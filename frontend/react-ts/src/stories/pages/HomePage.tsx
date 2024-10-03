@@ -259,7 +259,7 @@ function HomePage() {
     let albumPostUrl = `${server}/api/album/post?page=${postPage}&limit=5`;
     console.log(albumPostUrl);
     if (token && !isLoading && !isEnd) {
-      setIsLoading(true);
+      setIsLoading((loading) => !loading);
       console.log(`fetching ${postPage} page Album Posts...`);
       try {
         console.log("fetching...");
@@ -445,14 +445,13 @@ function HomePage() {
         </AlbumPostArea>
         {/* TODO: 무한 스크롤 구현 */}
         {/* Loading Indicator */}
-        {isLoading && (
+        {isLoading ? (
           <Text fontSize="16px" margin="20px 0px">
             로딩 중...
           </Text>
+        ) : (
+          <div ref={observerRef} style={{ height: "100px", backgroundColor: "transparent" }} />
         )}
-
-        {/* 무한 스크롤을 위한 observer div */}
-        <div ref={observerRef} style={{ height: "100px", backgroundColor: "transparent" }} />
       </Body>
     </Container>
   );

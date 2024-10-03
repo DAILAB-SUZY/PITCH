@@ -116,13 +116,14 @@ const Line = styled.div`
 
 const SearchArea = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   width: 100vw;
-  height: auto;
+  height: 30px;
   margin: 10px;
   background-color: ${colors.BG_grey};
+  overflow: scroll;
 `;
 
 const ContentInput = styled.input`
@@ -145,7 +146,7 @@ const ContentInput = styled.input`
 const SearchResultArea = styled.div`
   display: flex;
   width: 100vw;
-  height: 100%;
+  height: 600px;
   /* overflow: hidden; */
   align-items: center;
   justify-content: flex-start;
@@ -188,98 +189,34 @@ const Title = styled.div<{ fontSize?: string; margin?: string }>`
   font-size: ${(props) => props.fontSize};
   margin: ${(props) => props.margin};
   font-family: "Bd";
-  color: white;
+  color: ${colors.Font_black};
 `;
 
 interface SearchResult {
-  postId: number;
-  content: string;
-  createAt: number;
-  updateAt: number;
-  author: {
-    id: number;
-    username: string;
-    profilePicture: string;
+  albumArtist: {
+    artistId: string;
+    imageUrl: string;
+    name: string;
   };
-  album: {
-    id: number;
-    title: string;
-    albumCover: string;
-    artistName: string;
-    genre: string;
-  };
-  comments: [
-    {
-      id: number;
-      content: string;
-      createdAt: number;
-      updatedAt: number;
-      likes: [
-        {
-          id: number;
-          username: string;
-          profilePicture: string;
-        },
-      ];
-      childComments: [
-        {
-          id: number;
-          content: string;
-          author: {
-            id: number;
-            username: string;
-            profilePicture: string;
-          };
-        },
-      ];
-      author: {
-        id: number;
-        username: string;
-        profilePicture: string;
-      };
-    },
-  ];
-  likes: [
-    {
-      id: number;
-      username: string;
-      profilePicture: string;
-    },
-  ];
+  albumId: string;
+  imageUrl: string;
+  name: string;
+  total_tracks: number;
+  release_date: string;
 }
 
 function SearchPage() {
   //   const [albumPost, setAlbumPost] = useState<AlbumPost | null>(null);
   const [searchKeyword, setSearchKeyword] = useState("");
-  const { email, setEmail, name, setName, id, setId } = useStore();
-
-  let albumPost = {
-    postId: "post01",
-    content: "",
-    createAt: "",
-    updateAt: "",
-    author: {
-      id: 1,
-      username: name,
-      profilePicture:
-        "https://i.namu.wiki/i/-s0neKOBTEboNgx8tbXrz2ZQ-qt4S4rfX0ztS1mk2bqYPdI5ALlatQok3HoAvRq30J79s9xv_5J7N4MSEdt6Nw.webp",
-    },
-    album: {
-      id: 12,
-      title: "1989",
-      albumCover: "https://i.scdn.co/image/ab67616d00001e0252b2a3824413eefe9e33817a",
-      artistName: "taylor swift",
-      genre: "RnB",
-    },
-  };
+  // const { email, setEmail, name, setName, id, setId } = useStore();
 
   const navigate = useNavigate();
-  const GoToSearchPage = () => {
+  const GoToSignupPage = () => {
     navigate("/Signup");
   };
 
   const server = "http://203.255.81.70:8030";
-  let searchUrl = `${server}/api/searchSpotify/${searchKeyword}`;
+
   const reissueTokenUrl = `${server}/api/auth/reissued`;
 
   const [isLoading, setIsLoading] = useState(false);
@@ -288,6 +225,7 @@ function SearchPage() {
   const fetchSearch = async () => {
     const token = localStorage.getItem("login-token");
     const refreshToken = localStorage.getItem("login-refreshToken");
+    let searchUrl = `${server}/api/searchSpotify/album/${searchKeyword}`;
 
     if (token && !isLoading) {
       setIsLoading(true);
@@ -345,7 +283,7 @@ function SearchPage() {
           <Text fontFamily="Bd" fontSize="20px" margin="0px" color={colors.Font_black}>
             search
           </Text>
-          <Text fontFamily="Rg" fontSize="15px" margin="0px 10px 0px 0px" color={colors.Font_black}>
+          <Text fontFamily="Rg" fontSize="15px" margin="0px 10px 0px 0px" color={colors.BG_grey}>
             저장
           </Text>
         </ButtonArea>
@@ -358,20 +296,22 @@ function SearchPage() {
             ></ContentInput>
           </form>
         </SearchArea>
-        {!isLoading &&
-          searchResult &&
-          searchResult.map((song: any) => (
-            <SongArea>
-              <AlbumCover>
-                <img src={song.imageLUrl} width="100%" height="100%"></img>
-              </AlbumCover>
-              <SongTextArea>
-                <Title fontSize={"20px"}>{song.name}</Title>
-                <Title fontSize={"15px"}>{song.albumArist.name}</Title>
-              </SongTextArea>
-            </SongArea>
-          ))}
-        <SearchResultArea></SearchResultArea>
+
+        <SearchResultArea>
+          {!isLoading &&
+            searchResult &&
+            searchResult.map((album: any) => (
+              <SongArea onClick={() => {}}>
+                <AlbumCover>
+                  <img src={album.imageUrl} width="100%" height="100%"></img>
+                </AlbumCover>
+                <SongTextArea>
+                  <Title fontSize={"20px"}>{album.name}</Title>
+                  <Title fontSize={"15px"}>{album.albumArtist.name}</Title>
+                </SongTextArea>
+              </SongArea>
+            ))}
+        </SearchResultArea>
       </AlbumPostArea>
     </Container>
   );
