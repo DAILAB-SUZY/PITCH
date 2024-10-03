@@ -30,6 +30,9 @@ public class Album {//앨범과 트랙은 1:N관계이며 앨범과 아티스트
     @Column(name="album_id")
     private Long albumId;
 
+    @Column(name="spotify_album_id")
+    private String spotifyAlbumId;
+
     @Column(nullable=false)
     private String title;//앨범 제목
 
@@ -54,7 +57,7 @@ public class Album {//앨범과 트랙은 1:N관계이며 앨범과 아티스트
 
     @OneToMany(mappedBy = "album")
     @Builder.Default
-    private List<Track> tracks=new ArrayList<>();
+    private List<Track>track=new ArrayList<>();
 
     @OneToMany(mappedBy = "album")
     private List<AlbumChatComment> albumChatComments;

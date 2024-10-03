@@ -11,13 +11,15 @@ import org.cosmic.backend.domain.playList.domains.Track;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TrackDetail {
-    private Long trackId;
+    private String trackId;
     private String trackName;
     private String trackCover;
 
     public TrackDetail(Track track) {
-        this.trackId = track.getTrackId();
+        this.trackId = track.getSpotifyTrackId();
         this.trackName = track.getTitle();
         this.trackCover=track.getTrackCover();
     }
+
+
 }
