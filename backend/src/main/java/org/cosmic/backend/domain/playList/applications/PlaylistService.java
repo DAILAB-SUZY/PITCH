@@ -126,10 +126,9 @@ public class PlaylistService {
         followerIds.add(4L);
         followerIds.add(5L);
 
-        Instant timeBoundary = Instant.now().minusSeconds(60 * 60 * 24); // 24시간 이전 시간 계산
         Pageable pageable = PageRequest.of(0, 5); // 페이징 처리: 5개의 플레이리스트만 가져옴
 
-        followerPlaylistDetails = playlistRepository.findRecentPlaylistsByFollowers(followerIds, timeBoundary, pageable)
+        followerPlaylistDetails = playlistRepository.findRecentPlaylistsByFollowers(followerIds, pageable)
                 .stream()
                 .map(FollowerPlaylistDetail::new)
                 .collect(Collectors.toList());
@@ -149,7 +148,7 @@ public class PlaylistService {
             // 트랙 커버를 FollowerPlaylistDetail에 설정
             followerPlaylistDetails.get(i).setAlbumCover(trackCover);
         }
-
+        System.out.println("*******"+followerPlaylistDetails);
         return followerPlaylistDetails;
     }
 
