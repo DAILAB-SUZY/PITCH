@@ -243,6 +243,44 @@ const PlaylistCardArea = styled.div`
   margin-bottom: 35px;
 `;
 
+interface MusicProfileData {
+  userDetail: {
+    id: 0;
+    username: "string";
+    profilePicture: "string";
+  };
+  favoriteArtist: {
+    artistName: "string";
+    albumName: "string";
+    trackName: "string";
+    artistCover: "string";
+    albumCover: "string";
+    trackCover: "string";
+  };
+  bestAlbum: [
+    {
+      albumId: 0;
+      albumName: "string";
+      albumCover: "string";
+      score: 0;
+    },
+  ];
+  userDna: [
+    {
+      dnaName: "string";
+    },
+  ];
+  playlist: [
+    {
+      playlistId: 0;
+      trackId: 0;
+      title: "string";
+      artistName: "string";
+      trackCover: "string";
+    },
+  ];
+}
+
 const EditBtn = styled.div`
   display: flex;
   flex-direction: row;
@@ -260,6 +298,7 @@ const EditBtn = styled.div`
 
 function MusicProfilePage() {
   const [tabBtn, setTabBtn] = useState(1);
+  const [musicProfileData, setMusicProfileData] = useState<MusicProfileData>();
   const navigate = useNavigate();
   const GoToEditPage = () => {
     navigate("/MusicProfileEditPage");
@@ -290,6 +329,7 @@ function MusicProfilePage() {
           console.log("set PostList");
           const data = await response.json();
           console.log(data);
+          setMusicProfileData(data);
         } else if (response.status === 401) {
           console.log("reissuing Token");
           const reissueToken = await fetch(reissueTokenUrl, {
@@ -386,21 +426,22 @@ function MusicProfilePage() {
         <ProfileHeaderArea>
           <ProfileLeftArea>
             <Circle>
-              <img src={profile} width="100%" height="100%"></img>
+              <img src={musicProfileData?.userDetail.profilePicture} width="100%" height="100%"></img>
             </Circle>
             <FollowBtn>Follow</FollowBtn>
           </ProfileLeftArea>
           <ProfileRightArea>
             <ProfileNameArea>
               <Text fontFamily="Bd" fontSize="30px" margin="0px 15px 0px 0px ">
-                김준호
+                {name}
               </Text>
             </ProfileNameArea>
             <ProfileTagArea>
-              <Badge>준호더뮤직슬레이어</Badge>
-              <Tag>#여유로운</Tag>
+              {/* <Badge>더뮤직슬레이어</Badge> */}
+              {musicProfileData?.userDna.map((dna) => <Tag>#{dna.dnaName}</Tag>)}
+              {/* <Tag>#여유로운</Tag>
               <Tag>#Rock</Tag>
-              <Tag>#RnB</Tag>
+              <Tag>#RnB</Tag> */}
             </ProfileTagArea>
           </ProfileRightArea>
         </ProfileHeaderArea>

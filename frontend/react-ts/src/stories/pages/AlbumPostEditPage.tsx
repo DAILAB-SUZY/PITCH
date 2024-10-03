@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { colors } from "../../styles/color";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useStore from "../store/store";
 
 const Container = styled.div`
@@ -180,60 +180,16 @@ const ContentInput = styled.textarea`
 `;
 
 interface AlbumPost {
-  postId: number;
-  content: string;
-  createAt: number;
-  updateAt: number;
-  author: {
-    id: number;
-    username: string;
-    profilePicture: string;
+  albumArtist: {
+    artistId: string;
+    imageUrl: string;
+    name: string;
   };
-  album: {
-    id: number;
-    title: string;
-    albumCover: string;
-    artistName: string;
-    genre: string;
-  };
-  comments: [
-    {
-      id: number;
-      content: string;
-      createdAt: number;
-      updatedAt: number;
-      likes: [
-        {
-          id: number;
-          username: string;
-          profilePicture: string;
-        },
-      ];
-      childComments: [
-        {
-          id: number;
-          content: string;
-          author: {
-            id: number;
-            username: string;
-            profilePicture: string;
-          };
-        },
-      ];
-      author: {
-        id: number;
-        username: string;
-        profilePicture: string;
-      };
-    },
-  ];
-  likes: [
-    {
-      id: number;
-      username: string;
-      profilePicture: string;
-    },
-  ];
+  albumId: string;
+  imageUrl: string;
+  name: string;
+  total_tracks: number;
+  release_date: string;
 }
 
 function AlbumPostEditPage() {
@@ -241,8 +197,18 @@ function AlbumPostEditPage() {
   //   const [postContent, setPostContent] = useState("내용을 입력해주세요");
   //   const { email, setEmail, name, setName, id, setId } = useStore();
   const location = useLocation();
-  const albumData = location.state;
-  setAlbumPost(albumData);
+  const [postContent, setPostContent] = useState("");
+  const server = "http://203.255.81.70:8030";
+  const reissueTokenUrl = `${server}/api/auth/reissued`;
+
+  useEffect(() => {
+    if (!location.state) {
+      setAlbumPost(null);
+    } else {
+      setAlbumPost(location.state);
+      console.log(location.state);
+    }
+  }, [location.state]);
 
   //   const albumPost = {
   //     postId: "post01",
@@ -268,6 +234,58 @@ function AlbumPostEditPage() {
   const GoToSearchPage = () => {
     navigate("/SearchPage");
   };
+  const GoToHomePage = () => {
+    navigate("/HomePage");
+  };
+
+  const fetchPost = async () => {
+    const token = localStorage.getItem("login-token");
+    const refreshToken = localStorage.getItem("login-refreshToken");
+    let PostUrl = `${server}/api/album/post`;
+    if (token && albumPost) {
+      try {
+        console.log(`Posting...`);
+        console.log(albumPost);
+        const response = await fetch(PostUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            content: postContent,
+            title: albumPost.name,
+            albumId: albumPost.albumId,
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Post Success");
+          console.log(data);
+        } else if (response.status === 401) {
+          console.log("reissuing Token");
+          const reissueToken = await fetch(reissueTokenUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Refresh-Token": `${refreshToken}`,
+            },
+          });
+          const data = await reissueToken.json();
+          localStorage.setItem("login-token", data.token);
+          localStorage.setItem("login-refreshToken", data.refreshToken);
+          fetchPost();
+        } else {
+          console.error("Failed to fetch data:", response.status);
+        }
+      } catch (error) {
+        console.error("Error fetching the JSON file:", error);
+      } finally {
+        console.log("finished");
+      }
+    }
+  };
 
   return (
     <Container>
@@ -281,7 +299,7 @@ function AlbumPostEditPage() {
           >
             <ImageArea>
               <img
-                src={albumPost.album.albumCover}
+                src={albumPost.imageUrl}
                 width="100%"
                 object-fit="cover"
                 // z-index="1"
@@ -290,10 +308,10 @@ function AlbumPostEditPage() {
             <GradientBG> </GradientBG>
             <TitleTextArea>
               <Text fontFamily="Bd" fontSize="40px" margin="0px" color={colors.BG_white}>
-                {albumPost.album.title}
+                {albumPost.name}
               </Text>
               <Text fontFamily="Rg" fontSize="20px" margin="0px 0px 2px 10px" color={colors.BG_white}>
-                {albumPost.album.artistName}
+                {albumPost.albumArtist.name}
               </Text>
             </TitleTextArea>
           </AlbumTitleArea>
@@ -319,7 +337,13 @@ function AlbumPostEditPage() {
           <Text fontFamily="Bd" fontSize="20px" margin="0px" color={colors.Font_black}>
             Album Post
           </Text>
-          <Text fontFamily="Rg" fontSize="15px" margin="0px 10px 0px 0px" color={colors.Font_black}>
+          <Text
+            fontFamily="Rg"
+            fontSize="15px"
+            margin="0px 10px 0px 0px"
+            color={colors.Font_black}
+            onClick={fetchPost}
+          >
             저장
           </Text>
         </ButtonArea>
@@ -331,7 +355,12 @@ function AlbumPostEditPage() {
             </ProfileTextArea>
           </ProfileArea> */}
           <PostContentArea>
-            <ContentInput></ContentInput>
+            <form>
+              <ContentInput
+                placeholder="앨범에 대한 자유로운 감상평을 남겨주세요."
+                onChange={(e) => setPostContent(e.target.value)}
+              ></ContentInput>
+            </form>
           </PostContentArea>
           <ButtonArea></ButtonArea>
         </PostArea>

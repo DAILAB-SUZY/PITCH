@@ -237,6 +237,7 @@ function HomePage() {
         if (response.ok) {
           const data = await response.json();
           setfriendsPlayList((prevList) => [...prevList, ...data]);
+          console.log("fetched Playlist :");
           console.log(data);
         } else if (response.status === 401) {
           console.log("reissuing Token");
@@ -419,9 +420,7 @@ function HomePage() {
           <Title fontSize="22px" margin="20px 0px 0px 20px">
             Friend's Playlist
           </Title>
-          <PlaylistPreviewCard
-            playlists={friendsPlayList}
-          ></PlaylistPreviewCard>
+          <PlaylistPreviewCard playlists={friendsPlayList}></PlaylistPreviewCard>
         </PlaylistArea>
         <AlbumPostArea>
           <AlbumPostTitleArea>
@@ -450,10 +449,7 @@ function HomePage() {
           <RowAlignArea>
             {albumPostList.length > 0 ? (
               albumPostList.map((albumPost) => (
-                <AlbumPostCard
-                  key={albumPost.postId}
-                  albumPost={albumPost}
-                ></AlbumPostCard>
+                <AlbumPostCard key={albumPost.postId} albumPost={albumPost}></AlbumPostCard>
               ))
             ) : (
               <Text fontSize="15px" margin="150px 0px 0px 0px">
@@ -469,10 +465,7 @@ function HomePage() {
             로딩 중...
           </Text>
         ) : (
-          <div
-            ref={observerRef}
-            style={{ height: "100px", backgroundColor: "transparent" }}
-          />
+          <div ref={observerRef} style={{ height: "100px", backgroundColor: "transparent" }} />
         )}
       </Body>
     </Container>

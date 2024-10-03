@@ -215,7 +215,7 @@ function SearchPage() {
 
   const navigate = useNavigate();
 
-  const GoToAlbumPostEditPage = (album: SearchResult) => {
+  const GoToAlbumPostEditPage = (album: SearchResult | null = null) => {
     navigate("/AlbumPostEditPage", { state: album });
   };
 
@@ -278,7 +278,13 @@ function SearchPage() {
     <Container>
       <AlbumPostArea>
         <ButtonArea>
-          <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 10px" color={colors.Font_black}>
+          <Text
+            fontFamily="Rg"
+            fontSize="15px"
+            margin="0px 0px 0px 10px"
+            color={colors.Font_black}
+            onClick={() => GoToAlbumPostEditPage()}
+          >
             취소
           </Text>
           <Text fontFamily="Bd" fontSize="20px" margin="0px" color={colors.Font_black}>
@@ -312,6 +318,7 @@ function SearchPage() {
                 </SongTextArea>
               </SongArea>
             ))}
+          {isLoading && <Title fontSize={"20px"}>로딩중...</Title>}
         </SearchResultArea>
       </AlbumPostArea>
     </Container>
