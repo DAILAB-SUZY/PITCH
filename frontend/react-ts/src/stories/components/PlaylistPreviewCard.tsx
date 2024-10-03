@@ -124,7 +124,7 @@ const PlaylistPreviewCard = ({ playlists }: PlaylistProps) => {
           onClick={() => GoToPlayListPage(playlist.author.id)}
         >
           <AlbumCoverStack>
-            {playlist.albumCover.map((cover: any, index: any) => (
+            {playlist.albumCover.reverse().map((cover: any, index: any) => (
               <AlbumCover
                 key={index}
                 src={cover}

@@ -72,6 +72,7 @@ function PlayListPage() {
     trackId: number;
     title: string;
     artistName: string;
+    trackCover: string;
   }
 
   const [playList, setPlayList] = useState<PlayList[]>([]);
@@ -197,7 +198,7 @@ function PlayListPage() {
       <Body>
         <TitleArea>
           <Text fontFamily="Bd" fontSize="20px">
-            {userId}
+            {userId}'s PlayList
           </Text>
         </TitleArea>
         <PlayListArea>
