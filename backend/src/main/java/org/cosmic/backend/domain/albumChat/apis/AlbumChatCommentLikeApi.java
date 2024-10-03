@@ -1,11 +1,16 @@
 package org.cosmic.backend.domain.albumChat.apis;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.cosmic.backend.domain.albumChat.applications.AlbumChatCommentLikeService;
 import org.cosmic.backend.domain.albumChat.dtos.commentlike.AlbumChatCommentLikeDetail;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -49,8 +54,11 @@ public class AlbumChatCommentLikeApi {
      */
     @GetMapping("/album/{albumId}/comment/{albumChatCommentId}/commentLike")
     @ApiResponse(responseCode = "404", description = "Not Found AlbumChatComment")
-    @Operation(summary = "특정 앨범의 앨범챗 댓글의 좋아요 가져오기")
+    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+            array = @ArraySchema(schema = @Schema(implementation = AlbumChatCommentLikeDetail.class))))
+    @Operation(summary = "댓글 좋아요 조회",description = "특정 앨범의 앨범챗 댓글의 좋아요 조회")
     public ResponseEntity<List<AlbumChatCommentLikeDetail>> albumChatCommentLikeGetByAlbumChatCommentId(
+            @Parameter(description = "앨범챗 댓글 id")
             @PathVariable Long albumChatCommentId) {
         return ResponseEntity.ok(likeService.getAlbumChatCommentLikeByAlbumChatCommentId(albumChatCommentId));
     }
@@ -69,9 +77,13 @@ public class AlbumChatCommentLikeApi {
     @PostMapping("/album/{albumId}/comment/{albumChatCommentId}/commentLike")
     @ApiResponse(responseCode = "404", description = "Not Found User or AlbumChatComment")
     @ApiResponse(responseCode = "409", description = "CommentLike Already Exists")
-    @Operation(summary = "특정 앨범의 앨범챗 댓글의 좋아요 생성")
+    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+            array = @ArraySchema(schema = @Schema(implementation = AlbumChatCommentLikeDetail.class))))
+    @Operation(summary = "댓글 좋아요 생성",description = "특정 앨범의 앨범챗 댓글의 좋아요 생성")
     public ResponseEntity<List<AlbumChatCommentLikeDetail>> albumChatCommentLikeCreate(
-            @PathVariable Long albumChatCommentId, @AuthenticationPrincipal Long userId) {
+            @Parameter(description = "앨범챗 댓글 id")
+            @PathVariable Long albumChatCommentId,
+            @AuthenticationPrincipal Long userId) {
         return ResponseEntity.ok(likeService.albumChatCommentLikeCreate(userId, albumChatCommentId));
     }
 
@@ -86,9 +98,13 @@ public class AlbumChatCommentLikeApi {
      */
     @DeleteMapping("/album/{albumId}/comment/{albumChatCommentId}/commentLike")
     @ApiResponse(responseCode = "404", description = "Not Found CommentLike")
-    @Operation(summary = "특정 앨범의 앨범챗 댓글의 좋아요 삭제")
+    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+            array = @ArraySchema(schema = @Schema(implementation = AlbumChatCommentLikeDetail.class))))
+    @Operation(summary = "댓글 좋아요 삭제",description = "특정 앨범의 앨범챗 댓글의 좋아요 삭제")
     public ResponseEntity<List<AlbumChatCommentLikeDetail>> albumChatCommentLikeDelete(
-            @PathVariable Long albumChatCommentId, @AuthenticationPrincipal Long userId) {
+            @Parameter(description = "앨범챗 댓글 id")
+            @PathVariable Long albumChatCommentId,
+            @AuthenticationPrincipal Long userId) {
         return ResponseEntity.ok(likeService.albumChatCommentLikeDelete(albumChatCommentId, userId));
     }
 }

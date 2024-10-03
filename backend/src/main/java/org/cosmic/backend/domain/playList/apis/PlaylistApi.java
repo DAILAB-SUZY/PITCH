@@ -1,6 +1,10 @@
 package org.cosmic.backend.domain.playList.apis;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
@@ -11,6 +15,7 @@ import org.cosmic.backend.domain.playList.exceptions.NotFoundTrackException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.user.dtos.UserDetail;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -54,8 +59,12 @@ public class PlaylistApi {
     @Transactional
     @GetMapping("/user/{userId}/playlist")
     @ApiResponse(responseCode = "404", description = "Not Found User")
-    @Operation(summary = "특정 유저의 플레이리스트 정보 제공")
-    public ResponseEntity<List<PlaylistDetail>> dataGive(@PathVariable Long userId) {
+    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+            array = @ArraySchema(schema = @Schema(implementation = PlaylistDetail.class))))
+    @Operation(summary = "플레이리스트 조회",description = "특정 유저의 플레이리스트 조회")
+    public ResponseEntity<List<PlaylistDetail>> dataGive(
+            @Parameter(description = "유저 id")
+            @PathVariable Long userId) {
         return ResponseEntity.ok(playlistService.open(userId));
     }
 
@@ -69,10 +78,12 @@ public class PlaylistApi {
      */
     @Transactional
     @GetMapping("/FollowerPlaylist/user/{userId}")
-    @ApiResponse(responseCode = "404", description = "Not Found User")
-    @Operation(summary = "팔로우한 유저들의 플레이리스트 정보 제공")
-    public ResponseEntity<List<FollowerPlaylistDetail>> followerDataGive(@PathVariable Long userId) {
-        System.out.println("+++++++"+playlistService.followDataOpen(userId));
+    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+            array = @ArraySchema(schema = @Schema(implementation = FollowerPlaylistDetail.class))))
+    @Operation(summary = "플레이리스트 요약 정보",description = "팔로우한 유저들의 플레이리스트 요약 정보 제공")
+    public ResponseEntity<List<FollowerPlaylistDetail>> followerDataGive(
+            @Parameter(description = "유저 id")
+            @PathVariable Long userId) {
        return ResponseEntity.ok(playlistService.followDataOpen(userId));
     }
 
@@ -87,10 +98,14 @@ public class PlaylistApi {
      * @throws NotFoundTrackException 트랙을 찾을 수 없을 때 발생합니다.
      */
     @PostMapping("/playlist")
-    @Transactional
     @ApiResponse(responseCode = "404", description = "Not Found User or Track")
-    @Operation(summary = "특정 유저 플레이리스트 정보 저장")
-    public ResponseEntity<List<PlaylistDetail>> savePlaylistData(@RequestBody PlaylistDto playlist, @AuthenticationPrincipal Long userId) {
+    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+            array = @ArraySchema(schema = @Schema(implementation = PlaylistDetail.class))))
+    @Operation(summary = "플레이리스트 저장",description = "특정 유저 플레이리스트 데이터 저장")
+    public ResponseEntity<List<PlaylistDetail>> savePlaylistData(
+            @Parameter(description = "플레이리스트에 담을 데이터")
+            @RequestBody PlaylistDto playlist,
+            @AuthenticationPrincipal Long userId) {
         return ResponseEntity.ok(playlistService.save(userId, playlist));
     }
 
@@ -103,10 +118,13 @@ public class PlaylistApi {
      * @throws NotFoundArtistException 아티스트 이름이 일치하지 않을 때 발생합니다.
      */
     @GetMapping("/playlist/artist/{artistName}")
-    @Transactional
     @ApiResponse(responseCode = "400", description = "Not Match Artist Name")
-    @Operation(summary = "아티스트 이름 검색을 통한 노래정보 제공")
-    public ResponseEntity<List<TrackDetail>> artistSearch(@PathVariable String artistName) {
+    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+            array = @ArraySchema(schema = @Schema(implementation = TrackDetail.class))))
+    @Operation(summary = "아티스트 검색",description = "아티스트 이름을 통한 노래정보 제공")
+    public ResponseEntity<List<TrackDetail>> artistSearch(
+            @Parameter(description = "아티스트 이름")
+            @PathVariable String artistName) {
         return ResponseEntity.ok(playlistService.artistSearch(artistName));
     }
 
@@ -121,8 +139,12 @@ public class PlaylistApi {
     @GetMapping("/playlist/track/{trackName}")
     @Transactional
     @ApiResponse(responseCode = "404", description = "Not Match Track Title")
-    @Operation(summary = "노래 이름 검색을 통한 노래정보 제공")
-    public ResponseEntity<List<TrackDetail>> trackSearch(@PathVariable String trackName) {
+    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+            array = @ArraySchema(schema = @Schema(implementation = TrackDetail.class))))
+    @Operation(summary = "노래 검색",description = "노래 이름 검색을 통한 노래정보 제공")
+    public ResponseEntity<List<TrackDetail>> trackSearch(
+            @Parameter(description = "노래 이름")
+            @PathVariable String trackName) {
         return ResponseEntity.ok(playlistService.trackSearch(trackName));
     }
 }

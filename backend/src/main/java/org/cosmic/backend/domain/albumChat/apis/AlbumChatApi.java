@@ -1,6 +1,10 @@
 package org.cosmic.backend.domain.albumChat.apis;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.cosmic.backend.domain.albumChat.applications.AlbumChatService;
@@ -8,6 +12,7 @@ import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumChatDetail;
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatException;
 import org.cosmic.backend.domain.playList.dtos.AlbumDto;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -45,10 +50,14 @@ public class AlbumChatApi {
      * @throws NotFoundAlbumChatException 앨범챗을 찾을 수 없을 때 발생합니다.
      */
     @Transactional
-    @PostMapping("/open")
+    @PostMapping("/open/album/{albumId}")
     @ApiResponse(responseCode = "404", description = "Not Found AlbumChat")
-    @Operation(summary = "특정 앨범의 앨범챗 열기")
-    public ResponseEntity<AlbumChatDetail> getAlbumChatById(@RequestBody AlbumDto album) {
-        return ResponseEntity.ok(albumChatService.getAlbumChatById(album));
+    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+            array = @ArraySchema(schema = @Schema(implementation = AlbumChatDetail.class))))
+    @Operation(summary = "앨범챗 조회",description = "특정 앨범의 앨범챗 조회")
+    public ResponseEntity<AlbumChatDetail> getAlbumChatById(
+            @Parameter(description = "앨범id")
+            @PathVariable("albumId") Long albumId) {
+        return ResponseEntity.ok(albumChatService.getAlbumChatById(albumId));
     }
 }
