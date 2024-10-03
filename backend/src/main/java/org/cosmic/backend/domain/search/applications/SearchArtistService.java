@@ -43,7 +43,7 @@ public class SearchArtistService extends SearchService {
         }
     }
 
-    public String searchArtist(String accessToken, String q) throws JsonProcessingException {
+    public List<SpotifySearchArtistResponse> searchArtist(String accessToken, String q) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         List<SpotifySearchArtistResponse> spotifySearchArtistResponses = new ArrayList<>();
 
@@ -57,21 +57,20 @@ public class SearchArtistService extends SearchService {
             spotifySearchArtistResponse.setArtistId(item.path("id").asText());
             spotifySearchArtistResponse.setName(item.path("name").asText());
 
-            List<Image> images = new ArrayList<>();
-            JsonNode imagesNode = artistitemsNode.get(i).path("images");
-            for (JsonNode imageNode : imagesNode) {
-                Image image = new Image(
-                        imageNode.path("height").asInt(),
-                        imageNode.path("url").asText(),
-                        imageNode.path("width").asInt()
-                );
-                images.add(image);
+            // 이미지 배열이 존재하는지 확인
+            JsonNode imagesNode = item.path("images");
+            if (imagesNode.isArray() && imagesNode.size() > 0) {
+                // 이미지 배열에 값이 있으면 첫 번째 이미지 URL 가져오기
+                spotifySearchArtistResponse.setImageUrl(imagesNode.get(0).path("url").asText());
+            } else {
+                // 이미지가 없을 경우 null 또는 기본값 처리
+                spotifySearchArtistResponse.setImageUrl(null); // 필요에 따라 기본값으로 설정 가능
             }
-            spotifySearchArtistResponse.setImageUrl(artistitemsNode.get(i).path("images").get(0).path("url").asText());
+
             spotifySearchArtistResponses.add(spotifySearchArtistResponse);
         }
 
-        saveArtist(spotifySearchArtistResponses,accessToken);
-        return data;
+        //saveArtist(spotifySearchArtistResponses,accessToken);
+        return spotifySearchArtistResponses;
     }
 }

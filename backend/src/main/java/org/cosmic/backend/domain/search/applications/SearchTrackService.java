@@ -127,7 +127,7 @@ public class SearchTrackService extends SearchService {
 
         }
     }
-    public String searchTrack(String accessToken,String q) throws JsonProcessingException { // q는 검색어
+    public List<SpotifySearchTrackResponse> searchTrack(String accessToken,String q) throws JsonProcessingException { // q는 검색어
 
         /*List<TrackDetail> trackDetails = new ArrayList<>();
         //아티스트, 노래 이름으로 앨범, 노래, 아티스트 모든 정보 주기.
@@ -158,6 +158,8 @@ public class SearchTrackService extends SearchService {
         System.out.println(trackDetails);*/
 
         //DB에서 찾기
+
+
 
         List<SpotifySearchTrackResponse> spotifySearchTrackResponses = new ArrayList<>();
 
@@ -215,7 +217,7 @@ public class SearchTrackService extends SearchService {
 
         //saveTrack(accessToken,spotifySearchTrackResponses);
 
-        return data;
+        return spotifySearchTrackResponses;
     }
 
 }
