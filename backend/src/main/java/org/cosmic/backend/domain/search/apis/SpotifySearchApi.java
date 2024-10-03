@@ -48,8 +48,7 @@ public class SpotifySearchApi {
     public ResponseEntity<List<SpotifySearchTrackResponse>> searchTrack(
         @Parameter(description = "노래 이름")
         @PathVariable String name) throws JsonProcessingException { //q는 검색어
-        String accessToken=createSpotifyToken.accesstoken();
-        return ResponseEntity.ok(searchtrackService.searchTrack(accessToken,name));
+        return ResponseEntity.ok(searchtrackService.searchTrack(createSpotifyToken.accesstoken(),name));
     }
 
     //아티스트만 검색하는 상황
@@ -60,8 +59,7 @@ public class SpotifySearchApi {
     public ResponseEntity<List<SpotifySearchArtistResponse>> searchArtist(
         @Parameter(description = "아티스트 이름")
         @PathVariable String name) throws JsonProcessingException { //q는 검색어
-        String accessToken=createSpotifyToken.accesstoken();
-        return ResponseEntity.ok(searchArtistService.searchArtist(accessToken,name));
+        return ResponseEntity.ok(searchArtistService.searchArtist(createSpotifyToken.accesstoken(),name));
     }
 
     // 아티스트 또는 앨범 이름으로 앨범 정보 찾기
@@ -70,7 +68,6 @@ public class SpotifySearchApi {
     public ResponseEntity<List<SpotifySearchAlbumResponse>> searchAlbum(
         @Parameter(description = "앨범 이름")
         @PathVariable String name) throws JsonProcessingException { //q는 검색어
-        String accessToken=createSpotifyToken.accesstoken();
-        return ResponseEntity.ok(searchAlbumService.searchAlbum(accessToken,name));
+        return ResponseEntity.ok(searchAlbumService.searchAlbum(createSpotifyToken.accesstoken(),name));
     }
 }
