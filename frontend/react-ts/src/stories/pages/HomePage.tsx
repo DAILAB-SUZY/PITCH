@@ -140,6 +140,7 @@ function HomePage() {
   const [albumPostList, setAlbumPostList] = useState<AlbumPost[]>([]);
   const [postPage, setPostPage] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [isEnd, setIsEnd] = useState(false);
 
   console.log("render-----------------------------");
   console.log(`albumpost: `, albumPostList);
@@ -257,8 +258,8 @@ function HomePage() {
     console.log(`isLoading: ${isLoading}`);
     let albumPostUrl = `${server}/api/album/post?page=${postPage}&limit=5`;
     console.log(albumPostUrl);
-    if (token && !isLoading) {
-      setIsLoading(true);
+    if (token && !isLoading && !isEnd) {
+      setIsLoading((loading) => !loading);
       console.log(`fetching ${postPage} page Album Posts...`);
       try {
         console.log("fetching...");
@@ -275,6 +276,10 @@ function HomePage() {
           console.log("set PostList");
           const data: AlbumPost[] = await response.json();
           console.log(data);
+          if (data.length === 0) {
+            console.log("list End");
+            setIsEnd(true);
+          }
           setAlbumPostList((prevList) => [...prevList, ...data]); // 기존 데이터에 새로운 데이터를 추가
           setPostPage((prevPage) => prevPage + 1); // 페이지 증가
           console.log("albumpost ", albumPostList);
@@ -327,7 +332,7 @@ function HomePage() {
         observer.unobserve(observerRef.current); // 컴포넌트 언마운트 시 관찰 해제
       }
     };
-  }, []);
+  }, [postPage]);
 
   // useEffect(() => {
   //   console.log("effect");
@@ -440,14 +445,13 @@ function HomePage() {
         </AlbumPostArea>
         {/* TODO: 무한 스크롤 구현 */}
         {/* Loading Indicator */}
-        {isLoading && (
+        {isLoading ? (
           <Text fontSize="16px" margin="20px 0px">
             로딩 중...
           </Text>
+        ) : (
+          <div ref={observerRef} style={{ height: "100px", backgroundColor: "transparent" }} />
         )}
-
-        {/* 무한 스크롤을 위한 observer div */}
-        <div ref={observerRef} style={{ height: "100px", backgroundColor: "transparent" }} />
       </Body>
     </Container>
   );

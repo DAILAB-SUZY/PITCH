@@ -56,7 +56,7 @@ const SongTextArea = styled.div`
   flex-direction: column;
 `;
 
-const Title = styled.div<{ fontSize: string; margin: string }>`
+const Title = styled.div<{ fontSize?: string; margin?: string }>`
   font-size: ${(props) => props.fontSize};
   margin: ${(props) => props.margin};
   font-family: "Bd";
