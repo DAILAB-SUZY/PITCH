@@ -1,9 +1,7 @@
 package org.cosmic.backend.domain.post.applications;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 import org.cosmic.backend.domain.auth.applications.CreateSpotifyToken;
 import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundArtistException;
@@ -109,18 +107,15 @@ public class PostService {
    * @throws NotMatchAlbumException 게시물에 해당하는 앨범을 찾을 수 없을 때 발생합니다.
    */
   @Transactional
-  public PostAndCommentsDetail createPost(String content, String spotifyAlbumId, Long userId)
-      throws JsonProcessingException {
+  public PostAndCommentsDetail createPost(String content, String spotifyAlbumId, Long userId) {
     User user = userRepository.findById(userId).orElseThrow(NotFoundUserException::new);
-    Optional<Album> albumOptional = albumRepository.findBySpotifyAlbumId(spotifyAlbumId);
-    if (albumOptional.isEmpty()) {
-      searchAlbumService.searchAlbumId(createSpotifyToken.accesstoken(), spotifyAlbumId);
-      albumOptional = albumRepository.findBySpotifyAlbumId(spotifyAlbumId);
-    }
+    Album album = albumRepository.findBySpotifyAlbumId(spotifyAlbumId)
+        .orElseThrow(NotFoundAlbumException::new);
+
     Post post = postRepository.save(Post.builder()
         .content(content)
         .user(user)
-        .album(albumOptional.get())
+        .album(album)
         .build());
     return Post.toPostAndCommentDetail(post);
   }

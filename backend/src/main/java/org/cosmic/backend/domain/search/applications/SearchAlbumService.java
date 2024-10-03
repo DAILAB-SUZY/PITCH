@@ -15,6 +15,7 @@ import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
 import org.cosmic.backend.domain.search.dtos.SpotifySearchAlbumResponse;
 import org.cosmic.backend.domain.search.dtos.SpotifySearchArtistResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,6 +28,9 @@ public class SearchAlbumService extends SearchService {
   private AlbumRepository albumRepository;
   @Autowired
   private ArtistRepository artistRepository;
+  @Qualifier("searchService")
+  @Autowired
+  private SearchService searchService;
 
   public List<SpotifySearchAlbumResponse> searchAlbum(String accessToken, String q)
       throws JsonProcessingException {
@@ -114,4 +118,19 @@ public class SearchAlbumService extends SearchService {
     return spotifySearchAlbumResponse; // 예외 발생 시 null 반환
   }
 
+  private Artist saveArtistByArtistDto(org.cosmic.backend.domain.search.dtos.Artist artist) {
+    return artistRepository.save(Artist.from(artist));
+  }
+
+  private Album saveAlbumByAlbumDto(org.cosmic.backend.domain.search.dtos.Album album,
+      Artist artist) {
+    return albumRepository.save(Album.from(album, artist));
+  }
+
+  public void saveArtistAndAlbumBySpotifyId(String spotifyAlbumId) {
+    org.cosmic.backend.domain.search.dtos.Album album = searchService.findAlbumBySpotifyId(
+        spotifyAlbumId);
+    album.artists().set(0, searchService.findArtistBySpotifyId(album.artists().get(0).id()));
+    saveAlbumByAlbumDto(album, saveArtistByArtistDto(album.artists().get(0)));
+  }
 }

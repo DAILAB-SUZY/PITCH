@@ -1,6 +1,5 @@
 package org.cosmic.backend.domain.post.apis;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -20,7 +19,9 @@ import org.cosmic.backend.domain.post.dtos.Post.PostDetail;
 import org.cosmic.backend.domain.post.dtos.Post.UpdatePost;
 import org.cosmic.backend.domain.post.exceptions.NotFoundAlbumException;
 import org.cosmic.backend.domain.post.exceptions.NotFoundPostException;
+import org.cosmic.backend.domain.search.applications.SearchAlbumService;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -43,14 +44,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class PostApi {
 
   private final PostService postService;
+  private final SearchAlbumService searchAlbumService;
 
   /**
    * PostApi의 생성자입니다.
    *
    * @param postService 게시물 관련 비즈니스 로직을 처리하는 서비스 클래스
    */
-  public PostApi(PostService postService) {
+  public PostApi(PostService postService,
+      @Qualifier("searchAlbumService") SearchAlbumService searchAlbumService) {
     this.postService = postService;
+    this.searchAlbumService = searchAlbumService;
   }
 
   /**
@@ -108,7 +112,13 @@ public class PostApi {
   @ApiResponse(responseCode = "404", description = "Not Found Album")
   @Operation(summary = "특정 앨범 포스트 생성 API", description = "특정 앨범 포스트를 생성합니다.")
   public ResponseEntity<PostAndCommentsDetail> createPost(@RequestBody CreatePost post,
-      @AuthenticationPrincipal Long userId) throws JsonProcessingException {
+      @AuthenticationPrincipal Long userId) {
+    try {
+      return ResponseEntity.ok(
+          postService.createPost(post.getContent(), post.getSpotifyAlbumId(), userId));
+    } catch (NotFoundAlbumException e) {
+      searchAlbumService.saveArtistAndAlbumBySpotifyId(post.getSpotifyAlbumId());
+    }
     return ResponseEntity.ok(
         postService.createPost(post.getContent(), post.getSpotifyAlbumId(), userId));
   }
