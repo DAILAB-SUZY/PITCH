@@ -157,26 +157,41 @@ const SearchResultArea = styled.div`
   z-index: 10;
 `;
 
-const PostContentArea = styled.div`
-  display: flex;
+const SongArea = styled.div`
   width: 100%;
-  height: 100%;
-  box-sizing: border-box;
-
-  /* white-space: nowrap; */
-  /* text-overflow: ellipsis; */
-
-  flex-direction: column;
-  justify-content: space-between;
-  font-size: 15px;
-  font-family: "Rg";
-  padding: 0px 10px;
-  margin: 10px 0px 20px 0px;
-
-  transition: height ease 0.7s;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  flex-direction: row;
+  margin: 10px 0px 10px 0px;
 `;
 
-interface AlbumPost {
+const AlbumCover = styled.div`
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  background-color: black;
+  margin: 10px;
+  overflow: hidden;
+`;
+
+const SongTextArea = styled.div`
+  height: 80%;
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  flex-direction: column;
+`;
+
+const Title = styled.div<{ fontSize?: string; margin?: string }>`
+  font-size: ${(props) => props.fontSize};
+  margin: ${(props) => props.margin};
+  font-family: "Bd";
+  color: white;
+`;
+
+interface SearchResult {
   postId: number;
   content: string;
   createAt: number;
@@ -264,13 +279,18 @@ function SearchPage() {
   };
 
   const server = "http://203.255.81.70:8030";
-  let searchUrl = `${server}/api/searchSpotify`;
+  let searchUrl = `${server}/api/searchSpotify/${searchKeyword}`;
   const reissueTokenUrl = `${server}/api/auth/reissued`;
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchResult, setSearchResult] = useState<SearchResult[]>();
+
   const fetchSearch = async () => {
     const token = localStorage.getItem("login-token");
     const refreshToken = localStorage.getItem("login-refreshToken");
 
-    if (token) {
+    if (token && !isLoading) {
+      setIsLoading(true);
       try {
         console.log(`searching ${searchKeyword}...`);
         const response = await fetch(searchUrl, {
@@ -279,14 +299,12 @@ function SearchPage() {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({
-            q: searchKeyword,
-          }),
         });
 
         if (response.ok) {
           const data = await response.json();
           console.log(data);
+          setSearchResult(data);
         } else if (response.status === 401) {
           console.log("reissuing Token");
           const reissueToken = await fetch(reissueTokenUrl, {
@@ -306,9 +324,15 @@ function SearchPage() {
       } catch (error) {
         console.error("Error fetching the JSON file:", error);
       } finally {
+        setIsLoading(false);
         console.log("finished");
       }
     }
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault(); // 폼 제출 동작 방지
+    fetchSearch(); // 검색 실행
   };
 
   return (
@@ -327,18 +351,27 @@ function SearchPage() {
         </ButtonArea>
         <Line></Line>
         <SearchArea>
-          <form onSubmit={() => fetchSearch()}>
+          <form onSubmit={handleSearchSubmit}>
             <ContentInput
               placeholder="앨범의 제목을 입력하세요"
               onChange={(e) => setSearchKeyword(e.target.value)}
-              // onSubmit={() => fetchSearch()}
             ></ContentInput>
           </form>
         </SearchArea>
-
-        <SearchResultArea>
-          <PostContentArea></PostContentArea>
-        </SearchResultArea>
+        {!isLoading &&
+          searchResult &&
+          searchResult.map((song: any) => (
+            <SongArea>
+              <AlbumCover>
+                <img src={song.imageLUrl} width="100%" height="100%"></img>
+              </AlbumCover>
+              <SongTextArea>
+                <Title fontSize={"20px"}>{song.name}</Title>
+                <Title fontSize={"15px"}>{song.albumArist.name}</Title>
+              </SongTextArea>
+            </SongArea>
+          ))}
+        <SearchResultArea></SearchResultArea>
       </AlbumPostArea>
     </Container>
   );
