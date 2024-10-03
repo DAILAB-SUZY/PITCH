@@ -35,7 +35,7 @@ public class SearchAlbumService extends SearchService {
         this.artistRepository = artistRepository;
         this.albumRepository = albumRepository;
     }
-    public String searchAlbum(String accessToken, String q) throws JsonProcessingException {
+    public List<SpotifySearchAlbumResponse> searchAlbum(String accessToken, String q) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         List<SpotifySearchArtistResponse> spotifySearchArtistResponses = new ArrayList<>();
         List<SpotifySearchTrackResponse> spotifySearchTrackResponses = new ArrayList<>();
@@ -53,6 +53,8 @@ public class SearchAlbumService extends SearchService {
                 spotifySearchAlbumResponse.setRelease_date(item.path("release_date").asText());
                 spotifySearchAlbumResponse.setAlbumId(item.path("id").asText());
                 spotifySearchAlbumResponse.setName(item.path("name").asText());
+                spotifySearchAlbumResponse.setTotal_tracks(item.path("total_tracks").asInt());
+
 
                 List<Image> images = new ArrayList<>();
                 JsonNode imagesNode = albumitemsNode.get(i).path("images");
@@ -65,19 +67,29 @@ public class SearchAlbumService extends SearchService {
                     images.add(image);
                 }
 
-                spotifySearchAlbumResponse.setImages(images);
+                spotifySearchAlbumResponse.setImageUrl(albumitemsNode.get(i).path("images").get(0).path("url").asText());
                 item = albumitemsNode.get(i).path("artists");
                 for (int j = 0; j < item.size(); j++) {
                     SpotifySearchArtistResponse spotifySearchArtistResponse = new SpotifySearchArtistResponse();
                     JsonNode artistsNode = item.get(j);
                     spotifySearchArtistResponse.setArtistId(artistsNode.path("id").asText());
                     spotifySearchArtistResponse.setName(artistsNode.path("name").asText());
-                    spotifySearchArtistResponse.setImages(null);
+                    spotifySearchArtistResponse.setImageUrl(null);
                     spotifySearchAlbumResponse.setAlbumArtist(spotifySearchArtistResponse);
                 }
                 spotifySearchAlbumResponses.add(spotifySearchAlbumResponse);
+
+
+                String datas = searchArtistImg(accessToken, spotifySearchAlbumResponses.get(i).getAlbumArtist().getArtistId());
+
+                rootNode = mapper.readTree(datas);
+                JsonNode artistNode = rootNode.path("images");
+                String imgUrl = artistNode.get(0).path("url").asText();
+                spotifySearchAlbumResponses.get(i).getAlbumArtist().setImageUrl(imgUrl);
             }
 
+
+/*
             Artist artist1 = null;
             for(int i=0;i<spotifySearchAlbumResponses.size();i++) {
                 //for (int j = 0; j < spotifySearchAlbumResponses.get(i).getAlbumArtist.size(); j++) {
@@ -114,7 +126,7 @@ public class SearchAlbumService extends SearchService {
                 if (!album.isPresent())//Local DB에 spotify_artist_id 있는지 조회
                 {
                     Album album1 = albumRepository.save(Album.builder()
-                            .albumCover(spotifySearchAlbumResponses.get(i).getImages().get(0).getUrl())
+                            .albumCover(spotifySearchAlbumResponses.get(i).getImageUrl())
                             .title(spotifySearchAlbumResponses.get(i).getName())
                             .createdDate(releaseDateInstant)
                             .artist(artist1)
@@ -123,11 +135,11 @@ public class SearchAlbumService extends SearchService {
                     );
                 }
             }
-
+*/
         }
         catch (Exception e) {
 
         }
-        return data; // 예외 발생 시 null 반환
+        return spotifySearchAlbumResponses; // 예외 발생 시 null 반환
     }
 }

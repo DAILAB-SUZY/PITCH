@@ -180,9 +180,10 @@ public class PlaylistService {
      */
     @Transactional
     public List<TrackDetail> trackSearch(String track) {
-        if (trackRepository.findByTitle(track).isEmpty()) {
+       /* if (trackRepository.findByTitle(track).isEmpty()) {
             throw new NotFoundTrackException();
         }
-        return List.of(Track.toTrackDetail(trackRepository.findByTitle(track).get()));
+        return List.of(Track.toTrackDetail(trackRepository.findByTitle(track).get()));*/
+        return null;
     }
 }

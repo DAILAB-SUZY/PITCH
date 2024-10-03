@@ -22,7 +22,7 @@ public class SearchArtistService extends SearchService {
         this.artistRepository = artistRepository;
     }
 
-    public String saveArtist(List<SpotifySearchArtistResponse> spotifySearchArtistResponses, String accessToken) throws JsonProcessingException {
+    public void saveArtist(List<SpotifySearchArtistResponse> spotifySearchArtistResponses, String accessToken) throws JsonProcessingException {
        ObjectMapper mapper = new ObjectMapper();
         JsonNode rootNode = null;
         for (int i = 0; i < spotifySearchArtistResponses.size(); i++) {
@@ -30,24 +30,17 @@ public class SearchArtistService extends SearchService {
             if (artist.isPresent())//Local DB에 spotify_artist_id 있는지 조회
             {
                 //있다면 artist_cover 채워서 보내기
-                artist.get().setArtistCover(String.valueOf(spotifySearchArtistResponses.get(i).getImages().get(0).getUrl()));
+                artist.get().setArtistCover(String.valueOf(spotifySearchArtistResponses.get(i).getImageUrl()));
                 artistRepository.save(artist.get());
                 continue;
             }//존재하면
 
-
-            String datas = searchArtistImg(accessToken, spotifySearchArtistResponses.get(i).getArtistId());
-
-            rootNode = mapper.readTree(datas);
-            JsonNode artistNode = rootNode.path("images");
-            String imgUrl = artistNode.get(0).path("url").asText();
-            Artist artist1 = artistRepository.save(Artist.builder()
-                    .artistName(spotifySearchArtistResponses.get(i).getName())
-                    .artistCover(imgUrl)
-                    .spotifyArtistId(spotifySearchArtistResponses.get(i).getArtistId())
-                    .build());
+            artistRepository.save(Artist.builder()
+                .artistName(spotifySearchArtistResponses.get(i).getName())
+                .artistCover(spotifySearchArtistResponses.get(i).getImageUrl())
+                .spotifyArtistId(spotifySearchArtistResponses.get(i).getArtistId())
+                .build());
         }
-        return rootNode.toString();
     }
 
     public String searchArtist(String accessToken, String q) throws JsonProcessingException {
@@ -74,11 +67,11 @@ public class SearchArtistService extends SearchService {
                 );
                 images.add(image);
             }
-            spotifySearchArtistResponse.setImages(images);
+            spotifySearchArtistResponse.setImageUrl(artistitemsNode.get(i).path("images").get(0).path("url").asText());
             spotifySearchArtistResponses.add(spotifySearchArtistResponse);
         }
 
-        String datas=saveArtist(spotifySearchArtistResponses,accessToken);
+        saveArtist(spotifySearchArtistResponses,accessToken);
         return data;
     }
 }

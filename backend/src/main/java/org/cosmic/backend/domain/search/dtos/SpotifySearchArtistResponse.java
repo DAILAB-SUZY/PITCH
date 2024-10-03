@@ -12,8 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 
 public class SpotifySearchArtistResponse {
-    private String artistId;//artistId
-    private List<Image> images;
+    private String artistId;
+    private String imageUrl;
     private String name;
-
 }

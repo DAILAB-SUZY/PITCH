@@ -13,7 +13,8 @@ import java.util.List;
 public class SpotifySearchAlbumResponse {
     private SpotifySearchArtistResponse albumArtist;//앨범의 아티스트
     private String albumId;
-    private List<Image> images;
+    private String imageUrl;
     private String name;
+    private Integer total_tracks;
     private String release_date;
 }
