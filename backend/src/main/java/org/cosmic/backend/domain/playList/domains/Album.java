@@ -110,6 +110,15 @@ public class Album {//앨범과 트랙은 1:N관계이며 앨범과 아티스트
         .build();
   }
 
+  public static Album from(org.cosmic.backend.domain.search.dtos.Album album, Artist artist) {
+    return Album.builder()
+        .title(album.name())
+        .albumCover(album.images().get(0).url())
+        .spotifyAlbumId(album.id())
+        .artist(artist)
+        .build();
+  }
+
   @Override
   public String toString() {
     return "Album{" +
