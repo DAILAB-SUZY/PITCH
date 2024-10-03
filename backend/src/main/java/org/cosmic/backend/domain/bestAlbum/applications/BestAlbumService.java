@@ -2,16 +2,13 @@ package org.cosmic.backend.domain.bestAlbum.applications;
 
 import jakarta.transaction.Transactional;
 import org.cosmic.backend.domain.bestAlbum.domains.UserBestAlbum;
-import org.cosmic.backend.domain.bestAlbum.dtos.AlbumInfoDetail;
 import org.cosmic.backend.domain.bestAlbum.dtos.BestAlbumDetail;
 import org.cosmic.backend.domain.bestAlbum.exceptions.ExistBestAlbumException;
 import org.cosmic.backend.domain.bestAlbum.exceptions.NotMatchBestAlbumException;
 import org.cosmic.backend.domain.bestAlbum.repositorys.UserBestAlbumRepository;
 import org.cosmic.backend.domain.playList.domains.Album;
-import org.cosmic.backend.domain.playList.exceptions.NotFoundArtistException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
-import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
 import org.cosmic.backend.domain.post.exceptions.NotFoundAlbumException;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
@@ -32,7 +29,6 @@ public class BestAlbumService {
 
     private final UsersRepository usersRepository;
     private final AlbumRepository albumRepository;
-    private final ArtistRepository artistRepository;
     private final UserBestAlbumRepository userBestAlbumRepository;
 
     /**
@@ -40,13 +36,11 @@ public class BestAlbumService {
      *
      * @param usersRepository 유저 관련 데이터베이스 접근 레포지토리
      * @param albumRepository 앨범 관련 데이터베이스 접근 레포지토리
-     * @param artistRepository 아티스트 관련 데이터베이스 접근 레포지토리
      * @param userBestAlbumRepository 유저의 좋아요 앨범 관련 데이터베이스 접근 레포지토리
      */
-    public BestAlbumService(UsersRepository usersRepository, AlbumRepository albumRepository, ArtistRepository artistRepository, UserBestAlbumRepository userBestAlbumRepository) {
+    public BestAlbumService(UsersRepository usersRepository, AlbumRepository albumRepository,UserBestAlbumRepository userBestAlbumRepository) {
         this.usersRepository = usersRepository;
         this.albumRepository = albumRepository;
-        this.artistRepository = artistRepository;
         this.userBestAlbumRepository = userBestAlbumRepository;
     }
 
@@ -144,46 +138,11 @@ public class BestAlbumService {
                 })
                 .toList()
         );
+
         return userBestAlbumRepository.findByUser_UserId(userId)
                 .orElse(Collections.emptyList())
                 .stream()
                 .map(BestAlbumDetail::new)
                 .collect(Collectors.toList());
-    }
-
-    /**
-     * 주어진 아티스트 이름을 기반으로 해당 아티스트의 모든 앨범 정보를 검색합니다.
-     *
-     * @param artistName 아티스트의 이름
-     * @return 해당 아티스트의 앨범 목록
-     * @throws NotFoundArtistException 아티스트를 찾을 수 없는 경우 발생합니다.
-     */
-    @Transactional
-    public List<AlbumInfoDetail> searchArtist(String artistName) {
-        if(artistRepository.findByArtistName(artistName).isEmpty()) {
-            throw new NotFoundArtistException();
-        }
-        return albumRepository.findAllByArtist_ArtistName(artistName)
-                .stream()
-                .map(AlbumInfoDetail::new)
-                .toList();
-    }
-
-    /**
-     * 주어진 앨범 제목을 기반으로 모든 앨범 정보를 검색합니다.
-     *
-     * @param albumTitle 앨범의 제목
-     * @return 해당 제목을 가진 앨범 목록
-     * @throws NotFoundAlbumException 앨범을 찾을 수 없는 경우 발생합니다.
-     */
-    @Transactional
-    public List<AlbumInfoDetail> searchAlbum(String albumTitle) {
-        if(albumRepository.findAllByTitle(albumTitle).isEmpty()) {
-            throw new NotFoundAlbumException();
-        }
-        return albumRepository.findAllByTitle(albumTitle)
-                .stream()
-                .map(AlbumInfoDetail::new)
-                .toList();
     }
 }

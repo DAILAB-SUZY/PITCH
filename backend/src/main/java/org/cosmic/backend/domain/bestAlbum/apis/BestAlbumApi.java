@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import org.cosmic.backend.domain.bestAlbum.applications.BestAlbumService;
-import org.cosmic.backend.domain.bestAlbum.dtos.AlbumInfoDetail;
 import org.cosmic.backend.domain.bestAlbum.dtos.AlbumScoreDto;
 import org.cosmic.backend.domain.bestAlbum.dtos.BestAlbumDetail;
 import org.cosmic.backend.domain.bestAlbum.dtos.BestAlbumListRequest;
@@ -91,7 +90,6 @@ public class BestAlbumApi {
             @PathVariable Long albumId,
             @AuthenticationPrincipal Long userId
             ) {
-
         return ResponseEntity.ok(bestAlbumService.add(albumScoreDto.getScore(), userId, albumId));
     }
 
@@ -114,39 +112,5 @@ public class BestAlbumApi {
             @RequestBody BestAlbumListRequest bestAlbumlistRequest,
             @AuthenticationPrincipal Long userId) {
         return ResponseEntity.ok(bestAlbumService.save(userId, bestAlbumlistRequest.getBestalbum()));
-    }
-
-    /**
-     * <p>아티스트 이름을 통해 해당 아티스트의 앨범 정보를 검색합니다.</p>
-     *
-     * @param artistName 검색할 아티스트 이름
-     * @return 해당 아티스트의 앨범 목록
-     */
-    @GetMapping("bestAlbum/artist/{artistName}")
-    @ApiResponse(responseCode = "404", description = "Not Match Artist Name")
-    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-            array = @ArraySchema(schema = @Schema(implementation = AlbumInfoDetail.class))))
-    @Operation(summary = "아티스트 검색",description ="아티스트 이름 검색을 통한 앨범 정보 조회" )
-    public ResponseEntity<List<AlbumInfoDetail>> artistSearch(
-            @Parameter(description = "아티스트 이름")
-            @PathVariable String artistName) {
-        return ResponseEntity.ok(bestAlbumService.searchArtist(artistName));
-    }
-
-    /**
-     * <p>앨범 이름을 통해 해당 앨범 정보를 검색합니다.</p>
-     *
-     * @param albumName 검색할 앨범 이름
-     * @return 해당 앨범의 정보 목록
-     */
-    @GetMapping("/bestAlbum/album/{albumName}")
-    @ApiResponse(responseCode = "404", description = "Not Match Album Title")
-    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-            array = @ArraySchema(schema = @Schema(implementation = AlbumInfoDetail.class))))
-    @Operation(summary = "앨범 검색",description ="앨범 이름 검색을 통한 앨범 정보 조회" )
-    public ResponseEntity<List<AlbumInfoDetail>> albumSearch(
-            @Parameter(description = "앨범 이름")
-            @PathVariable String albumName) {
-        return ResponseEntity.ok(bestAlbumService.searchAlbum(albumName));
     }
 }

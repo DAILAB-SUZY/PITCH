@@ -19,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 /**
  * <p> FavoriteApi는 사용자의 즐겨찾기 아티스트와 관련된 REST API를 제공합니다. </p>
@@ -33,9 +32,7 @@ import java.util.List;
 @ApiCommonResponses
 @Tag(name = "Favorite아티스트 관련 API", description = "Favorite아티스트 정보 제공 및 저장")
 public class FavoriteApi {
-
     private final FavoriteArtistService favoriteartistService;
-
     /**
      * FavoriteApi의 생성자.
      *
@@ -44,7 +41,6 @@ public class FavoriteApi {
     public FavoriteApi(FavoriteArtistService favoriteartistService) {
         this.favoriteartistService = favoriteartistService;
     }
-
     /**
      * <p>사용자가 즐겨찾는 아티스트 정보를 반환합니다.</p>
      *
@@ -61,66 +57,6 @@ public class FavoriteApi {
             @Parameter(description = "유저 id")
             @PathVariable Long userId) {
         return ResponseEntity.ok(favoriteartistService.favoriteArtistGiveData(userId));
-    }
-
-    /**
-     * <p>주어진 아티스트 이름으로 관련된 앨범 및 트랙 데이터를 검색합니다.</p>
-     *
-     * @param artistName 아티스트의 이름
-     * @return 해당 아티스트의 앨범 및 트랙 데이터 리스트
-     * @throws NotFoundArtistException 아티스트를 찾을 수 없는 경우 발생합니다.
-     */
-    @GetMapping("/favoriteArtist/artist/{artistName}")
-    @ApiResponse(responseCode = "404", description = "Not Found Artist")
-    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-            array = @ArraySchema(schema = @Schema(implementation = ArtistDetail.class))))
-    @Operation(summary = "아티스트 검색",description = "아티스트 이름으로 아티스트 정보 제공")
-    public ResponseEntity<List<ArtistDetail>> artistSearchData(
-            @Parameter(description = "아티스트 이름")
-            @PathVariable String artistName) {
-        return ResponseEntity.ok(favoriteartistService.artistSearchData(artistName));
-    }
-
-    /**
-     * <p>주어진 앨범 이름과 아티스트 ID로 관련된 트랙 데이터를 검색합니다.</p>
-     *
-     * @param artistId 아티스트의 ID
-     * @param albumName 앨범의 이름
-     * @return 해당 앨범의 트랙 데이터 리스트
-     * @throws NotFoundAlbumException 앨범을 찾을 수 없는 경우 발생합니다.
-     */
-    @GetMapping("/favoriteArtist/artist/{artistId}/album/{albumName}")
-    @ApiResponse(responseCode = "404", description = "Not Found Album")
-    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-            array = @ArraySchema(schema = @Schema(implementation = ArtistDetail.class))))
-    @Operation(summary = "앨범 검색",description = "앨범으로 앨범 정보 제공")
-    public ResponseEntity<List<AlbumDetail>> albumSearchData(
-            @Parameter(description = "아티스트 id")
-            @PathVariable Long artistId,
-            @Parameter(description = "앨범 이름")
-            @PathVariable String albumName) {
-        return ResponseEntity.ok(favoriteartistService.albumSearchData(artistId, albumName));
-    }
-
-    /**
-     * <p>주어진 앨범 ID와 트랙 이름으로 트랙 데이터를 검색합니다.</p>
-     *
-     * @param albumId 앨범의 ID
-     * @param trackName 트랙의 이름
-     * @return 해당 트랙의 데이터
-     * @throws NotFoundTrackException 트랙을 찾을 수 없는 경우 발생합니다.
-     */
-    @GetMapping("/favoriteArtist/album/{albumId}/track/{trackName}")
-    @ApiResponse(responseCode = "404", description = "Not Found Track")
-    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-            array = @ArraySchema(schema = @Schema(implementation = ArtistDetail.class))))
-    @Operation(summary = "노래 검색",description = "노래로 노래 정보 제공")
-    public ResponseEntity<TrackDetail> trackSearchData(
-            @Parameter(description = "앨범 id")
-            @PathVariable Long albumId,
-            @Parameter(description = "노래 이름")
-            @PathVariable String trackName) {
-        return ResponseEntity.ok(favoriteartistService.trackSearchData(albumId, trackName));
     }
 
     /**
