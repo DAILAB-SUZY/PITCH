@@ -10,6 +10,8 @@ services:
     environment:
       - 'MAIL_ADDRESS='
       - 'MAIL_PASSWORD='
+      - 'CLIENT_ID='
+      - 'CLIENT_SECRET='
     ports:
       - '8082:8080'
     depends_on:
