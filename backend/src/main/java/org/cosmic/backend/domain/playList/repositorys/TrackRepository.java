@@ -12,7 +12,7 @@ public interface TrackRepository extends JpaRepository<Track,Long> {
     Optional<Track> findByTitleAndAlbum_AlbumId(String title, Long albumId);
     List<Track>findByAlbum_TitleAndArtist_ArtistId(String title,Long artistId);
     Optional<Track> findByTrackIdAndArtist_ArtistId(Long trackId,Long artistId);
-    List<Track> findByTitle(String title);
+    Optional<Track> findByTitle(String title);
 
     List<Track> findByArtist_ArtistName(String artistName);
     Optional<Track> findBySpotifyTrackId(String spotifyTrackId);

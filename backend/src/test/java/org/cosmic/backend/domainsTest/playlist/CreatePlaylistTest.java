@@ -92,7 +92,7 @@ public class CreatePlaylistTest extends BaseSetting {
         UserLoginDetail userLogin = loginUser("test1@example.com");
 
         Map<String,Object> params= new HashMap<>();
-        params.put("trackName","id");
+        params.put("trackName","ifsds");
 
         String url=urlGenerator.buildUrl("/api/playlist/track/{trackName}",params);
         mockMvcHelper(HttpMethod.GET,url,null,userLogin.getToken()).andExpect(status().isNotFound());

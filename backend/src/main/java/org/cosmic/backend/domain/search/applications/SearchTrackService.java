@@ -175,14 +175,19 @@ public class SearchTrackService extends SearchService {
             spotifySearchTrackResponse.setTrackName(item.path("name").asText());
 
             item = trackitemsNode.get(i).path("artists");
-                SpotifySearchArtistResponse spotifySearchArtistResponse = new SpotifySearchArtistResponse();
-                JsonNode artistsNode = item.get(0);
-                spotifySearchArtistResponse.setArtistId(artistsNode.path("id").asText());
-                spotifySearchArtistResponse.setName(artistsNode.path("name").asText());
-                spotifySearchArtistResponse.setImageUrl(null);
-                spotifySearchTrackResponse.setTrackArtist(spotifySearchArtistResponse);
+            SpotifySearchArtistResponse spotifySearchArtistResponse = new SpotifySearchArtistResponse();
+            JsonNode artistsNode = item.get(0);
+            spotifySearchArtistResponse.setArtistId(artistsNode.path("id").asText());
+            spotifySearchArtistResponse.setName(artistsNode.path("name").asText());
+            spotifySearchArtistResponse.setImageUrl(null);
+            spotifySearchTrackResponse.setTrackArtist(spotifySearchArtistResponse);
 
-                spotifySearchTrackResponses.add(spotifySearchTrackResponse);
+            spotifySearchTrackResponses.add(spotifySearchTrackResponse);
+
+
+
+
+
 
             SpotifySearchAlbumResponse spotifySearchAlbumResponse = new SpotifySearchAlbumResponse();
             item = trackitemsNode.get(i).path("album");
@@ -201,6 +206,8 @@ public class SearchTrackService extends SearchService {
                 images.add(image);
             }
             spotifySearchAlbumResponse.setImageUrl(item.path("images").get(0).path("url").asText());
+
+
 
             item = item.path("artists");//앨범의 아티스트들.
             spotifySearchArtistResponse = new SpotifySearchArtistResponse();
