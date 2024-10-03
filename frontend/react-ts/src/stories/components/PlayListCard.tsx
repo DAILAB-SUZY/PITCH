@@ -4,10 +4,8 @@ import img from "../../img/yanggang.webp";
 interface SongData {
   playlistId: number;
   trackId: number;
-  userId: number;
   title: string;
   artistName: string;
-  albumCover: string;
 }
 
 interface PlaylistProps {
@@ -69,7 +67,7 @@ const PlayListBox = ({ playlist }: PlaylistProps) => {
       {playlist.map((song) => (
         <SongArea>
           <AlbumCover>
-            <img src={song.albumCover} width="100%" height="100%"></img>
+            {/* <img src={song.albumCover} width="100%" height="100%"></img> */}
           </AlbumCover>
           <SongTextArea>
             <Title fontSize={"20px"}>{song.title}</Title>

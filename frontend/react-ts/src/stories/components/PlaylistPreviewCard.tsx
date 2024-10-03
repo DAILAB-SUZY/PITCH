@@ -112,8 +112,8 @@ const UserName = styled.div<{ fontFamily: string }>`
 
 const PlaylistPreviewCard = ({ playlists }: PlaylistProps) => {
   const navigate = useNavigate();
-  const GoToPlayListPage = () => {
-    navigate("/PlayListPage");
+  const GoToPlayListPage = (userId: number) => {
+    navigate("/PlayListPage", { state: userId });
   };
   return (
     <PlaylistContainer>
@@ -121,7 +121,7 @@ const PlaylistPreviewCard = ({ playlists }: PlaylistProps) => {
         <PlaylistBox
           key={playlist.playlistId}
           bgColor={colors.BG_grey}
-          onClick={() => GoToPlayListPage()}
+          onClick={() => GoToPlayListPage(playlist.author.id)}
         >
           <AlbumCoverStack>
             {playlist.albumCover.map((cover: any, index: any) => (

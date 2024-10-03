@@ -237,6 +237,7 @@ function HomePage() {
         if (response.ok) {
           const data = await response.json();
           setfriendsPlayList((prevList) => [...prevList, ...data]);
+          console.log("fetched PlayList:");
           console.log(data);
         } else if (response.status === 401) {
           console.log("reissuing Token");
