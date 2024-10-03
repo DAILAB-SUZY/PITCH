@@ -3,7 +3,6 @@ package org.cosmic.backend.domain.favoriteArtist.applications;
 import org.cosmic.backend.domain.favoriteArtist.domains.FavoriteArtist;
 import org.cosmic.backend.domain.favoriteArtist.dtos.*;
 import org.cosmic.backend.domain.favoriteArtist.repositorys.FavoriteArtistRepository;
-import org.cosmic.backend.domain.playList.exceptions.NotFoundArtistException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundTrackException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
@@ -14,7 +13,6 @@ import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 
 /**
  * <p> FavoriteArtistService는 사용자의 즐겨찾기 아티스트 정보를 관리하는 서비스입니다. </p>
@@ -27,7 +25,6 @@ import java.util.List;
  */
 @Service
 public class FavoriteArtistService {
-
     private final ArtistRepository artistRepository;
     private final AlbumRepository albumRepository;
     private final TrackRepository trackRepository;
@@ -63,56 +60,6 @@ public class FavoriteArtistService {
             throw new NotFoundUserException();
         }
         return FavoriteArtist.toFavoriteArtistDto(favoriteArtistRepository.findByUser_UserId(userId).get());
-    }
-
-    /**
-     * <p>아티스트 이름으로 관련된 앨범과 트랙 데이터를 검색합니다.</p>
-     *
-     * @param artistName 아티스트의 이름
-     * @return 해당 아티스트의 앨범 및 트랙 데이터
-     * @throws NotFoundArtistException 아티스트를 찾을 수 없는 경우 발생합니다.
-     */
-    public List<ArtistDetail> artistSearchData(String artistName) {
-        if (artistRepository.findByArtistName(artistName).isEmpty()) {
-            throw new NotFoundArtistException();
-        }
-        return artistRepository.findByArtistName(artistName)
-                .stream()
-                .map(ArtistDetail::new)
-                .toList();
-    }
-
-    /**
-     * <p>앨범 이름과 아티스트 ID로 관련된 트랙 데이터를 검색합니다.</p>
-     *
-     * @param artistId 아티스트의 ID
-     * @param albumName 앨범의 제목
-     * @return 해당 앨범의 트랙 데이터
-     * @throws NotFoundAlbumException 앨범을 찾을 수 없는 경우 발생합니다.
-     */
-    public List<AlbumDetail> albumSearchData(Long artistId, String albumName) {
-        if (albumRepository.findByTitleAndArtist_ArtistId(albumName, artistId).isEmpty()) {
-            throw new NotFoundAlbumException();
-        }
-        return albumRepository.findAllByTitle(albumName)
-                .stream()
-                .map(AlbumDetail::new)
-                .toList();
-    }
-
-    /**
-     * <p>앨범 ID와 트랙 이름으로 트랙 데이터를 검색합니다.</p>
-     *
-     * @param albumId 앨범의 ID
-     * @param trackName 트랙의 제목
-     * @return 해당 트랙의 데이터
-     * @throws NotFoundTrackException 트랙을 찾을 수 없는 경우 발생합니다.
-     */
-    public TrackDetail trackSearchData(Long albumId, String trackName) {
-        if (trackRepository.findByTitleAndAlbum_AlbumId(trackName, albumId).isEmpty()) {
-            throw new NotFoundTrackException();
-        }
-        return new TrackDetail(trackRepository.findByTitleAndAlbum_AlbumId(trackName, albumId).get());
     }
 
     /**

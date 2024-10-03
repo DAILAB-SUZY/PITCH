@@ -17,8 +17,6 @@ public class SearchService {
 
     public String search(String accessToken, String q)
     {
-        //db부터 먼저 확인한 뒤에 없다면.
-
         RestTemplate rest = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers = setting(accessToken,headers);
@@ -31,13 +29,7 @@ public class SearchService {
         HttpEntity<String> requestEntity = new HttpEntity<String>(body, headers);
         // 요청 시도 및 응답 처리
         ResponseEntity<String> responseEntity = rest.exchange(searchUrl, HttpMethod.GET, requestEntity, String.class);
-
-        // HttpStatusCode를 HttpStatus로 변환
-        HttpStatus httpStatus = HttpStatus.valueOf(responseEntity.getStatusCode().value());
-        String response = responseEntity.getBody();
-
-        // 검색 후 데이터 추출 후 DB 저장 (현재는 단순히 응답 반환)
-        return response;
+        return responseEntity.getBody();
     }
 
     public String searchArtistImg(String accessToken,String artistId)
@@ -50,10 +42,6 @@ public class SearchService {
         String searchUrl = "https://api.spotify.com/v1/artists/" + artistId;
         HttpEntity<String> requestEntity = new HttpEntity<String>(body, headers);
         ResponseEntity<String> responseEntity = rest.exchange(searchUrl, HttpMethod.GET, requestEntity, String.class);
-
-        HttpStatus httpStatus = HttpStatus.valueOf(responseEntity.getStatusCode().value());
-        String response = responseEntity.getBody();
-
-        return response;
+        return responseEntity.getBody();
     }
 }

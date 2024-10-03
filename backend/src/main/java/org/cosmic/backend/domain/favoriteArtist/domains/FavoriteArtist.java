@@ -20,7 +20,6 @@ import org.cosmic.backend.domain.user.domains.User;
 @Table(name="`FavoriteArtist`")
 @IdClass(FavoriteArtistPK.class)
 public class FavoriteArtist {
-
     @Id
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "artist_id")
