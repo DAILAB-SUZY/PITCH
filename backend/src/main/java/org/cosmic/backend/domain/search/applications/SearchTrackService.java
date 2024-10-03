@@ -43,7 +43,7 @@ public class SearchTrackService extends SearchService {
 
             spotifySearchTrackResponses.add(spotifySearchTrackResponse);
 
-            String datas = searchArtistImg(accessToken,spotifySearchTrackResponses.get(i).getTrackArtist().getArtistId());
+            String datas = searchSpotifyArtist(accessToken,spotifySearchTrackResponses.get(i).getTrackArtist().getArtistId());
 
             rootNode = mapper.readTree(datas);
             JsonNode trackArtistNode = rootNode.path("images");
@@ -70,7 +70,7 @@ public class SearchTrackService extends SearchService {
             spotifySearchTrackResponses.get(i).setAlbum(spotifySearchAlbumResponse);
             //아티스트
 
-            datas = searchArtistImg(accessToken, spotifySearchTrackResponses.get(i).getAlbum().getAlbumArtist().getArtistId());
+            datas = searchSpotifyArtist(accessToken, spotifySearchTrackResponses.get(i).getAlbum().getAlbumArtist().getArtistId());
 
             rootNode = mapper.readTree(datas);
             JsonNode albumArtistNode = rootNode.path("images");
@@ -82,5 +82,9 @@ public class SearchTrackService extends SearchService {
 
         return spotifySearchTrackResponses;
     }
+    public List<SpotifySearchTrackResponse> searchTrackId(String accessToken,String trackId) throws JsonProcessingException { // q는 검색어
+        rootNode = mapper.readTree(searchSpotifyTrack(accessToken,trackId));
 
+        return spotifySearchTrackResponses;
+    }
 }

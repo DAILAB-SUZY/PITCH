@@ -3,6 +3,7 @@ package org.cosmic.backend.domain.search.applications;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.cosmic.backend.domain.search.dtos.SpotifySearchAlbumResponse;
 import org.cosmic.backend.domain.search.dtos.SpotifySearchArtistResponse;
 import org.springframework.stereotype.Service;
 
@@ -37,4 +38,13 @@ public class SearchArtistService extends SearchService {
         }
         return spotifySearchArtistResponses;
     }
+
+    public SpotifySearchArtistResponse searchArtistId(String accessToken, String artistId) throws JsonProcessingException
+    {
+        JsonNode artistItem = mapper.readTree(searchSpotifyArtist(accessToken, artistId));
+
+        return new SpotifySearchArtistResponse(); // 예외 발생 시 null 반환
+    }
+
+
 }

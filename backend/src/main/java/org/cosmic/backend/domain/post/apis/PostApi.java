@@ -1,5 +1,6 @@
 package org.cosmic.backend.domain.post.apis;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -107,7 +108,7 @@ public class PostApi {
   @ApiResponse(responseCode = "404", description = "Not Found Album")
   @Operation(summary = "특정 앨범 포스트 생성 API", description = "특정 앨범 포스트를 생성합니다.")
   public ResponseEntity<PostAndCommentsDetail> createPost(@RequestBody CreatePost post,
-      @AuthenticationPrincipal Long userId) {
+      @AuthenticationPrincipal Long userId) throws JsonProcessingException {
     return ResponseEntity.ok(
         postService.createPost(post.getContent(), post.getSpotifyAlbumId(), userId));
   }
