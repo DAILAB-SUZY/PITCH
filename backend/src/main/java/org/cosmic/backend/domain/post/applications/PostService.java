@@ -1,10 +1,9 @@
 package org.cosmic.backend.domain.post.applications;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.cosmic.backend.domain.auth.applications.CreateSpotifyToken;
 import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundArtistException;
@@ -41,7 +40,7 @@ public class PostService {
   private final AlbumRepository albumRepository;
   private final SearchAlbumService searchAlbumService;
 
-  CreateSpotifyToken createSpotifyToken=new CreateSpotifyToken();
+  CreateSpotifyToken createSpotifyToken = new CreateSpotifyToken();
 
   /**
    * PostService의 생성자입니다.
@@ -52,7 +51,8 @@ public class PostService {
    * @param albumRepository  앨범 데이터를 처리하는 리포지토리
    */
   public PostService(PostRepository postRepository, UsersRepository userRepository,
-                     ArtistRepository artistRepository, AlbumRepository albumRepository, SearchAlbumService searchAlbumService) {
+      ArtistRepository artistRepository, AlbumRepository albumRepository,
+      SearchAlbumService searchAlbumService) {
     this.postRepository = postRepository;
     this.userRepository = userRepository;
     this.artistRepository = artistRepository;
@@ -109,15 +109,14 @@ public class PostService {
    * @throws NotMatchAlbumException 게시물에 해당하는 앨범을 찾을 수 없을 때 발생합니다.
    */
   @Transactional
-  public PostAndCommentsDetail createPost(String content, String spotifyAlbumId, Long userId) throws JsonProcessingException {
+  public PostAndCommentsDetail createPost(String content, String spotifyAlbumId, Long userId)
+      throws JsonProcessingException {
     User user = userRepository.findById(userId).orElseThrow(NotFoundUserException::new);
-    //TODO ("spotify에서 album data 수신 후 저장하는 로직필요")
     Optional<Album> albumOptional = albumRepository.findBySpotifyAlbumId(spotifyAlbumId);
-    if(albumOptional.isEmpty()) {
-      searchAlbumService.searchAlbumId(createSpotifyToken.accesstoken(),spotifyAlbumId);
+    if (albumOptional.isEmpty()) {
+      searchAlbumService.searchAlbumId(createSpotifyToken.accesstoken(), spotifyAlbumId);
       albumOptional = albumRepository.findBySpotifyAlbumId(spotifyAlbumId);
     }
-    //createSpotifyToken.accesstoken()
     Post post = postRepository.save(Post.builder()
         .content(content)
         .user(user)

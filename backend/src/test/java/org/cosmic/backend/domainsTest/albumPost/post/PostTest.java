@@ -30,7 +30,7 @@ public class PostTest extends AlbumPostBaseTest {
   public void createPostTest() throws Exception {
     CreatePost createPost = CreatePost.builder()
         .content("밤양갱 노래 안좋다")
-        .spotifyAlbumId("base")
+        .spotifyAlbumId("4QJZzFdGz2YlPZEHAlAJ6O")
         .build();
     mockMvcHelper(HttpMethod.POST, urlGenerator.buildUrl(baseUrl, params), createPost, validToken)
         .andDo(print())
