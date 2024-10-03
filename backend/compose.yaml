@@ -28,6 +28,8 @@ services:
       - 'TZ=Asia/Seoul'
     ports:
       - '9000:5432'
+    volumes:
+      - 'postgres_data:/var/lib/postgresql/data'
 
   redis:
     image: 'redis:latest'
@@ -40,3 +42,7 @@ services:
 networks:
   default:
     driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
