@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import logo from "../../img/logo.png";
 import SearchBox from "../components/SearchBox";
-import AlbumPostBox from "../components/AlbumPostBox";
+import AlbumPostCard from "../components/AlbumPostCard";
 import { colors } from "../../styles/color";
 
 const Container = styled.div`
@@ -15,7 +15,7 @@ const Container = styled.div`
   color: black;
 `;
 
-const HeaderContainer = styled.div`
+const Header = styled.div`
   width: 100vw;
   height: 150px;
   margin-bottom: 20px;
@@ -25,7 +25,7 @@ const HeaderContainer = styled.div`
   flex-direction: column;
 `;
 
-const HeaderElement = styled.div`
+const RowAlignArea = styled.div`
   width: 90vw;
   height: 50px;
   display: flex;
@@ -41,7 +41,7 @@ const Circle = styled.div`
   border-radius: 100px;
 `;
 
-const ByTextBox = styled.div`
+const WriterTextArea = styled.div`
   width: 20vw;
   height: 50px;
   display: flex;
@@ -49,13 +49,12 @@ const ByTextBox = styled.div`
   justify-content: center;
 `;
 
-const Title = styled.div<{ fontSize: string; margin: string }>`
+const Title = styled.div<{ fontSize: string }>`
   font-size: ${(props) => props.fontSize};
-  margin: ${(props) => props.margin};
   font-family: "Bd";
 `;
 
-const RightAlignBox = styled.div`
+const RightAlignArea = styled.div`
   width: 90vw;
   display: flex;
   align-items: center;
@@ -75,23 +74,24 @@ const CompleteButton = styled.div`
 function AlbumChatPostPage() {
   return (
     <Container>
-      <HeaderContainer>
+      <Header>
         <img src={logo} width="80px" height="80px"></img>
-        <HeaderElement>
+        <RowAlignArea>
           <Circle></Circle>
           <Title fontSize={"30px"}>AlbumPost</Title>
-          <ByTextBox>
-            <Title>by김준호</Title>
-          </ByTextBox>
-        </HeaderElement>
-      </HeaderContainer>
+          <WriterTextArea>
+            <Title fontSize="20px">by김준호</Title>
+          </WriterTextArea>
+        </RowAlignArea>
+      </Header>
       <SearchBox></SearchBox>
-      <AlbumPostBox></AlbumPostBox>
-      <RightAlignBox>
+      {/* <AlbumPostCard></AlbumPostCard>  //TODO: props로 전달할 곡 제목 넣기 */}
+
+      <RightAlignArea>
         <CompleteButton>
           <Title fontSize={"20px"}>완료</Title>
         </CompleteButton>
-      </RightAlignBox>
+      </RightAlignArea>
     </Container>
   );
 }

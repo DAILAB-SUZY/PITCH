@@ -1,29 +1,93 @@
 import styled from "styled-components";
-import BottomNav from "../components/BottomNav";
-import AlbumChatBox from "../components/AlbumChatBox";
+import Nav from "../components/Nav";
+import AlbumChatBox from "../components/AlbumChatCard";
 import { useNavigate } from "react-router-dom";
-
+import cover1 from "../../img/aespa.webp";
+import artistProfile from "../../img/aespaProfile.jpg";
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: start;
+  justify-content: flex-start;
   align-items: center;
+  overflow-y: scroll;
+  overflow-x: hidden;
   height: 100vh;
   width: 100vw;
   background-color: white;
   color: black;
 `;
 
-const HeaderContainer = styled.div`
-  width: 90vw;
-  height: 10vh;
+const Header = styled.div`
+  overflow-x: hidden;
   display: flex;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  justify-content: space-between;
-  flex-direction: row;
 `;
 
-const HeaderTilte = styled.div`
+const Body = styled.div`
+  margin-top: 120px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+`;
+
+const AlbumTitleArea = styled.div`
+  position: relative;
+  width: 100%;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  color: white;
+  box-sizing: border-box;
+`;
+
+const ImageArea = styled.div`
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  overflow: hidden;
+  width: 100%;
+  height: 200px;
+  /* object-fit: cover; */
+  z-index: 1;
+`;
+
+const GradientBG = styled.div`
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index: 2;
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
+  backdrop-filter: blur(0px);
+`;
+
+const TitleTextArea = styled.div`
+  /* position: absolute;
+  bottom: 10px;
+  left: 10px; */
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-end;
+  padding: 0px 0px 20px 20px;
+  box-sizing: border-box;
+  z-index: 3;
+`;
+
+const HeaderTilteArea = styled.div`
   width: 70vw;
   height: 10vh;
   display: flex;
@@ -33,16 +97,18 @@ const HeaderTilte = styled.div`
 `;
 
 const PostButton = styled.div`
-  width: 10vw;
-  height: 10vh;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: center;
   flex-direction: row;
-  background-color: red;
+  background-color: #ff006a;
+  color: white;
+  border-radius: 50%;
 `;
 
-const ChatHeaderContainer = styled.div`
+const ChatHeader = styled.div`
   width: 90vw;
   height: 10vh;
   display: flex;
@@ -51,7 +117,7 @@ const ChatHeaderContainer = styled.div`
   flex-direction: row;
 `;
 
-const AlbumContainer = styled.div`
+const AlbumInfoArea = styled.div`
   width: 90vw;
   height: 10vh;
   display: flex;
@@ -68,7 +134,7 @@ const AlbumCover = styled.div`
   overflow: hidden;
 `;
 
-const AlbumDescript = styled.div`
+const AlbumDescriptArea = styled.div`
   width: 69vw;
   height: 10vh;
   display: flex;
@@ -76,7 +142,7 @@ const AlbumDescript = styled.div`
   justify-content: start;
   flex-direction: column;
 `;
-const AlbumName = styled.div`
+const AlbumNameArea = styled.div`
   width: 69vw;
   height: 5vh;
   display: flex;
@@ -85,7 +151,7 @@ const AlbumName = styled.div`
   flex-direction: row;
 `;
 
-const ArtistInfo = styled.div`
+const ArtistInfoArea = styled.div`
   width: 69vw;
   height: 5vh;
   display: flex;
@@ -115,7 +181,7 @@ const Line = styled.div`
   border-bottom: 1px;
 `;
 
-const ChatContainer = styled.div`
+const ChatArea = styled.div`
   width: 90vw;
   height: 70vh;
   overflow-y: auto;
@@ -126,27 +192,15 @@ const ChatBox = styled.div`
   height: 110px;
 `;
 
-const BottomNavContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 2;
-  background-color: white;
-`;
-
-const Title = styled.div<{ fontSize: string; margin: string }>`
+const Title = styled.div<{ fontSize: string; margin?: string }>`
   font-size: ${(props) => props.fontSize};
   margin: ${(props) => props.margin};
   font-family: "Bd";
 `;
-const Text = styled.div<{ fontSize: string; margin: string }>`
+const Text = styled.div<{ fontSize?: string; margin?: string; fontFamily?: string }>`
   font-size: ${(props) => props.fontSize};
   margin: ${(props) => props.margin};
-  font-family: "Rg";
+  font-family: ${(props) => props.fontFamily};
 `;
 
 function AlbumChatPage() {
@@ -159,58 +213,66 @@ function AlbumChatPage() {
 
   return (
     <Container>
-      <HeaderContainer>
-        <HeaderTilte>
-          <Title fontSize="40px">Album Chat&nbsp;&nbsp;&nbsp;</Title>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="30"
-            height="30"
-            viewBox="0 0 16 16"
-          >
-            <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z" />
-            <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6m0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5" />
-          </svg>
-        </HeaderTilte>
+      <Header>
+        <Nav page={3}></Nav>
+      </Header>
+      <Body>
+        <AlbumTitleArea>
+          <ImageArea>
+            <img
+              src={cover1}
+              width="100%"
+              height="auto"
+              object-fit="cover"
+              // z-index="1"
+            ></img>
+          </ImageArea>
+          <GradientBG> </GradientBG>
+          <TitleTextArea>
+            <Text fontFamily="Bd" fontSize="30px">
+              SUPERNOVA
+            </Text>
+            <Text fontFamily="Rg" fontSize="15px">
+              AESPA
+            </Text>
+          </TitleTextArea>
+        </AlbumTitleArea>
         <PostButton>
-          <Text onClick={GoToPostPage} fontSize="50px">
+          <Text onClick={GoToPostPage} fontSize="30px">
             +
           </Text>
         </PostButton>
-      </HeaderContainer>
-      <AlbumContainer>
-        <AlbumCover></AlbumCover>
-        <AlbumDescript>
-          <AlbumName>
-            <Title fontSize="25px" margin="10px">
-              I've IVE
-            </Title>
-            <Text fontSize="15px" margin="10px">
-              댄스/발라드
-            </Text>
-          </AlbumName>
-          <ArtistInfo>
-            <ArtistCircle></ArtistCircle>
-            <Text fontSize="25px" margin="10px">
-              IVE
-            </Text>
-          </ArtistInfo>
-        </AlbumDescript>
-      </AlbumContainer>
-      <ChatHeaderContainer>
-        <Title fontSize="35px">CHAT</Title>
-      </ChatHeaderContainer>
-      <ChatContainer>
-        <ChatBox>
-          {items.map((item, index) => (
-            <AlbumChatBox></AlbumChatBox>
-          ))}
-        </ChatBox>
-      </ChatContainer>
-      <Line></Line>
-      <BottomNavContainer>
-        <BottomNav></BottomNav>
-      </BottomNavContainer>
+        <AlbumInfoArea>
+          <AlbumCover></AlbumCover>
+          <AlbumDescriptArea>
+            <AlbumNameArea>
+              <Title fontSize="25px" margin="10px">
+                I've IVE
+              </Title>
+              <Text fontSize="15px" margin="10px">
+                댄스/발라드
+              </Text>
+            </AlbumNameArea>
+            <ArtistInfoArea>
+              <ArtistCircle></ArtistCircle>
+              <Text fontSize="25px" margin="10px">
+                IVE
+              </Text>
+            </ArtistInfoArea>
+          </AlbumDescriptArea>
+        </AlbumInfoArea>
+        <ChatHeader>
+          <Title fontSize="35px">CHAT</Title>
+        </ChatHeader>
+        <ChatArea>
+          <ChatBox>
+            {items.map((item, index) => (
+              <AlbumChatBox></AlbumChatBox>
+            ))}
+          </ChatBox>
+        </ChatArea>
+        <Line></Line>
+      </Body>
     </Container>
   );
 }

@@ -1,130 +1,143 @@
 import styled from "styled-components";
 import { colors } from "../../styles/color";
 import logo from "../../img/logo.png";
-import BottomNav from "../components/BottomNav";
-import PlaylistCircle from "../components/PlaylistCircle";
-import PlayListBox from "../components/PlayListBox";
-import profile from "../../img/cat.webp";
+import Nav from "../components/Nav";
+import PlayListCard from "../components/PlayListCard";
+import cover1 from "../../img/aespa.webp";
+import cover2 from "../../img/newjeans.png";
+import cover3 from "../../img/daftpunk.png";
+import cover4 from "../../img/weeknd.jpg";
+import cover5 from "../../img/oasis.jpeg";
+import cover6 from "../../img/aespa2.jpg";
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  height: 98vh;
+  overflow-y: scroll;
+  height: 100vh;
   width: 100vw;
   background-color: white;
   color: black;
-  margin-bottom: 10vh;
 `;
 
-const HeaderContainer = styled.div`
-  width: 100vw;
-  height: 250px;
+const Header = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: center;
   flex-direction: column;
-`;
-
-const RowContainer = styled.div`
-  width: 80vw;
-  margin-right: 20vw;
-  display: flex;
+  justify-content: center;
   align-items: center;
-  justify-content: space-evenly;
-  flex-direction: row;
 `;
-
-const RightAlignContainer = styled.div`
-  width: 90vw;
-  height: 4vh;
+const Body = styled.div`
+  margin-top: 130px;
   display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
   align-items: center;
-  justify-content: end;
-  flex-direction: row;
 `;
 
-const Title = styled.div<{ fontSize: string; margin: string }>`
-  font-size: ${(props) => props.fontSize};
-  margin: ${(props) => props.margin};
-  font-family: "Bd";
-`;
-
-const Circle = styled.div`
-  width: 50px;
-  height: 50px;
-  border-radius: 100%;
-  background-color: black;
-  overflow: hidden;
-`;
-
-const ModBtn = styled.div`
-  width: 20vw;
-  height: 4vh;
-  background-color: lightgrey;
-  border-bottom-left-radius: 2vh;
-  border-bottom-right-radius: 2vh;
-  border-top-right-radius: 2vh;
-  border-top-left-radius: 2vh;
+const TitleArea = styled.div`
+  width: 100%;
+  height: 60px;
   display: flex;
-  align-items: center;
-  justify-content: space-evenly;
   flex-direction: row;
-`;
-
-const BottomNavContainer = styled.div`
-  display: flex;
   align-items: center;
   justify-content: center;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-color: white;
 `;
 
-const PlayList = styled.div`
-  width: 90vw;
-  height: 60vh;
+const PlayListArea = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
+
+const Text = styled.div<{
+  fontFamily: string;
+  fontSize: string;
+  margin: string;
+}>`
+  font-size: ${(props) => props.fontSize};
+  font-family: ${(props) => props.fontFamily};
+  margin: ${(props) => props.margin};
 `;
 
 function PlayListPage() {
+  const playlist = [
+    {
+      playlistId: 0,
+      trackId: 0,
+      userId: 0,
+      title: "Armageddon",
+      artistName: "aespa",
+      albumCover: cover1,
+    },
+    {
+      playlistId: 1,
+      trackId: 1,
+      userId: 0,
+      title: "ASAP",
+      artistName: "NewJeans",
+      albumCover: cover2,
+    },
+    {
+      playlistId: 2,
+      trackId: 2,
+      userId: 0,
+      title: "Get Lucky",
+      artistName: "DaftPunk",
+      albumCover: cover3,
+    },
+    {
+      playlistId: 3,
+      trackId: 3,
+      userId: 0,
+      title: "Blinding Light",
+      artistName: "The Weeknd",
+      albumCover: cover4,
+    },
+    {
+      playlistId: 4,
+      trackId: 4,
+      userId: 0,
+      title: "Don't look Back in Anger",
+      artistName: "Oasis",
+      albumCover: cover5,
+    },
+    {
+      playlistId: 5,
+      trackId: 5,
+      userId: 0,
+      title: "Girls",
+      artistName: "aespa",
+      albumCover: cover6,
+    },
+    {
+      playlistId: 6,
+      trackId: 6,
+      userId: 0,
+      title: "SUPERNOVA",
+      artistName: "aespa",
+      albumCover: cover1,
+    },
+  ];
   return (
     <Container>
-      <HeaderContainer>
-        <img src={logo} width="80px" height="80px"></img>
-        <RowContainer>
-          <Circle>
-            <img src={profile} width="100%" height="100%"></img>
-          </Circle>
-          <Title fontSize={"25px"}>이준석's Playlist</Title>
-        </RowContainer>
-        <RightAlignContainer>
-          <ModBtn>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              fill="currentColor"
-              viewBox="0 0 16 16"
-            >
-              <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-              <path
-                fill-rule="evenodd"
-                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
-              />
-            </svg>
-            <Title fontSize={"16px"}>수정</Title>
-          </ModBtn>
-        </RightAlignContainer>
-      </HeaderContainer>
-      <PlayList>
-        <PlayListBox></PlayListBox>
-      </PlayList>
-      <BottomNavContainer>
-        <BottomNav></BottomNav>
-      </BottomNavContainer>
+      <Header>
+        <Nav page={2}></Nav>
+      </Header>
+      <Body>
+        <TitleArea>
+          <Text fontFamily="Bd" fontSize="20px">
+            김준호's Playlist
+          </Text>
+        </TitleArea>
+        <PlayListArea>
+          <PlayListCard playlist={playlist}></PlayListCard>
+        </PlayListArea>
+      </Body>
     </Container>
   );
 }

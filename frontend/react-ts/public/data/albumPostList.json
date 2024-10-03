@@ -1,0 +1,38 @@
+[
+  {
+    "albumCover": "../../img/aespa.webp",
+    "albumName": "Amageddon",
+    "artist": "aespa",
+    "userInfo": {
+      "userName": "김준호",
+      "userProfile": "profile"
+    }
+  },
+  {
+    "albumCover": "cover2",
+    "albumName": "Get Up",
+    "artist": "NewJeans",
+    "userInfo": {
+      "userName": "김준호",
+      "userProfile": "profile"
+    }
+  },
+  {
+    "albumCover": "cover3",
+    "albumName": "Randon Access Memory",
+    "artist": "DaftPunk",
+    "userInfo": {
+      "userName": "김준호",
+      "userProfile": "profile"
+    }
+  },
+  {
+    "albumCover": "cover4",
+    "albumName": "Bliding Light",
+    "artist": "The Weeknd",
+    "userInfo": {
+      "userName": "김준호",
+      "userProfile": "profile"
+    }
+  }
+]

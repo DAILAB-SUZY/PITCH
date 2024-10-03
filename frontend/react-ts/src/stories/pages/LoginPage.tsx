@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import InputBox from "../inputs/InputBox";
 import useStore from "../store/store";
 import { useState } from "react";
+// @ts-ignore
+import base64, { decode } from "js-base64";
 
 const Title = styled.div<{ fontSize: string; margin: string }>`
   font-size: ${(props) => props.fontSize};
@@ -29,7 +31,7 @@ const Container = styled.div`
   color: ${colors.Font_black};
 `;
 
-const LeftAlignContainer = styled.div`
+const LeftAlignArea = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
@@ -39,7 +41,7 @@ const LeftAlignContainer = styled.div`
   height: 10px;
 `;
 
-const WrappingContainer = styled.div<{
+const LoginArea = styled.div<{
   flex_direction: string;
   justify_content: string;
 }>`
@@ -76,65 +78,67 @@ function LoginPage() {
   const [typedEmail, setTypedEmail] = useState("");
   const [typedPassword, setTypedPassword] = useState("");
 
-  let loginUrl = "http://10.255.81.70:8030/auth/signin";
+  const server = "http://203.255.81.70:8030";
+  let loginUrl = server + "/api/auth/signin";
+  const { email, setEmail, name, setName, id, setId } = useStore();
   const Login = () => {
     const fetchDatas = async () => {
       console.log("로그인");
-      const response = await fetch(loginUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          refreshToken: null,
-          token: null,
-          email: typedEmail,
-          password: typedPassword,
-          id: 0,
-        }),
-      });
-      const data = await response.json();
-      console.log(response.status);
-      if (data.token) {
-        localStorage.setItem("login-token", data.token);
-        console.log(localStorage.getItem("login-token"));
+      try {
+        const response = await fetch(loginUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            refreshToken: null,
+            token: null,
+            email: typedEmail,
+            password: typedPassword,
+            id: 0,
+          }),
+        });
+        const data = await response.json();
+
+        if (response.status == 200) {
+          localStorage.setItem("login-token", data.token);
+          console.log(localStorage.getItem("login-token"));
+          localStorage.setItem("login-refreshToken", data.refreshToken);
+          console.log(localStorage.getItem("login-refreshToken"));
+          setEmail(data.email);
+          setId(data.id);
+          setName(data.username);
+          console.log(data);
+          const parseToken = JSON.parse(decode(data.token.split(".")[1]));
+          console.log("parsed Token: ", parseToken);
+          // // setName();
+
+          console.log("로그인 완료");
+          GoToHomePage();
+        } else console.log("로그인 실패");
+        console.error("Failed to fetch data:", response.status);
+      } catch (error) {
+        console.error("Error fetching the JSON file:", error);
       }
-      if (data.refreshToken) {
-        localStorage.setItem("login-refreshToken", data.refreshToken);
-        console.log(localStorage.getItem("login-refreshToken"));
-      }
-      if (response.status == 200) {
-        console.log("로그인 완료");
-        GoToHomePage();
-      } else console.log("로그인 실패");
-      console.log(data);
     };
     fetchDatas();
   };
 
   return (
     <Container>
-      <WrappingContainer flex_direction="column" justify_content="center">
-        <img
-          src={logo}
-          width="150px"
-          height="150px"
-          onClick={GoToHomePage}
-        ></img>
+      <LoginArea flex_direction="column" justify_content="center">
+        <img src={logo} width="150px" height="150px" onClick={GoToHomePage}></img>
         <Title fontSize="30px" margin="10px">
           {" "}
           로그인{" "}
         </Title>
-        <InputBox
-          placeholder="E-mail"
-          onChange={(e) => setTypedEmail(e.target.value)}
-        ></InputBox>
+        <InputBox placeholder="E-mail" onChange={(e) => setTypedEmail(e.target.value)}></InputBox>
         <InputBox
           placeholder="Password"
           onChange={(e) => setTypedPassword(e.target.value)}
           type={inputType}
         ></InputBox>
-        <LeftAlignContainer>
+        <LeftAlignArea>
           <Text fontSize="16px" margin="10px">
             {" "}
             비밀번호 보기
@@ -167,20 +171,14 @@ function LoginPage() {
               <path d="M3.35 5.47q-.27.24-.518.487A13 13 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.881 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7 7 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.709zm10.296 8.884-12-12 .708-.708 12 12z" />
             </svg>
           )}
-        </LeftAlignContainer>
+        </LeftAlignArea>
 
         <StackConatiner>
-          <LeftAlignContainer></LeftAlignContainer>
-          <Btn
-            width="100px"
-            height="40px"
-            fontsize="20px"
-            text="로그인"
-            onClick={Login}
-          ></Btn>
+          <LeftAlignArea></LeftAlignArea>
+          <Btn width="100px" height="40px" fontsize="20px" text="로그인" onClick={Login}></Btn>
         </StackConatiner>
-        <LeftAlignContainer></LeftAlignContainer>
-      </WrappingContainer>
+        <LeftAlignArea></LeftAlignArea>
+      </LoginArea>
       <Title fontSize="15px" margin="10px" onClick={GoToSignupPage}>
         회원가입
       </Title>

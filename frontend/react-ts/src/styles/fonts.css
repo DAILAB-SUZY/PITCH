@@ -10,6 +10,12 @@
   font-weight: bold;
 }
 
+@font-face {
+  font-family: "Mon";
+  src: url("../font/Montserrat-ExtraBold.otf") format("opentype");
+  font-weight: bold;
+}
+
 body {
   font-family: "Bd";
 }
