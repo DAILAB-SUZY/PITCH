@@ -1,4 +1,23 @@
+version: '3.8'
+
 services:
+  pitch:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: 'pitch'
+    restart: 'always'
+    environment:
+      - 'MAIL_ADDRESS='
+      - 'MAIL_PASSWORD='
+      - 'CLIENT_ID='
+      - 'CLIENT_SECRET='
+    ports:
+      - '8082:8080'
+    depends_on:
+      - postgres
+      - redis
+
   postgres:
     image: 'postgres:latest'
     container_name: 'postgresql'
@@ -17,3 +36,7 @@ services:
     hostname: 'redis'
     ports:
       - '9001:6379'
+
+networks:
+  default:
+    driver: bridge
