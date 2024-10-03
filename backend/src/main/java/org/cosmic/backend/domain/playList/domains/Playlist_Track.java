@@ -39,6 +39,7 @@ public class Playlist_Track {//N:M을 이어줄 연결다리
                 .trackId(playlist_track.getTrack().getTrackId())
                 .title(playlist_track.getTrack().getTitle())
                 .artistName(playlist_track.getTrack().getArtist().getArtistName())
+                .trackCover(playlist_track.getTrack().getTrackCover())
                 .build();
     }
 }

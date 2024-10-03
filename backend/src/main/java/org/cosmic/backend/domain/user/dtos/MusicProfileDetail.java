@@ -13,6 +13,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class MusicProfileDetail {
+    private UserDetail userDetail;
     private FavoriteArtistDetail favoriteArtist;
     private List<BestAlbumDetail> bestAlbum;
     private List<UserDnaResponse> userDna;

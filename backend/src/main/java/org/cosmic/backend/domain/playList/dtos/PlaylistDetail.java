@@ -14,4 +14,5 @@ public class PlaylistDetail {
     Long trackId;
     String title;
     String artistName;
+    String trackCover;
 }
