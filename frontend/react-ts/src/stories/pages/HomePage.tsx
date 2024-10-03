@@ -98,36 +98,45 @@ const Text = styled.div<{ fontSize: string; margin: string }>`
 `;
 
 function HomePage() {
-  const playlists = [
-    {
-      id: 1,
-      userName: "junho1231",
-      profileImage: profile,
-      albumCovers: [cover1, cover4, cover2],
-      bgColor: "#b5a1f7",
-    },
-    {
-      id: 2,
-      userName: "hello123",
-      profileImage: profile,
-      albumCovers: [cover4, cover5, cover3],
-      bgColor: "#f7d5a1",
-    },
-    {
-      id: 3,
-      userName: "junho1231",
-      profileImage: profile,
-      albumCovers: [cover3, cover2, cover1],
-      bgColor: "#b8f7a1",
-    },
-    {
-      id: 4,
-      userName: "hello123",
-      profileImage: profile,
-      albumCovers: [cover3, cover4, cover5],
-      bgColor: "#f7a1e7",
-    },
-  ];
+  interface FriendsPlayList {
+    playlistId: number;
+    albumCover: string[];
+    author: {
+      id: number;
+      username: string;
+      profilePicture: string;
+    };
+  }
+  // const playlists = [
+  //   {
+  //     id: 1,
+  //     userName: "junho1231",
+  //     profileImage: profile,
+  //     albumCovers: [cover1, cover4, cover2],
+  //     bgColor: "#b5a1f7",
+  //   },
+  //   {
+  //     id: 2,
+  //     userName: "hello123",
+  //     profileImage: profile,
+  //     albumCovers: [cover4, cover5, cover3],
+  //     bgColor: "#f7d5a1",
+  //   },
+  //   {
+  //     id: 3,
+  //     userName: "junho1231",
+  //     profileImage: profile,
+  //     albumCovers: [cover3, cover2, cover1],
+  //     bgColor: "#b8f7a1",
+  //   },
+  //   {
+  //     id: 4,
+  //     userName: "hello123",
+  //     profileImage: profile,
+  //     albumCovers: [cover3, cover4, cover5],
+  //     bgColor: "#f7a1e7",
+  //   },
+  // ];
 
   const { email, setEmail, name, setName, id, setId } = useStore();
 
@@ -141,6 +150,7 @@ function HomePage() {
   const [postPage, setPostPage] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [isEnd, setIsEnd] = useState(false);
+  const [friendsPlayList, setfriendsPlayList] = useState<FriendsPlayList[]>([]);
 
   console.log("render-----------------------------");
   console.log(`albumpost: `, albumPostList);
@@ -148,7 +158,6 @@ function HomePage() {
 
   const server = "http://203.255.81.70:8030";
 
-  const PlaylistUrl = `${server}/api/user/${id}/playlist`;
   const reissueTokenUrl = `${server}/api/auth/reissued`;
 
   // Intersection Observer용 ref
@@ -211,7 +220,7 @@ function HomePage() {
       },
     ];
   }
-
+  const PlaylistUrl = `${server}/api/FollowerPlaylist/user/1`;
   // TODO: playlist fetching
   const fetchPlaylist = async () => {
     if (token) {
@@ -227,6 +236,7 @@ function HomePage() {
 
         if (response.ok) {
           const data = await response.json();
+          setfriendsPlayList((prevList) => [...prevList, ...data]);
           console.log(data);
         } else if (response.status === 401) {
           console.log("reissuing Token");
@@ -308,6 +318,10 @@ function HomePage() {
       }
     }
   };
+
+  useEffect(() => {
+    fetchPlaylist();
+  }, []);
 
   // Intersection Observer 설정
   useEffect(() => {
@@ -405,7 +419,9 @@ function HomePage() {
           <Title fontSize="22px" margin="20px 0px 0px 20px">
             Friend's Playlist
           </Title>
-          <PlaylistPreviewCard playlists={playlists}></PlaylistPreviewCard>
+          <PlaylistPreviewCard
+            playlists={friendsPlayList}
+          ></PlaylistPreviewCard>
         </PlaylistArea>
         <AlbumPostArea>
           <AlbumPostTitleArea>
@@ -434,7 +450,10 @@ function HomePage() {
           <RowAlignArea>
             {albumPostList.length > 0 ? (
               albumPostList.map((albumPost) => (
-                <AlbumPostCard key={albumPost.postId} albumPost={albumPost}></AlbumPostCard>
+                <AlbumPostCard
+                  key={albumPost.postId}
+                  albumPost={albumPost}
+                ></AlbumPostCard>
               ))
             ) : (
               <Text fontSize="15px" margin="150px 0px 0px 0px">
@@ -450,7 +469,10 @@ function HomePage() {
             로딩 중...
           </Text>
         ) : (
-          <div ref={observerRef} style={{ height: "100px", backgroundColor: "transparent" }} />
+          <div
+            ref={observerRef}
+            style={{ height: "100px", backgroundColor: "transparent" }}
+          />
         )}
       </Body>
     </Container>

@@ -7,7 +7,7 @@ import InputBox from "../inputs/InputBox";
 import useStore from "../store/store";
 import { useState } from "react";
 // @ts-ignore
-import base64, { decode } from "js-base64";
+//import base64, { decode } from "js-base64";
 
 const Title = styled.div<{ fontSize: string; margin: string }>`
   font-size: ${(props) => props.fontSize};
@@ -109,14 +109,14 @@ function LoginPage() {
           setId(data.id);
           setName(data.username);
           console.log(data);
-          const parseToken = JSON.parse(decode(data.token.split(".")[1]));
-          console.log("parsed Token: ", parseToken);
           // // setName();
 
           console.log("로그인 완료");
           GoToHomePage();
-        } else console.log("로그인 실패");
-        console.error("Failed to fetch data:", response.status);
+        } else {
+          console.log("로그인 실패");
+          console.error("Failed to fetch data:", response.status);
+        }
       } catch (error) {
         console.error("Error fetching the JSON file:", error);
       }
@@ -127,12 +127,20 @@ function LoginPage() {
   return (
     <Container>
       <LoginArea flex_direction="column" justify_content="center">
-        <img src={logo} width="150px" height="150px" onClick={GoToHomePage}></img>
+        <img
+          src={logo}
+          width="150px"
+          height="150px"
+          onClick={GoToHomePage}
+        ></img>
         <Title fontSize="30px" margin="10px">
           {" "}
           로그인{" "}
         </Title>
-        <InputBox placeholder="E-mail" onChange={(e) => setTypedEmail(e.target.value)}></InputBox>
+        <InputBox
+          placeholder="E-mail"
+          onChange={(e) => setTypedEmail(e.target.value)}
+        ></InputBox>
         <InputBox
           placeholder="Password"
           onChange={(e) => setTypedPassword(e.target.value)}
@@ -175,7 +183,13 @@ function LoginPage() {
 
         <StackConatiner>
           <LeftAlignArea></LeftAlignArea>
-          <Btn width="100px" height="40px" fontsize="20px" text="로그인" onClick={Login}></Btn>
+          <Btn
+            width="100px"
+            height="40px"
+            fontsize="20px"
+            text="로그인"
+            onClick={Login}
+          ></Btn>
         </StackConatiner>
         <LeftAlignArea></LeftAlignArea>
       </LoginArea>
