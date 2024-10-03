@@ -7,6 +7,6 @@ public class NotExistEmailException extends NotFoundException {
         super(errorMessage);
     }
     public NotExistEmailException(){
-        this("Not found email");
+        this(getNotExistEmailError());
     }
 }

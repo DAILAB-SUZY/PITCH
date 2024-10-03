@@ -1,18 +1,21 @@
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+import { colors } from "../../styles/color";
 
 // PlaylistData 타입 정의
-interface PlaylistData {
-  id: number;
-  userName: string;
-  profileImage: string;
-  albumCovers: string[];
-  bgColor: string;
+interface FriendsPlayList {
+  playlistId: number;
+  albumCover: string[];
+  author: {
+    id: number;
+    username: string;
+    profilePicture: string;
+  };
 }
 
 // Props 타입 정의
 interface PlaylistProps {
-  playlists: PlaylistData[];
+  playlists: FriendsPlayList[];
 }
 
 // 전체 컨테이너 (가로 스크롤 가능)
@@ -74,7 +77,11 @@ const ProfileArea = styled.div`
   height: 70px;
   padding: 15px 10px 15px 10px;
   border-radius: 0px 0px 12px 12px;
-  background: linear-gradient(0deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0) 100%);
+  background: linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.6) 0%,
+    rgba(0, 0, 0, 0) 100%
+  );
   display: flex;
   flex-direction: row;
   align-items: flex-end;
@@ -111,16 +118,24 @@ const PlaylistPreviewCard = ({ playlists }: PlaylistProps) => {
   return (
     <PlaylistContainer>
       {playlists.map((playlist) => (
-        <PlaylistBox key={playlist.id} bgColor={playlist.bgColor} onClick={() => GoToPlayListPage()}>
+        <PlaylistBox
+          key={playlist.playlistId}
+          bgColor={colors.BG_grey}
+          onClick={() => GoToPlayListPage()}
+        >
           <AlbumCoverStack>
-            {playlist.albumCovers.map((cover, index) => (
-              <AlbumCover key={index} src={cover} alt={`Album Cover ${index + 1}`} />
+            {playlist.albumCover.map((cover: any, index: any) => (
+              <AlbumCover
+                key={index}
+                src={cover}
+                alt={`Album Cover ${index + 1}`}
+              />
             ))}
           </AlbumCoverStack>
           <ProfileArea>
-            <ProfileImage src={playlist.profileImage} alt="Profile" />
+            <ProfileImage src={playlist.author.profilePicture} alt="Profile" />
             <UserNameArea>
-              <UserName fontFamily="Bd">{playlist.userName}'s</UserName>
+              <UserName fontFamily="Bd">{playlist.author.username}'s</UserName>
               <UserName fontFamily="Rg">Playlist</UserName>
             </UserNameArea>
           </ProfileArea>
