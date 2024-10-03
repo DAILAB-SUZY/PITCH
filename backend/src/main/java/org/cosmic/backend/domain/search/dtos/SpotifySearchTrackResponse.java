@@ -15,4 +15,5 @@ public class SpotifySearchTrackResponse {
     private SpotifySearchAlbumResponse album;
     private String trackId;
     private String trackName;
+    private String duration;
 }
