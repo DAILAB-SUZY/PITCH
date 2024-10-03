@@ -129,9 +129,9 @@ public class PlaylistService {
         Pageable pageable = PageRequest.of(0, 5); // 페이징 처리: 5개의 플레이리스트만 가져옴
 
         followerPlaylistDetails = playlistRepository.findRecentPlaylistsByFollowers(followerIds, pageable)
-                .stream()
-                .map(FollowerPlaylistDetail::new)
-                .collect(Collectors.toList());
+            .stream()
+            .map(FollowerPlaylistDetail::new)
+            .collect(Collectors.toList());
 
         for (int i = 0; i < followerPlaylistDetails.size(); i++) {
             // Playlist ID로 해당 플레이리스트에 속한 트랙을 가져옴
@@ -148,7 +148,6 @@ public class PlaylistService {
             // 트랙 커버를 FollowerPlaylistDetail에 설정
             followerPlaylistDetails.get(i).setAlbumCover(trackCover);
         }
-        System.out.println("*******"+followerPlaylistDetails);
         return followerPlaylistDetails;
     }
 
