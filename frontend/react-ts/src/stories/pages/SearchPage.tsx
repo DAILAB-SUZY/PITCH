@@ -206,21 +206,22 @@ interface SearchResult {
 }
 
 function SearchPage() {
-  //   const [albumPost, setAlbumPost] = useState<AlbumPost | null>(null);
+  const [albumPost, setAlbumPost] = useState<SearchResult | null>(null);
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [searchResult, setSearchResult] = useState<SearchResult[]>();
+  const [isLoading, setIsLoading] = useState(false);
+
   // const { email, setEmail, name, setName, id, setId } = useStore();
 
   const navigate = useNavigate();
-  const GoToSignupPage = () => {
-    navigate("/Signup");
+
+  const GoToAlbumPostEditPage = (album: SearchResult) => {
+    navigate("/AlbumPostEditPage", { state: album });
   };
 
   const server = "http://203.255.81.70:8030";
 
   const reissueTokenUrl = `${server}/api/auth/reissued`;
-
-  const [isLoading, setIsLoading] = useState(false);
-  const [searchResult, setSearchResult] = useState<SearchResult[]>();
 
   const fetchSearch = async () => {
     const token = localStorage.getItem("login-token");
@@ -301,7 +302,7 @@ function SearchPage() {
           {!isLoading &&
             searchResult &&
             searchResult.map((album: any) => (
-              <SongArea onClick={() => {}}>
+              <SongArea key={album.albumId} onClick={() => GoToAlbumPostEditPage(album)}>
                 <AlbumCover>
                   <img src={album.imageUrl} width="100%" height="100%"></img>
                 </AlbumCover>

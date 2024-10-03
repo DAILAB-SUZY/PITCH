@@ -109,14 +109,14 @@ function LoginPage() {
           setId(data.id);
           setName(data.username);
           console.log(data);
-          const parseToken = JSON.parse(decode(data.token.split(".")[1]));
-          console.log("parsed Token: ", parseToken);
           // // setName();
 
           console.log("로그인 완료");
           GoToHomePage();
-        } else console.log("로그인 실패");
-        console.error("Failed to fetch data:", response.status);
+        } else {
+          console.log("로그인 실패");
+          console.error("Failed to fetch data:", response.status);
+        }
       } catch (error) {
         console.error("Error fetching the JSON file:", error);
       }

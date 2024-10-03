@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { colors } from "../../styles/color";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import useStore from "../store/store";
 
@@ -237,29 +237,32 @@ interface AlbumPost {
 }
 
 function AlbumPostEditPage() {
-  //   const [albumPost, setAlbumPost] = useState<AlbumPost | null>(null);
-  const [postContent, setPostContent] = useState("내용을 입력해주세요");
-  const { email, setEmail, name, setName, id, setId } = useStore();
+  const [albumPost, setAlbumPost] = useState<AlbumPost | null>(null);
+  //   const [postContent, setPostContent] = useState("내용을 입력해주세요");
+  //   const { email, setEmail, name, setName, id, setId } = useStore();
+  const location = useLocation();
+  const albumData = location.state;
+  setAlbumPost(albumData);
 
-  const albumPost = {
-    postId: "post01",
-    content: "",
-    createAt: "",
-    updateAt: "",
-    author: {
-      id: 1,
-      username: name,
-      profilePicture:
-        "https://i.namu.wiki/i/-s0neKOBTEboNgx8tbXrz2ZQ-qt4S4rfX0ztS1mk2bqYPdI5ALlatQok3HoAvRq30J79s9xv_5J7N4MSEdt6Nw.webp",
-    },
-    album: {
-      id: 12,
-      title: "1989",
-      albumCover: "https://i.scdn.co/image/ab67616d00001e0252b2a3824413eefe9e33817a",
-      artistName: "taylor swift",
-      genre: "RnB",
-    },
-  };
+  //   const albumPost = {
+  //     postId: "post01",
+  //     content: "",
+  //     createAt: "",
+  //     updateAt: "",
+  //     author: {
+  //       id: 1,
+  //       username: name,
+  //       profilePicture:
+  //         "https://i.namu.wiki/i/-s0neKOBTEboNgx8tbXrz2ZQ-qt4S4rfX0ztS1mk2bqYPdI5ALlatQok3HoAvRq30J79s9xv_5J7N4MSEdt6Nw.webp",
+  //     },
+  //     album: {
+  //       id: 12,
+  //       title: "1989",
+  //       albumCover: "https://i.scdn.co/image/ab67616d00001e0252b2a3824413eefe9e33817a",
+  //       artistName: "taylor swift",
+  //       genre: "RnB",
+  //     },
+  //   };
 
   const navigate = useNavigate();
   const GoToSearchPage = () => {
@@ -322,11 +325,11 @@ function AlbumPostEditPage() {
         </ButtonArea>
         <Line></Line>
         <PostArea>
-          <ProfileArea>
+          {/* <ProfileArea>
             <ProfileTextArea>
               <ProfileName>{name}</ProfileName>
             </ProfileTextArea>
-          </ProfileArea>
+          </ProfileArea> */}
           <PostContentArea>
             <ContentInput></ContentInput>
           </PostContentArea>
