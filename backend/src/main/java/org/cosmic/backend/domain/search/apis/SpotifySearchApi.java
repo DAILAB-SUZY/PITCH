@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDetail;
 import org.cosmic.backend.domain.auth.applications.CreateSpotifyToken;
 import org.cosmic.backend.domain.search.applications.SearchAlbumService;
 import org.cosmic.backend.domain.search.applications.SearchArtistService;
@@ -16,6 +17,7 @@ import org.cosmic.backend.domain.search.applications.SearchTrackService;
 import org.cosmic.backend.domain.search.dtos.SpotifySearchAlbumResponse;
 import org.cosmic.backend.domain.search.dtos.SpotifySearchArtistResponse;
 import org.cosmic.backend.domain.search.dtos.SpotifySearchTrackResponse;
+import org.cosmic.backend.domain.user.dtos.MusicProfileDetail;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -61,6 +63,8 @@ public class SpotifySearchApi {
 
     // 아티스트 또는 앨범 이름으로 앨범 정보 찾기
     @GetMapping("/searchSpotify/album/{name}")
+    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+            array = @ArraySchema(schema = @Schema(implementation = SpotifySearchAlbumResponse.class))))
     @Operation(summary = "특정 앨범 조회")
     public ResponseEntity<List<SpotifySearchAlbumResponse>> searchAlbum(
         @Parameter(description = "앨범 이름")
@@ -70,6 +74,8 @@ public class SpotifySearchApi {
 
     //id로 앨범 정보찾기
     @GetMapping("/searchSpotify/albumId/{albumId}")
+    @ApiResponse(responseCode = "200", content = {@Content(schema=@Schema(contentMediaType = MediaType.APPLICATION_JSON_VALUE
+            ,implementation= SpotifySearchAlbumResponse.class))})
     @Operation(summary = "특정 앨범 조회")
     public ResponseEntity<SpotifySearchAlbumResponse> searchAlbumId(
             @Parameter(description = "앨범 ")
@@ -79,6 +85,8 @@ public class SpotifySearchApi {
 
     //id로 노래 정보찾기
     @GetMapping("/searchSpotify/trackId/{trackId}")
+    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+            array = @ArraySchema(schema = @Schema(implementation = SpotifySearchTrackResponse.class))))
     @Operation(summary = "특정 앨범 조회")
     public ResponseEntity<List<SpotifySearchTrackResponse>> searchTrackId(
             @Parameter(description = "앨범 이름")
@@ -88,6 +96,8 @@ public class SpotifySearchApi {
 
     //id로 아티스트 정보 찾기
     @GetMapping("/searchSpotify/artistId/{artistId}")
+    @ApiResponse(responseCode = "200", content = {@Content(schema=@Schema(contentMediaType = MediaType.APPLICATION_JSON_VALUE
+            ,implementation= SpotifySearchArtistResponse.class))})
     @Operation(summary = "특정 앨범 조회")
     public ResponseEntity<SpotifySearchArtistResponse> searchArtistId(
             @Parameter(description = "앨범 이름")

@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumChatDetail;
 import org.cosmic.backend.domain.favoriteArtist.applications.FavoriteArtistService;
 import org.cosmic.backend.domain.favoriteArtist.dtos.*;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundArtistException;
@@ -50,8 +51,8 @@ public class FavoriteApi {
      */
     @GetMapping("/user/{userId}/favoriteArtist")
     @ApiResponse(responseCode = "404", description = "Not Found User")
-    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-            array = @ArraySchema(schema = @Schema(implementation = FavoriteArtistDetail.class))))
+    @ApiResponse(responseCode = "200", content = {@Content(schema=@Schema(contentMediaType = MediaType.APPLICATION_JSON_VALUE
+            ,implementation= FavoriteArtistDetail.class))})
     @Operation(summary = "favorite아티스트 조회",description = "특정 유저의 favorite아티스트 조회")
     public ResponseEntity<FavoriteArtistDetail> favoriteArtistGiveData(
             @Parameter(description = "유저 id")
@@ -72,8 +73,8 @@ public class FavoriteApi {
      */
     @PostMapping("/favoriteArtist")
     @ApiResponse(responseCode = "404", description = "Not Found User Or Track Or Album Or Artist")
-    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-            array = @ArraySchema(schema = @Schema(implementation = ArtistDetail.class))))
+    @ApiResponse(responseCode = "200", content = {@Content(schema=@Schema(contentMediaType = MediaType.APPLICATION_JSON_VALUE
+            ,implementation= FavoriteArtistDetail.class))})
     @Operation(summary = "favorite아티스트 저장",description = "특정 유저의 Favorite아티스트 정보 저장")
     public ResponseEntity<FavoriteArtistDetail> favoriteArtistSaveData(
             @Parameter(description = "favorite아티스트 등록 정보")

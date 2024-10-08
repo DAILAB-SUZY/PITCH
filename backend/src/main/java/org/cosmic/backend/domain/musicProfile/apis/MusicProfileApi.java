@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.cosmic.backend.domain.mail.dtos.EmailAddress;
 import org.cosmic.backend.domain.musicProfile.applications.MusicProfileService;
 import org.cosmic.backend.domain.user.dtos.MusicProfileDetail;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
@@ -31,8 +32,8 @@ public class MusicProfileApi {
      * @return 사용자의 뮤직 프로필 데이터를 포함한 {@link ResponseEntity}
      */
     @GetMapping("/user/{userId}/musicProfile")
-    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-            array = @ArraySchema(schema = @Schema(implementation = MusicProfileDetail.class))))
+    @ApiResponse(responseCode = "200", content = {@Content(schema=@Schema(contentMediaType = MediaType.APPLICATION_JSON_VALUE
+            ,implementation= MusicProfileDetail.class))})
     @Operation(summary = "뮤직 프로필 API", description = "특정 유저의 뮤직 프로필 조회")
     public ResponseEntity<MusicProfileDetail> userMusicProfile(
             @Parameter(description = "유저 id")

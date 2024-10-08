@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.cosmic.backend.domain.albumChat.applications.AlbumChatService;
 import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumChatDetail;
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatException;
+import org.cosmic.backend.domain.auth.dtos.UserLoginDetail;
 import org.cosmic.backend.domain.playList.dtos.AlbumDto;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
 import org.springframework.http.MediaType;
@@ -52,8 +53,9 @@ public class AlbumChatApi {
     @Transactional
     @PostMapping("/open/album/{albumId}")
     @ApiResponse(responseCode = "404", description = "Not Found AlbumChat")
-    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-            array = @ArraySchema(schema = @Schema(implementation = AlbumChatDetail.class))))
+    @ApiResponse(responseCode = "200", content = {@Content(schema=@Schema(contentMediaType = MediaType.APPLICATION_JSON_VALUE
+        ,implementation= AlbumChatDetail.class))})
+
     @Operation(summary = "앨범챗 조회",description = "특정 앨범의 앨범챗 조회")
     public ResponseEntity<AlbumChatDetail> getAlbumChatById(
             @Parameter(description = "앨범id")

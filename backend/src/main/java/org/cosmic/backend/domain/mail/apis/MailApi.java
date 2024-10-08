@@ -1,10 +1,13 @@
 package org.cosmic.backend.domain.mail.apis;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.cosmic.backend.domain.favoriteArtist.dtos.FavoriteArtistDetail;
 import org.cosmic.backend.domain.mail.applications.EmailService;
 import org.cosmic.backend.domain.mail.dtos.EmailAddress;
 import org.cosmic.backend.domain.mail.dtos.VerificationForm;
@@ -13,6 +16,7 @@ import org.cosmic.backend.domain.mail.exceptions.IntervalNotEnoughException;
 import org.cosmic.backend.domain.mail.utils.ApacheMathRandomCodeGenerator;
 import org.cosmic.backend.domain.user.exceptions.NotMatchPasswordException;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,6 +49,8 @@ public class MailApi {
      * @throws RuntimeException 기타 문제가 있는 경우
      */
     @PostMapping("/mail/request")
+    @ApiResponse(responseCode = "200", content = {@Content(schema=@Schema(contentMediaType = MediaType.APPLICATION_JSON_VALUE
+            ,implementation= EmailAddress.class))})
     @ApiResponse(responseCode = "401", description = "Email is already exist or interval is too short")
     @Operation(summary = "랜덤코드 메일 전송 API", description = "사용자 이메일로 랜덤코드를 발송합니다.")
     public ResponseEntity<EmailAddress> sendVerificationEmail(@Valid @RequestBody EmailAddress address) {
@@ -61,6 +67,8 @@ public class MailApi {
      * @throws NotMatchPasswordException 이메일이 존재하지 않거나 인증 코드가 일치하지 않는 경우
      */
     @PostMapping("mail/verify")
+    @ApiResponse(responseCode = "200", content = {@Content(schema=@Schema(contentMediaType = MediaType.APPLICATION_JSON_VALUE
+            ,implementation= EmailAddress.class))})
     @ApiResponse(responseCode = "401", description = "Email is not exist or random code is not matched")
     @Operation(summary = "랜덤코드 인증 API", description = "사용자 이메일로 전송된 랜덤코드를 검증합니다.")
     public ResponseEntity<EmailAddress> verifyEmail(@Valid @RequestBody VerificationForm form) {
