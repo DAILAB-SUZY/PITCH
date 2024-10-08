@@ -18,6 +18,7 @@ public class SearchService {
     headers.add("Authorization", "Bearer " + accessToken);
     headers.add("Host", "api.spotify.com");
     headers.add("Content-type", "application/json");
+    headers.add("Accept-Language","ko");
     return headers;
   }
 
