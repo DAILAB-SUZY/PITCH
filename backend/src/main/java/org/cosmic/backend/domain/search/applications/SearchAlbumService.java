@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class SearchAlbumService extends SearchService {
 
-  List<SpotifySearchAlbumResponse> spotifySearchAlbumResponses = new ArrayList<>();
   ObjectMapper mapper = new ObjectMapper();
   JsonNode rootNode = null;
   @Autowired
@@ -34,6 +33,8 @@ public class SearchAlbumService extends SearchService {
 
   public List<SpotifySearchAlbumResponse> searchAlbum(String accessToken, String q)
       throws JsonProcessingException {
+
+    List<SpotifySearchAlbumResponse> spotifySearchAlbumResponses = new ArrayList<>();
     rootNode = mapper.readTree(search(accessToken, q));
     try {
       JsonNode albumitemsNode = rootNode.path("albums").path("items");

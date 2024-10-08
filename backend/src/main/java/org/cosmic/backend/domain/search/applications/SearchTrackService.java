@@ -14,9 +14,10 @@ import java.util.*;
 public class SearchTrackService extends SearchService {
     ObjectMapper mapper = new ObjectMapper();
     JsonNode rootNode;
-    List<SpotifySearchTrackResponse> spotifySearchTrackResponses = new ArrayList<>();
 
     public List<SpotifySearchTrackResponse> searchTrack(String accessToken,String q) throws JsonProcessingException { // q는 검색어
+
+        List<SpotifySearchTrackResponse> spotifySearchTrackResponses = new ArrayList<>();
         rootNode = mapper.readTree(search(accessToken,q));
         JsonNode trackitemsNode = rootNode.path("tracks").path("items");
         for(int i=0;i<trackitemsNode.size();i++)
@@ -85,6 +86,7 @@ public class SearchTrackService extends SearchService {
     public List<SpotifySearchTrackResponse> searchTrackId(String accessToken,String trackId) throws JsonProcessingException { // q는 검색어
         rootNode = mapper.readTree(searchSpotifyTrack(accessToken,trackId));
 
+        List<SpotifySearchTrackResponse> spotifySearchTrackResponses = new ArrayList<>();
         return spotifySearchTrackResponses;
     }
 }
