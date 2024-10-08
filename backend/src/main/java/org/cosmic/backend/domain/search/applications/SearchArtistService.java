@@ -15,9 +15,10 @@ public class SearchArtistService extends SearchService {
 
     ObjectMapper mapper = new ObjectMapper();
     JsonNode rootNode = null;
-    List<SpotifySearchArtistResponse> spotifySearchArtistResponses = new ArrayList<>();
 
     public List<SpotifySearchArtistResponse> searchArtist(String accessToken, String q) throws JsonProcessingException {
+
+        List<SpotifySearchArtistResponse> spotifySearchArtistResponses = new ArrayList<>();
         rootNode = mapper.readTree(search(accessToken, q));
         JsonNode artistItemsNode = rootNode.path("artists").path("items");
 
