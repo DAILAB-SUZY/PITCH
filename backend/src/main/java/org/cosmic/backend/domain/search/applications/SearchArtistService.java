@@ -3,16 +3,33 @@ package org.cosmic.backend.domain.search.applications;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumChatDetail;
+import org.cosmic.backend.domain.playList.domains.Album;
+import org.cosmic.backend.domain.playList.domains.Artist;
+import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
+import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
+import org.cosmic.backend.domain.search.dtos.ArtistTrackResponse;
 import org.cosmic.backend.domain.search.dtos.SpotifySearchAlbumResponse;
 import org.cosmic.backend.domain.search.dtos.SpotifySearchArtistResponse;
+import org.cosmic.backend.domain.search.dtos.SpotifySearchTrackResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.beans.Transient;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class SearchArtistService extends SearchService {
 
+    @Autowired
+    private AlbumRepository albumRepository;
+    @Autowired
+    private ArtistRepository artistRepository;
     ObjectMapper mapper = new ObjectMapper();
     JsonNode rootNode = null;
 
@@ -40,11 +57,99 @@ public class SearchArtistService extends SearchService {
         return spotifySearchArtistResponses;
     }
 
-    public SpotifySearchArtistResponse searchArtistId(String accessToken, String artistId) throws JsonProcessingException
+    @Transactional
+    public List<SpotifySearchAlbumResponse> searchAlbumByArtistId(String accessToken, String artistId) throws JsonProcessingException
     {
-        JsonNode artistItem = mapper.readTree(searchSpotifyArtist(accessToken, artistId));
+        List<SpotifySearchAlbumResponse> spotifySearchAlbumResponses = new ArrayList<>();
+        JsonNode rootNode = mapper.readTree(searchSpotifyAlbumByArtistId(accessToken, artistId));
+        JsonNode artistItem = rootNode.path("items");
+        for(int i = 0; i < artistItem.size(); i++) {
+            SpotifySearchAlbumResponse spotifySearchAlbumResponse = new SpotifySearchAlbumResponse();
+            spotifySearchAlbumResponse.setAlbumId(artistItem.get(i).path("id").asText());
+            spotifySearchAlbumResponse.setName(artistItem.get(i).path("name").asText());
+            spotifySearchAlbumResponse.setTotal_tracks(artistItem.get(i).path("total_tracks").asInt());
+            spotifySearchAlbumResponse.setRelease_date(artistItem.get(i).path("release_date").asText());
+            JsonNode imageNode = artistItem.get(i).path("images").get(0);
+            spotifySearchAlbumResponse.setImageUrl(imageNode.path("url").asText());
 
-        return new SpotifySearchArtistResponse(); // 예외 발생 시 null 반환
+            JsonNode artistNode = artistItem.get(i).path("artists").get(0);
+            SpotifySearchArtistResponse spotifySearchArtistResponse = new SpotifySearchArtistResponse();
+            spotifySearchArtistResponse.setName(artistNode.path("name").asText());
+            spotifySearchArtistResponse.setArtistId(artistNode.path("id").asText());
+            //artistId로 img가져오기
+            JsonNode rootNode2 = mapper.readTree(
+                searchSpotifyArtist(accessToken, artistNode.path("id").asText()));
+            JsonNode artistImgNode = rootNode2.path("images");
+            String imgUrl = artistImgNode.get(0).path("url").asText();
+            spotifySearchArtistResponse.setImageUrl(imgUrl);
+            spotifySearchAlbumResponse.setAlbumArtist(spotifySearchArtistResponse);
+
+            LocalDate localDate = LocalDate.parse(spotifySearchAlbumResponse.getRelease_date());
+            Instant instant = localDate.atStartOfDay(ZoneId.of("UTC")).toInstant();
+
+            Artist artist;
+            if(artistRepository.findBySpotifyArtistId(spotifySearchArtistResponse.getArtistId()).isPresent())
+            {
+                artist = artistRepository.findBySpotifyArtistId(spotifySearchArtistResponse.getArtistId()).get();
+            }
+            else{
+                artist=artistRepository.save(Artist.builder()
+                        .artistCover(spotifySearchArtistResponse.getImageUrl())
+                        .spotifyArtistId(spotifySearchArtistResponse.getArtistId())
+                        .artistName(spotifySearchArtistResponse.getName())
+                        .build());
+            }
+            albumRepository.save(Album.builder()
+                .spotifyAlbumId(spotifySearchAlbumResponse.getAlbumId())
+                .title(spotifySearchAlbumResponse.getName())
+                .albumCover(spotifySearchAlbumResponse.getImageUrl())
+                .createdDate(instant)
+                .artist(artist)
+                .build());
+            spotifySearchAlbumResponses.add(spotifySearchAlbumResponse);
+        }
+        return spotifySearchAlbumResponses; // 예외 발생 시 null 반환
+    }
+
+    @Transactional
+    public List<ArtistTrackResponse> searchTrackByArtistId(String accessToken, String artistId) throws JsonProcessingException
+    {
+        List<ArtistTrackResponse> artistTrackResponses = new ArrayList<>();
+        List<SpotifySearchAlbumResponse>spotifySearchAlbumResponses=searchAlbumByArtistId(accessToken,artistId);
+
+        List<String>albumIDs=new ArrayList<>();
+        for (SpotifySearchAlbumResponse spotifySearchAlbumRespons : spotifySearchAlbumResponses) {
+            albumIDs.add(spotifySearchAlbumRespons.getAlbumId());
+        }
+
+        JsonNode rootNode = mapper.readTree(searchSpotifyTrackByArtistId(accessToken, albumIDs));
+        JsonNode albumItem = rootNode.path("albums");
+
+        for(int i = 0; i < albumItem.size(); i++) {
+            JsonNode albumImgNode = albumItem.get(i).path("images");
+            String imgUrl = albumImgNode.get(0).path("url").asText();
+
+            JsonNode trackItemNode = albumItem.get(i).path("tracks").path("items");
+            for(int j=0; j<trackItemNode.size(); j++) {
+                ArtistTrackResponse artistTrackResponse = new ArtistTrackResponse();
+                artistTrackResponse.setTrackId(trackItemNode.get(j).path("id").asText());
+
+                int durationMs=trackItemNode.get(j).path("duration_ms").asInt();
+                // 밀리초를 분과 초로 변환
+                int minutes = (durationMs / 1000) / 60; // 전체 초를 60으로 나눈 값이 분
+                int seconds = (durationMs / 1000) % 60; // 나머지가 초
+
+                String formattedDuration = String.format("%d:%02d", minutes, seconds);
+                artistTrackResponse.setDuration(formattedDuration);
+
+                artistTrackResponse.setTrackName(trackItemNode.get(j).path("name").asText());
+                artistTrackResponse.setImgUrl(imgUrl);
+
+                artistTrackResponses.add(artistTrackResponse);
+            }
+        }
+        return artistTrackResponses; // 예외 발생 시 null 반환
+
     }
 
 

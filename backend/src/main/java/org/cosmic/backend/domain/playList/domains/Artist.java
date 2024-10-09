@@ -28,7 +28,7 @@ public class Artist {//
   @Column(name = "artist_id")
   private Long artistId;
 
-  @Column(name = "spotify_artist_id")
+  @Column(name = "spotify_artist_id",unique = true)
   private String spotifyArtistId;
 
   @Column(name = "artist_name")

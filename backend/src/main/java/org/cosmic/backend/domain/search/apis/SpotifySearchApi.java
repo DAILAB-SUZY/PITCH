@@ -14,6 +14,7 @@ import org.cosmic.backend.domain.auth.applications.CreateSpotifyToken;
 import org.cosmic.backend.domain.search.applications.SearchAlbumService;
 import org.cosmic.backend.domain.search.applications.SearchArtistService;
 import org.cosmic.backend.domain.search.applications.SearchTrackService;
+import org.cosmic.backend.domain.search.dtos.ArtistTrackResponse;
 import org.cosmic.backend.domain.search.dtos.SpotifySearchAlbumResponse;
 import org.cosmic.backend.domain.search.dtos.SpotifySearchArtistResponse;
 import org.cosmic.backend.domain.search.dtos.SpotifySearchTrackResponse;
@@ -82,7 +83,7 @@ public class SpotifySearchApi {
             @PathVariable String albumId) throws JsonProcessingException { //q는 검색어
         return ResponseEntity.ok(searchAlbumService.searchAlbumId(createSpotifyToken.accesstoken(),albumId));
     }
-
+/*
     //id로 노래 정보찾기
     @GetMapping("/searchSpotify/trackId/{trackId}")
     @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -103,5 +104,25 @@ public class SpotifySearchApi {
             @Parameter(description = "앨범 이름")
             @PathVariable String artistId) throws JsonProcessingException { //q는 검색어
         return ResponseEntity.ok(searchArtistService.searchArtistId(createSpotifyToken.accesstoken(),artistId));
+    }*/
+
+    @GetMapping("/searchSpotify/artist/{artistId}/album")
+    @Operation(summary = "특정 아티스트의 앨범들 조회")
+    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+            array = @ArraySchema(schema = @Schema(implementation = SpotifySearchAlbumResponse.class))))
+    public ResponseEntity<List<SpotifySearchAlbumResponse>> searchAlbumByArtistId(
+            @Parameter(description = "앨범 이름")
+            @PathVariable String artistId) throws JsonProcessingException { //q는 검색어
+        return ResponseEntity.ok(searchArtistService.searchAlbumByArtistId(createSpotifyToken.accesstoken(),artistId));
+    }
+
+    @GetMapping("/searchSpotify/artist/{artistId}/track")
+    @Operation(summary = "특정 아티스트의 노래들 조회")
+    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+            array = @ArraySchema(schema = @Schema(implementation = SpotifySearchAlbumResponse.class))))
+    public ResponseEntity<List<ArtistTrackResponse>> searchTrackByArtistId(
+            @Parameter(description = "앨범 이름")
+            @PathVariable String artistId) throws JsonProcessingException { //q는 검색어
+        return ResponseEntity.ok(searchArtistService.searchTrackByArtistId(createSpotifyToken.accesstoken(),artistId));
     }
 }
