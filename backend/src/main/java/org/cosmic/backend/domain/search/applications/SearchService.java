@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
+
 
 @Service
 public class SearchService {
@@ -96,5 +98,40 @@ public class SearchService {
     String url = "https://api.spotify.com/v1/artists/" + spotifyArtistId;
     RestTemplate rest = new RestTemplate();
     return rest.exchange(url, HttpMethod.GET, getEntity(), Artist.class).getBody();
+  }
+
+  public String searchSpotifyAlbumByArtistId(String accessToken, String artistId) {
+    RestTemplate rest = new RestTemplate();
+    HttpHeaders headers = new HttpHeaders();
+    headers = setting(accessToken, headers);
+
+    String body = "";
+    String searchUrl = "https://api.spotify.com/v1/artists/" + artistId+"/albums";
+    HttpEntity<String> requestEntity = new HttpEntity<String>(body, headers);
+    ResponseEntity<String> responseEntity = rest.exchange(searchUrl, HttpMethod.GET, requestEntity,
+            String.class);
+    return responseEntity.getBody();
+  }
+
+  public String searchSpotifyTrackByArtistId(String accessToken, List<String> albumIds) {
+    RestTemplate rest = new RestTemplate();
+    HttpHeaders headers = new HttpHeaders();
+    headers = setting(accessToken, headers);
+    String body = "";
+    String temp="ids=";
+    for(int i=0;i<albumIds.size();i++) {
+      if(i==albumIds.size()-1)
+      {
+        temp=temp+albumIds.get(i);
+        break;
+      }
+      temp=temp+albumIds.get(i)+",";
+    }
+    String searchUrl = "https://api.spotify.com/v1/albums?"+temp;
+    System.out.println(searchUrl);
+    HttpEntity<String> requestEntity = new HttpEntity<String>(body, headers);
+    ResponseEntity<String> responseEntity = rest.exchange(searchUrl, HttpMethod.GET, requestEntity,
+            String.class);
+    return responseEntity.getBody();
   }
 }
