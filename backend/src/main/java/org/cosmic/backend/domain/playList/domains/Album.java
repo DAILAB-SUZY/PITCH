@@ -12,10 +12,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,9 +22,12 @@ import lombok.NoArgsConstructor;
 import org.cosmic.backend.domain.albumChat.domains.AlbumChatComment;
 import org.cosmic.backend.domain.albumChat.domains.AlbumLike;
 import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumChatDetail;
+import org.cosmic.backend.domain.post.dtos.Comment.ChildCommentDetail;
+import org.cosmic.backend.domain.post.dtos.Comment.CommentDetail;
 import org.cosmic.backend.domain.post.dtos.Post.AlbumDetail;
 import org.cosmic.backend.domain.post.dtos.Post.AlbumDto;
 import org.cosmic.backend.domain.post.entities.Post;
+import org.cosmic.backend.domain.post.entities.PostComment;
 
 @Data
 @NoArgsConstructor
@@ -50,10 +51,10 @@ public class Album {//앨범과 트랙은 1:N관계이며 앨범과 아티스트
 
   @Column(nullable = false)
   private String albumCover;
-
+/*
   @Builder.Default
-  @ManyToMany(fetch = FetchType.LAZY)
-  private Set<Genre> genre = new HashSet<>();
+  @ManyToMany(fetch = FetchType.LAZY)*/
+  private String genre="balad";
 
   @Builder.Default
   @Column(nullable = false)
@@ -85,10 +86,14 @@ public class Album {//앨범과 트랙은 1:N관계이며 앨범과 아티스트
         .title(album.title)
         .albumCover(album.albumCover)
         .artistName(album.artist.getArtistName())
-        .genre(album.genre.toString())
+        .genre(album.genre)
         .build();
   }
-
+  public static List<AlbumDetail> toAlbumDetail(List<Album> album) {
+    List<AlbumDetail> albumDetails = new ArrayList<>();
+    album.forEach(albumDetail -> albumDetails.add(toAlbumDetail(albumDetail)));
+    return albumDetails;
+  }
   public static AlbumChatDetail toAlbumChatDetail(Album album) {
     return AlbumChatDetail.builder()
         .albumId(album.albumId)

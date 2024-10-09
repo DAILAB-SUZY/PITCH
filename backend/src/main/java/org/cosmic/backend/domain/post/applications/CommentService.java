@@ -79,11 +79,11 @@ public class CommentService {
             parent = postCommentRepository.findById(parent_id).orElseThrow(NotFoundPostException::new);
         }
         postCommentRepository.save(PostComment.builder()
-                .content(content)
-                .parentComment(parent)
-                .user(user)
-                .post(post)
-                .build());
+            .content(content)
+            .parentComment(parent)
+            .user(user)
+            .post(post)
+            .build());
 
         return PostComment.toCommentDetails(postCommentRepository.findByPost_PostId(postId));
     }
