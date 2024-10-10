@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'docker:20.10.16' // Docker CLI가 포함된 이미지 사용
+            args '-v /var/run/docker.sock:/var/run/docker.sock' // 호스트의 Docker를 사용하기 위한 소켓 공유
+        }
+    }
 
     environment {
         DOCKER_COMPOSE_DIR = "backend"
