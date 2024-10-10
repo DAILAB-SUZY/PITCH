@@ -10,4 +10,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 public interface FollowRepository extends JpaRepository<Follow, FollowPK> {
 
   List<Follow> findAllByUser_UserId(Long userId);
+
+  List<Follow> findAllByOther_UserId(Long userId);
 }
