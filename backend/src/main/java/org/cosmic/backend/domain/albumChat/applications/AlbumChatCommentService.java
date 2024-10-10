@@ -159,6 +159,11 @@ public class AlbumChatCommentService {
         if (userRepository.findById(userId).isEmpty()) {
             throw new NotFoundUserException();
         }
+
+        if(comment.getParentAlbumChatCommentId()!=null&&commentRepository.findById(comment.getParentAlbumChatCommentId()).isEmpty())
+        {
+            throw new NotFoundAlbumChatException();//부모albumchatComment가 없다면
+        }
         commentRepository.save(
                 new AlbumChatComment(
                         comment.getContent(),

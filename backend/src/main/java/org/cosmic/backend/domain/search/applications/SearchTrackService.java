@@ -85,7 +85,6 @@ public class SearchTrackService extends SearchService {
     }
     public List<SpotifySearchTrackResponse> searchTrackId(String accessToken,String trackId) throws JsonProcessingException { // q는 검색어
         rootNode = mapper.readTree(searchSpotifyTrack(accessToken,trackId));
-
         List<SpotifySearchTrackResponse> spotifySearchTrackResponses = new ArrayList<>();
         return spotifySearchTrackResponses;
     }
