@@ -52,7 +52,7 @@ public class AlbumChatApi {
      * @throws NotFoundAlbumChatException 앨범챗을 찾을 수 없을 때 발생합니다.
      */
     @Transactional
-    @PostMapping("/open/album/{albumId}")
+    @GetMapping("/open/album/{albumId}")
     @ApiResponse(responseCode = "404", description = "Not Found AlbumChat")
     @ApiResponse(responseCode = "200", content = {@Content(schema=@Schema(contentMediaType = MediaType.APPLICATION_JSON_VALUE
         ,implementation= AlbumChatDetail.class))})
