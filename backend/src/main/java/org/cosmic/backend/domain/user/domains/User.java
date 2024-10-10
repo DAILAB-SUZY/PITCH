@@ -21,6 +21,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.cosmic.backend.domain.bestAlbum.domains.UserBestAlbum;
 import org.cosmic.backend.domain.favoriteArtist.domains.FavoriteArtist;
 import org.cosmic.backend.domain.musicDna.domains.MusicDna;
 import org.cosmic.backend.domain.musicDna.dtos.DnaDetail;
@@ -94,6 +95,18 @@ public class User {
   @Builder.Default
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<PostLike> postLikes = new ArrayList<>();
+
+  @Builder.Default
+  @OneToMany(mappedBy = "other", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Follow> followers = new ArrayList<>();
+
+  @Builder.Default
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Follow> followings = new ArrayList<>();
+
+  @Builder.Default
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<UserBestAlbum> bestAlbums = new ArrayList<>();
 
   public User(Email email, String username, String password) {
     this.email = email;
