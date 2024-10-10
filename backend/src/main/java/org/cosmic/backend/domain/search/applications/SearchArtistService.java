@@ -88,6 +88,7 @@ public class SearchArtistService extends SearchService {
             Instant instant = localDate.atStartOfDay(ZoneId.of("UTC")).toInstant();
 
             Artist artist;
+            Album album;
             if(artistRepository.findBySpotifyArtistId(spotifySearchArtistResponse.getArtistId()).isPresent())
             {
                 artist = artistRepository.findBySpotifyArtistId(spotifySearchArtistResponse.getArtistId()).get();
@@ -99,13 +100,17 @@ public class SearchArtistService extends SearchService {
                         .artistName(spotifySearchArtistResponse.getName())
                         .build());
             }
-            albumRepository.save(Album.builder()
-                .spotifyAlbumId(spotifySearchAlbumResponse.getAlbumId())
-                .title(spotifySearchAlbumResponse.getName())
-                .albumCover(spotifySearchAlbumResponse.getImageUrl())
-                .createdDate(instant)
-                .artist(artist)
-                .build());
+
+            if(albumRepository.findBySpotifyAlbumId(spotifySearchAlbumResponse.getAlbumId()).isEmpty())
+            {
+                albumRepository.save(Album.builder()
+                        .spotifyAlbumId(spotifySearchAlbumResponse.getAlbumId())
+                        .title(spotifySearchAlbumResponse.getName())
+                        .albumCover(spotifySearchAlbumResponse.getImageUrl())
+                        .createdDate(instant)
+                        .artist(artist)
+                        .build());
+            }
             spotifySearchAlbumResponses.add(spotifySearchAlbumResponse);
         }
         return spotifySearchAlbumResponses; // 예외 발생 시 null 반환
