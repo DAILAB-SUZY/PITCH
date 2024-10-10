@@ -60,12 +60,14 @@ public class Post {
 
     public static PostAndCommentsDetail toPostAndCommentDetail(Post post) {
         return PostAndCommentsDetail.builder()
-                .postId(post.postId)
-                .content(post.content)
-                .createAt(post.create_time)
-                .updateAt(post.update_time)
-                .album(Album.toAlbumDetail(post.album))
-                .author(User.toUserDetail(post.user))
+                .postDetail(PostDetail.builder()
+                    .postId(post.postId)
+                    .content(post.content)
+                    .createAt(post.create_time)
+                    .updateAt(post.update_time)
+                    .album(Album.toAlbumDetail(post.album))
+                    .author(User.toUserDetail(post.user))
+                    .build())
                 .comments(PostComment.toCommentDetails(post.postComments))
                 .likes(post.postLikes.stream().map(like -> User.toUserDetail(like.getUser())).toList())
                 .build();
