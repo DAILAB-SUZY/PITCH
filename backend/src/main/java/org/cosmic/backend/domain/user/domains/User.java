@@ -95,6 +95,14 @@ public class User {
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<PostLike> postLikes = new ArrayList<>();
 
+  @Builder.Default
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Follow> followers = new ArrayList<>();
+
+  @Builder.Default
+  @OneToMany(mappedBy = "other", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Follow> followings = new ArrayList<>();
+
   public User(Email email, String username, String password) {
     this.email = email;
     this.username = username;

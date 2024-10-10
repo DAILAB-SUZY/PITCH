@@ -64,6 +64,13 @@ public class FollowTest {
   @DisplayName("유저에서 팔로우 확인")
   @Transactional
   public void followCheckInUserTest() {
-    User user = createUser("testman");
+    User user = createAndSaveUser("myuser");
+    List<User> others = createAndSaveUsers(100);
+
+    others.forEach(
+        other -> followRepository.save(Follow.builder().user(user).other(other).build()));
+
+    List<Follow> follows = followRepository.findAllByUser_UserId(user.getUserId());
+    Assertions.assertEquals(100, follows.size());
   }
 }
