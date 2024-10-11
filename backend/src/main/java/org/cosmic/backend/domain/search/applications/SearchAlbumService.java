@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import org.cosmic.backend.domain.playList.domains.Album;
@@ -42,7 +43,10 @@ public class SearchAlbumService extends SearchService {
       for (int i = 0; i < albumitemsNode.size(); i++) {
         SpotifySearchAlbumResponse spotifySearchAlbumResponse = new SpotifySearchAlbumResponse();
         JsonNode item = albumitemsNode.get(i);
-        spotifySearchAlbumResponse.setRelease_date(item.path("release_date").asText());
+        String release_date=item.path("release_date").asText();
+        LocalDate releaseDate = LocalDate.parse(release_date, DateTimeFormatter.ISO_DATE);
+        Instant releaseDateInstant = releaseDate.atStartOfDay(ZoneId.of("UTC")).toInstant();
+        spotifySearchAlbumResponse.setRelease_date(release_date);
         spotifySearchAlbumResponse.setAlbumId(item.path("id").asText());
         spotifySearchAlbumResponse.setName(item.path("name").asText());
         spotifySearchAlbumResponse.setTotal_tracks(item.path("total_tracks").asInt());
@@ -68,6 +72,31 @@ public class SearchAlbumService extends SearchService {
         JsonNode artistNode = rootNode.path("images");
         String imgUrl = artistNode.get(0).path("url").asText();
         spotifySearchAlbumResponses.get(i).getAlbumArtist().setImageUrl(imgUrl);
+
+        Artist artist;
+        if(artistRepository.findBySpotifyArtistId(spotifySearchAlbumResponse.getAlbumArtist().getArtistId()).isPresent())
+        {
+          artist = artistRepository.findBySpotifyArtistId(spotifySearchAlbumResponse.getAlbumArtist().getArtistId()).get();
+        }
+        else{
+          artist=artistRepository.save(Artist.builder()
+                  .artistCover(spotifySearchAlbumResponse.getAlbumArtist().getImageUrl())
+                  .spotifyArtistId(spotifySearchAlbumResponse.getAlbumArtist().getArtistId())
+                  .artistName(spotifySearchAlbumResponse.getAlbumArtist().getName())
+                  .build());
+        }
+
+        if(albumRepository.findBySpotifyAlbumId(spotifySearchAlbumResponse.getAlbumId()).isEmpty())
+        {
+          albumRepository.save(Album.builder()
+                  .spotifyAlbumId(spotifySearchAlbumResponse.getAlbumId())
+                  .title(spotifySearchAlbumResponse.getName())
+                  .albumCover(spotifySearchAlbumResponse.getImageUrl())
+                  .createdDate(releaseDateInstant)
+                  .artist(artist)
+                  .build());
+        }
+
       }
     } catch (Exception e) {
 
