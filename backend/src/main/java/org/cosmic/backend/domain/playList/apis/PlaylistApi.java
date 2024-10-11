@@ -12,7 +12,7 @@ import java.util.List;
 import org.cosmic.backend.domain.playList.applications.PlaylistService;
 import org.cosmic.backend.domain.playList.dtos.FollowerPlaylistDetail;
 import org.cosmic.backend.domain.playList.dtos.PlaylistDetail;
-import org.cosmic.backend.domain.playList.dtos.PlaylistDto;
+import org.cosmic.backend.domain.playList.dtos.SpotifyTracksDto;
 import org.cosmic.backend.domain.playList.dtos.TrackDetail;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundArtistException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundTrackException;
@@ -112,8 +112,8 @@ public class PlaylistApi {
   @Operation(summary = "플레이리스트 저장", description = "특정 유저 플레이리스트 데이터 저장")
 
   public ResponseEntity<List<PlaylistDetail>> savePlaylistData(
-      @Parameter(description = "플레이리스트에 담을 데이터")
-      @RequestBody PlaylistDto playlist,
+      @Parameter(description = "플레이리스트에 담을 데이터 리스트")
+      @RequestBody SpotifyTracksDto playlist,
       @AuthenticationPrincipal Long userId) {
     return ResponseEntity.ok(playlistService.save(userId, playlist));
   }
@@ -129,7 +129,7 @@ public class PlaylistApi {
   @ApiResponse(responseCode = "400", description = "Not Match Artist Name")
   @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
       array = @ArraySchema(schema = @Schema(implementation = TrackDetail.class))))
-  @Operation(summary = "아티스트 검색", description = "아티스트 이름을 통한 노래정보 제공")
+  @Operation(summary = "아티스트 검색", description = "아티스트 이름을 통한 노래정보 제공", deprecated = true)
   public ResponseEntity<List<TrackDetail>> artistSearch(
       @Parameter(description = "아티스트 이름")
       @PathVariable String artistName) {
@@ -148,7 +148,7 @@ public class PlaylistApi {
   @ApiResponse(responseCode = "404", description = "Not Match Track Title")
   @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
       array = @ArraySchema(schema = @Schema(implementation = TrackDetail.class))))
-  @Operation(summary = "노래 검색", description = "노래 이름 검색을 통한 노래정보 제공")
+  @Operation(summary = "노래 검색", description = "노래 이름 검색을 통한 노래정보 제공", deprecated = true)
   public ResponseEntity<List<TrackDetail>> trackSearch(
       @Parameter(description = "노래 이름")
       @PathVariable String trackName) {
