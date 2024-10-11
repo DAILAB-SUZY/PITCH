@@ -9,6 +9,8 @@ import org.cosmic.backend.domain.bestAlbum.dtos.BestAlbumDetail;
 import org.cosmic.backend.domain.favoriteArtist.dtos.FavoriteArtistDetail;
 import org.cosmic.backend.domain.musicDna.dtos.UserDnaResponse;
 import org.cosmic.backend.domain.playList.dtos.PlaylistDetail;
+import org.cosmic.backend.domain.user.domains.User;
+import org.cosmic.backend.domain.user.dtos.FollowDto;
 import org.cosmic.backend.domain.user.dtos.UserDetail;
 
 @Data

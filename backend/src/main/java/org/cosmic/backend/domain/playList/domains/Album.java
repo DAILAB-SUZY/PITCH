@@ -51,15 +51,15 @@ public class Album {//앨범과 트랙은 1:N관계이며 앨범과 아티스트
 
   @Column(nullable = false)
   private String albumCover;
-/*
+
   @Builder.Default
-  @ManyToMany(fetch = FetchType.LAZY)*/
+  //@ManyToMany(fetch = FetchType.LAZY)*/
   private String genre="balad";
 
   @Builder.Default
   @Column(nullable = false)
   private Instant createdDate = Instant.now();//발매 일
-  //TODO 애초에 저장할 때 STRING으로 2024-04-05형식으로 넣기.
+
   @OneToMany(mappedBy = "album")
   @Builder.Default
   private Set<Post> posts = new HashSet<>();

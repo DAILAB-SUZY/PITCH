@@ -3,17 +3,33 @@ package org.cosmic.backend.domain.search.applications;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.cosmic.backend.domain.playList.domains.Album;
+import org.cosmic.backend.domain.playList.domains.Artist;
+import org.cosmic.backend.domain.playList.domains.Track;
+import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
+import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
+import org.cosmic.backend.domain.playList.repositorys.TrackRepository;
 import org.cosmic.backend.domain.search.dtos.SpotifySearchAlbumResponse;
 import org.cosmic.backend.domain.search.dtos.SpotifySearchArtistResponse;
 import org.cosmic.backend.domain.search.dtos.SpotifySearchTrackResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 
 @Service
 public class SearchTrackService extends SearchService {
     ObjectMapper mapper = new ObjectMapper();
     JsonNode rootNode;
+
+    @Autowired
+    private ArtistRepository artistRepository;
+    @Autowired
+    private TrackRepository trackRepository;
+    @Autowired
+    private AlbumRepository albumRepository;
 
     public List<SpotifySearchTrackResponse> searchTrack(String accessToken,String q) throws JsonProcessingException { // q는 검색어
 
@@ -26,7 +42,9 @@ public class SearchTrackService extends SearchService {
             JsonNode item = trackitemsNode.get(i);
             spotifySearchTrackResponse.setTrackId(item.path("id").asText());
             spotifySearchTrackResponse.setTrackName(item.path("name").asText());
-            int durationMs=item.path("duration_ms").asInt();
+
+            int durationMs = item.path("duration_ms").asInt();
+            Instant instant = Instant.EPOCH.plusMillis(durationMs);
             // 밀리초를 분과 초로 변환
             int minutes = (durationMs / 1000) / 60; // 전체 초를 60으로 나눈 값이 분
             int seconds = (durationMs / 1000) % 60; // 나머지가 초
@@ -79,10 +97,50 @@ public class SearchTrackService extends SearchService {
 
             spotifySearchArtistResponse.setImageUrl(albumImgUrl);
             spotifySearchTrackResponses.get(i).getAlbum().setAlbumArtist(spotifySearchArtistResponse);
+
+
+            Artist artist;
+            Album album;
+            if(artistRepository.findBySpotifyArtistId(spotifySearchTrackResponse.getTrackArtist().getArtistId()).isPresent())
+            {
+                artist = artistRepository.findBySpotifyArtistId(spotifySearchTrackResponse.getTrackArtist().getArtistId()).get();
+            }
+            else{
+                artist=artistRepository.save(Artist.builder()
+                        .artistCover(spotifySearchTrackResponse.getTrackArtist().getImageUrl())
+                        .spotifyArtistId(spotifySearchTrackResponse.getTrackArtist().getArtistId())
+                        .artistName(spotifySearchTrackResponse.getTrackArtist().getName())
+                        .build());
+            }
+
+            if(albumRepository.findBySpotifyAlbumId(spotifySearchAlbumResponse.getAlbumId()).isPresent())
+            {
+                album = albumRepository.findBySpotifyAlbumId(spotifySearchAlbumResponse.getAlbumId()).get();
+            }
+            else{
+                album=albumRepository.save(Album.builder()
+                        .spotifyAlbumId(spotifySearchAlbumResponse.getAlbumId())
+                        .title(spotifySearchAlbumResponse.getName())
+                        .albumCover(spotifySearchAlbumResponse.getImageUrl())
+                        .createdDate(instant)
+                        .artist(artist)
+                        .build());
+            }
+            if(trackRepository.findBySpotifyTrackId(spotifySearchTrackResponse.getTrackId()).isEmpty())
+            {
+                trackRepository.save(Track.builder()
+                        .spotifyTrackId(spotifySearchTrackResponse.getTrackId())
+                        .trackCover(album.getAlbumCover())
+                        .artist(artist)
+                        .title(spotifySearchTrackResponse.getTrackName())
+                        .album(album)
+                        .build());
+            }
         }
 
         return spotifySearchTrackResponses;
     }
+
     public List<SpotifySearchTrackResponse> searchTrackId(String accessToken,String trackId) throws JsonProcessingException { // q는 검색어
         rootNode = mapper.readTree(searchSpotifyTrack(accessToken,trackId));
         List<SpotifySearchTrackResponse> spotifySearchTrackResponses = new ArrayList<>();
