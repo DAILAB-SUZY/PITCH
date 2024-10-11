@@ -1,8 +1,15 @@
 package org.cosmic.backend.domain.search.applications;
 
+import jakarta.transaction.Transactional;
+import java.util.List;
 import org.cosmic.backend.domain.auth.applications.CreateSpotifyToken;
+import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
+import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
+import org.cosmic.backend.domain.playList.repositorys.TrackRepository;
 import org.cosmic.backend.domain.search.dtos.Album;
 import org.cosmic.backend.domain.search.dtos.Artist;
+import org.cosmic.backend.domain.search.dtos.Track;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -10,17 +17,22 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
-
 
 @Service
 public class SearchService {
+
+  @Autowired
+  private AlbumRepository albumRepository;
+  @Autowired
+  private TrackRepository trackRepository;
+  @Autowired
+  private ArtistRepository artistRepository;
 
   public HttpHeaders setting(String accessToken, HttpHeaders headers) {
     headers.add("Authorization", "Bearer " + accessToken);
     headers.add("Host", "api.spotify.com");
     headers.add("Content-type", "application/json");
-    headers.add("Accept-Language","ko");
+    headers.add("Accept-Language", "ko");
     return headers;
   }
 
@@ -106,10 +118,10 @@ public class SearchService {
     headers = setting(accessToken, headers);
 
     String body = "";
-    String searchUrl = "https://api.spotify.com/v1/artists/" + artistId+"/albums";
+    String searchUrl = "https://api.spotify.com/v1/artists/" + artistId + "/albums";
     HttpEntity<String> requestEntity = new HttpEntity<String>(body, headers);
     ResponseEntity<String> responseEntity = rest.exchange(searchUrl, HttpMethod.GET, requestEntity,
-            String.class);
+        String.class);
     return responseEntity.getBody();
   }
 
@@ -118,20 +130,42 @@ public class SearchService {
     HttpHeaders headers = new HttpHeaders();
     headers = setting(accessToken, headers);
     String body = "";
-    String temp="ids=";
-    for(int i=0;i<albumIds.size();i++) {
-      if(i==albumIds.size()-1)
-      {
-        temp=temp+albumIds.get(i);
+    String temp = "ids=";
+    for (int i = 0; i < albumIds.size(); i++) {
+      if (i == albumIds.size() - 1) {
+        temp = temp + albumIds.get(i);
         break;
       }
-      temp=temp+albumIds.get(i)+",";
+      temp = temp + albumIds.get(i) + ",";
     }
-    String searchUrl = "https://api.spotify.com/v1/albums?"+temp;
+    String searchUrl = "https://api.spotify.com/v1/albums?" + temp;
     System.out.println(searchUrl);
     HttpEntity<String> requestEntity = new HttpEntity<String>(body, headers);
     ResponseEntity<String> responseEntity = rest.exchange(searchUrl, HttpMethod.GET, requestEntity,
-            String.class);
+        String.class);
     return responseEntity.getBody();
+  }
+
+  public Track findTrackBySpotifyId(String spotifyTrackId) {
+    String url = "https://api.spotify.com/v1/tracks/" + spotifyTrackId;
+    RestTemplate rest = new RestTemplate();
+    return rest.exchange(url, HttpMethod.GET, getEntity(), Track.class).getBody();
+  }
+
+  @Transactional
+  public org.cosmic.backend.domain.playList.domains.Track findAndSaveTrackBySpotifyId(
+      String spotifyTrackId) {
+    Track track = findTrackBySpotifyId(spotifyTrackId);
+    org.cosmic.backend.domain.playList.domains.Artist artist = artistRepository.findBySpotifyArtistId(
+            track.artists().get(0).id())
+        .orElse(artistRepository.save(
+            org.cosmic.backend.domain.playList.domains.Artist.from(
+                findArtistBySpotifyId(track.artists().get(0).id()))));
+    org.cosmic.backend.domain.playList.domains.Album album = albumRepository.findBySpotifyAlbumId(
+        track.album().id()).orElse(albumRepository.save(
+        org.cosmic.backend.domain.playList.domains.Album.from(track.album(), artist)));
+    return trackRepository.findBySpotifyTrackId(track.id()
+    ).orElse(trackRepository.save(
+        org.cosmic.backend.domain.playList.domains.Track.from(track, album, artist)));
   }
 }
