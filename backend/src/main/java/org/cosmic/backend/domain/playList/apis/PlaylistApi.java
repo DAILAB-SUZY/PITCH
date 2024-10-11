@@ -35,17 +35,14 @@ import java.util.List;
 public class PlaylistApi {
 
     private final PlaylistService playlistService;
-    private final UsersRepository usersRepository;
 
     /**
      * <p>PlaylistApi의 생성자입니다.</p>
      *
      * @param playlistService 플레이리스트 관련 비즈니스 로직을 처리하는 서비스 클래스
-     * @param usersRepository 사용자 관련 데이터베이스 접근 레포지토리
      */
-    public PlaylistApi(PlaylistService playlistService, UsersRepository usersRepository) {
+    public PlaylistApi(PlaylistService playlistService) {
         this.playlistService = playlistService;
-        this.usersRepository = usersRepository;
     }
 
     /**

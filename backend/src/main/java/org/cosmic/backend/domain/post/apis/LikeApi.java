@@ -81,7 +81,7 @@ public class LikeApi {
     @PostMapping("")
     @ApiResponse(responseCode = "200", content = {
             @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-            schema = @Schema(implementation = PostAndCommentsDetail.class))
+                    schema = @Schema(implementation = PostAndCommentsDetail.class))
     })
     @ApiResponse(responseCode = "404", description = "Not Found User or Post")
     @Operation(summary = "앨범 포스트 좋아요 API", description = "앨범 포스트에 대해 좋아요 혹은 좋아요를 취소합니다.")

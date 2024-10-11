@@ -1,6 +1,7 @@
 package org.cosmic.backend.domain.post.applications;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import org.cosmic.backend.domain.auth.applications.CreateSpotifyToken;
 import org.cosmic.backend.domain.playList.domains.Album;
@@ -11,7 +12,6 @@ import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
 import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
 import org.cosmic.backend.domain.post.dtos.Post.AlbumDto;
 import org.cosmic.backend.domain.post.dtos.Post.PostAndCommentsDetail;
-import org.cosmic.backend.domain.post.dtos.Post.PostDetail;
 import org.cosmic.backend.domain.post.entities.Post;
 import org.cosmic.backend.domain.post.exceptions.NotFoundAlbumException;
 import org.cosmic.backend.domain.post.exceptions.NotFoundPostException;
@@ -25,6 +25,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.cosmic.backend.domain.post.dtos.Post.PostDetail;
 
 /**
  * 게시물(Post) 관련 비즈니스 로직을 처리하는 서비스 클래스입니다. 게시물 조회, 생성, 수정, 삭제 및 앨범/아티스트 검색 기능을 제공합니다.
@@ -184,5 +185,20 @@ public class PostService {
         .stream()
         .map(Album::toAlbumDto)
         .toList();
+  }
+
+  @Transactional
+  public List<PostDetail> openPost(Long userId) {
+    List<PostDetail> postDetails=new ArrayList<>();
+    List<Post> posts=new ArrayList<>();
+    posts=postRepository.findByUser_UserId(userId);
+    for(int i=0;i<posts.size();i++) {
+      PostDetail postDetail= new PostDetail(posts.get(i).getPostId(),posts.get(i).getContent(),
+        posts.get(i).getCreate_time(),posts.get(i).getUpdate_time(),
+          User.toUserDetail(userRepository.findById(userId).get()),Album.toAlbumDetail(posts.get(i).getAlbum()));//user album
+
+      postDetails.add(postDetail);
+    }
+    return postDetails;
   }
 }

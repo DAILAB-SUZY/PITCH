@@ -41,4 +41,5 @@ Optional<List<AlbumChatComment>> findByAlbum_AlbumId(Long albumid);//key로 찾�
             "ORDER BY acc.createTime DESC"
     )
     Optional<List<AlbumChatComment>> findByAlbumIdOrderByReply(@Param("albumId") Long albumId, @Param("albumChatCommentId") Long albumChatCommentId);
+    Optional<List<AlbumChatComment>> findByUser_UserId(Long userId);
 }
