@@ -12,7 +12,6 @@ import org.cosmic.backend.domain.playList.domains.Playlist_Track;
 @Builder
 public class PlaylistDetail {
 
-  Long playlistId;
   Long trackId;
   String title;
   String artistName;
@@ -20,8 +19,7 @@ public class PlaylistDetail {
 
   public static PlaylistDetail from(Playlist_Track playlistTrack) {
     return PlaylistDetail.builder()
-        .playlistId(playlistTrack.getPlaylist().getPlaylistId())
-        .trackId(playlistTrack.getId())
+        .trackId(playlistTrack.getTrack().getTrackId())
         .title(playlistTrack.getTrack().getTitle())
         .artistName(playlistTrack.getTrack().getArtist().getArtistName())
         .trackCover(playlistTrack.getTrack().getTrackCover())
