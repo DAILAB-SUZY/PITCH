@@ -56,8 +56,19 @@ public class FavoriteArtistService {
      * @throws NotFoundUserException 사용자를 찾을 수 없는 경우 발생합니다.
      */
     public FavoriteArtistDetail favoriteArtistGiveData(Long userId) {
-        if (usersRepository.findById(userId).isEmpty() || favoriteArtistRepository.findByUser_UserId(userId).isEmpty()) {
+        if (usersRepository.findById(userId).isEmpty()) {
             throw new NotFoundUserException();
+        }
+        if(favoriteArtistRepository.findByUser_UserId(userId).isEmpty())
+        {
+            return FavoriteArtistDetail.builder()
+                    .artistName("없음")
+                    .albumCover("없음")
+                    .trackCover("없음")
+                    .artistCover("없음")
+                    .albumName("없음")
+                    .trackName("없음")
+                    .build();
         }
         return FavoriteArtist.toFavoriteArtistDto(favoriteArtistRepository.findByUser_UserId(userId).get());
     }

@@ -1,4 +1,4 @@
-package org.cosmic.backend.domain.user.dtos;
+package org.cosmic.backend.domain.musicProfile.dtos;
 
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -9,12 +9,12 @@ import org.cosmic.backend.domain.bestAlbum.dtos.BestAlbumDetail;
 import org.cosmic.backend.domain.favoriteArtist.dtos.FavoriteArtistDetail;
 import org.cosmic.backend.domain.musicDna.dtos.UserDnaResponse;
 import org.cosmic.backend.domain.playList.dtos.PlaylistDetail;
-import org.cosmic.backend.domain.user.domains.User;
+import org.cosmic.backend.domain.user.dtos.UserDetail;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 @Builder
+@AllArgsConstructor
 public class MusicProfileDetail {
 
   private UserDetail userDetail;

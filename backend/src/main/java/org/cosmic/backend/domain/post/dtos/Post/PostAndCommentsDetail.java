@@ -15,12 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PostAndCommentsDetail {
-    private Long postId;
-    private String content;
-    private Instant createAt;
-    private Instant updateAt;
-    private UserDetail author;
-    private AlbumDetail album;
+    private PostDetail postDetail;
     private List<CommentDetail> comments;
     private List<UserDetail> likes;
 }
