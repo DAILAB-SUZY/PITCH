@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.cosmic.backend.domain.albumChat.applications.AlbumChatCommentLikeService;
 import org.cosmic.backend.domain.albumChat.dtos.commentlike.AlbumChatCommentLikeDetail;
+import org.cosmic.backend.domain.post.dtos.Post.PostAndCommentsDetail;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -74,6 +75,7 @@ public class AlbumChatCommentLikeApi {
      * @throws NotFoundAlbumChatCommentException 앨범챗 댓글을 찾을 수 없을 때 발생합니다.
      * @throws ExistCommentLikeException 이미 존재하는 좋아요가 있을 때 발생합니다.
      */
+    /*
     @PostMapping("/album/{albumId}/comment/{albumChatCommentId}/commentLike")
     @ApiResponse(responseCode = "404", description = "Not Found User or AlbumChatComment")
     @ApiResponse(responseCode = "409", description = "CommentLike Already Exists")
@@ -85,7 +87,7 @@ public class AlbumChatCommentLikeApi {
             @PathVariable Long albumChatCommentId,
             @AuthenticationPrincipal Long userId) {
         return ResponseEntity.ok(likeService.albumChatCommentLikeCreate(userId, albumChatCommentId));
-    }
+    }*/
 
     /**
      * <p>특정 앨범의 앨범챗 댓글에 대한 좋아요를 삭제합니다.</p>
@@ -107,4 +109,20 @@ public class AlbumChatCommentLikeApi {
             @AuthenticationPrincipal Long userId) {
         return ResponseEntity.ok(likeService.albumChatCommentLikeDelete(albumChatCommentId, userId));
     }
+
+
+
+    @PostMapping("/album/{albumId}/comment/{albumChatCommentId}/commentLike")
+    @ApiResponse(responseCode = "200", content = {
+            @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = PostAndCommentsDetail.class))
+    })
+    @ApiResponse(responseCode = "404", description = "Not Found User or AlbumChat")
+    @Operation(summary = "앨범 챗 댓글 좋아요 API", description = "앨범 챗 특정 댓글에 대해 좋아요 혹은 좋아요를 취소합니다.")
+    public ResponseEntity<List<AlbumChatCommentLikeDetail>> likeAlbumChat(@PathVariable Long albumId,@PathVariable Long albumChatCommentId, @AuthenticationPrincipal Long userId) {
+        return ResponseEntity.ok(likeService.likeOrUnlikeAlbumChat(albumChatCommentId, userId));
+    }// TODO 이 방식으로 통일.
+
+
+
 }

@@ -13,7 +13,7 @@ public interface AlbumChatCommentLikeRepository extends JpaRepository<AlbumChatC
     Optional<AlbumChatCommentLike> findByAlbumChatComment_AlbumChatCommentIdAndUser_UserId
         (Long albumChatCommentId, Long userId);
     Long countByAlbumChatComment_AlbumChatCommentId(Long albumChatCommentId);
-
+    Boolean existsByAlbumChatComment_AlbumChatCommentIdAndUser_UserId(Long albumChatCommentId, Long userId);
     void deleteByAlbumChatComment_AlbumChatCommentIdAndUser_UserId(Long albumChatCommentId, Long userId);
 
 }
