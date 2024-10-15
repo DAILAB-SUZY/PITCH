@@ -13,6 +13,8 @@ import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.playList.domains.Artist;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
 import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
+import org.cosmic.backend.domain.search.dtos.SpotifyAlbum;
+import org.cosmic.backend.domain.search.dtos.SpotifyArtist;
 import org.cosmic.backend.domain.search.dtos.SpotifySearchAlbumResponse;
 import org.cosmic.backend.domain.search.dtos.SpotifySearchArtistResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +45,7 @@ public class SearchAlbumService extends SearchService {
       for (int i = 0; i < albumitemsNode.size(); i++) {
         SpotifySearchAlbumResponse spotifySearchAlbumResponse = new SpotifySearchAlbumResponse();
         JsonNode item = albumitemsNode.get(i);
-        String release_date=item.path("release_date").asText();
+        String release_date = item.path("release_date").asText();
         LocalDate releaseDate = LocalDate.parse(release_date, DateTimeFormatter.ISO_DATE);
         Instant releaseDateInstant = releaseDate.atStartOfDay(ZoneId.of("UTC")).toInstant();
         spotifySearchAlbumResponse.setRelease_date(release_date);
@@ -74,27 +76,27 @@ public class SearchAlbumService extends SearchService {
         spotifySearchAlbumResponses.get(i).getAlbumArtist().setImageUrl(imgUrl);
 
         Artist artist;
-        if(artistRepository.findBySpotifyArtistId(spotifySearchAlbumResponse.getAlbumArtist().getArtistId()).isPresent())
-        {
-          artist = artistRepository.findBySpotifyArtistId(spotifySearchAlbumResponse.getAlbumArtist().getArtistId()).get();
-        }
-        else{
-          artist=artistRepository.save(Artist.builder()
-                  .artistCover(spotifySearchAlbumResponse.getAlbumArtist().getImageUrl())
-                  .spotifyArtistId(spotifySearchAlbumResponse.getAlbumArtist().getArtistId())
-                  .artistName(spotifySearchAlbumResponse.getAlbumArtist().getName())
-                  .build());
+        if (artistRepository.findBySpotifyArtistId(
+            spotifySearchAlbumResponse.getAlbumArtist().getArtistId()).isPresent()) {
+          artist = artistRepository.findBySpotifyArtistId(
+              spotifySearchAlbumResponse.getAlbumArtist().getArtistId()).get();
+        } else {
+          artist = artistRepository.save(Artist.builder()
+              .artistCover(spotifySearchAlbumResponse.getAlbumArtist().getImageUrl())
+              .spotifyArtistId(spotifySearchAlbumResponse.getAlbumArtist().getArtistId())
+              .artistName(spotifySearchAlbumResponse.getAlbumArtist().getName())
+              .build());
         }
 
-        if(albumRepository.findBySpotifyAlbumId(spotifySearchAlbumResponse.getAlbumId()).isEmpty())
-        {
+        if (albumRepository.findBySpotifyAlbumId(spotifySearchAlbumResponse.getAlbumId())
+            .isEmpty()) {
           albumRepository.save(Album.builder()
-                  .spotifyAlbumId(spotifySearchAlbumResponse.getAlbumId())
-                  .title(spotifySearchAlbumResponse.getName())
-                  .albumCover(spotifySearchAlbumResponse.getImageUrl())
-                  .createdDate(releaseDateInstant)
-                  .artist(artist)
-                  .build());
+              .spotifyAlbumId(spotifySearchAlbumResponse.getAlbumId())
+              .title(spotifySearchAlbumResponse.getName())
+              .albumCover(spotifySearchAlbumResponse.getImageUrl())
+              .createdDate(releaseDateInstant)
+              .artist(artist)
+              .build());
         }
 
       }
@@ -148,19 +150,20 @@ public class SearchAlbumService extends SearchService {
     return spotifySearchAlbumResponse; // 예외 발생 시 null 반환
   }
 
-  private Artist saveArtistByArtistDto(org.cosmic.backend.domain.search.dtos.Artist artist) {
-    return artistRepository.save(Artist.from(artist));
+  private Artist saveArtistByArtistDto(SpotifyArtist spotifyArtist) {
+    return artistRepository.save(Artist.from(spotifyArtist));
   }
 
-  private Album saveAlbumByAlbumDto(org.cosmic.backend.domain.search.dtos.Album album,
+  private Album saveAlbumByAlbumDto(SpotifyAlbum spotifyAlbum,
       Artist artist) {
-    return albumRepository.save(Album.from(album, artist));
+    return albumRepository.save(Album.from(spotifyAlbum, artist));
   }
 
   public void saveArtistAndAlbumBySpotifyId(String spotifyAlbumId) {
-    org.cosmic.backend.domain.search.dtos.Album album = searchService.findAlbumBySpotifyId(
+    SpotifyAlbum spotifyAlbum = searchService.findAlbumBySpotifyId(
         spotifyAlbumId);
-    album.artists().set(0, searchService.findArtistBySpotifyId(album.artists().get(0).id()));
-    saveAlbumByAlbumDto(album, saveArtistByArtistDto(album.artists().get(0)));
+    spotifyAlbum.spotifyArtists()
+        .set(0, searchService.findArtistBySpotifyId(spotifyAlbum.spotifyArtists().get(0).id()));
+    saveAlbumByAlbumDto(spotifyAlbum, saveArtistByArtistDto(spotifyAlbum.spotifyArtists().get(0)));
   }
 }

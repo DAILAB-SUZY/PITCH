@@ -26,6 +26,7 @@ import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumChatDetail;
 import org.cosmic.backend.domain.post.dtos.Post.AlbumDetail;
 import org.cosmic.backend.domain.post.dtos.Post.AlbumDto;
 import org.cosmic.backend.domain.post.entities.Post;
+import org.cosmic.backend.domain.search.dtos.SpotifyAlbum;
 
 @Data
 @NoArgsConstructor
@@ -52,7 +53,7 @@ public class Album {//앨범과 트랙은 1:N관계이며 앨범과 아티스트
 
   @Builder.Default
   //@ManyToMany(fetch = FetchType.LAZY)*/
-  private String genre="balad";
+  private String genre = "balad";
 
   @Builder.Default
   @Column(nullable = false)
@@ -117,11 +118,11 @@ public class Album {//앨범과 트랙은 1:N관계이며 앨범과 아티스트
         .build();
   }
 
-  public static Album from(org.cosmic.backend.domain.search.dtos.Album album, Artist artist) {
+  public static Album from(SpotifyAlbum spotifyAlbum, Artist artist) {
     return Album.builder()
-        .title(album.name())
-        .albumCover(album.images().get(0).url())
-        .spotifyAlbumId(album.id())
+        .title(spotifyAlbum.name())
+        .albumCover(spotifyAlbum.images().get(0).url())
+        .spotifyAlbumId(spotifyAlbum.id())
         .artist(artist)
         .build();
   }

@@ -18,6 +18,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.cosmic.backend.domain.playList.dtos.TrackDetail;
+import org.cosmic.backend.domain.search.dtos.SpotifyTrack;
 
 @Data
 @NoArgsConstructor
@@ -69,14 +70,14 @@ public class Track {//여기엔 모든 노래들이 담길 것임. 담길 때 �
         .build();
   }
 
-  public static Track from(org.cosmic.backend.domain.search.dtos.Track body, Album album,
+  public static Track from(SpotifyTrack body, Album album,
       Artist artist) {
     return Track.builder()
         .title(body.name())
         .spotifyTrackId(body.id())
         .album(album)
         .artist(artist)
-        .trackCover(body.album().images().get(0).url())
+        .trackCover(body.spotifyAlbum().images().get(0).url())
         .build();
   }
 }

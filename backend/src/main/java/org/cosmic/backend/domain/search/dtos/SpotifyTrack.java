@@ -2,9 +2,9 @@ package org.cosmic.backend.domain.search.dtos;
 
 import java.util.List;
 
-public record Track(
-    Album album,
-    List<Artist> artists,
+public record SpotifyTrack(
+    SpotifyAlbum spotifyAlbum,
+    List<SpotifyArtist> spotifyArtists,
     List<String> available_markets,
     int disc_number,
     int duration_ms,

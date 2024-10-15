@@ -15,6 +15,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.cosmic.backend.domain.favoriteArtist.domains.FavoriteArtist;
+import org.cosmic.backend.domain.search.dtos.SpotifyArtist;
 
 @Data
 @NoArgsConstructor
@@ -28,7 +29,7 @@ public class Artist {//
   @Column(name = "artist_id")
   private Long artistId;
 
-  @Column(name = "spotify_artist_id",unique = true)
+  @Column(name = "spotify_artist_id", unique = true)
   private String spotifyArtistId;
 
   @Column(name = "artist_name")
@@ -53,11 +54,11 @@ public class Artist {//
     this.artistName = name;
   }
 
-  public static Artist from(org.cosmic.backend.domain.search.dtos.Artist artist) {
+  public static Artist from(SpotifyArtist spotifyArtist) {
     return Artist.builder()
-        .artistName(artist.name())
-        .artistCover(artist.images().get(0).url())
-        .spotifyArtistId(artist.id())
+        .artistName(spotifyArtist.name())
+        .artistCover(spotifyArtist.images().get(0).url())
+        .spotifyArtistId(spotifyArtist.id())
         .build();
   }
 

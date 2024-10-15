@@ -3,12 +3,15 @@ package org.cosmic.backend.domain.search.applications;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import org.cosmic.backend.domain.auth.applications.CreateSpotifyToken;
+import org.cosmic.backend.domain.playList.domains.Album;
+import org.cosmic.backend.domain.playList.domains.Artist;
+import org.cosmic.backend.domain.playList.domains.Track;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
 import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
 import org.cosmic.backend.domain.playList.repositorys.TrackRepository;
-import org.cosmic.backend.domain.search.dtos.Album;
-import org.cosmic.backend.domain.search.dtos.Artist;
-import org.cosmic.backend.domain.search.dtos.Track;
+import org.cosmic.backend.domain.search.dtos.SpotifyAlbum;
+import org.cosmic.backend.domain.search.dtos.SpotifyArtist;
+import org.cosmic.backend.domain.search.dtos.SpotifyTrack;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -52,7 +55,6 @@ public class SearchService {
         String.class);
     return responseEntity.getBody();
   }
-
 
   public String searchSpotifyTrack(String accessToken, String trackId) {
     RestTemplate rest = new RestTemplate();
@@ -99,17 +101,38 @@ public class SearchService {
     return new HttpEntity<>(headers);
   }
 
-
-  public Album findAlbumBySpotifyId(String spotifyAlbumId) {
+  public SpotifyAlbum findAlbumBySpotifyId(String spotifyAlbumId) {
     String url = "https://api.spotify.com/v1/albums/" + spotifyAlbumId;
     RestTemplate rest = new RestTemplate();
-    return rest.exchange(url, HttpMethod.GET, getEntity(), Album.class).getBody();
+    return rest.exchange(url, HttpMethod.GET, getEntity(), SpotifyAlbum.class).getBody();
   }
 
-  protected Artist findArtistBySpotifyId(String spotifyArtistId) {
+  protected SpotifyArtist findArtistBySpotifyId(String spotifyArtistId) {
     String url = "https://api.spotify.com/v1/artists/" + spotifyArtistId;
     RestTemplate rest = new RestTemplate();
-    return rest.exchange(url, HttpMethod.GET, getEntity(), Artist.class).getBody();
+    return rest.exchange(url, HttpMethod.GET, getEntity(), SpotifyArtist.class).getBody();
+  }
+
+  @Transactional
+  public Artist findAndSaveArtistBySpotifyId(
+      String spotifyArtistId) {
+    return artistRepository.findBySpotifyArtistId(spotifyArtistId)
+        .orElseGet(() -> artistRepository.save(
+            Artist.from(
+                findArtistBySpotifyId(spotifyArtistId))));
+  }
+
+  @Transactional
+  public Album findAndSaveAlbumBySpotifyId(
+      String spotifyAlbumId) {
+    return albumRepository.findBySpotifyAlbumId(spotifyAlbumId)
+        .orElseGet(() -> {
+          SpotifyAlbum spotifyAlbum = findAlbumBySpotifyId(spotifyAlbumId);
+          return albumRepository.save(
+              Album.from(
+                  spotifyAlbum,
+                  findAndSaveArtistBySpotifyId(spotifyAlbum.spotifyArtists().get(0).id())));
+        });
   }
 
   public String searchSpotifyAlbumByArtistId(String accessToken, String artistId) {
@@ -146,26 +169,25 @@ public class SearchService {
     return responseEntity.getBody();
   }
 
-  public Track findTrackBySpotifyId(String spotifyTrackId) {
+  public SpotifyTrack findTrackBySpotifyId(String spotifyTrackId) {
     String url = "https://api.spotify.com/v1/tracks/" + spotifyTrackId;
     RestTemplate rest = new RestTemplate();
-    return rest.exchange(url, HttpMethod.GET, getEntity(), Track.class).getBody();
+    return rest.exchange(url, HttpMethod.GET, getEntity(), SpotifyTrack.class).getBody();
   }
 
   @Transactional
-  public org.cosmic.backend.domain.playList.domains.Track findAndSaveTrackBySpotifyId(
+  public Track findAndSaveTrackBySpotifyId(
       String spotifyTrackId) {
-    Track track = findTrackBySpotifyId(spotifyTrackId);
-    org.cosmic.backend.domain.playList.domains.Artist artist = artistRepository.findBySpotifyArtistId(
-            track.artists().get(0).id())
-        .orElse(artistRepository.save(
-            org.cosmic.backend.domain.playList.domains.Artist.from(
-                findArtistBySpotifyId(track.artists().get(0).id()))));
-    org.cosmic.backend.domain.playList.domains.Album album = albumRepository.findBySpotifyAlbumId(
-        track.album().id()).orElse(albumRepository.save(
-        org.cosmic.backend.domain.playList.domains.Album.from(track.album(), artist)));
-    return trackRepository.findBySpotifyTrackId(track.id()
+    SpotifyTrack spotifyTrack = findTrackBySpotifyId(spotifyTrackId);
+    Artist artist = findAndSaveArtistBySpotifyId(
+        spotifyTrack.spotifyArtists().get(0).id());
+    Album album = findAndSaveAlbumBySpotifyId(
+        spotifyTrack.spotifyAlbum().id());
+    albumRepository.findBySpotifyAlbumId(
+        spotifyTrack.spotifyAlbum().id()).orElse(albumRepository.save(
+        Album.from(spotifyTrack.spotifyAlbum(), artist)));
+    return trackRepository.findBySpotifyTrackId(spotifyTrack.id()
     ).orElse(trackRepository.save(
-        org.cosmic.backend.domain.playList.domains.Track.from(track, album, artist)));
+        Track.from(spotifyTrack, album, artist)));
   }
 }
