@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { colors } from "../../styles/color";
 import { useRef, useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import AlbumChatCard from "../components/AlbumChatCard";
 import useStore from "../store/store";
 
@@ -94,6 +94,14 @@ const Text = styled.div<{
   font-family: ${(props) => props.fontFamily};
   color: ${(props) => props.color};
   margin: ${(props) => props.margin};
+  max-width: 280px;
+
+  // 두 줄 이상일 때 '...' 처리
+  display: -webkit-box;
+  -webkit-line-clamp: 2; // 2줄까지만 표시
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const PostArea = styled.div`
@@ -113,7 +121,7 @@ const PostArea = styled.div`
 const ProfileArea = styled.div`
   display: flex;
   width: 100%;
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: center;
   flex-direction: row;
 `;
@@ -142,7 +150,47 @@ const ProfileImage = styled.div`
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background-color: ${colors.Main_Pink};
+`;
+
+const ProfileImgTextArea = styled.div`
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: flex-start;
+  align-items: center;
+`;
+
+const EditBtn = styled.div`
+  display: flex;
+  position: relative;
+`;
+
+const DropdownMenu = styled.div`
+  position: absolute;
+  top: 25px;
+  right: 0;
+  width: 70px;
+  height: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background-color: white;
+  border-radius: 7px;
+  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
+  z-index: 10;
+  overflow: hidden;
+`;
+
+const DropdownItem = styled.div`
+  padding: 10px;
+  width: 70px;
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+  &:hover {
+    background-color: ${colors.BG_grey};
+  }
 `;
 const RowAlignArea = styled.div`
   display: flex;
@@ -190,40 +238,124 @@ const ChatArea = styled.div`
   justify-content: flex-start;
 `;
 
+interface albumPost {
+  postDetail: {
+    postId: number;
+    content: string;
+    createAt: number;
+    updateAt: number;
+    author: {
+      id: number;
+      username: string;
+      profilePicture: string;
+      dnas: [
+        {
+          dnaKey: number;
+          dnaName: string;
+        }[],
+      ];
+    };
+    album: {
+      id: number;
+      title: string;
+      albumCover: string;
+      artistName: string;
+      genre: string;
+    };
+  };
+
+  comments: {
+    id: number;
+    content: string;
+    createdAt: number;
+    updatedAt: number;
+    likes: {
+      id: number;
+      username: string;
+      profilePicture: string;
+    }[];
+    childComments: {
+      id: number;
+      content: string;
+      author: {
+        id: number;
+        username: string;
+        profilePicture: string;
+      };
+    }[];
+    author: {
+      id: number;
+      username: string;
+      profilePicture: string;
+    };
+  }[];
+  likes: {
+    id: number;
+    username: string;
+    profilePicture: string;
+  }[];
+}
+
 function AlbumPostPage() {
   const location = useLocation();
   //const [albumPost, setAlbumPost] = useState();
-  const albumPost = location.state;
-
-  // useEffect(() => {
-  //   setAlbumPost(location.state);
-  //   const CreateTime = albumPost.createAt;
-  //   const UpdatedTime = albumPost.updateAt;
-  // }, []);
-
-  const CreateTime = albumPost.createAt;
-  const UpdatedTime = albumPost.updateAt;
-
-  ////// Post 시간 계산 //////
-
-  const [timeAgo, setTimeAgo] = useState<string>("");
-
+  const [albumPost, setAlbumPost] = useState<albumPost>();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const navigate = useNavigate();
+  const GoToHomePage = () => {
+    navigate("/Home");
+  };
+  const GoToAlbumPostEditPage = () => {
+    let album;
+    if (albumPost) {
+      album = {
+        albumArtist: {
+          artistId: null,
+          imageUrl: null,
+          name: albumPost.postDetail.album.artistName,
+        },
+        albumId: albumPost.postDetail.album.id,
+        imageUrl: albumPost.postDetail.album.albumCover,
+        name: albumPost.postDetail.album.title,
+        total_tracks: null,
+        release_date: null,
+        postContent: albumPost.postDetail.content,
+      };
+    }
+    navigate("/AlbumPostEditPage", { state: album });
+  };
+  console.log(`album Post:`);
+  console.log(albumPost);
   useEffect(() => {
-    const updateTimeAgo = () => {
-      if (UpdatedTime === null) {
-        const time = formatTimeAgo(CreateTime);
-        setTimeAgo(time);
-      } else {
-        const time = formatTimeAgo(UpdatedTime);
-        setTimeAgo(time);
-      }
-    };
+    // location.state로부터 albumPost 값을 초기화
+    console.log("setting albumpost");
+    if (location.state) {
+      setAlbumPost(location.state);
+    }
+  }, []);
 
-    // 처음 마운트될 때 시간 계산
-    updateTimeAgo();
-  }, [CreateTime, UpdatedTime]);
+  // Post 시간 계산에 필요한 상태 관리
+  const [timeAgo, setTimeAgo] = useState<string>("");
+  useEffect(() => {
+    if (albumPost) {
+      console.log("getting time from post");
+      const CreateTime = albumPost.postDetail.createAt;
+      const UpdatedTime = albumPost.postDetail.updateAt;
+
+      const updateTimeAgo = () => {
+        if (!UpdatedTime) {
+          setTimeAgo(formatTimeAgo(CreateTime));
+        } else {
+          setTimeAgo(formatTimeAgo(UpdatedTime));
+        }
+      };
+      updateTimeAgo();
+    }
+  }, [albumPost]);
 
   const formatTimeAgo = (unixTimestamp: number): string => {
+    console.log("time calculating");
     const currentTime = Math.floor(Date.now() / 1000); // 현재 시간 (초)
     const timeDifference = currentTime - Math.floor(unixTimestamp); // 경과 시간 (초)
 
@@ -241,49 +373,155 @@ function AlbumPostPage() {
   };
   /////////////
 
-  // Post 좋아요 상태 확인
   const { email, setEmail, name, setName, id, setId } = useStore();
 
-  // // Post 좋아요 상태 확인
+  // Post 좋아요 상태 확인
   const [isPostLiked, setIsPostLiked] = useState(false);
-  const [likesCount, setLikesCount] = useState(albumPost.likes.length);
+  const [likesCount, setLikesCount] = useState<number>(0);
 
   useEffect(() => {
-    if (albumPost.likes.some((like: any) => like.id === id)) {
-      setIsPostLiked(true);
+    if (albumPost) {
+      setLikesCount(albumPost.likes.length);
+      if (albumPost.likes.some((like: any) => like.id === id)) {
+        setIsPostLiked(true);
+      }
+      console.log(`좋아요 상태 : ${isPostLiked} / 좋아요 개수 : ${likesCount}`);
     }
-  }, []);
+  }, [albumPost]);
+
+  useEffect(() => {
+    if (albumPost) {
+      console.log(`--좋아요 상태 : ${isPostLiked} / 좋아요 개수 : ${likesCount}`);
+    }
+  }, [isPostLiked, likesCount]);
 
   // 좋아요 상태 변경 함수
   const server = "http://203.255.81.70:8030";
-  const PostLikeUrl = server + "//api/album/post/" + albumPost.postId + "/like";
+  const reissueTokenUrl = `${server}/api/auth/reissued`;
+  const [token, setToken] = useState(localStorage.getItem("login-token"));
+  const [refreshToken, setRefreshToken] = useState(localStorage.getItem("login-refreshToken"));
+  const PostLikeUrl = server + "/api/album/post/" + (albumPost ? albumPost.postDetail.postId : "") + "/like";
+
   const changePostLike = async () => {
-    if (isPostLiked) {
-      // 이미 좋아요를 눌렀다면 좋아요 취소
-      setIsPostLiked(false);
-      setLikesCount(likesCount - 1);
-      albumPost.likes = albumPost.likes.filter((like: any) => like.id !== id);
-    } else {
-      // 좋아요 누르기
-      setIsPostLiked(true);
-      setLikesCount(likesCount + 1);
-      albumPost.likes.push(id);
-    }
-    // like 데이터 POST 요청
-    console.log("fetching Data");
-    try {
-      const response = await fetch(PostLikeUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await response.json();
-      console.log("like 성공");
-    } catch (error) {
-      console.error("like 실패:", error);
+    console.log("changing Like");
+    if (albumPost) {
+      if (isPostLiked) {
+        // 이미 좋아요를 눌렀다면 좋아요 취소
+        setIsPostLiked(false);
+        setLikesCount(likesCount - 1);
+        albumPost.likes = albumPost.likes.filter((like: any) => like.id !== id);
+      } else {
+        // 좋아요 누르기
+        setIsPostLiked(true);
+        setLikesCount(likesCount + 1);
+        albumPost.likes.push({
+          id: id,
+          username: name,
+          // TODO: profile 이미지 링크 추가
+          profilePicture: "string",
+        });
+      }
+      fetchLike();
+      // like 데이터 POST 요청
     }
   };
+
+  const fetchLike = async () => {
+    if (token) {
+      console.log("fetching Like Data");
+      try {
+        const response = await fetch(PostLikeUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setAlbumPost(data);
+          if (data.likes.some((like: any) => like.id === id)) {
+            console.log("like 추가");
+          } else {
+            console.log("like 삭제");
+          }
+        } else if (response.status === 401) {
+          console.log("reissuing Token");
+          const reissueToken = await fetch(reissueTokenUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Refresh-Token": `${refreshToken}`,
+            },
+          });
+          const data = await reissueToken.json();
+          localStorage.setItem("login-token", data.token);
+          setToken(data.token);
+          localStorage.setItem("login-refreshToken", data.refreshToken);
+          setRefreshToken(data.refreshToken);
+          fetchLike();
+        } else {
+          console.error("Failed to fetch data:", response.status);
+        }
+      } catch (error) {
+        console.error("like 실패:", error);
+      }
+    }
+  };
+
+  // 수정/삭제 버튼
+  const editMenu = () => {
+    console.log("edit");
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  // 삭제요청
+  const PostDeleteUrl = server + "/api/album/post/" + (albumPost ? albumPost.postDetail.postId : "");
+  const deletePost = async () => {
+    if (token) {
+      if (albumPost) {
+        console.log(`delete id: ${albumPost.postDetail.postId}Post...`);
+      }
+      try {
+        const response = await fetch(PostDeleteUrl, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setAlbumPost(data);
+          console.log("deleted");
+          GoToHomePage();
+        } else if (response.status === 401) {
+          console.log("reissuing Token");
+          const reissueToken = await fetch(reissueTokenUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Refresh-Token": `${refreshToken}`,
+            },
+          });
+          const data = await reissueToken.json();
+          localStorage.setItem("login-token", data.token);
+          setToken(data.token);
+          localStorage.setItem("login-refreshToken", data.refreshToken);
+          setRefreshToken(data.refreshToken);
+          deletePost();
+        } else {
+          console.error("Failed to delete data:", response.status);
+        }
+      } catch (error) {
+        console.error("delete 실패:", error);
+      }
+    }
+  };
+
+  if (!albumPost) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <Container>
@@ -292,7 +530,7 @@ function AlbumPostPage() {
         <AlbumTitleArea>
           <ImageArea>
             <img
-              src={albumPost.album.albumCover}
+              src={albumPost.postDetail.album.albumCover}
               width="100%"
               object-fit="cover"
               // z-index="1"
@@ -300,25 +538,48 @@ function AlbumPostPage() {
           </ImageArea>
           <GradientBG> </GradientBG>
           <TitleTextArea>
-            <Text fontFamily="Bd" fontSize="40px" margin="0px" color={colors.BG_white}>
-              {albumPost.album.title}
+            <Text fontFamily="Bd" fontSize="30px" margin="0px" color={colors.BG_white}>
+              {albumPost.postDetail.album.title}
             </Text>
             <Text fontFamily="Rg" fontSize="20px" margin="0px 0px 2px 10px" color={colors.BG_white}>
-              {albumPost.album.artistName}
+              {albumPost.postDetail.album.artistName}
             </Text>
           </TitleTextArea>
         </AlbumTitleArea>
         <PostArea>
           <ProfileArea>
-            <ProfileImage>
-              <img src={albumPost.author.profilePicture}></img>
-            </ProfileImage>
-            <ProfileTextArea>
-              <ProfileName>{albumPost.author.username}</ProfileName>
-              <PostUploadTime> {timeAgo} </PostUploadTime>
-            </ProfileTextArea>
+            <ProfileImgTextArea>
+              <ProfileImage>
+                <img src={albumPost.postDetail.author.profilePicture}></img>
+              </ProfileImage>
+              <ProfileTextArea>
+                <ProfileName>{albumPost.postDetail.author.username}</ProfileName>
+                <PostUploadTime> {timeAgo} </PostUploadTime>
+              </ProfileTextArea>
+            </ProfileImgTextArea>
+            {albumPost.postDetail.author.id === id && (
+              <EditBtn ref={dropdownRef}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  fill={colors.Font_grey}
+                  className="bi bi-three-dots"
+                  viewBox="0 0 16 16"
+                  onClick={() => editMenu()} // 클릭 시 토글
+                >
+                  <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3" />
+                </svg>
+                {isDropdownOpen && (
+                  <DropdownMenu>
+                    <DropdownItem onClick={() => GoToAlbumPostEditPage()}>수정</DropdownItem>
+                    <DropdownItem onClick={() => deletePost()}>삭제</DropdownItem>
+                  </DropdownMenu>
+                )}
+              </EditBtn>
+            )}
           </ProfileArea>
-          <PostContentArea>{albumPost.content}</PostContentArea>
+          <PostContentArea>{albumPost.postDetail.content}</PostContentArea>
           <ButtonArea>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -327,10 +588,10 @@ function AlbumPostPage() {
               fill={isPostLiked ? colors.Button_active : colors.Button_deactive}
               className="bi bi-heart-fill"
               viewBox="0 0 16 16"
-              // onClick={() => changePostLike()}
+              onClick={() => changePostLike()}
             >
               <path
-                fill-rule="evenodd"
+                fillRule="evenodd"
                 d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"
               />
             </svg>
@@ -355,7 +616,6 @@ function AlbumPostPage() {
           </ButtonArea>
         </PostArea>
       </AlbumPostArea>
-      {/*  TODO: postArea와 ContentArea사이 공간 생기는거 없애기 */}
       <ChatArea>
         <RowAlignArea>
           <Text fontFamily="Bd" fontSize="30px" margin="0px" color="black">
@@ -373,13 +633,13 @@ function AlbumPostPage() {
           >
             <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
             <path
-              fill-rule="evenodd"
+              fillRule="evenodd"
               d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
             />
           </svg>
         </RowAlignArea>
-        {albumPost.comments.map((comment: any) => (
-          <AlbumChatCard comment={comment}></AlbumChatCard>
+        {albumPost.comments.map((comment: any, index: number) => (
+          <AlbumChatCard key={index} comment={comment}></AlbumChatCard>
         ))}
       </ChatArea>
     </Container>

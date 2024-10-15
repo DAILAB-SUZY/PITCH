@@ -3,13 +3,12 @@ import { colors } from "../../styles/color";
 
 interface FavoriteArtistProps {
   FavoriteArtistData: {
-    id: number;
-    artist: string;
-    artistProfile: string;
-    FavoriteAlbum: string;
-    FavoriteAlbumCover: string;
-    FavoriteSong: string;
-    FavoriteSongCover: string;
+    albumCover: string;
+    albumName: string;
+    artistCover: string;
+    artistName: string;
+    trackCover: string;
+    trackName: string;
   };
 }
 
@@ -159,7 +158,7 @@ function FavoriteArtistCard({ FavoriteArtistData }: FavoriteArtistProps) {
     <FavoriteArtistArea>
       <BG>
         <ImageArea>
-          <img src={data.artistProfile} width="auto" height="100%" object-fit="cover"></img>
+          <img src={data.artistCover} width="auto" height="100%" object-fit="cover"></img>
         </ImageArea>
         <GradientBG> </GradientBG>
         {/* <ArtistProfileArea>
@@ -170,32 +169,32 @@ function FavoriteArtistCard({ FavoriteArtistData }: FavoriteArtistProps) {
         <ContentArea>
           <ArtistTitleTextArea>
             <Text fontFamily="Bd" fontSize="50px" color="white">
-              Aespa
+              {data.artistName}
             </Text>
           </ArtistTitleTextArea>
           <FavoriteAlbumArea>
             <FavoriteAlbumCover>
-              <img src={data.FavoriteAlbumCover} width="100%" height="100%" object-fit="cover"></img>
+              <img src={data.albumCover} width="100%" height="100%" object-fit="cover"></img>
             </FavoriteAlbumCover>
             <FavoriteAlbumTextArea>
               <Text fontFamily="Bd" fontSize="20px" color="white">
                 Favorite Album
               </Text>
               <Text fontFamily="Rg" fontSize="15px" color="white">
-                {data.FavoriteAlbum}
+                {data.albumName}
               </Text>
             </FavoriteAlbumTextArea>
           </FavoriteAlbumArea>
           <FavoriteAlbumArea>
             <FavoriteAlbumCover>
-              <img src={data.FavoriteSongCover} width="100%" height="100%" object-fit="cover"></img>
+              <img src={data.trackCover} width="100%" height="100%" object-fit="cover"></img>
             </FavoriteAlbumCover>
             <FavoriteAlbumTextArea>
               <Text fontFamily="Bd" fontSize="20px" color="white">
                 Favorite Song
               </Text>
               <Text fontFamily="Rg" fontSize="15px" color="white">
-                {data.FavoriteSong}
+                {data.trackName}
               </Text>
             </FavoriteAlbumTextArea>
           </FavoriteAlbumArea>

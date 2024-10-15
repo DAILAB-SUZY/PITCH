@@ -1,15 +1,14 @@
 import styled from "styled-components";
 
-// PlaylistData 타입 정의
-interface AlbumData {
-  id: number;
-  songName: string;
-  artist: string;
-  albumCover: string;
-}
-
 interface AlbumDataProps {
-  AlbumData: AlbumData[];
+  AlbumData: [
+    {
+      albumCover: string;
+      albumId: number;
+      albumName: string;
+      score: number;
+    },
+  ];
 }
 const BestAlbumArea = styled.div`
   width: 100vw;
@@ -64,15 +63,15 @@ function AlbumGrid({ AlbumData }: AlbumDataProps) {
       <AlbumCol>
         <AlbumRow>
           {firstRow.map((Album) => (
-            <AlbumCover key={Album.id}>
-              <AlbumImage src={Album.albumCover} alt={Album.songName} />
+            <AlbumCover key={Album.albumId}>
+              <AlbumImage src={Album.albumCover} alt={Album.albumName} />
             </AlbumCover>
           ))}
         </AlbumRow>
         <AlbumRow>
           {secondRow.map((Album) => (
-            <AlbumCover key={Album.id}>
-              <AlbumImage src={Album.albumCover} alt={Album.songName} />
+            <AlbumCover key={Album.albumId}>
+              <AlbumImage src={Album.albumCover} alt={Album.albumName} />
             </AlbumCover>
           ))}
         </AlbumRow>

@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { colors } from "../../styles/color";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import useStore from "../store/store";
+import Loader from "../components/Loader";
 
 const Container = styled.div`
   display: flex;
@@ -23,65 +23,6 @@ const AlbumPostArea = styled.div`
   align-items: center;
   justify-content: flex-start;
   flex-direction: column;
-`;
-
-const AlbumTitleArea = styled.div`
-  position: relative;
-  width: 100vw;
-  height: 100vw;
-  /* padding: 0px 0px 20px 10px; */
-  /* z-index: 3; */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
-  color: white;
-  box-sizing: border-box;
-  overflow: hidden;
-`;
-
-const ImageArea = styled.div`
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  overflow: hidden;
-  width: 100vw;
-  height: 80vw;
-  /* object-fit: cover; */
-  z-index: 1;
-`;
-
-const GradientBG = styled.div`
-  position: absolute;
-  overflow: hidden;
-  top: 0px;
-  left: 0px;
-  z-index: 2;
-  width: 100vw;
-  height: 80vw;
-  object-fit: cover;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px 10px 0px 0px;
-  background: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
-  backdrop-filter: blur(0px);
-`;
-
-const TitleTextArea = styled.div`
-  position: absolute;
-  bottom: 10px;
-  left: 10px;
-  /* position: sticky;
-  top: 10px; */
-  width: 100%;
-  height: auto;
-  display: flex;
-  justify-content: flex-start;
-  align-items: flex-end;
-  padding: 0px 0px 20px 20px;
-  box-sizing: border-box;
-  z-index: 3;
 `;
 
 const Text = styled.div<{
@@ -179,10 +120,15 @@ const AlbumCover = styled.div`
 
 const SongTextArea = styled.div`
   height: 80%;
+  /* width: 100%; */
+  width: 300px;
   display: flex;
   align-items: start;
   justify-content: space-between;
   flex-direction: column;
+  white-space: nowrap;
+  overflow: hidden; // 너비를 넘어가면 안보이게
+  text-overflow: ellipsis; // 글자가 넘어가면 말줄임(...) 표시
 `;
 
 const Title = styled.div<{ fontSize?: string; margin?: string }>`
@@ -190,6 +136,11 @@ const Title = styled.div<{ fontSize?: string; margin?: string }>`
   margin: ${(props) => props.margin};
   font-family: "Bd";
   color: ${colors.Font_black};
+  width: 100%;
+  height: 100%;
+  white-space: nowrap;
+  overflow: hidden; // 너비를 넘어가면 안보이게
+  text-overflow: ellipsis; // 글자가 넘어가면 말줄임(...) 표시
 `;
 
 interface SearchResult {
@@ -210,6 +161,9 @@ function SearchPage() {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [searchResult, setSearchResult] = useState<SearchResult[]>();
   const [isLoading, setIsLoading] = useState(false);
+
+  console.log("기존 배열");
+  console.log(searchResult);
 
   // const { email, setEmail, name, setName, id, setId } = useStore();
 
@@ -271,6 +225,7 @@ function SearchPage() {
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault(); // 폼 제출 동작 방지
+    setSearchResult([]); // 검색 결과 초기화
     fetchSearch(); // 검색 실행
   };
 
@@ -318,7 +273,7 @@ function SearchPage() {
                 </SongTextArea>
               </SongArea>
             ))}
-          {isLoading && <Title fontSize={"20px"}>로딩중...</Title>}
+          {isLoading && <Loader></Loader>}
         </SearchResultArea>
       </AlbumPostArea>
     </Container>

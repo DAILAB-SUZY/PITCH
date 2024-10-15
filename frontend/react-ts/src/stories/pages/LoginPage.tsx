@@ -72,9 +72,6 @@ function LoginPage() {
     else setInputType("text");
   };
 
-  // const token: string;
-  // const email = useStore((state) => state.email);
-  // const setEmail = useStore((state) => state.setEmail);
   const [typedEmail, setTypedEmail] = useState("");
   const [typedPassword, setTypedPassword] = useState("");
 
@@ -124,28 +121,27 @@ function LoginPage() {
     fetchDatas();
   };
 
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault(); // 폼 제출 동작 방지
+    Login();
+  };
+
   return (
     <Container>
       <LoginArea flex_direction="column" justify_content="center">
-        <img
-          src={logo}
-          width="150px"
-          height="150px"
-          onClick={GoToHomePage}
-        ></img>
+        <img src={logo} width="150px" height="150px"></img>
         <Title fontSize="30px" margin="10px">
           {" "}
           로그인{" "}
         </Title>
-        <InputBox
-          placeholder="E-mail"
-          onChange={(e) => setTypedEmail(e.target.value)}
-        ></InputBox>
-        <InputBox
-          placeholder="Password"
-          onChange={(e) => setTypedPassword(e.target.value)}
-          type={inputType}
-        ></InputBox>
+        <InputBox placeholder="E-mail" onChange={(e) => setTypedEmail(e.target.value)}></InputBox>
+        <form onSubmit={handleSearchSubmit}>
+          <InputBox
+            placeholder="Password"
+            onChange={(e) => setTypedPassword(e.target.value)}
+            type={inputType}
+          ></InputBox>
+        </form>
         <LeftAlignArea>
           <Text fontSize="16px" margin="10px">
             {" "}
@@ -183,13 +179,7 @@ function LoginPage() {
 
         <StackConatiner>
           <LeftAlignArea></LeftAlignArea>
-          <Btn
-            width="100px"
-            height="40px"
-            fontsize="20px"
-            text="로그인"
-            onClick={Login}
-          ></Btn>
+          <Btn width="100px" height="40px" fontSize="20px" text="로그인" onClick={Login}></Btn>
         </StackConatiner>
         <LeftAlignArea></LeftAlignArea>
       </LoginArea>

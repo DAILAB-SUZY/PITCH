@@ -1,18 +1,11 @@
 import styled from "styled-components";
 import { colors } from "../../styles/color";
-import profile from "../../img/happy.webp";
-import cover1 from "../../img/aespa.webp";
-import cover2 from "../../img/newjeans.png";
-import cover3 from "../../img/daftpunk.png";
-import cover4 from "../../img/weeknd.jpg";
-import cover5 from "../../img/oasis.jpeg";
 
 import Nav from "../components/Nav";
 import AlbumPostCard from "../components/AlbumPostCard";
 import PlaylistPreviewCard from "../components/PlaylistPreviewCard";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { userInfo } from "os";
 import useStore from "../store/store";
 
 const Container = styled.div`
@@ -107,36 +100,6 @@ function HomePage() {
       profilePicture: string;
     };
   }
-  // const playlists = [
-  //   {
-  //     id: 1,
-  //     userName: "junho1231",
-  //     profileImage: profile,
-  //     albumCovers: [cover1, cover4, cover2],
-  //     bgColor: "#b5a1f7",
-  //   },
-  //   {
-  //     id: 2,
-  //     userName: "hello123",
-  //     profileImage: profile,
-  //     albumCovers: [cover4, cover5, cover3],
-  //     bgColor: "#f7d5a1",
-  //   },
-  //   {
-  //     id: 3,
-  //     userName: "junho1231",
-  //     profileImage: profile,
-  //     albumCovers: [cover3, cover2, cover1],
-  //     bgColor: "#b8f7a1",
-  //   },
-  //   {
-  //     id: 4,
-  //     userName: "hello123",
-  //     profileImage: profile,
-  //     albumCovers: [cover3, cover4, cover5],
-  //     bgColor: "#f7a1e7",
-  //   },
-  // ];
 
   const { email, setEmail, name, setName, id, setId } = useStore();
 
@@ -165,22 +128,31 @@ function HomePage() {
   const token = localStorage.getItem("login-token");
   const refreshToken = localStorage.getItem("login-refreshToken");
   interface AlbumPost {
-    postId: number;
-    content: string;
-    createAt: number;
-    updateAt: number;
-    author: {
-      id: number;
-      username: string;
-      profilePicture: string;
+    postDetail: {
+      postId: number;
+      content: string;
+      createAt: number;
+      updateAt: number;
+      author: {
+        id: number;
+        username: string;
+        profilePicture: string;
+        dnas: [
+          {
+            dnaKey: number;
+            dnaName: string;
+          }[],
+        ];
+      };
+      album: {
+        id: number;
+        title: string;
+        albumCover: string;
+        artistName: string;
+        genre: string;
+      };
     };
-    album: {
-      id: number;
-      title: string;
-      albumCover: string;
-      artistName: string;
-      genre: string;
-    };
+
     comments: [
       {
         id: number;
@@ -221,7 +193,8 @@ function HomePage() {
     ];
   }
   const PlaylistUrl = `${server}/api/FollowerPlaylist/user/1`;
-  // TODO: playlist fetching
+
+  // Playlist Fetching
   const fetchPlaylist = async () => {
     if (token) {
       try {
@@ -238,6 +211,7 @@ function HomePage() {
           const data = await response.json();
           setfriendsPlayList((prevList) => [...prevList, ...data]);
           console.log("fetched Playlist :");
+          console.log("fetched PlayList:");
           console.log(data);
         } else if (response.status === 401) {
           console.log("reissuing Token");
@@ -308,7 +282,7 @@ function HomePage() {
           localStorage.setItem("login-refreshToken", data.refreshToken);
           fetchAlbumPosts();
         } else {
-          console.error("Failed to fetch data:", response.status);
+          console.error("Failed to fetch AlbumPost data:", response.status);
         }
       } catch (error) {
         console.error("Error fetching the JSON file:", error);
@@ -349,67 +323,6 @@ function HomePage() {
     };
   }, [postPage]);
 
-  // useEffect(() => {
-  //   console.log("effect");
-  //   if (!isLoading) {
-  //     console.log("fetch call");
-  //     fetchAlbumPosts();
-  //   }
-  // }, [postPage]);
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const token = localStorage.getItem("login-token");
-  //     const refreshToken = localStorage.getItem("login-refreshToken");
-  //     if (token) {
-  //       try {
-  //         const response = await fetch(HomeUrl, {
-  //           method: "GET",
-  //           headers: {
-  //             "Content-Type": "application/json",
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         });
-
-  //         // fetch 성공하면 데이터 json 변환 후 저장
-  //         if (response.ok) {
-  //           const data = await response.json();
-  //           setAlbumPostList(data);
-  //           console.log("Fetched data:", albumPostList);
-  //         }
-  //         // token 만료 시 refreshToken으로 재발급 후 다시 fetch 시도
-  //         else if (response.status === 401) {
-  //           try {
-  //             const reissueToken = await fetch(reissueTokenUrl, {
-  //               method: "POST",
-  //               headers: {
-  //                 "Content-Type": "application/json",
-  //                 "Refresh-Token": `${refreshToken}`,
-  //               },
-  //             });
-  //             const data = await reissueToken.json();
-  //             console.log("Token reissued");
-  //             localStorage.setItem("login-token", data.token);
-  //             localStorage.setItem("login-refreshToken", data.refreshToken);
-  //             fetchData();
-  //           } catch (error) {
-  //             console.error("Failed to reissueToken:", response.status);
-  //           }
-  //         }
-  //         // fetch 실패 시 에러 코드
-  //         else {
-  //           console.error("Failed to fetch data:", response.status);
-  //         }
-  //       } catch (error) {
-  //         console.error("Error fetching the JSON file:", error);
-  //       }
-  //     } else {
-  //       console.log("No token found");
-  //     }
-  //   };
-  //   fetchData();
-  // }, []);
-
   return (
     <Container>
       <Header>
@@ -449,17 +362,24 @@ function HomePage() {
           <RowAlignArea>
             {albumPostList.length > 0 ? (
               albumPostList.map((albumPost) => (
-                <AlbumPostCard key={albumPost.postId} albumPost={albumPost}></AlbumPostCard>
+                <AlbumPostCard
+                  key={albumPost.postDetail.postId}
+                  albumPost={albumPost}
+                  // setAlbumPostList={setAlbumPostList}
+                ></AlbumPostCard>
               ))
             ) : (
-              <Text fontSize="15px" margin="150px 0px 0px 0px">
-                게시물이 없습니다
-              </Text>
+              <Text fontSize="15px" margin="150px 0px 0px 0px"></Text>
             )}
           </RowAlignArea>
         </AlbumPostArea>
-        {/* TODO: 무한 스크롤 구현 */}
-        {/* Loading Indicator */}
+        {isEnd ? (
+          <Text fontSize="16px" margin="20px 0px">
+            더이상 게시물이 없습니다
+          </Text>
+        ) : (
+          <></>
+        )}
         {isLoading ? (
           <Text fontSize="16px" margin="20px 0px">
             로딩 중...

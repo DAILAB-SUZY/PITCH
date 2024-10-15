@@ -1,20 +1,12 @@
 import styled from "styled-components";
-import { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import logo from "../../img/logo.png";
+import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { colors } from "../../styles/color";
 import Nav from "../components/Nav";
 import profile from "../../img/cat.webp";
 import PlaylistCard from "../components/PlaylistCardMini";
 import AlbumGrid from "../components/AlbumGrid";
 import FavoriteArtistCard from "../components/FavoriteArtistCard";
-import cover1 from "../../img/aespa.webp";
-import cover2 from "../../img/newjeans.png";
-import cover3 from "../../img/daftpunk.png";
-import cover4 from "../../img/weeknd.jpg";
-import cover5 from "../../img/oasis.jpeg";
-import cover6 from "../../img/aespa2.jpg";
-import aespaProfile from "../../img/aespaProfile.jpg";
 
 const Container = styled.div`
   display: flex;
@@ -267,73 +259,54 @@ const Btn = styled.div<{ bgColor: string }>`
   box-shadow: 0 0px 5px rgba(0, 0, 0, 0.1);
 `;
 
+// interface MusicProfileData {
+//   userDetail: {
+//     id: number;
+//     username: string;
+//     profilePicture: string;
+//   };
+//   favoriteArtist: {
+//     artistName: string;
+//     albumName: string;
+//     trackName: string;
+//     artistCover: string;
+//     albumCover: string;
+//     trackCover: string;
+//   };
+//   bestAlbum: [
+//     {
+//       albumId: number;
+//       albumName: string;
+//       albumCover: string;
+//       score: number;
+//     },
+//   ];
+//   userDna: [
+//     {
+//       dnaName: string;
+//     },
+//   ];
+//   playlist: [
+//     {
+//       playlistId: number;
+//       trackId: number;
+//       title: string;
+//       artistName: string;
+//       trackCover: string;
+//     },
+//   ];
+// }
+
 function MusicProfileEditPage() {
   const [tabBtn, setTabBtn] = useState(1);
   const navigate = useNavigate();
   const GoToMusicProfilePage = () => {
     navigate("/MusicProfilePage");
   };
-  const playlistData = {
-    id: 1,
-    userName: "junho1231",
-    profileImage: profile,
-    songs: [
-      {
-        id: 1,
-        songName: "Get Lucky",
-        artist: "Daft Punk",
-        albumCover: cover3,
-      },
-      {
-        id: 2,
-        songName: "Bliding Light",
-        artist: "The Weeknd",
-        albumCover: cover4,
-      },
-    ],
-  };
-  const AlbumData = [
-    {
-      id: 1,
-      songName: "Get Lucky",
-      artist: "Daft Punk",
-      albumCover: cover1,
-    },
-    {
-      id: 2,
-      songName: "Bliding Light",
-      artist: "The Weeknd",
-      albumCover: cover2,
-    },
-    {
-      id: 1,
-      songName: "Get Lucky",
-      artist: "Daft Punk",
-      albumCover: cover3,
-    },
-    {
-      id: 2,
-      songName: "Bliding Light",
-      artist: "The Weeknd",
-      albumCover: cover4,
-    },
-    {
-      id: 2,
-      songName: "Bliding Light",
-      artist: "The Weeknd",
-      albumCover: cover5,
-    },
-  ];
 
-  const FavoriteArtistData = {
-    id: 40,
-    artist: "aespa",
-    artistProfile: aespaProfile,
-    FavoriteAlbum: "Armageddon",
-    FavoriteAlbumCover: cover1,
-    FavoriteSong: "Girls",
-    FavoriteSongCover: cover6,
-  };
+  const location = useLocation();
+  const musicProfileData = location.state;
+
   return (
     <Container>
       <Header>
@@ -362,7 +335,7 @@ function MusicProfileEditPage() {
           </ProfileRightArea>
         </ProfileHeaderArea>
         <PlaylistCardArea>
-          <PlaylistCard playlist={playlistData}></PlaylistCard>
+          <PlaylistCard playlist={musicProfileData.playlist}></PlaylistCard>
         </PlaylistCardArea>
         <MenuArea>
           <TabArea>
@@ -404,11 +377,11 @@ function MusicProfileEditPage() {
             </FollowArea>
             <BestAlbumArea>
               <Title>BestAlbum</Title>
-              <AlbumGrid AlbumData={AlbumData}></AlbumGrid>
+              <AlbumGrid AlbumData={musicProfileData}></AlbumGrid>
             </BestAlbumArea>
             <FavoriteArtistArea>
               <Title>Favorite Artist</Title>
-              <FavoriteArtistCard FavoriteArtistData={FavoriteArtistData}></FavoriteArtistCard>
+              <FavoriteArtistCard FavoriteArtistData={musicProfileData.favoriteArtist}></FavoriteArtistCard>
             </FavoriteArtistArea>
             <BtnArea>
               <Btn bgColor={colors.BG_lightpink} onClick={() => GoToMusicProfilePage()}>

@@ -1,7 +1,8 @@
 import styled from "styled-components";
 import { colors } from "../../styles/color";
-import { useRef, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import useStore from "../store/store";
 
 const AlbumPostContainer = styled.div`
   width: 350px;
@@ -108,11 +109,20 @@ const PostArea = styled.div`
 
 const ProfileArea = styled.div`
   display: flex;
+  width: auto;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: row;
+`;
+
+const PostHeaderArea = styled.div`
+  display: flex;
   width: 100%;
   justify-content: flex-start;
   align-items: center;
   flex-direction: row;
 `;
+
 const PostUploadTime = styled.div`
   display: flex;
   font-size: 10px;
@@ -171,75 +181,84 @@ const ButtonArea = styled.div`
 
 interface AlbumPostProps {
   albumPost: {
-    postId: number;
-    content: string;
-    createAt: number;
-    updateAt: number;
-    author: {
-      id: number;
-      username: string;
-      profilePicture: string;
+    postDetail: {
+      postId: number;
+      content: string;
+      createAt: number;
+      updateAt: number;
+      author: {
+        id: number;
+        username: string;
+        profilePicture: string;
+        dnas: [
+          {
+            dnaKey: number;
+            dnaName: string;
+          }[],
+        ];
+      };
+      album: {
+        id: number;
+        title: string;
+        albumCover: string;
+        artistName: string;
+        genre: string;
+      };
     };
-    album: {
+
+    comments: {
       id: number;
-      title: string;
-      albumCover: string;
-      artistName: string;
-      genre: string;
-    };
-    comments: [
-      {
+      content: string;
+      createdAt: number;
+      updatedAt: number;
+      likes: {
+        id: number;
+        username: string;
+        profilePicture: string;
+      }[];
+      childComments: {
         id: number;
         content: string;
-        createdAt: number;
-        updatedAt: number;
-        likes: [
-          {
-            id: number;
-            username: string;
-            profilePicture: string;
-          },
-        ];
-        childComments: [
-          {
-            id: number;
-            content: string;
-            author: {
-              id: number;
-              username: string;
-              profilePicture: string;
-            };
-          },
-        ];
         author: {
           id: number;
           username: string;
           profilePicture: string;
         };
-      },
-    ];
-    likes: [
-      {
+      }[];
+      author: {
         id: number;
         username: string;
         profilePicture: string;
-      },
-    ];
+      };
+    }[];
+    likes: {
+      id: number;
+      username: string;
+      profilePicture: string;
+    }[];
   };
 }
 
 const AlbumPost = ({ albumPost }: AlbumPostProps) => {
   // const contentHeight = useRef<HTMLDivElement>(null);
   // const textHeight = useRef<HTMLDivElement>(null);
-
+  const { email, setEmail, name, setName, id, setId } = useStore();
   const navigate = useNavigate();
   const GoToAlbumPostPage = () => {
-    navigate("/AlbumPostPage", { state: albumPost });
+    navigate("/AlbumPostPage", { state: { albumPost } });
   };
 
+  const GoToMusicProfilePage = () => {
+    navigate("/MusicProfilePage", { state: albumPost.postDetail.author.id });
+  };
+
+  // const GoToMusicProfilePage = () => {
+  //   navigate("/MusicProfilePage", { state: { albumPost } });
+  // };
+
   ////// Post 시간 계산 //////
-  const CreateTime = albumPost.createAt;
-  const UpdatedTime = albumPost.updateAt;
+  const CreateTime = albumPost.postDetail.createAt;
+  const UpdatedTime = albumPost.postDetail.updateAt;
   const [timeAgo, setTimeAgo] = useState<string>("");
 
   useEffect(() => {
@@ -275,12 +294,104 @@ const AlbumPost = ({ albumPost }: AlbumPostProps) => {
   };
   /////////////
 
+  // Post 좋아요 상태 확인
+  const [isPostLiked, setIsPostLiked] = useState(false);
+  const [likesCount, setLikesCount] = useState<number>(0);
+
+  useEffect(() => {
+    if (albumPost) {
+      setLikesCount(albumPost.likes.length);
+      if (albumPost.likes.some((like: any) => like.id === id)) {
+        setIsPostLiked(true);
+      }
+      console.log(`좋아요 상태 : ${isPostLiked} / 좋아요 개수 : ${likesCount}`);
+    }
+  }, [albumPost]);
+
+  useEffect(() => {
+    if (albumPost) {
+      console.log(`--좋아요 상태 : ${isPostLiked} / 좋아요 개수 : ${likesCount}`);
+    }
+  }, [isPostLiked, likesCount]);
+
+  // 좋아요 상태 변경 함수
+  const server = "http://203.255.81.70:8030";
+  const reissueTokenUrl = `${server}/api/auth/reissued`;
+  const [token, setToken] = useState(localStorage.getItem("login-token"));
+  const [refreshToken, setRefreshToken] = useState(localStorage.getItem("login-refreshToken"));
+  const PostLikeUrl = server + "/api/album/post/" + (albumPost ? albumPost.postDetail.postId : "") + "/like";
+
+  const changePostLike = async () => {
+    console.log("changing Like");
+    if (isPostLiked) {
+      // 이미 좋아요를 눌렀다면 좋아요 취소
+      setIsPostLiked(false);
+      setLikesCount(likesCount - 1);
+      albumPost.likes = albumPost.likes.filter((like: any) => like.id !== id);
+    } else {
+      // 좋아요 누르기
+      setIsPostLiked(true);
+      setLikesCount(likesCount + 1);
+      albumPost.likes.push({
+        id: id,
+        username: name,
+        // TODO: profile 이미지 링크 추가
+        profilePicture: "string",
+      });
+    }
+    fetchLike();
+    // like 데이터 POST 요청
+  };
+
+  const fetchLike = async () => {
+    if (token) {
+      console.log("fetching Like Data");
+      try {
+        const response = await fetch(PostLikeUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          // setAlbumPost(data);
+          if (data.likes.some((like: any) => like.id === id)) {
+            console.log("like 추가");
+          } else {
+            console.log("like 삭제");
+          }
+        } else if (response.status === 401) {
+          console.log("reissuing Token");
+          const reissueToken = await fetch(reissueTokenUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Refresh-Token": `${refreshToken}`,
+            },
+          });
+          const data = await reissueToken.json();
+          localStorage.setItem("login-token", data.token);
+          setToken(data.token);
+          localStorage.setItem("login-refreshToken", data.refreshToken);
+          setRefreshToken(data.refreshToken);
+          fetchLike();
+        } else {
+          console.error("Failed to fetch data:", response.status);
+        }
+      } catch (error) {
+        console.error("like 실패:", error);
+      }
+    }
+  };
+
   return (
     <AlbumPostContainer>
       <AlbumTitleArea>
         <ImageArea>
           <img
-            src={albumPost.album.albumCover}
+            src={albumPost.postDetail.album.albumCover}
             width="350px"
             height="320px"
             object-fit="cover"
@@ -290,25 +401,27 @@ const AlbumPost = ({ albumPost }: AlbumPostProps) => {
         <GradientBG> </GradientBG>
         <TitleTextArea>
           <Text fontFamily="Bd" fontSize="30px">
-            {albumPost.album.title}
+            {albumPost.postDetail.album.title}
           </Text>
           <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 2px 10px">
-            {albumPost.album.artistName}
+            {albumPost.postDetail.album.artistName}
           </Text>
         </TitleTextArea>
       </AlbumTitleArea>
-      <PostArea onClick={() => GoToAlbumPostPage()}>
-        <ProfileArea>
-          <ProfileImage>
-            <img src={albumPost.author.profilePicture} width="100%" height="100%"></img>
-          </ProfileImage>
-          <ProfileTextArea>
-            <ProfileName>{albumPost.author.username}</ProfileName>
-            <PostUploadTime> {timeAgo}</PostUploadTime>
-          </ProfileTextArea>
-        </ProfileArea>
-        <PostContentArea>
-          <p>{albumPost.content}</p>
+      <PostArea>
+        <PostHeaderArea>
+          <ProfileArea onClick={() => GoToMusicProfilePage()}>
+            <ProfileImage>
+              <img src={albumPost.postDetail.author.profilePicture} width="100%" height="100%"></img>
+            </ProfileImage>
+            <ProfileTextArea>
+              <ProfileName>{albumPost.postDetail.author.username}</ProfileName>
+            </ProfileTextArea>
+          </ProfileArea>
+          <PostUploadTime> {timeAgo}</PostUploadTime>
+        </PostHeaderArea>
+        <PostContentArea onClick={() => GoToAlbumPostPage()}>
+          <p>{albumPost.postDetail.content}</p>
         </PostContentArea>
         {/* <PostContentArea ref={contentHeight}>
           <p ref={textHeight}>{albumPost.content}</p>
@@ -320,12 +433,11 @@ const AlbumPost = ({ albumPost }: AlbumPostProps) => {
             width="14"
             height="14"
             fill={
-              albumPost.likes.some((like) => like.id === albumPost.author.id)
-                ? colors.Button_active
-                : colors.Button_deactive
+              albumPost.likes.some((like) => like.id === id) ? colors.Button_active : colors.Button_deactive
             }
             className="bi bi-heart-fill"
             viewBox="0 0 16 16"
+            onClick={() => changePostLike()}
           >
             <path
               fill-rule="evenodd"

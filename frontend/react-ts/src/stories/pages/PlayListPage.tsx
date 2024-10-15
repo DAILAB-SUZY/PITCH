@@ -1,14 +1,10 @@
 import styled from "styled-components";
 import { colors } from "../../styles/color";
-import logo from "../../img/logo.png";
 import Nav from "../components/Nav";
 import PlayListCard from "../components/PlayListCard";
-import cover1 from "../../img/aespa.webp";
-import cover2 from "../../img/newjeans.png";
-import cover3 from "../../img/daftpunk.png";
-import cover4 from "../../img/weeknd.jpg";
-import cover5 from "../../img/oasis.jpeg";
-import cover6 from "../../img/aespa2.jpg";
+import { useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import useStore from "../store/store";
 
 const Container = styled.div`
   display: flex;
@@ -55,9 +51,9 @@ const PlayListArea = styled.div`
 `;
 
 const Text = styled.div<{
-  fontFamily: string;
-  fontSize: string;
-  margin: string;
+  fontFamily?: string;
+  fontSize?: string;
+  margin?: string;
 }>`
   font-size: ${(props) => props.fontSize};
   font-family: ${(props) => props.fontFamily};
@@ -65,77 +61,84 @@ const Text = styled.div<{
 `;
 
 function PlayListPage() {
-  const playlist = [
-    {
-      playlistId: 0,
-      trackId: 0,
-      userId: 0,
-      title: "Armageddon",
-      artistName: "aespa",
-      albumCover: cover1,
-    },
-    {
-      playlistId: 1,
-      trackId: 1,
-      userId: 0,
-      title: "ASAP",
-      artistName: "NewJeans",
-      albumCover: cover2,
-    },
-    {
-      playlistId: 2,
-      trackId: 2,
-      userId: 0,
-      title: "Get Lucky",
-      artistName: "DaftPunk",
-      albumCover: cover3,
-    },
-    {
-      playlistId: 3,
-      trackId: 3,
-      userId: 0,
-      title: "Blinding Light",
-      artistName: "The Weeknd",
-      albumCover: cover4,
-    },
-    {
-      playlistId: 4,
-      trackId: 4,
-      userId: 0,
-      title: "Don't look Back in Anger",
-      artistName: "Oasis",
-      albumCover: cover5,
-    },
-    {
-      playlistId: 5,
-      trackId: 5,
-      userId: 0,
-      title: "Girls",
-      artistName: "aespa",
-      albumCover: cover6,
-    },
-    {
-      playlistId: 6,
-      trackId: 6,
-      userId: 0,
-      title: "SUPERNOVA",
-      artistName: "aespa",
-      albumCover: cover1,
-    },
-  ];
+  interface PlayList {
+    playlistId: number;
+    trackId: number;
+    title: string;
+    artistName: string;
+    trackCover: string;
+  }
+
+  const [playList, setPlayList] = useState<PlayList[]>([]);
+
+  const location = useLocation();
+  const author = location.state;
+
+  const token = localStorage.getItem("login-token");
+  const refreshToken = localStorage.getItem("login-refreshToken");
+  const server = "http://203.255.81.70:8030";
+  const reissueTokenUrl = `${server}/api/auth/reissued`;
+
+  const PlayListURL = `${server}/api/user/${author.id}/playlist`;
+
+  const fetchPlayList = async () => {
+    if (token) {
+      try {
+        console.log(`fetching Playlist...`);
+        const response = await fetch(PlayListURL, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setPlayList((prevList) => [...prevList, ...data]);
+          console.log("fetched PlayList:");
+          console.log(data);
+        } else if (response.status === 401) {
+          console.log("reissuing Token");
+          const reissueToken = await fetch(reissueTokenUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Refresh-Token": `${refreshToken}`,
+            },
+          });
+          const data = await reissueToken.json();
+          localStorage.setItem("login-token", data.token);
+          localStorage.setItem("login-refreshToken", data.refreshToken);
+          fetchPlayList();
+        } else {
+          console.error("Failed to fetch data:", response.status);
+        }
+      } catch (error) {
+        console.error("Error fetching the JSON file:", error);
+      } finally {
+        console.log("finished");
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchPlayList();
+  }, []);
+
   return (
     <Container>
       <Header>
-        <Nav page={2}></Nav>
+        <Nav page={author.page}></Nav>
       </Header>
       <Body>
         <TitleArea>
           <Text fontFamily="Bd" fontSize="20px">
-            김준호's Playlist
+            {author.username}'s PlayList
           </Text>
         </TitleArea>
         <PlayListArea>
-          <PlayListCard playlist={playlist}></PlayListCard>
+          <PlayListCard playlist={playList}></PlayListCard>
         </PlayListArea>
       </Body>
     </Container>

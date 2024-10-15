@@ -1,20 +1,12 @@
 import styled from "styled-components";
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import logo from "../../img/logo.png";
+import { useNavigate, useLocation } from "react-router-dom";
 import { colors } from "../../styles/color";
 import Nav from "../components/Nav";
-import profile from "../../img/cat.webp";
-import PlaylistCard from "../components/PlaylistCardMini";
+import PlaylistCardMini from "../components/PlaylistCardMini";
 import AlbumGrid from "../components/AlbumGrid";
 import FavoriteArtistCard from "../components/FavoriteArtistCard";
-import cover1 from "../../img/aespa.webp";
-import cover2 from "../../img/newjeans.png";
-import cover3 from "../../img/daftpunk.png";
-import cover4 from "../../img/weeknd.jpg";
-import cover5 from "../../img/oasis.jpeg";
-import cover6 from "../../img/aespa2.jpg";
-import aespaProfile from "../../img/aespaProfile.jpg";
+import AlbumPostCard from "../components/AlbumPostCard";
 import useStore from "../store/store";
 
 const Container = styled.div`
@@ -45,9 +37,9 @@ const Body = styled.div`
 `;
 
 const Text = styled.div<{
-  fontFamily: string;
-  fontSize: string;
-  margin: string;
+  fontFamily?: string;
+  fontSize?: string;
+  margin?: string;
 }>`
   font-size: ${(props) => props.fontSize};
   font-family: ${(props) => props.fontFamily};
@@ -78,7 +70,6 @@ const Circle = styled.div`
   width: 100px;
   height: 100px;
   border-radius: 100%;
-  background-color: black;
   overflow: hidden;
   margin-bottom: 10px;
 `;
@@ -245,38 +236,54 @@ const PlaylistCardArea = styled.div`
 
 interface MusicProfileData {
   userDetail: {
-    id: 0;
-    username: "string";
-    profilePicture: "string";
+    id: number;
+    username: string;
+    profilePicture: string;
+    dnas: [
+      {
+        dnaKey: number;
+        dnaName: string;
+      },
+    ];
   };
   favoriteArtist: {
-    artistName: "string";
-    albumName: "string";
-    trackName: "string";
-    artistCover: "string";
-    albumCover: "string";
-    trackCover: "string";
+    artistName: string;
+    albumName: string;
+    trackName: string;
+    artistCover: string;
+    albumCover: string;
+    trackCover: string;
   };
   bestAlbum: [
     {
-      albumId: 0;
-      albumName: "string";
-      albumCover: "string";
-      score: 0;
+      albumId: number;
+      albumName: string;
+      albumCover: string;
+      score: number;
     },
   ];
   userDna: [
     {
-      dnaName: "string";
+      dnaName: string;
     },
   ];
   playlist: [
     {
-      playlistId: 0;
-      trackId: 0;
-      title: "string";
-      artistName: "string";
-      trackCover: "string";
+      playlistId: number;
+      trackId: number;
+      title: string;
+      artistName: string;
+      trackCover: string;
+    },
+  ];
+  followings: [
+    {
+      userId: number;
+    },
+  ];
+  followers: [
+    {
+      userId: number;
     },
   ];
 }
@@ -299,21 +306,24 @@ const EditBtn = styled.div`
 function MusicProfilePage() {
   const [tabBtn, setTabBtn] = useState(1);
   const [musicProfileData, setMusicProfileData] = useState<MusicProfileData>();
+  const [activityData, setActivityData] = useState();
   const navigate = useNavigate();
-  const GoToEditPage = () => {
-    navigate("/MusicProfileEditPage");
+  const location = useLocation();
+  const profileId = location.state;
+  const GoToEditPage = (musicProfileData: MusicProfileData) => {
+    navigate("/MusicProfileEditPage", { state: musicProfileData });
   };
 
   const { email, setEmail, name, setName, id, setId } = useStore();
-
+  console.log(`id: ${id} / name: ${name}`);
   const server = "http://203.255.81.70:8030";
-  let musiProfileUrl = `${server}/api/user/${id}/musicProfile`;
+  let musiProfileUrl = `${server}/api/user/${profileId}/musicProfile`;
+  let activityUrl = `${server}/api/user/${profileId}/musicProfile/activity`;
   const reissueTokenUrl = `${server}/api/auth/reissued`;
+  const token = localStorage.getItem("login-token");
+  const refreshToken = localStorage.getItem("login-refreshToken");
 
   const fetchData = async () => {
-    const token = localStorage.getItem("login-token");
-    const refreshToken = localStorage.getItem("login-refreshToken");
-
     if (token) {
       try {
         console.log("fetching...");
@@ -356,67 +366,48 @@ function MusicProfilePage() {
   useEffect(() => {
     fetchData();
   }, []);
-  const playlistData = {
-    id: 1,
-    userName: "junho1231",
-    profileImage: profile,
-    songs: [
-      {
-        id: 1,
-        songName: "Get Lucky",
-        artist: "Daft Punk",
-        albumCover: cover3,
-      },
-      {
-        id: 2,
-        songName: "Bliding Light",
-        artist: "The Weeknd",
-        albumCover: cover4,
-      },
-    ],
-  };
-  const AlbumData = [
-    {
-      id: 1,
-      songName: "Get Lucky",
-      artist: "Daft Punk",
-      albumCover: cover1,
-    },
-    {
-      id: 2,
-      songName: "Bliding Light",
-      artist: "The Weeknd",
-      albumCover: cover2,
-    },
-    {
-      id: 1,
-      songName: "Get Lucky",
-      artist: "Daft Punk",
-      albumCover: cover3,
-    },
-    {
-      id: 2,
-      songName: "Bliding Light",
-      artist: "The Weeknd",
-      albumCover: cover4,
-    },
-    {
-      id: 2,
-      songName: "Bliding Light",
-      artist: "The Weeknd",
-      albumCover: cover5,
-    },
-  ];
 
-  const FavoriteArtistData = {
-    id: 40,
-    artist: "aespa",
-    artistProfile: aespaProfile,
-    FavoriteAlbum: "Armageddon",
-    FavoriteAlbumCover: cover1,
-    FavoriteSong: "Girls",
-    FavoriteSongCover: cover6,
+  const fetchActivityData = async () => {
+    if (token) {
+      try {
+        console.log("fetching Activity...");
+        const response = await fetch(activityUrl, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          console.log("set PostList");
+          const data = await response.json();
+          console.log(data);
+          setActivityData(data);
+        } else if (response.status === 401) {
+          console.log("reissuing Token");
+          const reissueToken = await fetch(reissueTokenUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Refresh-Token": `${refreshToken}`,
+            },
+          });
+          const data = await reissueToken.json();
+          localStorage.setItem("login-token", data.token);
+          localStorage.setItem("login-refreshToken", data.refreshToken);
+          fetchActivityData();
+        } else {
+          console.error("Failed to fetch data:", response.status);
+        }
+      } catch (error) {
+        console.error("Error fetching the JSON file:", error);
+      } finally {
+        console.log("finished");
+      }
+    }
   };
+
   return (
     <Container>
       <Header>
@@ -428,26 +419,25 @@ function MusicProfilePage() {
             <Circle>
               <img src={musicProfileData?.userDetail.profilePicture} width="100%" height="100%"></img>
             </Circle>
-            <FollowBtn>Follow</FollowBtn>
+            {id !== musicProfileData?.userDetail.id && <FollowBtn>Follow</FollowBtn>}
           </ProfileLeftArea>
           <ProfileRightArea>
             <ProfileNameArea>
               <Text fontFamily="Bd" fontSize="30px" margin="0px 15px 0px 0px ">
-                {name}
+                {musicProfileData?.userDetail.username}
               </Text>
             </ProfileNameArea>
             <ProfileTagArea>
               {/* <Badge>더뮤직슬레이어</Badge> */}
-              {musicProfileData?.userDna.map((dna) => <Tag>#{dna.dnaName}</Tag>)}
-              {/* <Tag>#여유로운</Tag>
-              <Tag>#Rock</Tag>
-              <Tag>#RnB</Tag> */}
+              {musicProfileData?.userDetail.dnas.map((dna) => <Tag key={dna.dnaKey}>#{dna.dnaName}</Tag>)}
             </ProfileTagArea>
           </ProfileRightArea>
         </ProfileHeaderArea>
-        <PlaylistCardArea>
-          <PlaylistCard playlist={playlistData}></PlaylistCard>
-        </PlaylistCardArea>
+        {musicProfileData?.playlist && (
+          <PlaylistCardArea>
+            <PlaylistCardMini playlist={musicProfileData.playlist} userDetail={musicProfileData.userDetail} />
+          </PlaylistCardArea>
+        )}
         <MenuArea>
           <TabArea>
             <TabBtn
@@ -460,7 +450,10 @@ function MusicProfilePage() {
             <TabBtn
               bgColor={tabBtn === 2 ? colors.Main_Pink : colors.BG_grey}
               color={tabBtn === 2 ? colors.BG_white : colors.Font_black}
-              onClick={() => setTabBtn(2)}
+              onClick={() => {
+                setTabBtn(2);
+                fetchActivityData();
+              }}
             >
               Activity
             </TabBtn>
@@ -474,48 +467,65 @@ function MusicProfilePage() {
                   Follower
                 </Text>
                 <Text fontFamily="Rg" fontSize="15px" margin="5px">
-                  123
+                  {musicProfileData?.followers !== null ? musicProfileData?.followers.length : 0}
                 </Text>
               </FollowBox>
               <FollowBox>
                 <Text fontFamily="Bd" fontSize="15px" margin="5px">
-                  Follower
+                  Following
                 </Text>
                 <Text fontFamily="Rg" fontSize="15px" margin="5px">
-                  456
+                  {musicProfileData?.followings !== null ? musicProfileData?.followings.length : 0}
                 </Text>
               </FollowBox>
             </FollowArea>
             <BestAlbumArea>
               <Title>BestAlbum</Title>
-              <AlbumGrid AlbumData={AlbumData}></AlbumGrid>
+              {musicProfileData?.bestAlbum && <AlbumGrid AlbumData={musicProfileData?.bestAlbum}></AlbumGrid>}
             </BestAlbumArea>
             <FavoriteArtistArea>
               <Title>Favorite Artist</Title>
-              <FavoriteArtistCard FavoriteArtistData={FavoriteArtistData}></FavoriteArtistCard>
+              {musicProfileData?.favoriteArtist && (
+                <FavoriteArtistCard FavoriteArtistData={musicProfileData.favoriteArtist}></FavoriteArtistCard>
+              )}
             </FavoriteArtistArea>
-            <EditBtn onClick={() => GoToEditPage()}>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="17"
-                height="17"
-                fill="currentColor"
-                className="bi bi-pencil-square"
-                viewBox="0 0 16 16"
-              >
-                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                <path
-                  fill-rule="evenodd"
-                  d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
-                />
-              </svg>
-              <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 4px">
-                수정
-              </Text>
-            </EditBtn>
+            {musicProfileData && (
+              <EditBtn onClick={() => GoToEditPage(musicProfileData)}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="17"
+                  height="17"
+                  fill="currentColor"
+                  className="bi bi-pencil-square"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                  <path
+                    fill-rule="evenodd"
+                    d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
+                  />
+                </svg>
+                <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 4px">
+                  수정
+                </Text>
+              </EditBtn>
+            )}
           </>
         ) : (
-          <></>
+          <>
+            {" "}
+            {activityData.length > 0 ? (
+              activityData.map((albumPost) => (
+                <AlbumPostCard
+                  key={albumPost.postDetail.postId}
+                  albumPost={albumPost}
+                  // setAlbumPostList={setAlbumPostList}
+                ></AlbumPostCard>
+              ))
+            ) : (
+              <Text fontSize="15px" margin="150px 0px 0px 0px"></Text>
+            )}
+          </>
         )}
       </Body>
     </Container>

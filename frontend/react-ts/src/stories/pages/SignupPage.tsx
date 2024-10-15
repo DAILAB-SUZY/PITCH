@@ -227,7 +227,7 @@ function SignupPage() {
         </RightAlignArea>
         <CenterAlignArea>
           <InputBox name="E-Mail" placeholder="E-mail" onChange={onChangeIdHandler}></InputBox>
-          <Btn width="70px" height="33px" fontsize="15px" text="인증요청" onClick={emailcheck}></Btn>
+          <Btn width="70px" height="33px" fontSize="15px" text="인증요청" onClick={emailcheck}></Btn>
         </CenterAlignArea>
         <RightAlignArea>
           {idError && <small style={{ color: "red" }}>{idError}</small>}
@@ -239,7 +239,7 @@ function SignupPage() {
             placeholder="인증번호 입력"
             onChange={(e) => setCheckcode(e.target.value)}
           ></InputBox>
-          <Btn width="70px" height="33px" fontsize="15px" text="인증확인" onClick={codeCheck}></Btn>
+          <Btn width="70px" height="33px" fontSize="15px" text="인증확인" onClick={codeCheck}></Btn>
         </CenterAlignArea>
         <RightAlignArea>{codecheckError && <small>{codecheckError}</small>}</RightAlignArea>
         <RightAlignArea>
@@ -256,7 +256,7 @@ function SignupPage() {
         </RightAlignArea>
         <CenterAlignArea>
           <LeftAlignArea></LeftAlignArea>
-          <Btn width="100px" height="33px" fontsize="15px" text="가입" onClick={signupHandler}></Btn>
+          <Btn width="100px" height="33px" fontSize="15px" text="가입" onClick={signupHandler}></Btn>
         </CenterAlignArea>
       </SignupArea>
     </Container>

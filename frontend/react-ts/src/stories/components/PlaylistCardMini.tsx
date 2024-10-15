@@ -1,25 +1,31 @@
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-
-// PlaylistData 타입 정의
-interface SongData {
-  id: number;
-  songName: string;
-  artist: string;
-  albumCover: string;
-}
+import useStore from "../store/store";
 
 // Props 타입 정의
 interface PlaylistProps {
-  id: number;
-  userName: string;
-  profileImage: string;
-  songs: SongData[];
+  playlist: [
+    {
+      playlistId: number;
+      trackId: number;
+      title: string;
+      artistName: string;
+      trackCover: string;
+    },
+  ];
+  userDetail: {
+    id: number;
+    username: string;
+    profilePicture: string;
+    dnas: [
+      {
+        dnaKey: number;
+        dnaName: string;
+      },
+    ];
+  };
 }
 
-interface PlaylistCardProps {
-  playlist: PlaylistProps;
-}
 // 스타일 정의
 const PlaylistCardSmall = styled.div`
   background: linear-gradient(90deg, #3fc8ff, #d1dcff);
@@ -96,27 +102,34 @@ const MoreButton = styled.div`
 `;
 
 // Playlist 컴포넌트
-const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
+const PlaylistCard = ({ playlist, userDetail }: PlaylistProps) => {
+  //const { email, setEmail, name, setName, id, setId } = useStore();
   const navigate = useNavigate();
-  const GoToPlayListPage = () => {
-    navigate("/PlayListPage");
+  const GoToPlayListPage = (author: {}) => {
+    navigate("/PlayListPage", { state: author });
   };
-  const { songs, userName } = playlist;
+
+  const playlistInfo = {
+    id: userDetail.id,
+    username: userDetail.username,
+    profilePicture: userDetail.profilePicture,
+    page: 2,
+  };
   return (
     <PlaylistCardSmall>
-      <UserNameArea>{userName}'s Playlist</UserNameArea>
+      <UserNameArea>{userDetail.username}'s Playlist</UserNameArea>
       <SongList>
-        {songs.map((song) => (
-          <SongItem key={song.id}>
-            <AlbumCover src={song.albumCover} alt="Album Cover" />
+        {playlist.slice(0, 2).map((song) => (
+          <SongItem key={song.trackId}>
+            <AlbumCover src={song.trackCover} alt="Album Cover" />
             <SongInfo>
-              <SongTitle>{song.songName}</SongTitle>
-              <Artist>{song.artist}</Artist>
+              <SongTitle>{song.title}</SongTitle>
+              <Artist>{song.artistName}</Artist>
             </SongInfo>
           </SongItem>
         ))}
       </SongList>
-      <MoreButton onClick={() => GoToPlayListPage()}>더보기</MoreButton>
+      <MoreButton onClick={() => GoToPlayListPage(playlistInfo)}>더보기</MoreButton>
     </PlaylistCardSmall>
   );
 };

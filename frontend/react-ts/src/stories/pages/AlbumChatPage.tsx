@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import Nav from "../components/Nav";
-import AlbumChatBox from "../components/AlbumChatCard";
+import AlbumChatCard from "../components/AlbumChatCard";
 import { useNavigate } from "react-router-dom";
 import cover1 from "../../img/aespa.webp";
 import artistProfile from "../../img/aespaProfile.jpg";
@@ -266,9 +266,9 @@ function AlbumChatPage() {
         </ChatHeader>
         <ChatArea>
           <ChatBox>
-            {items.map((item, index) => (
-              <AlbumChatBox></AlbumChatBox>
-            ))}
+            {/* {items.map((item, index) => (
+              <AlbumChatCard></AlbumChatCard>
+            ))} */}
           </ChatBox>
         </ChatArea>
         <Line></Line>

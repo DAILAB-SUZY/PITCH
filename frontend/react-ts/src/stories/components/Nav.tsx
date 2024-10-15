@@ -9,6 +9,7 @@ import Profile_deactive from "../../img/profile.png";
 import albumChat_active from "../../img/albumChat_on.png";
 import albumChat_deactive from "../../img/albumChat.png";
 import logo from "../../img/logo.png";
+import useStore from "../store/store";
 
 interface NavProps {
   // onClick?: () => void;
@@ -61,13 +62,15 @@ const Title = styled.div<{ fontSize: string; margin: string; color: string }>`
 `;
 
 const Nav = ({ page }: NavProps) => {
+  const { email, setEmail, name, setName, id, setId } = useStore();
+
   const navigate = useNavigate();
 
   const GoToHomePage = () => {
     navigate("/Home");
   };
   const GoToMusicProfilePage = () => {
-    navigate("/MusicProfilePage");
+    navigate("/MusicProfilePage", { state: id });
   };
   const GoToAlbumChatPage = () => {
     navigate("/AlbumChatPage");
