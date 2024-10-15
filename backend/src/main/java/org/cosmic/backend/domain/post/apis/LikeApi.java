@@ -87,7 +87,7 @@ public class LikeApi {
     @Operation(summary = "앨범 포스트 좋아요 API", description = "앨범 포스트에 대해 좋아요 혹은 좋아요를 취소합니다.")
     public ResponseEntity<PostAndCommentsDetail> likePost(@PathVariable Long postId, @AuthenticationPrincipal Long userId) {
         return ResponseEntity.ok(likeService.likeOrUnlikePost(postId, userId));
-    }
+    }// TODO 이 방식으로 통일.
 
     /**
      * 좋아요를 삭제합니다.
@@ -98,7 +98,7 @@ public class LikeApi {
      */
     @DeleteMapping("")
     @ApiResponse(responseCode = "404", description = "Not Found Like")
-    @Operation(hidden = true)
+    @Operation(hidden = true,deprecated = true)
     public ResponseEntity<?> deleteLike(@PathVariable Long postId, @AuthenticationPrincipal Long userId) {
         likeService.deleteLike(userId, postId);
         return ResponseEntity.ok("성공");

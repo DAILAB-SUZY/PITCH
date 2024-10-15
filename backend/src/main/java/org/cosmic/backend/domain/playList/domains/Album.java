@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -88,13 +89,11 @@ public class Album {//앨범과 트랙은 1:N관계이며 앨범과 아티스트
         .genre(album.genre)
         .build();
   }
-
   public static List<AlbumDetail> toAlbumDetail(List<Album> album) {
     List<AlbumDetail> albumDetails = new ArrayList<>();
     album.forEach(albumDetail -> albumDetails.add(toAlbumDetail(albumDetail)));
     return albumDetails;
   }
-
   public static AlbumChatDetail toAlbumChatDetail(Album album) {
     return AlbumChatDetail.builder()
         .albumId(album.getAlbumId())
