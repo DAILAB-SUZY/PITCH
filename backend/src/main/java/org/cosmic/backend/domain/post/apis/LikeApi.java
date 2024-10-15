@@ -87,7 +87,7 @@ public class LikeApi {
     @Operation(summary = "앨범 포스트 좋아요 API", description = "앨범 포스트에 대해 좋아요 혹은 좋아요를 취소합니다.")
     public ResponseEntity<PostAndCommentsDetail> likePost(@PathVariable Long postId, @AuthenticationPrincipal Long userId) {
         return ResponseEntity.ok(likeService.likeOrUnlikePost(postId, userId));
-    }// TODO 이 방식으로 통일.
+    }
 
     /**
      * 좋아요를 삭제합니다.
