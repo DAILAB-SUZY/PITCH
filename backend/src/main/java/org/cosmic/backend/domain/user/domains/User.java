@@ -21,6 +21,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.cosmic.backend.domain.albumChat.domains.AlbumChatComment;
 import org.cosmic.backend.domain.bestAlbum.domains.UserBestAlbum;
 import org.cosmic.backend.domain.favoriteArtist.domains.FavoriteArtist;
 import org.cosmic.backend.domain.musicDna.domains.MusicDna;
@@ -107,6 +108,10 @@ public class User {
   @Builder.Default
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<UserBestAlbum> bestAlbums = new ArrayList<>();
+
+  @Builder.Default
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<AlbumChatComment> albumChatComments = new ArrayList<>();
 
   public User(Email email, String username, String password) {
     this.email = email;

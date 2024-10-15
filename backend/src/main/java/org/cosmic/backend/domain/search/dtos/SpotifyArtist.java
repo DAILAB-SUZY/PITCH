@@ -2,7 +2,7 @@ package org.cosmic.backend.domain.search.dtos;
 
 import java.util.List;
 
-public record Artist(
+public record SpotifyArtist(
     ExternalUrls external_urls,
     Followers followers,
     List<String> genres,

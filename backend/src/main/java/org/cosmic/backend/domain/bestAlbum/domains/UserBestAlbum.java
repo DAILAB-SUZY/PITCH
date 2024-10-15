@@ -40,4 +40,12 @@ public class UserBestAlbum {
 
   @Builder.Default
   private Integer score = 0;
+
+  public static UserBestAlbum from(User user, Album album, Integer score) {
+    return UserBestAlbum.builder()
+        .user(user)
+        .album(album)
+        .score(score)
+        .build();
+  }
 }

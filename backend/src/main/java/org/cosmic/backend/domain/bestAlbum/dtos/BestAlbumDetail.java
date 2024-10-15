@@ -1,5 +1,6 @@
 package org.cosmic.backend.domain.bestAlbum.dtos;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,5 +32,9 @@ public class BestAlbumDetail {
         .albumCover(bestAlbums.getAlbum().getAlbumCover())
         .score(bestAlbums.getScore())
         .build();
+  }
+
+  public static List<BestAlbumDetail> from(List<UserBestAlbum> userBestAlbums) {
+    return userBestAlbums.stream().map(BestAlbumDetail::from).toList();
   }
 }
