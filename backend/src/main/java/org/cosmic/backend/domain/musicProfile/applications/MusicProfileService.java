@@ -43,7 +43,6 @@ public class MusicProfileService {
     public MusicProfileDetail openMusicProfile(Long userId) {
         MusicProfileDetail musicProfileDetail = new MusicProfileDetail();
         musicProfileDetail.setUserDetail(User.toUserDetail(usersRepository.findByUserId(userId).get()));
-        musicProfileDetail.setUserDna(musicDnaService.getUserDna(userId));
         musicProfileDetail.setPlaylist(playlistService.open(userId));
         musicProfileDetail.setBestAlbum(bestAlbumService.open(userId));
         musicProfileDetail.setFavoriteArtist(favoriteArtistService.favoriteArtistGiveData(userId));
