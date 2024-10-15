@@ -43,7 +43,7 @@ public class MusicProfileApi {
 
     @GetMapping("/user/{userId}/musicProfile/activity")
     @ApiResponse(responseCode = "200", content = {@Content(schema=@Schema(contentMediaType = MediaType.APPLICATION_JSON_VALUE
-            ,implementation= MusicProfileDetail.class))})
+            ,implementation= ActivityDetail.class))})
     @Operation(summary = "뮤직 프로필 activity탭", description = "특정 유저의 activity만 제공")
     public ResponseEntity<ActivityDetail> activityOpen(
             @Parameter(description = "유저 id")
@@ -53,7 +53,7 @@ public class MusicProfileApi {
 
     @GetMapping("/user/{userId}/musicProfile/profile")
     @ApiResponse(responseCode = "200", content = {@Content(schema=@Schema(contentMediaType = MediaType.APPLICATION_JSON_VALUE
-            ,implementation= MusicProfileDetail.class))})
+            ,implementation= ProfileDetail.class))})
     @Operation(summary = "뮤직 프로필 profile탭", description = "특정 유저의 profile만 제공")
     public ResponseEntity<ProfileDetail> profileOpen(
             @Parameter(description = "유저 id")
