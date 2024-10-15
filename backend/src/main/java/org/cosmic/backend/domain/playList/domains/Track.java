@@ -77,7 +77,7 @@ public class Track {//여기엔 모든 노래들이 담길 것임. 담길 때 �
         .spotifyTrackId(body.id())
         .album(album)
         .artist(artist)
-        .trackCover(body.spotifyAlbum().images().get(0).url())
+        .trackCover(body.album().images().get(0).url())
         .build();
   }
 }

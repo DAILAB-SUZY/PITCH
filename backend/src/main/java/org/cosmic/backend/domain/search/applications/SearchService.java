@@ -130,7 +130,7 @@ public class SearchService {
           return albumRepository.save(
               Album.from(
                   spotifyAlbum,
-                  findAndSaveArtistBySpotifyId(spotifyAlbum.spotifyArtists().get(0).id())));
+                  findAndSaveArtistBySpotifyId(spotifyAlbum.artists().get(0).id())));
         });
   }
 
@@ -180,7 +180,7 @@ public class SearchService {
     return trackRepository.findBySpotifyTrackId(spotifyTrackId)
         .orElseGet(() -> {
           SpotifyTrack spotifyTrack = findTrackBySpotifyId(spotifyTrackId);
-          Album album = findAndSaveAlbumBySpotifyId(spotifyTrack.spotifyArtists().get(0).id());
+          Album album = findAndSaveAlbumBySpotifyId(spotifyTrack.artists().get(0).id());
           return trackRepository.save(
               Track.from(spotifyTrack, album, album.getArtist()));
         });

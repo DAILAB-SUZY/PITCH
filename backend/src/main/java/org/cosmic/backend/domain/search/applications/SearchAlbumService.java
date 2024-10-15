@@ -162,8 +162,8 @@ public class SearchAlbumService extends SearchService {
   public void saveArtistAndAlbumBySpotifyId(String spotifyAlbumId) {
     SpotifyAlbum spotifyAlbum = searchService.findAlbumBySpotifyId(
         spotifyAlbumId);
-    spotifyAlbum.spotifyArtists()
-        .set(0, searchService.findArtistBySpotifyId(spotifyAlbum.spotifyArtists().get(0).id()));
-    saveAlbumByAlbumDto(spotifyAlbum, saveArtistByArtistDto(spotifyAlbum.spotifyArtists().get(0)));
+    spotifyAlbum.artists()
+        .set(0, searchService.findArtistBySpotifyId(spotifyAlbum.artists().get(0).id()));
+    saveAlbumByAlbumDto(spotifyAlbum, saveArtistByArtistDto(spotifyAlbum.artists().get(0)));
   }
 }

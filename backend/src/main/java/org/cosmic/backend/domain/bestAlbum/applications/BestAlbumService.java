@@ -42,7 +42,7 @@ public class BestAlbumService {
   }
 
   private List<BestAlbumDetail> getBestAlbumDetailList(User user) {
-    return user.getBestAlbums().stream().map(BestAlbumDetail::new).toList();
+    return BestAlbumDetail.from(user.getBestAlbums());
   }
 
   /**

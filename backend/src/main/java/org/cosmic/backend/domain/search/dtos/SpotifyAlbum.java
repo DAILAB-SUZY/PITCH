@@ -16,7 +16,7 @@ public record SpotifyAlbum(
     Restrictions restrictions,
     String type,
     String uri,
-    List<SpotifyArtist> spotifyArtists,
+    List<SpotifyArtist> artists,
     Tracks tracks,
     List<Copyright> copyrights,
     ExternalIds external_ids,
