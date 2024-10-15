@@ -222,10 +222,19 @@ public class AlbumChatCommentService {
      * @throws NotFoundAlbumChatCommentException 댓글을 찾을 수 없을 때 발생합니다.
      */
     public List<AlbumChatCommentDetail> albumChatCommentDelete(Long albumId, Long albumChatCommentId, String sorted, int count) {
-        if (commentRepository.findById(albumChatCommentId).isEmpty()) {
-            throw new NotFoundAlbumChatCommentException();
+
+
+        AlbumChatComment parentComment = commentRepository.findById(albumChatCommentId)
+                .orElseThrow(NotFoundAlbumChatCommentException::new);
+
+        // 부모 댓글에 연관된 자식 댓글들 삭제
+        List<AlbumChatComment> childComments = commentRepository.findByParentAlbumChatCommentId(albumChatCommentId).get();
+        if (!childComments.isEmpty()) {
+            commentRepository.deleteAll(childComments);
         }
-        commentRepository.deleteById(albumChatCommentId);
+
+        // 부모 댓글 삭제
+        commentRepository.delete(parentComment);
 
         return getAlbumChatComment(albumId, sorted, count);
     }
