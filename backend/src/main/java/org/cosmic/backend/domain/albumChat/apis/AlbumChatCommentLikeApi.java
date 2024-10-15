@@ -121,7 +121,7 @@ public class AlbumChatCommentLikeApi {
     @Operation(summary = "앨범 챗 댓글 좋아요 API", description = "앨범 챗 특정 댓글에 대해 좋아요 혹은 좋아요를 취소합니다.")
     public ResponseEntity<List<AlbumChatCommentLikeDetail>> likeAlbumChat(@PathVariable Long albumId,@PathVariable Long albumChatCommentId, @AuthenticationPrincipal Long userId) {
         return ResponseEntity.ok(likeService.likeOrUnlikeAlbumChat(albumChatCommentId, userId));
-    }// TODO 이 방식으로 통일.
+    }
 
 
 
