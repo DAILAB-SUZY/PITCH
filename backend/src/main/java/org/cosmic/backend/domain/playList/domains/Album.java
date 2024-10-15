@@ -12,8 +12,10 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.Instant;
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,12 +24,9 @@ import lombok.NoArgsConstructor;
 import org.cosmic.backend.domain.albumChat.domains.AlbumChatComment;
 import org.cosmic.backend.domain.albumChat.domains.AlbumLike;
 import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumChatDetail;
-import org.cosmic.backend.domain.post.dtos.Comment.ChildCommentDetail;
-import org.cosmic.backend.domain.post.dtos.Comment.CommentDetail;
 import org.cosmic.backend.domain.post.dtos.Post.AlbumDetail;
 import org.cosmic.backend.domain.post.dtos.Post.AlbumDto;
 import org.cosmic.backend.domain.post.entities.Post;
-import org.cosmic.backend.domain.post.entities.PostComment;
 
 @Data
 @NoArgsConstructor
@@ -52,14 +51,14 @@ public class Album {//앨범과 트랙은 1:N관계이며 앨범과 아티스트
   @Column(nullable = false)
   private String albumCover;
 
-//@ManyToMany(fetch = FetchType.LAZY)
   @Builder.Default
+  //@ManyToMany(fetch = FetchType.LAZY)*/
   private String genre="balad";
 
   @Builder.Default
   @Column(nullable = false)
   private Instant createdDate = Instant.now();//발매 일
-  //TODO 애초에 저장할 때 STRING으로 2024-04-05형식으로 넣기.
+
   @OneToMany(mappedBy = "album")
   @Builder.Default
   private Set<Post> posts = new HashSet<>();
@@ -82,10 +81,10 @@ public class Album {//앨범과 트랙은 1:N관계이며 앨범과 아티스트
 
   public static AlbumDetail toAlbumDetail(Album album) {
     return AlbumDetail.builder()
-        .id(album.albumId)
-        .title(album.title)
-        .albumCover(album.albumCover)
-        .artistName(album.artist.getArtistName())
+        .id(album.getAlbumId())
+        .title(album.getTitle())
+        .albumCover(album.getAlbumCover())
+        .artistName(album.getArtist().getArtistName())
         .genre(album.genre)
         .build();
   }
@@ -96,14 +95,16 @@ public class Album {//앨범과 트랙은 1:N관계이며 앨범과 아티스트
   }
   public static AlbumChatDetail toAlbumChatDetail(Album album) {
     return AlbumChatDetail.builder()
-        .albumId(album.albumId)
-        .title(album.title)
-        .cover(album.albumCover)
+        .albumId(album.getAlbumId())
+        .title(album.getTitle())
+        .cover(album.getAlbumCover())
         .genre(album.genre.toString())
         .artistName(album.getArtist().getArtistName())
-        .comments(album.albumChatComments.stream().map(AlbumChatComment::toAlbumChatCommentDetail)
-            .toList())
-        .albumLike(album.albumLike.stream().map(AlbumLike::toAlbumChatAlbumLikeDetail).toList())
+        .comments(
+            album.getAlbumChatComments().stream().map(AlbumChatComment::toAlbumChatCommentDetail)
+                .toList())
+        .albumLike(
+            album.getAlbumLike().stream().map(AlbumLike::toAlbumChatAlbumLikeDetail).toList())
         .build();
   }
 

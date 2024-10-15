@@ -5,8 +5,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.playList.domains.Artist;
+import org.cosmic.backend.domain.playList.domains.Track;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
 import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
+import org.cosmic.backend.domain.playList.repositorys.TrackRepository;
 import org.cosmic.backend.domain.search.dtos.ArtistTrackResponse;
 import org.cosmic.backend.domain.search.dtos.SpotifySearchAlbumResponse;
 import org.cosmic.backend.domain.search.dtos.SpotifySearchArtistResponse;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.beans.Transient;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -28,6 +31,8 @@ public class SearchArtistService extends SearchService {
     private AlbumRepository albumRepository;
     @Autowired
     private ArtistRepository artistRepository;
+    @Autowired
+    private TrackRepository trackRepository;
     ObjectMapper mapper = new ObjectMapper();
     JsonNode rootNode = null;
 
@@ -49,6 +54,15 @@ public class SearchArtistService extends SearchService {
                 spotifySearchArtistResponse.setImageUrl(imagesNode.get(0).path("url").asText());
             } else {
                 spotifySearchArtistResponse.setImageUrl(null); // 필요에 따라 기본값으로 설정 가능
+            }
+
+            if(artistRepository.findBySpotifyArtistId(spotifySearchArtistResponse.getArtistId()).isEmpty())
+            {
+                artistRepository.save(Artist.builder()
+                    .artistCover(spotifySearchArtistResponse.getImageUrl())
+                    .spotifyArtistId(spotifySearchArtistResponse.getArtistId())
+                    .artistName(spotifySearchArtistResponse.getName())
+                    .build());
             }
             spotifySearchArtistResponses.add(spotifySearchArtistResponse);
         }
@@ -115,45 +129,84 @@ public class SearchArtistService extends SearchService {
     }
 
     @Transactional
-    public List<ArtistTrackResponse> searchTrackByArtistId(String accessToken, String artistId) throws JsonProcessingException
+    public List<SpotifySearchTrackResponse> searchTrackByArtistId(String accessToken, String artistId) throws JsonProcessingException
     {
-        List<ArtistTrackResponse> artistTrackResponses = new ArrayList<>();
-        List<SpotifySearchAlbumResponse>spotifySearchAlbumResponses=searchAlbumByArtistId(accessToken,artistId);
-
+        List<SpotifySearchTrackResponse> spotifySearchTrackResponses = new ArrayList<>();
+        List<SpotifySearchAlbumResponse> spotifySearchAlbumResponses=searchAlbumByArtistId(accessToken,artistId);
         List<String>albumIDs=new ArrayList<>();
         for (SpotifySearchAlbumResponse spotifySearchAlbumRespons : spotifySearchAlbumResponses) {
             albumIDs.add(spotifySearchAlbumRespons.getAlbumId());
         }
-
-        JsonNode rootNode = mapper.readTree(searchSpotifyTrackByArtistId(accessToken, albumIDs));
+        JsonNode rootNode = mapper.readTree(searchSpotifyTrackByArtistId(accessToken, albumIDs));//앨범들로 노래찾기
         JsonNode albumItem = rootNode.path("albums");
 
         for(int i = 0; i < albumItem.size(); i++) {
+            //앨범 아티스트 정보넣기
             JsonNode albumImgNode = albumItem.get(i).path("images");
             String imgUrl = albumImgNode.get(0).path("url").asText();
-
             JsonNode trackItemNode = albumItem.get(i).path("tracks").path("items");
-            for(int j=0; j<trackItemNode.size(); j++) {
-                ArtistTrackResponse artistTrackResponse = new ArtistTrackResponse();
-                artistTrackResponse.setTrackId(trackItemNode.get(j).path("id").asText());
 
-                int durationMs=trackItemNode.get(j).path("duration_ms").asInt();
+            for(int j=0; j<trackItemNode.size(); j++) {//노래정보
+                SpotifySearchTrackResponse spotifySearchTrackResponse = new SpotifySearchTrackResponse();
+                spotifySearchTrackResponse.setTrackArtist(spotifySearchAlbumResponses.get(i).getAlbumArtist());
+                spotifySearchTrackResponse.setAlbum(spotifySearchAlbumResponses.get(i));
+
+                spotifySearchTrackResponse.setTrackId(trackItemNode.get(j).path("id").asText());
+
+                int durationMs = trackItemNode.get(j).path("duration_ms").asInt();
+                Instant durationInstant = Instant.ofEpochMilli(durationMs);
                 // 밀리초를 분과 초로 변환
                 int minutes = (durationMs / 1000) / 60; // 전체 초를 60으로 나눈 값이 분
                 int seconds = (durationMs / 1000) % 60; // 나머지가 초
 
                 String formattedDuration = String.format("%d:%02d", minutes, seconds);
-                artistTrackResponse.setDuration(formattedDuration);
+                spotifySearchTrackResponse.setDuration(formattedDuration);
 
-                artistTrackResponse.setTrackName(trackItemNode.get(j).path("name").asText());
-                artistTrackResponse.setImgUrl(imgUrl);
+                spotifySearchTrackResponse.setTrackName(trackItemNode.get(j).path("name").asText());
 
-                artistTrackResponses.add(artistTrackResponse);
+                Artist artist;
+                Album album;
+
+                if(artistRepository.findBySpotifyArtistId(spotifySearchTrackResponse.getTrackArtist().getArtistId()).isPresent())
+                {
+                    artist = artistRepository.findBySpotifyArtistId(spotifySearchTrackResponse.getTrackArtist().getArtistId()).get();
+                }
+                else{
+                    artist=artistRepository.save(Artist.builder()
+                            .artistCover(spotifySearchTrackResponse.getTrackArtist().getImageUrl())
+                            .spotifyArtistId(spotifySearchTrackResponse.getTrackArtist().getArtistId())
+                            .artistName(spotifySearchTrackResponse.getTrackArtist().getName())
+                            .build());
+                }
+
+                if(albumRepository.findBySpotifyAlbumId(spotifySearchAlbumResponses.get(i).getAlbumId()).isPresent())
+                {
+                    album = albumRepository.findBySpotifyAlbumId(spotifySearchAlbumResponses.get(i).getAlbumId()).get();
+                }
+                else{
+                    album=albumRepository.save(Album.builder()
+                            .spotifyAlbumId(spotifySearchAlbumResponses.get(i).getAlbumId())
+                            .title(spotifySearchAlbumResponses.get(i).getName())
+                            .albumCover(spotifySearchAlbumResponses.get(i).getImageUrl())
+                            .createdDate(durationInstant)
+                            .artist(artist)
+                            .build());
+                }
+                if(trackRepository.findBySpotifyTrackId(spotifySearchTrackResponse.getTrackId()).isEmpty())
+                {
+                    trackRepository.save(Track.builder()
+                        .spotifyTrackId(spotifySearchTrackResponse.getTrackId())
+                        .trackCover(album.getAlbumCover())
+                        .artist(artist)
+                        .title(spotifySearchTrackResponse.getTrackName())
+                        .album(album)
+                        .build());
+                }
+                spotifySearchTrackResponses.add(spotifySearchTrackResponse);
             }
         }
-        return artistTrackResponses; // 예외 발생 시 null 반환
 
+        return spotifySearchTrackResponses; // 예외 발생 시 null 반환
     }
-
 
 }
