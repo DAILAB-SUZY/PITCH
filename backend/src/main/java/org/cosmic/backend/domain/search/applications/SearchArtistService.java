@@ -12,6 +12,7 @@ import org.cosmic.backend.domain.playList.repositorys.TrackRepository;
 import org.cosmic.backend.domain.search.dtos.ArtistTrackResponse;
 import org.cosmic.backend.domain.search.dtos.SpotifySearchAlbumResponse;
 import org.cosmic.backend.domain.search.dtos.SpotifySearchArtistResponse;
+import org.cosmic.backend.domain.search.dtos.SpotifySearchTrackResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
