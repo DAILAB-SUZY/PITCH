@@ -117,9 +117,8 @@ public class SearchService {
   public Artist findAndSaveArtistBySpotifyId(
       String spotifyArtistId) {
     return artistRepository.findBySpotifyArtistId(spotifyArtistId)
-        .orElseGet(() -> artistRepository.save(
-            Artist.from(
-                findArtistBySpotifyId(spotifyArtistId))));
+        .orElseGet(
+            () -> artistRepository.save(Artist.from(findArtistBySpotifyId(spotifyArtistId))));
   }
 
   @Transactional
@@ -178,16 +177,12 @@ public class SearchService {
   @Transactional
   public Track findAndSaveTrackBySpotifyId(
       String spotifyTrackId) {
-    SpotifyTrack spotifyTrack = findTrackBySpotifyId(spotifyTrackId);
-    Artist artist = findAndSaveArtistBySpotifyId(
-        spotifyTrack.spotifyArtists().get(0).id());
-    Album album = findAndSaveAlbumBySpotifyId(
-        spotifyTrack.spotifyAlbum().id());
-    albumRepository.findBySpotifyAlbumId(
-        spotifyTrack.spotifyAlbum().id()).orElse(albumRepository.save(
-        Album.from(spotifyTrack.spotifyAlbum(), artist)));
-    return trackRepository.findBySpotifyTrackId(spotifyTrack.id()
-    ).orElse(trackRepository.save(
-        Track.from(spotifyTrack, album, artist)));
+    return trackRepository.findBySpotifyTrackId(spotifyTrackId)
+        .orElseGet(() -> {
+          SpotifyTrack spotifyTrack = findTrackBySpotifyId(spotifyTrackId);
+          Album album = findAndSaveAlbumBySpotifyId(spotifyTrack.spotifyArtists().get(0).id());
+          return trackRepository.save(
+              Track.from(spotifyTrack, album, album.getArtist()));
+        });
   }
 }
