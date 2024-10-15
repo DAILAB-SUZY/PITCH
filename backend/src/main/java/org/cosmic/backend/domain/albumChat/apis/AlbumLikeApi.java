@@ -12,6 +12,7 @@ import org.cosmic.backend.domain.albumChat.dtos.albumlike.AlbumChatAlbumLikeDeta
 import org.cosmic.backend.domain.albumChat.exceptions.ExistAlbumLikeException;
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
+import org.cosmic.backend.domain.post.dtos.Post.PostAndCommentsDetail;
 import org.cosmic.backend.domain.post.exceptions.NotFoundLikeException;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
 import org.springframework.http.MediaType;
@@ -107,4 +108,15 @@ public class AlbumLikeApi {
             @AuthenticationPrincipal Long userId) {
         return ResponseEntity.ok(likeService.albumChatAlbumLikeDelete(albumId, userId));
     }
+
+    @PostMapping("/album/{albumId}/like")
+    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+            array = @ArraySchema(schema = @Schema(implementation = AlbumChatAlbumLikeDetail.class))))
+    @ApiResponse(responseCode = "404", description = "Not Found User or album")
+    @Operation(summary = "앨범 좋아요 API", description = "앨범에 대해 좋아요 혹은 좋아요를 취소합니다.")
+    public ResponseEntity<List<AlbumChatAlbumLikeDetail>> likeAlbum(@PathVariable Long albumId, @AuthenticationPrincipal Long userId) {
+        return ResponseEntity.ok(likeService.likeOrUnlikeAlbum(albumId, userId));
+    }
+
+
 }

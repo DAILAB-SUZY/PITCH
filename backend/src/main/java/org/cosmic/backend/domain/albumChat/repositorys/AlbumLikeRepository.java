@@ -11,4 +11,5 @@ public interface AlbumLikeRepository extends JpaRepository<AlbumLike, AlbumLikeP
     List<AlbumLike> findByAlbum_AlbumId(Long albumChatId);
     Optional<AlbumLike> findByAlbum_AlbumIdAndUser_UserId(Long albumChatId, Long userId);
     void deleteByAlbum_AlbumIdAndUser_UserId(Long albumId, Long userId);
+    Boolean existsByAlbum_AlbumIdAndUser_UserId(Long postId, Long userId);
 }

@@ -8,10 +8,15 @@ import org.cosmic.backend.domain.albumChat.repositorys.AlbumLikeRepository;
 import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
+import org.cosmic.backend.domain.post.entities.Post;
+import org.cosmic.backend.domain.post.entities.PostLike;
+import org.cosmic.backend.domain.post.exceptions.NotFoundAlbumException;
 import org.cosmic.backend.domain.post.exceptions.NotFoundLikeException;
+import org.cosmic.backend.domain.post.exceptions.NotFoundPostException;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -107,6 +112,24 @@ public class AlbumLikeService {
         }
         likeRepository.deleteByAlbum_AlbumIdAndUser_UserId(albumId, userId);
 
+        return likeRepository.findByAlbum_AlbumId(albumId)
+                .stream()
+                .map(AlbumChatAlbumLikeDetail::new)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public List<AlbumChatAlbumLikeDetail> likeOrUnlikeAlbum(Long albumId, Long userId) {
+        if (likeRepository.existsByAlbum_AlbumIdAndUser_UserId(albumId, userId)) {
+            likeRepository.deleteByAlbum_AlbumIdAndUser_UserId(albumId, userId);
+        }
+        else{
+            likeRepository.save(AlbumLike.builder()
+                    .album(albumRepository.findById(albumId).orElseThrow(NotFoundAlbumException::new))
+                    .user(usersRepository.findById(userId).orElseThrow(NotFoundUserException::new))
+                    .build());
+        }
+        likeRepository.flush();
         return likeRepository.findByAlbum_AlbumId(albumId)
                 .stream()
                 .map(AlbumChatAlbumLikeDetail::new)

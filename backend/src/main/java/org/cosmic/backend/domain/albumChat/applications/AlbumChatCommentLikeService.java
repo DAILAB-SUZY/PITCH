@@ -1,5 +1,6 @@
 package org.cosmic.backend.domain.albumChat.applications;
 
+import org.cosmic.backend.domain.albumChat.domains.AlbumChatComment;
 import org.cosmic.backend.domain.albumChat.domains.AlbumChatCommentLike;
 import org.cosmic.backend.domain.albumChat.dtos.commentlike.AlbumChatCommentLikeDetail;
 import org.cosmic.backend.domain.albumChat.exceptions.ExistCommentLikeException;
@@ -8,9 +9,15 @@ import org.cosmic.backend.domain.albumChat.exceptions.NotFoundCommentLikeExcepti
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatCommentLikeRepository;
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatCommentRepository;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
+import org.cosmic.backend.domain.post.entities.Post;
+import org.cosmic.backend.domain.post.entities.PostLike;
+import org.cosmic.backend.domain.post.exceptions.NotFoundPostException;
+import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -107,6 +114,25 @@ public class AlbumChatCommentLikeService {
         }
         albumChatCommentLikeRepository.deleteByAlbumChatComment_AlbumChatCommentIdAndUser_UserId(albumChatCommentId, userId);
 
+        return albumChatCommentLikeRepository.findByAlbumChatComment_AlbumChatCommentId(albumChatCommentId)
+                .stream()
+                .map(AlbumChatCommentLikeDetail::new)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public List<AlbumChatCommentLikeDetail> likeOrUnlikeAlbumChat(Long albumChatCommentId, Long userId) {
+        if(albumChatCommentLikeRepository.existsByAlbumChatComment_AlbumChatCommentIdAndUser_UserId(albumChatCommentId, userId)){
+            albumChatCommentLikeRepository.deleteByAlbumChatComment_AlbumChatCommentIdAndUser_UserId(albumChatCommentId, userId);
+        }
+        else{
+            albumChatCommentLikeRepository.save(AlbumChatCommentLike.builder()
+                    .albumChatComment(albumChatCommentRepository.findById(albumChatCommentId).orElseThrow(NotFoundAlbumChatCommentException::new))
+                    .user(usersRepository.findById(userId).orElseThrow(NotFoundUserException::new))
+                    .updateTime(Instant.now())
+                    .build());
+        }
+        albumChatCommentLikeRepository.flush();
         return albumChatCommentLikeRepository.findByAlbumChatComment_AlbumChatCommentId(albumChatCommentId)
                 .stream()
                 .map(AlbumChatCommentLikeDetail::new)
