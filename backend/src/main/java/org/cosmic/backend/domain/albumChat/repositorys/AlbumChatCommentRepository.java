@@ -42,4 +42,5 @@ Optional<List<AlbumChatComment>> findByAlbum_AlbumId(Long albumid);//key로 찾�
     )
     Optional<List<AlbumChatComment>> findByAlbumIdOrderByReply(@Param("albumId") Long albumId, @Param("albumChatCommentId") Long albumChatCommentId);
     Optional<List<AlbumChatComment>> findByUser_UserId(Long userId);
+    Optional<List<AlbumChatComment>> findByParentAlbumChatCommentId(Long parentAlbumChatCommentId);
 }
