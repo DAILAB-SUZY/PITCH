@@ -36,6 +36,7 @@ public class Post {
   @Column(name = "post_id") // 컬럼 이름 명시
   private Long postId;
 
+  @Column(length = 3000)
   private String content; // 내용
   private Instant updateTime;
   @Builder.Default
@@ -81,5 +82,9 @@ public class Post {
         .comments(PostComment.toCommentDetails(post.postComments))
         .likes(post.postLikes.stream().map(like -> User.toUserDetail(like.getUser())).toList())
         .build();
+  }
+
+  public boolean isAuthorId(Long userId) {
+    return getUser().isMe(userId);
   }
 }

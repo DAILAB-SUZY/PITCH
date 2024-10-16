@@ -8,11 +8,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-import org.cosmic.backend.domain.playList.dtos.ArtistDto;
-import org.cosmic.backend.domain.playList.exceptions.NotFoundArtistException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.post.applications.PostService;
-import org.cosmic.backend.domain.post.dtos.Post.AlbumDto;
 import org.cosmic.backend.domain.post.dtos.Post.CreatePost;
 import org.cosmic.backend.domain.post.dtos.Post.PostAndCommentsDetail;
 import org.cosmic.backend.domain.post.dtos.Post.PostDetail;
@@ -151,38 +148,12 @@ public class PostApi {
   @DeleteMapping("/{postId}")
   @ApiResponse(responseCode = "404", description = "Not Found Post")
   @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-      array = @ArraySchema(schema = @Schema(implementation = PostDetail.class))))
+      schema = @Schema(implementation = PostDetail.class)))
   @Operation(summary = "특정 앨범 포스트 삭제 API", description = "특정 앨범 포스트를 삭제합니다.")
-  public ResponseEntity<List<PostDetail>> deletePost(@PathVariable Long postId,
+  public ResponseEntity<String> deletePost(@PathVariable Long postId,
       @AuthenticationPrincipal Long userId) {
-    return ResponseEntity.ok(postService.deletePost(postId, userId));
+    postService.deletePost(postId, userId);
+    return ResponseEntity.ok("ok");
   }
 
-  /**
-   * 앨범 이름으로 앨범을 검색합니다.
-   *
-   * @param album 검색할 앨범의 정보를 포함한 DTO 객체
-   * @return 해당 앨범의 정보를 포함한 DTO 객체 리스트
-   * @throws NotFoundAlbumException 앨범을 찾을 수 없을 때 발생합니다.
-   */
-  @PostMapping("/searchAlbum")
-  @ApiResponse(responseCode = "404", description = "Not Found Album")
-  @Operation(hidden = true)
-  public List<AlbumDto> searchAlbum(@RequestBody AlbumDto album) {
-    return postService.searchAlbum(album.getAlbumName());
-  }
-
-  /**
-   * 아티스트 이름으로 앨범을 검색합니다.
-   *
-   * @param artist 검색할 아티스트의 정보를 포함한 DTO 객체
-   * @return 해당 아티스트의 앨범 정보를 포함한 DTO 객체 리스트
-   * @throws NotFoundArtistException 아티스트를 찾을 수 없을 때 발생합니다.
-   */
-  @PostMapping("/searchArtist")
-  @ApiResponse(responseCode = "404", description = "Not Found Artist")
-  @Operation(hidden = true)
-  public List<AlbumDto> searchArtist(@RequestBody ArtistDto artist) {
-    return postService.searchArtist(artist.getArtistName());
-  }
 }

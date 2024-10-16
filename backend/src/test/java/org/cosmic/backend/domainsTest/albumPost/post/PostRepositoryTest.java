@@ -19,9 +19,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 
-@DataJpaTest(showSql = false)
+@DataJpaTest
 @Log4j2
 public class PostRepositoryTest {
 
@@ -61,16 +60,18 @@ public class PostRepositoryTest {
 
     LongStream.range(0, 99).forEach(
         time -> makePost(user, album, "" + time, Instant.now().minus(time, ChronoUnit.DAYS),
-            time % 2 == 0 ? null : Instant.now().minus(time, ChronoUnit.HOURS)));
+            time % 5 == 0 ? null : Instant.now().minus(time, ChronoUnit.HOURS)));
 
-    Pageable pageable = PageRequest.of(0, 5,
-        Sort.by("updateTime", "createTime").descending());
-    List<Instant> a = postRepository.findAll(pageable).getContent().stream()
-        .map(post -> post.getUpdateTime() == null ? post.getCreateTime() : post.getUpdateTime())
+    Pageable pageable = PageRequest.of(0, 5);
+    List<Instant> a = postRepository.findAllWithCustomSorting(pageable).getContent().stream()
+        .map(post -> {
+          //log.info("createTime: " + post.getCreateTime() + "\tupdateTime: " + post.getUpdateTime());
+          return post.getUpdateTime() == null ? post.getCreateTime() : post.getUpdateTime();
+        })
         .toList();
 
     for (int i = 1; i < a.size(); i++) {
-      log.info(a.get(i).toString());
+      //log.info(a.get(i).toString());
       Assertions.assertTrue(a.get(i - 1).isAfter(a.get(i)));
     }
   }
