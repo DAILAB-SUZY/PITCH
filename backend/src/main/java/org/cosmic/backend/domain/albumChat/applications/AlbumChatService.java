@@ -2,7 +2,7 @@ package org.cosmic.backend.domain.albumChat.applications;
 
 import org.cosmic.backend.domain.albumChat.domains.AlbumChatComment;
 import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumChatDetail;
-import org.cosmic.backend.domain.albumChat.dtos.albumChat.UserAlbumChatDetail;
+import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumCommentDetail;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDetail;
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatException;
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatCommentRepository;
@@ -74,7 +74,7 @@ public class AlbumChatService {
     }
 
     @Transactional
-    public List<UserAlbumChatDetail> openUserAlbumChat(Long userId) {
+    public List<AlbumCommentDetail> openUserAlbumChat(Long userId) {
         return AlbumChatComment.toUserAlbumChatDetail(albumChatCommentRepository.findByUser_UserId(userId).get());
     }
 }

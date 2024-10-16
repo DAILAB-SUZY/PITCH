@@ -12,7 +12,7 @@ import org.cosmic.backend.domain.playList.domains.Album;
 @AllArgsConstructor
 public class AlbumDetail {
 
-  private Long id;
+  private Long albumId;
   private String title;
   private String albumCover;
   private String artistName;
@@ -20,7 +20,7 @@ public class AlbumDetail {
 
   public static AlbumDetail from(Album album) {
     return AlbumDetail.builder()
-        .id(album.getAlbumId())
+        .albumId(album.getAlbumId())
         .title(album.getTitle())
         .albumCover(album.getAlbumCover())
         .artistName(album.getArtist().getArtistName())
