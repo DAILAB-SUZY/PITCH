@@ -259,44 +259,6 @@ const Btn = styled.div<{ bgColor: string }>`
   box-shadow: 0 0px 5px rgba(0, 0, 0, 0.1);
 `;
 
-// interface MusicProfileData {
-//   userDetail: {
-//     id: number;
-//     username: string;
-//     profilePicture: string;
-//   };
-//   favoriteArtist: {
-//     artistName: string;
-//     albumName: string;
-//     trackName: string;
-//     artistCover: string;
-//     albumCover: string;
-//     trackCover: string;
-//   };
-//   bestAlbum: [
-//     {
-//       albumId: number;
-//       albumName: string;
-//       albumCover: string;
-//       score: number;
-//     },
-//   ];
-//   userDna: [
-//     {
-//       dnaName: string;
-//     },
-//   ];
-//   playlist: [
-//     {
-//       playlistId: number;
-//       trackId: number;
-//       title: string;
-//       artistName: string;
-//       trackCover: string;
-//     },
-//   ];
-// }
-
 function MusicProfileEditPage() {
   const [tabBtn, setTabBtn] = useState(1);
   const navigate = useNavigate();
@@ -327,7 +289,6 @@ function MusicProfileEditPage() {
               </Text>
             </ProfileNameArea>
             <ProfileTagArea>
-              <Badge>준호더뮤직슬레이어</Badge>
               <Tag>#여유로운</Tag>
               <Tag>#Rock</Tag>
               <Tag>#RnB</Tag>
@@ -335,7 +296,12 @@ function MusicProfileEditPage() {
           </ProfileRightArea>
         </ProfileHeaderArea>
         <PlaylistCardArea>
-          <PlaylistCard playlist={musicProfileData.playlist}></PlaylistCard>
+          <PlaylistCard
+            playlist={{
+              playlist: { ...musicProfileData.playlist },
+              userDetail: { ...musicProfileData.userDetail },
+            }}
+          ></PlaylistCard>
         </PlaylistCardArea>
         <MenuArea>
           <TabArea>

@@ -12,12 +12,10 @@ interface AlbumPost {
       id: number;
       username: string;
       profilePicture: string;
-      dnas: [
-        {
-          dnaKey: number;
-          dnaName: string;
-        }[],
-      ];
+      dnas: {
+        dnaKey: number;
+        dnaName: string;
+      }[];
     };
     album: {
       id: number;

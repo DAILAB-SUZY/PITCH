@@ -3,11 +3,11 @@ import { colors } from "../../styles/color";
 import ColorThief from "colorthief";
 import { useEffect, useRef, useState } from "react";
 interface SongData {
-  artistName: string;
   playlistId: number;
-  title: string;
-  trackCover: string;
   trackId: number;
+  title: string;
+  artistName: string;
+  trackCover: string;
 }
 
 interface PlaylistProps {
@@ -62,10 +62,10 @@ const SongTextArea = styled.div`
   text-overflow: ellipsis; // 글자가 넘어가면 말줄임(...) 표시
 `;
 
-const Title = styled.div<{ fontSize?: string; margin?: string }>`
+const Title = styled.div<{ fontSize?: string; margin?: string; fontFamily?: string }>`
   font-size: ${(props) => props.fontSize};
   margin: ${(props) => props.margin};
-  font-family: "Bd";
+  font-family: ${(props) => props.fontFamily};
   color: white;
   width: 100%;
   height: 100%;
@@ -115,8 +115,12 @@ const PlayListBox = ({ playlist }: PlaylistProps) => {
             ></img>
           </AlbumCover>
           <SongTextArea>
-            <Title fontSize={"20px"}>{song.title}</Title>
-            <Title fontSize={"15px"}>{song.artistName}</Title>
+            <Title fontSize={"16px"} fontFamily="Bd" margin="0px 0px 5px 0px">
+              {song.title}
+            </Title>
+            <Title fontSize={"14px"} fontFamily="Rg">
+              {song.artistName}
+            </Title>
           </SongTextArea>
         </SongArea>
       ))}

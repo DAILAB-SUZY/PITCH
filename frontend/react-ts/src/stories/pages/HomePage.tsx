@@ -139,12 +139,10 @@ function HomePage() {
         id: number;
         username: string;
         profilePicture: string;
-        dnas: [
-          {
-            dnaKey: number;
-            dnaName: string;
-          }[],
-        ];
+        dnas: {
+          dnaKey: number;
+          dnaName: string;
+        }[];
       };
       album: {
         id: number;
@@ -155,44 +153,36 @@ function HomePage() {
       };
     };
 
-    comments: [
-      {
+    comments: {
+      id: number;
+      content: string;
+      createdAt: number;
+      updatedAt: number;
+      likes: {
+        id: number;
+        username: string;
+        profilePicture: string;
+      }[];
+      childComments: {
         id: number;
         content: string;
-        createdAt: number;
-        updatedAt: number;
-        likes: [
-          {
-            id: number;
-            username: string;
-            profilePicture: string;
-          },
-        ];
-        childComments: [
-          {
-            id: number;
-            content: string;
-            author: {
-              id: number;
-              username: string;
-              profilePicture: string;
-            };
-          },
-        ];
         author: {
           id: number;
           username: string;
           profilePicture: string;
         };
-      },
-    ];
-    likes: [
-      {
+      }[];
+      author: {
         id: number;
         username: string;
         profilePicture: string;
-      },
-    ];
+      };
+    }[];
+    likes: {
+      id: number;
+      username: string;
+      profilePicture: string;
+    }[];
   }
   const PlaylistUrl = `${server}/api/FollowerPlaylist/user/1`;
 
@@ -374,7 +364,7 @@ function HomePage() {
               albumPosts.map((albumPost) => (
                 <AlbumPostCard
                   // key={albumPost.postDetail.postId}
-                  albumPostId={albumPost.postDetail.postId}
+                  albumPost={albumPost}
                   // setAlbumPostList={setAlbumPostList}
                 ></AlbumPostCard>
               ))

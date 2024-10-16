@@ -178,6 +178,7 @@ const Line = styled.div`
 const ContentInput = styled.textarea`
   width: 100%;
   min-height: 200px;
+  height: auto;
   background-color: ${colors.BG_grey};
   font-size: 15px;
   border: 0;

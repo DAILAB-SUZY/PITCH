@@ -7,7 +7,7 @@ import useAlbumPostStore from "../store/albumPostStore";
 
 const AlbumPostContainer = styled.div`
   width: 350px;
-  margin: 20px 0px;
+  margin: 10px 0px;
   height: auto;
   background-color: ${colors.BG_grey};
   border-radius: 10px;
@@ -160,7 +160,7 @@ const PostContentArea = styled.div`
 
   /* white-space: nowrap; */
   overflow: hidden;
-  /* text-overflow: ellipsis; */
+  text-overflow: ellipsis;
 
   flex-direction: column;
   justify-content: space-between;
@@ -180,79 +180,76 @@ const ButtonArea = styled.div`
   margin: 0 10 0 10px;
 `;
 
-// interface AlbumPostProps {
-//   albumPost: {
-//     postDetail: {
-//       postId: number;
-//       content: string;
-//       createAt: number;
-//       updateAt: number;
-//       author: {
-//         id: number;
-//         username: string;
-//         profilePicture: string;
-//         dnas: [
-//           {
-//             dnaKey: number;
-//             dnaName: string;
-//           }[],
-//         ];
-//       };
-//       album: {
-//         id: number;
-//         title: string;
-//         albumCover: string;
-//         artistName: string;
-//         genre: string;
-//       };
-//     };
-
-//     comments: {
-//       id: number;
-//       content: string;
-//       createdAt: number;
-//       updatedAt: number;
-//       likes: {
-//         id: number;
-//         username: string;
-//         profilePicture: string;
-//       }[];
-//       childComments: {
-//         id: number;
-//         content: string;
-//         author: {
-//           id: number;
-//           username: string;
-//           profilePicture: string;
-//         };
-//       }[];
-//       author: {
-//         id: number;
-//         username: string;
-//         profilePicture: string;
-//       };
-//     }[];
-//     likes: {
-//       id: number;
-//       username: string;
-//       profilePicture: string;
-//     }[];
-//   };
-// }
 interface AlbumPostProps {
-  albumPostId: number;
+  albumPost: {
+    postDetail: {
+      postId: number;
+      content: string;
+      createAt: number;
+      updateAt: number;
+      author: {
+        id: number;
+        username: string;
+        profilePicture: string;
+        dnas: {
+          dnaKey: number;
+          dnaName: string;
+        }[];
+      };
+      album: {
+        id: number;
+        title: string;
+        albumCover: string;
+        artistName: string;
+        genre: string;
+      };
+    };
+
+    comments: {
+      id: number;
+      content: string;
+      createdAt: number;
+      updatedAt: number;
+      likes: {
+        id: number;
+        username: string;
+        profilePicture: string;
+      }[];
+      childComments: {
+        id: number;
+        content: string;
+        author: {
+          id: number;
+          username: string;
+          profilePicture: string;
+        };
+      }[];
+      author: {
+        id: number;
+        username: string;
+        profilePicture: string;
+      };
+    }[];
+    likes: {
+      id: number;
+      username: string;
+      profilePicture: string;
+    }[];
+  };
 }
 
-const AlbumPost = ({ albumPostId }: AlbumPostProps) => {
-  // const contentHeight = useRef<HTMLDivElement>(null);
-  // const textHeight = useRef<HTMLDivElement>(null);
-  const { email, setEmail, name, setName, id, setId } = useStore();
-  const { getAlbumPostById } = useAlbumPostStore();
-  const albumPost = getAlbumPostById(albumPostId);
+// interface AlbumPostProps {
+//   albumPostId: number;
+// }
 
+const AlbumPost = (albumPostData: AlbumPostProps) => {
+  const { email, setEmail, name, setName, id, setId } = useStore();
+  const albumPost = albumPostData.albumPost;
   const navigate = useNavigate();
   const GoToAlbumPostPage = () => {
-    navigate("/AlbumPostPage", { state: { albumPostId } });
+    console.log("__postid");
+    console.log(albumPost.postDetail.postId);
+    navigate("/AlbumPostPage", { state: albumPost.postDetail.postId });
   };
 
   const GoToMusicProfilePage = () => {
@@ -266,12 +263,14 @@ const AlbumPost = ({ albumPostId }: AlbumPostProps) => {
 
   useEffect(() => {
     const updateTimeAgo = () => {
-      if (CreateTime && UpdatedTime) {
+      if (CreateTime) {
         if (UpdatedTime === null) {
           const time = formatTimeAgo(CreateTime);
+          console.log("수정안됨");
           setTimeAgo(time);
         } else {
           const time = formatTimeAgo(UpdatedTime);
+          console.log("수정됨");
           setTimeAgo(time);
         }
       }
@@ -424,9 +423,7 @@ const AlbumPost = ({ albumPostId }: AlbumPostProps) => {
           </ProfileArea>
           <PostUploadTime> {timeAgo}</PostUploadTime>
         </PostHeaderArea>
-        <PostContentArea onClick={() => GoToAlbumPostPage()}>
-          <p>{albumPost?.postDetail.content}</p>
-        </PostContentArea>
+        <PostContentArea onClick={() => GoToAlbumPostPage()}>{albumPost?.postDetail.content}</PostContentArea>
         {/* <PostContentArea ref={contentHeight}>
           <p ref={textHeight}>{albumPost.content}</p>
         </PostContentArea> */}
@@ -444,7 +441,7 @@ const AlbumPost = ({ albumPostId }: AlbumPostProps) => {
             onClick={() => changePostLike()}
           >
             <path
-              fill-rule="evenodd"
+              fillRule="evenodd"
               d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"
             />
           </svg>

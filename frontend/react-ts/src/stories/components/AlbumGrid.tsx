@@ -15,6 +15,7 @@ const BestAlbumArea = styled.div`
   display: flex;
   flex-direction: row;
   overflow-x: scroll;
+  box-sizing: border-box;
   padding: 20px;
 `;
 

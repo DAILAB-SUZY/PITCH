@@ -2,10 +2,11 @@ import styled from "styled-components";
 import { colors } from "../../styles/color";
 import { useEffect, useState } from "react";
 const ChatCardContainer = styled.div`
-  width: 90vw;
+  width: 350px;
   height: 100%;
   padding: 10px;
-  margin-bottom: 20px;
+  box-sizing: border-box;
+  margin: 10px 0px;
   background-color: ${colors.BG_grey};
   border-radius: 12px;
   display: flex;
@@ -61,7 +62,6 @@ const ProfileImage = styled.div`
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background-color: ${colors.Main_Pink};
 `;
 
 const ButtonArea = styled.div`
@@ -74,40 +74,62 @@ const ButtonArea = styled.div`
 
 interface commentProps {
   comment: {
-    id: number;
-    content: string;
-    createAt: number;
-    updateAt: number;
-    likes: [
-      {
-        id: number;
-        username: string;
-        profilePicture: string;
-      },
-    ];
-    childComments: [
-      {
-        id: number;
-        content: string;
+    albumDetail: {
+      albumId: number;
+      title: string;
+      albumCover: string;
+      artistName: string;
+      genre: string;
+    };
+    albumChatCommentDetail: {
+      albumChatCommentId: number;
+      content: string;
+      createAt: number;
+      updateAt: number;
+      likes: {
         author: {
           id: number;
           username: string;
           profilePicture: string;
+          dnas: {
+            dnaKey: number;
+            dnaName: string;
+          }[];
         };
-      },
-    ];
-    author: {
-      id: number;
-      username: string;
-      profilePicture: string;
+        updateAt: string;
+      }[];
+      comments: {
+        albumChatCommentId: number;
+        content: string;
+        createAt: string;
+        updateAt: string;
+        author: {
+          id: number;
+          username: string;
+          profilePicture: string;
+          dnas: {
+            dnaKey: number;
+            dnaName: string;
+          }[];
+        };
+      }[];
+      author: {
+        id: number;
+        username: string;
+        profilePicture: string;
+        dnas: {
+          dnaKey: number;
+          dnaName: string;
+        }[];
+      };
     };
   };
 }
 
-const AlbumChatCard = ({ comment }: commentProps) => {
+const AlbumChatCardWithAlbum = ({ comment }: commentProps) => {
   ////// Post 시간 계산 //////
-  const CreateTime = comment?.createAt;
-  const UpdatedTime = comment?.updateAt;
+  const CreateTime = comment?.albumChatCommentDetail.createAt;
+  const UpdatedTime = comment?.albumChatCommentDetail.updateAt;
   const [timeAgo, setTimeAgo] = useState<string>("");
 
   useEffect(() => {
@@ -151,15 +173,15 @@ const AlbumChatCard = ({ comment }: commentProps) => {
     <ChatCardContainer>
       <ProfileArea>
         <ProfileImage>
-          <img src={comment.author.profilePicture}></img>
+          <img src={comment.albumChatCommentDetail.author.profilePicture}></img>
         </ProfileImage>
         <ProfileTextArea>
-          <ProfileName>{comment.author.username}</ProfileName>
+          <ProfileName>{comment.albumChatCommentDetail.author.username}</ProfileName>
           <PostUploadTime> {timeAgo} </PostUploadTime>
         </ProfileTextArea>
       </ProfileArea>
       <ChatCardBody>
-        <Text fontSize="15px">{comment.content}</Text>
+        <Text fontSize="15px">{comment.albumChatCommentDetail.content}</Text>
       </ChatCardBody>
       <ButtonArea>
         <svg
@@ -167,7 +189,9 @@ const AlbumChatCard = ({ comment }: commentProps) => {
           width="14"
           height="14"
           fill={
-            comment.likes.some((like: any) => like.id === comment.author.id)
+            comment.albumChatCommentDetail.likes.some(
+              (like: any) => like.id === comment.albumChatCommentDetail.author.id
+            )
               ? colors.Button_active
               : colors.Button_deactive
           }
@@ -175,12 +199,12 @@ const AlbumChatCard = ({ comment }: commentProps) => {
           viewBox="0 0 16 16"
         >
           <path
-            fill-rule="evenodd"
+            fillRule="evenodd"
             d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"
           />
         </svg>
         <Text fontSize="14px" color="grey" margin="0px 20px 0px 5px">
-          좋아요 {comment.likes.length}개
+          좋아요 {comment.albumChatCommentDetail.likes.length}개
         </Text>
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -195,11 +219,12 @@ const AlbumChatCard = ({ comment }: commentProps) => {
           <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6m0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5" />
         </svg>
         <Text fontSize="14px" color="grey" margin="0px 0px 0px 5px">
-          답글 {comment.childComments.length}개
+          {/* 답글 {comment.albumChatCommentDetail.comments.length}개 */}
+          답글 ??개
         </Text>
       </ButtonArea>
     </ChatCardContainer>
   );
 };
 
-export default AlbumChatCard;
+export default AlbumChatCardWithAlbum;

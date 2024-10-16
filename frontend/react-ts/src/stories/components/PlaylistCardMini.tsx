@@ -34,7 +34,7 @@ const PlaylistCardSmall = styled.div<{ gradient?: string }>`
     gradient || "linear-gradient(to top right, #989898, #f3f3f3)"};
   border-radius: 12px;
   padding: 15px;
-  width: 330px;
+  width: 320px;
   height: 190px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   color: white;

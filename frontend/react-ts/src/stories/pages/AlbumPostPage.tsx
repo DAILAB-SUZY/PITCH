@@ -210,6 +210,8 @@ const PostContentArea = styled.div`
 
   /* white-space: nowrap; */
   /* text-overflow: ellipsis; */
+  white-space: pre-wrap;
+  line-height: 150%;
 
   flex-direction: column;
   justify-content: space-between;
@@ -299,9 +301,12 @@ interface albumPost {
 
 function AlbumPostPage() {
   const location = useLocation();
-  const { getAlbumPostById, replaceAlbumPostById } = useAlbumPostStore();
   const [albumPost, setAlbumPost] = useState<albumPost>();
-  const albumPostId = location.state.albumPostId;
+  const [albumPostId, setAlbumPostId] = useState(location.state);
+  const server = "http://203.255.81.70:8030";
+  const reissueTokenUrl = `${server}/api/auth/reissued`;
+  const [token, setToken] = useState(localStorage.getItem("login-token"));
+  const [refreshToken, setRefreshToken] = useState(localStorage.getItem("login-refreshToken"));
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
@@ -329,17 +334,53 @@ function AlbumPostPage() {
     navigate("/AlbumPostEditPage", { state: album });
   };
 
-  // post 가져오기
-  useEffect(() => {
-    console.log("setting albumpost");
-    if (location.state) {
-      console.log(`post Id :`);
-      console.log(albumPostId);
-      const albumPostData = getAlbumPostById(albumPostId);
-      setAlbumPost(albumPostData);
-      console.log("albumpost::");
-      console.log(albumPost);
+  const fetchAlbumPost = async () => {
+    console.log("start fetching albumPost...");
+    let albumPostUrl = `${server}/api/album/post/${albumPostId}`;
+    console.log(albumPostUrl);
+    if (token) {
+      try {
+        console.log("fetching...");
+        const response = await fetch(albumPostUrl, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        console.log("fetching...complete");
+
+        if (response.ok) {
+          console.log("set Post");
+          const data = await response.json();
+          console.log(data);
+          setAlbumPost(data); // 기존 데이터에 새로운 데이터를 추가
+        } else if (response.status === 401) {
+          console.log("reissuing Token");
+          const reissueToken = await fetch(reissueTokenUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Refresh-Token": `${refreshToken}`,
+            },
+          });
+          const data = await reissueToken.json();
+          localStorage.setItem("login-token", data.token);
+          localStorage.setItem("login-refreshToken", data.refreshToken);
+          fetchAlbumPost();
+        } else {
+          console.error("Failed to fetch AlbumPost data:", response.status);
+        }
+      } catch (error) {
+        console.error("Error fetching the JSON file:", error);
+      } finally {
+        console.log("fetching Complete: ", albumPost);
+      }
     }
+  };
+
+  useEffect(() => {
+    fetchAlbumPost();
   }, []);
 
   // Post 시간 계산에 필요한 상태 관리
@@ -403,11 +444,6 @@ function AlbumPostPage() {
   }, [isPostLiked, likesCount]);
 
   // 좋아요 상태 변경 함수
-  const server = "http://203.255.81.70:8030";
-  const reissueTokenUrl = `${server}/api/auth/reissued`;
-  const [token, setToken] = useState(localStorage.getItem("login-token"));
-  const [refreshToken, setRefreshToken] = useState(localStorage.getItem("login-refreshToken"));
-
   const changePostLike = async () => {
     console.log("changing Like");
     if (albumPost) {
@@ -448,7 +484,7 @@ function AlbumPostPage() {
         if (response.ok) {
           const data = await response.json();
           setAlbumPost(data);
-          replaceAlbumPostById(albumPostId, data);
+          // replaceAlbumPostById(albumPostId, data);
           if (data.likes.some((like: any) => like.id === id)) {
             console.log("like 추가");
           } else {
@@ -485,7 +521,6 @@ function AlbumPostPage() {
   };
 
   // 삭제요청
-
   const deletePost = async () => {
     const PostDeleteUrl = server + "/api/album/post/" + (albumPost ? albumPost.postDetail.postId : "");
     if (token) {
