@@ -2,16 +2,22 @@ package org.cosmic.backend.domain.search.applications;
 
 import jakarta.transaction.Transactional;
 import java.util.List;
+import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.auth.applications.CreateSpotifyToken;
 import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.playList.domains.Artist;
 import org.cosmic.backend.domain.playList.domains.Track;
+import org.cosmic.backend.domain.playList.dtos.TrackDetail;
+import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
 import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
 import org.cosmic.backend.domain.playList.repositorys.TrackRepository;
 import org.cosmic.backend.domain.search.dtos.SpotifyAlbum;
 import org.cosmic.backend.domain.search.dtos.SpotifyArtist;
+import org.cosmic.backend.domain.search.dtos.SpotifyRecommend;
 import org.cosmic.backend.domain.search.dtos.SpotifyTrack;
+import org.cosmic.backend.domain.user.domains.User;
+import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -22,6 +28,7 @@ import org.springframework.web.client.RestTemplate;
 
 
 @Service
+@Log4j2
 public class SearchService {
 
   @Autowired
@@ -30,6 +37,8 @@ public class SearchService {
   private TrackRepository trackRepository;
   @Autowired
   private ArtistRepository artistRepository;
+  @Autowired
+  private UsersRepository usersRepository;
 
   public HttpHeaders setting(String accessToken, HttpHeaders headers) {
     headers.add("Authorization", "Bearer " + accessToken);
@@ -184,5 +193,24 @@ public class SearchService {
           return trackRepository.save(
               Track.from(spotifyTrack, album, album.getArtist()));
         });
+  }
+
+  private SpotifyRecommend getRecommendationByArtistAndTracks(String spotifyArtistId,
+      List<String> spotifyTrackIds) {
+    String url = "https://api.spotify.com/v1/recommendations?limit=5&market=KR&seed_artists={seedArtistId}&seed_tracks={seedTrackIds}";
+    RestTemplate rest = new RestTemplate();
+    return rest.exchange(url, HttpMethod.GET, getEntity(), SpotifyRecommend.class, spotifyArtistId,
+        String.join(",", spotifyTrackIds)).getBody();
+  }
+
+  @Transactional
+  public List<TrackDetail> getRecommendations(Long userId) {
+    User user = usersRepository.findById(userId).orElseThrow(NotFoundUserException::new);
+
+    SpotifyRecommend spotifyRecommend = getRecommendationByArtistAndTracks(
+        user.getFavoriteArtistId(), user.getPlaylistTracksIds());
+
+    return spotifyRecommend.tracks().stream()
+        .map(track -> TrackDetail.from(findAndSaveTrackBySpotifyId(track.id()))).toList();
   }
 }
