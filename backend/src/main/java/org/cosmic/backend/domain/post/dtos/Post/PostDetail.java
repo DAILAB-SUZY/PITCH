@@ -26,8 +26,8 @@ public class PostDetail {
     return PostDetail.builder()
         .postId(post.getPostId())
         .content(post.getContent())
-        .createAt(post.getCreate_time())
-        .updateAt(post.getUpdate_time())
+        .createAt(post.getCreateTime())
+        .updateAt(post.getUpdateTime())
         .author(UserDetail.from(post.getUser()))
         .album(AlbumDetail.from(post.getAlbum()))
         .build();

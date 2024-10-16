@@ -166,4 +166,8 @@ public class User {
       this.create_time = Instant.now();  // 저장되기 전에 create_time이 null이면 현재 시간으로 설정
     }
   }
+
+  public boolean isMe(Long userId) {
+    return userId.equals(this.userId);
+  }
 }

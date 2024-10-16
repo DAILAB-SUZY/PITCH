@@ -3,87 +3,54 @@ package org.cosmic.backend.domain.post.applications;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import org.cosmic.backend.domain.auth.applications.CreateSpotifyToken;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.playList.domains.Album;
-import org.cosmic.backend.domain.playList.exceptions.NotFoundArtistException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.playList.exceptions.NotMatchAlbumException;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
-import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
-import org.cosmic.backend.domain.post.dtos.Post.AlbumDto;
 import org.cosmic.backend.domain.post.dtos.Post.PostAndCommentsDetail;
+import org.cosmic.backend.domain.post.dtos.Post.PostDetail;
 import org.cosmic.backend.domain.post.entities.Post;
 import org.cosmic.backend.domain.post.exceptions.NotFoundAlbumException;
 import org.cosmic.backend.domain.post.exceptions.NotFoundPostException;
 import org.cosmic.backend.domain.post.exceptions.NotMatchUserException;
 import org.cosmic.backend.domain.post.repositories.PostRepository;
-import org.cosmic.backend.domain.search.applications.SearchAlbumService;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.cosmic.backend.domain.post.dtos.Post.PostDetail;
 
 /**
  * 게시물(Post) 관련 비즈니스 로직을 처리하는 서비스 클래스입니다. 게시물 조회, 생성, 수정, 삭제 및 앨범/아티스트 검색 기능을 제공합니다.
  */
 @Service
+@RequiredArgsConstructor
+@Log4j2
 public class PostService {
 
   private final PostRepository postRepository;
   private final UsersRepository userRepository;
-  private final ArtistRepository artistRepository;
   private final AlbumRepository albumRepository;
-  private final SearchAlbumService searchAlbumService;
 
-  CreateSpotifyToken createSpotifyToken = new CreateSpotifyToken();
-
-  /**
-   * PostService의 생성자입니다.
-   *
-   * @param postRepository   게시물 데이터를 처리하는 리포지토리
-   * @param userRepository   사용자 데이터를 처리하는 리포지토리
-   * @param artistRepository 아티스트 데이터를 처리하는 리포지토리
-   * @param albumRepository  앨범 데이터를 처리하는 리포지토리
-   */
-  public PostService(PostRepository postRepository, UsersRepository userRepository,
-      ArtistRepository artistRepository, AlbumRepository albumRepository,
-      SearchAlbumService searchAlbumService) {
-    this.postRepository = postRepository;
-    this.userRepository = userRepository;
-    this.artistRepository = artistRepository;
-    this.albumRepository = albumRepository;
-    this.searchAlbumService = searchAlbumService;
+  private List<PostAndCommentsDetail> getUsersPosts(Long userId, Pageable pageable) {
+    return postRepository.findByUser_UserId(userId, pageable).map(Post::toPostAndCommentDetail)
+        .getContent();
   }
 
-  /**
-   * 특정 사용자의 모든 게시물을 조회합니다.
-   *
-   * @param userId 게시물을 조회할 사용자의 ID
-   * @return 사용자의 모든 게시물을 포함한 요청 객체 리스트
-   * @throws NotFoundUserException 사용자를 찾을 수 없을 때 발생합니다.
-   */
-  public List<PostDetail> getAllPosts(Long userId) {
-    User user = userRepository.findById(userId).orElseThrow(NotFoundUserException::new);
-
-    return user.getPosts()
-        .stream()
-        .map(Post::toPostDetail)
-        .toList();
+  private Pageable getPostPageable(Integer page, Integer limit) {
+    return PageRequest.of(page, limit);
   }
 
   public List<PostAndCommentsDetail> getPosts(Long userId, Integer page, Integer limit) {
-    Pageable pageable = PageRequest.of(page, limit);
+    Pageable pageable = getPostPageable(page, limit);
     if (userId != null) {
-      return postRepository.findByUser_UserId(userId, pageable).map(Post::toPostAndCommentDetail)
-          .getContent();
+      return getUsersPosts(userId, pageable);
     }
-    Page<PostAndCommentsDetail> postDetails = postRepository.findAll(pageable)
-        .map(Post::toPostAndCommentDetail);
-    return postDetails.getContent();
+    return postRepository.findAllWithCustomSorting(pageable)
+        .getContent().stream().map(Post::toPostAndCommentDetail).toList();
   }
 
   /**
@@ -121,6 +88,12 @@ public class PostService {
     return Post.toPostAndCommentDetail(post);
   }
 
+  private void validPostAuthor(Post post, Long userId) {
+    if (!post.isAuthorId(userId)) {
+      throw new NotMatchUserException();
+    }
+  }
+
   /**
    * 기존 게시물을 수정합니다.
    *
@@ -129,11 +102,9 @@ public class PostService {
   @Transactional
   public PostAndCommentsDetail updatePost(String content, Long postId, Long userId) {
     Post updatedPost = postRepository.findById(postId).orElseThrow(NotFoundPostException::new);
-    if (!updatedPost.getUser().getUserId().equals(userId)) {
-      throw new NotMatchUserException();
-    }
+    validPostAuthor(updatedPost, userId);
     updatedPost.setContent(content);
-    updatedPost.setUpdate_time(Instant.now());
+    updatedPost.setUpdateTime(Instant.now());
     return Post.toPostAndCommentDetail(postRepository.save(updatedPost));
   }
 
@@ -144,58 +115,22 @@ public class PostService {
    * @throws NotFoundPostException 게시물을 찾을 수 없을 때 발생합니다.
    */
   @Transactional
-  public List<PostDetail> deletePost(Long postId, Long userId) {
+  public void deletePost(Long postId, Long userId) {
     Post post = postRepository.findById(postId).orElseThrow(NotFoundPostException::new);
-    if (!post.getUser().getUserId().equals(userId)) {
-      throw new NotMatchUserException();
-    }
+    validPostAuthor(post, userId);
     postRepository.delete(post);
-    return postRepository.findAll(PageRequest.of(0, 10)).map(Post::toPostDetail).getContent();
-  }
-
-  /**
-   * 앨범 이름으로 앨범을 검색합니다.
-   *
-   * @param albumName 검색할 앨범 이름
-   * @return 해당 앨범의 정보를 포함한 DTO 객체 리스트
-   * @throws NotFoundAlbumException 앨범을 찾을 수 없을 때 발생합니다.
-   */
-  public List<AlbumDto> searchAlbum(String albumName) {
-    if (albumRepository.findAllByTitle(albumName).isEmpty()) {
-      throw new NotFoundAlbumException();
-    }
-    return albumRepository.findAllByTitle(albumName)
-        .stream()
-        .map(Album::toAlbumDto)
-        .toList();
-  }
-
-  /**
-   * 아티스트 이름으로 앨범을 검색합니다.
-   *
-   * @param artistName 검색할 아티스트 이름
-   * @return 해당 아티스트의 앨범 정보를 포함한 DTO 객체 리스트
-   * @throws NotFoundArtistException 아티스트를 찾을 수 없을 때 발생합니다.
-   */
-  public List<AlbumDto> searchArtist(String artistName) {
-    if (artistRepository.findByArtistName(artistName).isEmpty()) {
-      throw new NotFoundArtistException();
-    }
-    return albumRepository.findAllByArtist_ArtistName(artistName)
-        .stream()
-        .map(Album::toAlbumDto)
-        .toList();
   }
 
   @Transactional
   public List<PostDetail> openPost(Long userId) {
-    List<PostDetail> postDetails=new ArrayList<>();
-    List<Post> posts=new ArrayList<>();
-    posts=postRepository.findByUser_UserId(userId);
-    for(int i=0;i<posts.size();i++) {
-      PostDetail postDetail= new PostDetail(posts.get(i).getPostId(),posts.get(i).getContent(),
-        posts.get(i).getCreate_time(),posts.get(i).getUpdate_time(),
-          User.toUserDetail(userRepository.findById(userId).get()),Album.toAlbumDetail(posts.get(i).getAlbum()));//user album
+    List<PostDetail> postDetails = new ArrayList<>();
+    List<Post> posts = new ArrayList<>();
+    posts = postRepository.findByUser_UserId(userId);
+    for (int i = 0; i < posts.size(); i++) {
+      PostDetail postDetail = new PostDetail(posts.get(i).getPostId(), posts.get(i).getContent(),
+          posts.get(i).getCreateTime(), posts.get(i).getUpdateTime(),
+          User.toUserDetail(userRepository.findById(userId).get()),
+          Album.toAlbumDetail(posts.get(i).getAlbum()));//user album
 
       postDetails.add(postDetail);
     }
