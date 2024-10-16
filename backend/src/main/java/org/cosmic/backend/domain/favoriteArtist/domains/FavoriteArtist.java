@@ -1,6 +1,13 @@
 package org.cosmic.backend.domain.favoriteArtist.domains;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,34 +24,39 @@ import org.cosmic.backend.domain.user.domains.User;
 @AllArgsConstructor
 @Entity
 @Builder
-@Table(name="`FavoriteArtist`")
+@Table(name = "`FavoriteArtist`")
 @IdClass(FavoriteArtistPK.class)
 public class FavoriteArtist {
-    @Id
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "artist_id")
-    private Artist artist;
 
-    @Id
-    @OneToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+  @Id
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "artist_id")
+  private Artist artist;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Track track;
+  @Id
+  @OneToOne
+  @JoinColumn(name = "user_id")
+  private User user;
 
-    @Builder.Default
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Album album = new Album(); // @Builder.Default 추가
+  @ManyToOne(fetch = FetchType.LAZY)
+  private Track track;
 
-    public static FavoriteArtistDetail toFavoriteArtistDto(FavoriteArtist favoriteArtist){
-        return FavoriteArtistDetail.builder()
-                .artistName(favoriteArtist.artist.getArtistName())
-                .albumCover(favoriteArtist.album.getAlbumCover())
-                .trackCover(favoriteArtist.track.getTrackCover())
-                .artistCover(favoriteArtist.artist.getArtistCover())
-                .albumName(favoriteArtist.track.getAlbum().getTitle())
-                .trackName(favoriteArtist.track.getTitle())
-                .build();
-    }
+  @Builder.Default
+  @ManyToOne(fetch = FetchType.LAZY)
+  private Album album = new Album(); // @Builder.Default 추가
+
+  public static FavoriteArtistDetail toFavoriteArtistDto(FavoriteArtist favoriteArtist) {
+    return FavoriteArtistDetail.builder()
+        .artistName(favoriteArtist.artist.getArtistName())
+        .albumCover(favoriteArtist.album.getAlbumCover())
+        .trackCover(favoriteArtist.track.getTrackCover())
+        .artistCover(favoriteArtist.artist.getArtistCover())
+        .albumName(favoriteArtist.track.getAlbum().getTitle())
+        .trackName(favoriteArtist.track.getTitle())
+        .build();
+  }
+
+  public String getSpotifyArtistId() {
+    return getArtist().getSpotifyArtistId();
+  }
 }
