@@ -87,4 +87,9 @@ public class Post {
   public boolean isAuthorId(Long userId) {
     return getUser().isMe(userId);
   }
+
+  public static List<PostAndCommentsDetail> toPostAndCommentDetail(List<Post> posts) {
+    return posts.stream().map(Post::toPostAndCommentDetail).toList();
+  }
+
 }
