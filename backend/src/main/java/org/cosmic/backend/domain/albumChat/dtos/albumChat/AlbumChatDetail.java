@@ -33,4 +33,20 @@ public class AlbumChatDetail {
         this.albumLike=album.getAlbumLike().stream().map(AlbumLike::toAlbumChatAlbumLikeDetail).toList();
     }
 
+    public static AlbumChatDetail from(AlbumChatComment albumChatComment) {
+        return AlbumChatDetail.builder()
+                .albumId(albumChatComment.getAlbum().getAlbumId())
+                .cover(albumChatComment.getAlbum().getAlbumCover())
+                .genre(albumChatComment.getAlbum().getGenre())
+                .title(albumChatComment.getAlbum().getTitle())
+                .artistName(albumChatComment.getAlbum().getArtist().getArtistName())
+                .comments(albumChatComment.getAlbum().getAlbumChatComments().stream().map(AlbumChatComment::toAlbumChatCommentDetail).toList())
+                .albumLike(albumChatComment.getAlbum().getAlbumLike().stream().map(AlbumLike::toAlbumChatAlbumLikeDetail).toList())
+                .build();
+    }
+
+    public static List<AlbumChatDetail> from(List<AlbumChatComment> albumChatComments) {
+        return albumChatComments.stream().map(AlbumChatDetail::from).toList();
+    }
+
 }

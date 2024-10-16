@@ -8,7 +8,6 @@ import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatException
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatCommentRepository;
 import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.post.dtos.Post.AlbumDetail;
-import org.cosmic.backend.domain.playList.dtos.AlbumDto;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -16,7 +15,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,6 +29,7 @@ public class AlbumChatService {
     @Autowired
     private AlbumChatCommentService albumChatCommentService;
 
+    @Autowired
     private final AlbumRepository albumRepository;
     @Autowired
     private AlbumChatCommentRepository albumChatCommentRepository;
