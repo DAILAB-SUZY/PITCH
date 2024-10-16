@@ -7,7 +7,7 @@ import org.cosmic.backend.domain.auth.applications.CreateSpotifyToken;
 import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.playList.domains.Artist;
 import org.cosmic.backend.domain.playList.domains.Track;
-import org.cosmic.backend.domain.playList.dtos.TrackDetail;
+import org.cosmic.backend.domain.playList.dtos.PlaylistDetail;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
 import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
@@ -204,13 +204,13 @@ public class SearchService {
   }
 
   @Transactional
-  public List<TrackDetail> getRecommendations(Long userId) {
+  public List<PlaylistDetail> getRecommendations(Long userId) {
     User user = usersRepository.findById(userId).orElseThrow(NotFoundUserException::new);
 
     SpotifyRecommend spotifyRecommend = getRecommendationByArtistAndTracks(
         user.getFavoriteArtistId(), user.getPlaylistTracksIds());
 
     return spotifyRecommend.tracks().stream()
-        .map(track -> TrackDetail.from(findAndSaveTrackBySpotifyId(track.id()))).toList();
+        .map(track -> PlaylistDetail.from(findAndSaveTrackBySpotifyId(track.id()))).toList();
   }
 }

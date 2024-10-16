@@ -8,11 +8,12 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.favoriteArtist.domains.FavoriteArtist;
+import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.playList.domains.Artist;
 import org.cosmic.backend.domain.playList.domains.Playlist;
 import org.cosmic.backend.domain.playList.domains.Playlist_Track;
 import org.cosmic.backend.domain.playList.domains.Track;
-import org.cosmic.backend.domain.playList.dtos.TrackDetail;
+import org.cosmic.backend.domain.playList.dtos.PlaylistDetail;
 import org.cosmic.backend.domain.playList.repositorys.TrackRepository;
 import org.cosmic.backend.domain.search.applications.SearchService;
 import org.cosmic.backend.domain.user.domains.User;
@@ -64,9 +65,12 @@ public class SpotifyRecommendTest {
                 .artistName("wow")
                 .build())
             .title("test")
+            .album(Album.builder()
+                .albumId(1L)
+                .build())
             .build()));
 
-    List<TrackDetail> recommendations = searchService.getRecommendations(1L);
+    List<PlaylistDetail> recommendations = searchService.getRecommendations(1L);
 
     Assertions.assertEquals(5, recommendations.size());
   }
