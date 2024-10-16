@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.cosmic.backend.domain.bestAlbum.dtos.BestAlbumDetail;
 import org.cosmic.backend.domain.favoriteArtist.dtos.FavoriteArtistDetail;
-import org.cosmic.backend.domain.musicDna.dtos.UserDnaResponse;
 import org.cosmic.backend.domain.playList.dtos.PlaylistDetail;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.dtos.FollowDto;
@@ -25,6 +24,7 @@ public class MusicProfileDetail {
   private List<PlaylistDetail> playlist;
   private List<FollowDto> followings;
   private List<FollowDto> followers;
+  private List<PlaylistDetail> recommendation;
 
   public static MusicProfileDetail from(User user) {
     return MusicProfileDetail.builder()
