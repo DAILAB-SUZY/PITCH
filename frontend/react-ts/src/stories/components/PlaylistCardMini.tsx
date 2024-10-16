@@ -1,6 +1,8 @@
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import useStore from "../store/store";
+import ColorThief from "colorthief";
+import { useEffect, useRef, useState } from "react";
 
 // Props 타입 정의
 interface PlaylistProps {
@@ -27,8 +29,9 @@ interface PlaylistProps {
 }
 
 // 스타일 정의
-const PlaylistCardSmall = styled.div`
-  background: linear-gradient(90deg, #3fc8ff, #d1dcff);
+const PlaylistCardSmall = styled.div<{ gradient?: string }>`
+  background: ${({ gradient }: { gradient?: string }) =>
+    gradient || "linear-gradient(to top right, #989898, #f3f3f3)"};
   border-radius: 12px;
   padding: 15px;
   width: 330px;
@@ -115,13 +118,43 @@ const PlaylistCard = ({ playlist, userDetail }: PlaylistProps) => {
     profilePicture: userDetail.profilePicture,
     page: 2,
   };
+
+  const [playlistGradient, setPlaylistGradient] = useState<string>();
+  const albumCoverRef = useRef<HTMLImageElement | null>(null);
+  // ColorThief로 앨범 커버에서 색상 추출
+  const extractColors = () => {
+    const colorThief = new ColorThief();
+    const img = albumCoverRef.current;
+
+    let gradient = "#ddd"; // 기본 배경색 설정
+
+    if (img) {
+      const colors = colorThief.getPalette(img, 2); // 가장 대비되는 두 가지 색상 추출
+      const primaryColor = `rgb(${colors[0].join(",")})`;
+      const secondaryColor = `rgb(${colors[1].join(",")})`;
+      gradient = `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`;
+    }
+
+    setPlaylistGradient(gradient);
+  };
+
+  const handleImageLoad = () => {
+    extractColors(); // 이미지 로드 후 색상 추출
+  };
+
   return (
-    <PlaylistCardSmall>
+    <PlaylistCardSmall gradient={playlistGradient}>
       <UserNameArea>{userDetail.username}'s Playlist</UserNameArea>
       <SongList>
-        {playlist.slice(0, 2).map((song) => (
+        {playlist.slice(0, 2).map((song, index) => (
           <SongItem key={song.trackId}>
-            <AlbumCover src={song.trackCover} alt="Album Cover" />
+            <AlbumCover
+              src={song.trackCover}
+              alt="Album Cover"
+              crossOrigin="anonymous"
+              onLoad={handleImageLoad}
+              ref={index === 0 ? albumCoverRef : null}
+            />
             <SongInfo>
               <SongTitle>{song.title}</SongTitle>
               <Artist>{song.artistName}</Artist>

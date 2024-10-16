@@ -4,6 +4,7 @@ import { useRef, useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import AlbumChatCard from "../components/AlbumChatCard";
 import useStore from "../store/store";
+import useAlbumPostStore from "../store/albumPostStore";
 
 const Container = styled.div`
   display: flex;
@@ -298,8 +299,9 @@ interface albumPost {
 
 function AlbumPostPage() {
   const location = useLocation();
-  //const [albumPost, setAlbumPost] = useState();
+  const { getAlbumPostById, replaceAlbumPostById } = useAlbumPostStore();
   const [albumPost, setAlbumPost] = useState<albumPost>();
+  const albumPostId = location.state.albumPostId;
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
@@ -321,17 +323,22 @@ function AlbumPostPage() {
         total_tracks: null,
         release_date: null,
         postContent: albumPost.postDetail.content,
+        postId: albumPost.postDetail.postId,
       };
     }
     navigate("/AlbumPostEditPage", { state: album });
   };
-  console.log(`album Post:`);
-  console.log(albumPost);
+
+  // post 가져오기
   useEffect(() => {
-    // location.state로부터 albumPost 값을 초기화
     console.log("setting albumpost");
     if (location.state) {
-      setAlbumPost(location.state);
+      console.log(`post Id :`);
+      console.log(albumPostId);
+      const albumPostData = getAlbumPostById(albumPostId);
+      setAlbumPost(albumPostData);
+      console.log("albumpost::");
+      console.log(albumPost);
     }
   }, []);
 
@@ -400,7 +407,6 @@ function AlbumPostPage() {
   const reissueTokenUrl = `${server}/api/auth/reissued`;
   const [token, setToken] = useState(localStorage.getItem("login-token"));
   const [refreshToken, setRefreshToken] = useState(localStorage.getItem("login-refreshToken"));
-  const PostLikeUrl = server + "/api/album/post/" + (albumPost ? albumPost.postDetail.postId : "") + "/like";
 
   const changePostLike = async () => {
     console.log("changing Like");
@@ -427,6 +433,8 @@ function AlbumPostPage() {
   };
 
   const fetchLike = async () => {
+    const PostLikeUrl =
+      server + "/api/album/post/" + (albumPost ? albumPost.postDetail.postId : "") + "/like";
     if (token) {
       console.log("fetching Like Data");
       try {
@@ -440,6 +448,7 @@ function AlbumPostPage() {
         if (response.ok) {
           const data = await response.json();
           setAlbumPost(data);
+          replaceAlbumPostById(albumPostId, data);
           if (data.likes.some((like: any) => like.id === id)) {
             console.log("like 추가");
           } else {
@@ -476,8 +485,9 @@ function AlbumPostPage() {
   };
 
   // 삭제요청
-  const PostDeleteUrl = server + "/api/album/post/" + (albumPost ? albumPost.postDetail.postId : "");
+
   const deletePost = async () => {
+    const PostDeleteUrl = server + "/api/album/post/" + (albumPost ? albumPost.postDetail.postId : "");
     if (token) {
       if (albumPost) {
         console.log(`delete id: ${albumPost.postDetail.postId}Post...`);
@@ -525,123 +535,127 @@ function AlbumPostPage() {
 
   return (
     <Container>
-      <AlbumPostArea>
-        {/*  TODO: 스크롤 되다가 일부 남기고 멈추기 */}
-        <AlbumTitleArea>
-          <ImageArea>
-            <img
-              src={albumPost.postDetail.album.albumCover}
-              width="100%"
-              object-fit="cover"
-              // z-index="1"
-            ></img>
-          </ImageArea>
-          <GradientBG> </GradientBG>
-          <TitleTextArea>
-            <Text fontFamily="Bd" fontSize="30px" margin="0px" color={colors.BG_white}>
-              {albumPost.postDetail.album.title}
-            </Text>
-            <Text fontFamily="Rg" fontSize="20px" margin="0px 0px 2px 10px" color={colors.BG_white}>
-              {albumPost.postDetail.album.artistName}
-            </Text>
-          </TitleTextArea>
-        </AlbumTitleArea>
-        <PostArea>
-          <ProfileArea>
-            <ProfileImgTextArea>
-              <ProfileImage>
-                <img src={albumPost.postDetail.author.profilePicture}></img>
-              </ProfileImage>
-              <ProfileTextArea>
-                <ProfileName>{albumPost.postDetail.author.username}</ProfileName>
-                <PostUploadTime> {timeAgo} </PostUploadTime>
-              </ProfileTextArea>
-            </ProfileImgTextArea>
-            {albumPost.postDetail.author.id === id && (
-              <EditBtn ref={dropdownRef}>
+      {albumPost && (
+        <>
+          <AlbumPostArea>
+            {/*  TODO: 스크롤 되다가 일부 남기고 멈추기 */}
+            <AlbumTitleArea>
+              <ImageArea>
+                <img
+                  src={albumPost.postDetail.album.albumCover}
+                  width="100%"
+                  object-fit="cover"
+                  // z-index="1"
+                ></img>
+              </ImageArea>
+              <GradientBG> </GradientBG>
+              <TitleTextArea>
+                <Text fontFamily="Bd" fontSize="30px" margin="0px" color={colors.BG_white}>
+                  {albumPost.postDetail.album.title}
+                </Text>
+                <Text fontFamily="Rg" fontSize="20px" margin="0px 0px 2px 10px" color={colors.BG_white}>
+                  {albumPost.postDetail.album.artistName}
+                </Text>
+              </TitleTextArea>
+            </AlbumTitleArea>
+            <PostArea>
+              <ProfileArea>
+                <ProfileImgTextArea>
+                  <ProfileImage>
+                    <img src={albumPost.postDetail.author.profilePicture}></img>
+                  </ProfileImage>
+                  <ProfileTextArea>
+                    <ProfileName>{albumPost.postDetail.author.username}</ProfileName>
+                    <PostUploadTime> {timeAgo} </PostUploadTime>
+                  </ProfileTextArea>
+                </ProfileImgTextArea>
+                {albumPost.postDetail.author.id === id && (
+                  <EditBtn ref={dropdownRef}>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      fill={colors.Font_grey}
+                      className="bi bi-three-dots"
+                      viewBox="0 0 16 16"
+                      onClick={() => editMenu()} // 클릭 시 토글
+                    >
+                      <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3" />
+                    </svg>
+                    {isDropdownOpen && (
+                      <DropdownMenu>
+                        <DropdownItem onClick={() => GoToAlbumPostEditPage()}>수정</DropdownItem>
+                        <DropdownItem onClick={() => deletePost()}>삭제</DropdownItem>
+                      </DropdownMenu>
+                    )}
+                  </EditBtn>
+                )}
+              </ProfileArea>
+              <PostContentArea>{albumPost.postDetail.content}</PostContentArea>
+              <ButtonArea>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  fill={colors.Font_grey}
-                  className="bi bi-three-dots"
+                  width="14"
+                  height="14"
+                  fill={isPostLiked ? colors.Button_active : colors.Button_deactive}
+                  className="bi bi-heart-fill"
                   viewBox="0 0 16 16"
-                  onClick={() => editMenu()} // 클릭 시 토글
+                  onClick={() => changePostLike()}
                 >
-                  <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3" />
+                  <path
+                    fillRule="evenodd"
+                    d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"
+                  />
                 </svg>
-                {isDropdownOpen && (
-                  <DropdownMenu>
-                    <DropdownItem onClick={() => GoToAlbumPostEditPage()}>수정</DropdownItem>
-                    <DropdownItem onClick={() => deletePost()}>삭제</DropdownItem>
-                  </DropdownMenu>
-                )}
-              </EditBtn>
-            )}
-          </ProfileArea>
-          <PostContentArea>{albumPost.postDetail.content}</PostContentArea>
-          <ButtonArea>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="14"
-              height="14"
-              fill={isPostLiked ? colors.Button_active : colors.Button_deactive}
-              className="bi bi-heart-fill"
-              viewBox="0 0 16 16"
-              onClick={() => changePostLike()}
-            >
-              <path
-                fillRule="evenodd"
-                d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"
-              />
-            </svg>
-            <Text fontFamily="Rg" fontSize="14px" color="grey" margin="0px 20px 0px 3px">
-              좋아요 {albumPost.likes.length}개
-            </Text>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="14"
-              height="14"
-              fill="grey"
-              className="bi bi-chat-right-text-fill"
-              viewBox="0 0 16 16"
-              style={{ strokeWidth: 6 }}
-            >
-              <path d="M2 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h9.586a2 2 0 0 1 1.414.586l2 2V2a1 1 0 0 0-1-1zm12-1a2 2 0 0 1 2 2v12.793a.5.5 0 0 1-.854.353l-2.853-2.853a1 1 0 0 0-.707-.293H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z" />
-              <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6m0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5" />
-            </svg>
-            <Text fontFamily="Rg" fontSize="14px" color="grey" margin="0px 0px 0px 3px">
-              답글 {albumPost.comments.length}개
-            </Text>
-          </ButtonArea>
-        </PostArea>
-      </AlbumPostArea>
-      <ChatArea>
-        <RowAlignArea>
-          <Text fontFamily="Bd" fontSize="30px" margin="0px" color="black">
-            Comment
-          </Text>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="22"
-            height="22"
-            fill="currentColor"
-            className="bi bi-pencil-square"
-            viewBox="0 0 16 16"
-            //  TODO: 댓글 작성 기능 구현
-            // onClick={ 댓글 작성 페이지로 이동 }
-          >
-            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-            <path
-              fillRule="evenodd"
-              d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
-            />
-          </svg>
-        </RowAlignArea>
-        {albumPost.comments.map((comment: any, index: number) => (
-          <AlbumChatCard key={index} comment={comment}></AlbumChatCard>
-        ))}
-      </ChatArea>
+                <Text fontFamily="Rg" fontSize="14px" color="grey" margin="0px 20px 0px 3px">
+                  좋아요 {albumPost.likes.length}개
+                </Text>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  fill="grey"
+                  className="bi bi-chat-right-text-fill"
+                  viewBox="0 0 16 16"
+                  style={{ strokeWidth: 6 }}
+                >
+                  <path d="M2 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h9.586a2 2 0 0 1 1.414.586l2 2V2a1 1 0 0 0-1-1zm12-1a2 2 0 0 1 2 2v12.793a.5.5 0 0 1-.854.353l-2.853-2.853a1 1 0 0 0-.707-.293H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z" />
+                  <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6m0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5" />
+                </svg>
+                <Text fontFamily="Rg" fontSize="14px" color="grey" margin="0px 0px 0px 3px">
+                  답글 {albumPost.comments.length}개
+                </Text>
+              </ButtonArea>
+            </PostArea>
+          </AlbumPostArea>
+          <ChatArea>
+            <RowAlignArea>
+              <Text fontFamily="Bd" fontSize="30px" margin="0px" color="black">
+                Comment
+              </Text>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="22"
+                height="22"
+                fill="currentColor"
+                className="bi bi-pencil-square"
+                viewBox="0 0 16 16"
+                //  TODO: 댓글 작성 기능 구현
+                // onClick={ 댓글 작성 페이지로 이동 }
+              >
+                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                <path
+                  fillRule="evenodd"
+                  d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
+                />
+              </svg>
+            </RowAlignArea>
+            {albumPost.comments.map((comment: any, index: number) => (
+              <AlbumChatCard key={index} comment={comment}></AlbumChatCard>
+            ))}
+          </ChatArea>
+        </>
+      )}
     </Container>
   );
 }

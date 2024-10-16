@@ -7,6 +7,7 @@ import PlaylistPreviewCard from "../components/PlaylistPreviewCard";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useStore from "../store/store";
+import useAlbumPostStore from "../store/albumPostStore";
 
 const Container = styled.div`
   display: flex;
@@ -102,6 +103,7 @@ function HomePage() {
   }
 
   const { email, setEmail, name, setName, id, setId } = useStore();
+  const { albumPosts, setAlbumPosts, addAlbumPost, clearAlbumPosts } = useAlbumPostStore();
 
   const navigate = useNavigate();
   const GoToAlbumPostEditPage = () => {
@@ -109,14 +111,14 @@ function HomePage() {
   };
 
   console.log(`${email} / ${name} / ${id}`);
-  const [albumPostList, setAlbumPostList] = useState<AlbumPost[]>([]);
+  //const [albumPostList, setAlbumPostList] = useState<AlbumPost[]>([]);
   const [postPage, setPostPage] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [isEnd, setIsEnd] = useState(false);
   const [friendsPlayList, setfriendsPlayList] = useState<FriendsPlayList[]>([]);
 
   console.log("render-----------------------------");
-  console.log(`albumpost: `, albumPostList);
+  console.log(`albumpost: `, albumPosts);
   console.log(`postPage: `, postPage);
 
   const server = "http://203.255.81.70:8030";
@@ -237,9 +239,12 @@ function HomePage() {
     }
   };
 
+  useEffect(() => {
+    clearAlbumPosts();
+  }, []);
   // 무한 스크롤 데이터를 가져오는 함수
   const fetchAlbumPosts = async () => {
-    console.log("start fetching");
+    console.log("start fetching albumPost...");
     console.log(`isLoading: ${isLoading}`);
     let albumPostUrl = `${server}/api/album/post?page=${postPage}&limit=5`;
     console.log(albumPostUrl);
@@ -265,9 +270,14 @@ function HomePage() {
             console.log("list End");
             setIsEnd(true);
           }
-          setAlbumPostList((prevList) => [...prevList, ...data]); // 기존 데이터에 새로운 데이터를 추가
+          // 만약 첫 로딩이면
+          if (postPage == 0) {
+            clearAlbumPosts();
+          }
+          setAlbumPosts(data); // 기존 데이터에 새로운 데이터를 추가
           setPostPage((prevPage) => prevPage + 1); // 페이지 증가
-          console.log("albumpost ", albumPostList);
+
+          console.log("albumpost ", albumPosts);
         } else if (response.status === 401) {
           console.log("reissuing Token");
           const reissueToken = await fetch(reissueTokenUrl, {
@@ -288,7 +298,7 @@ function HomePage() {
         console.error("Error fetching the JSON file:", error);
       } finally {
         setIsLoading(false); // 로딩 상태 해제
-        console.log("fetching Complete: ", albumPostList);
+        console.log("fetching Complete: ", albumPosts);
         console.log(`postPage : ${postPage}`);
       }
     }
@@ -360,11 +370,11 @@ function HomePage() {
             </svg>
           </AlbumPostTitleArea>
           <RowAlignArea>
-            {albumPostList.length > 0 ? (
-              albumPostList.map((albumPost) => (
+            {albumPosts.length > 0 ? (
+              albumPosts.map((albumPost) => (
                 <AlbumPostCard
-                  key={albumPost.postDetail.postId}
-                  albumPost={albumPost}
+                  // key={albumPost.postDetail.postId}
+                  albumPostId={albumPost.postDetail.postId}
                   // setAlbumPostList={setAlbumPostList}
                 ></AlbumPostCard>
               ))

@@ -198,6 +198,7 @@ interface AlbumPost {
   name: string;
   total_tracks: number;
   release_date: string;
+  postId: number;
 }
 
 function AlbumPostEditPage() {
@@ -235,6 +236,7 @@ function AlbumPostEditPage() {
     navigate("/Home");
   };
 
+  // 게시물 작성
   const fetchPost = async () => {
     const token = localStorage.getItem("login-token");
     const refreshToken = localStorage.getItem("login-refreshToken");
@@ -254,6 +256,56 @@ function AlbumPostEditPage() {
             content: postContent,
             title: albumPost.name,
             spotifyAlbumId: albumPost.albumId,
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Post Success");
+          console.log(data);
+          GoToHomePage();
+        } else if (response.status === 401) {
+          console.log("reissuing Token");
+          const reissueToken = await fetch(reissueTokenUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Refresh-Token": `${refreshToken}`,
+            },
+          });
+          const data = await reissueToken.json();
+          localStorage.setItem("login-token", data.token);
+          localStorage.setItem("login-refreshToken", data.refreshToken);
+          fetchPost();
+        } else {
+          console.error("Failed to Post data:", response.status);
+        }
+      } catch (error) {
+        console.error("Error fetching the JSON file:", error);
+      } finally {
+        console.log("finished");
+      }
+    }
+  };
+
+  // 게시물 수정
+  const fetchEdit = async () => {
+    const token = localStorage.getItem("login-token");
+    const refreshToken = localStorage.getItem("login-refreshToken");
+    let EditUrl = `${server}/api/album/post/${albumPost?.postId}`;
+    if (token && albumPost) {
+      try {
+        console.log(`Edit Posting...`);
+        console.log(albumPost);
+        console.log(postContent);
+        const response = await fetch(EditUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            content: postContent,
           }),
         });
 
@@ -355,7 +407,7 @@ function AlbumPostEditPage() {
             fontSize="15px"
             margin="0px 10px 0px 0px"
             color={colors.Font_black}
-            onClick={fetchPost}
+            onClick={isEditMode ? fetchEdit : fetchPost}
           >
             저장
           </Text>

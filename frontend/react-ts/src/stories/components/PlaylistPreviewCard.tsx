@@ -193,12 +193,13 @@ const PlaylistPreviewCard = ({ playlists }: PlaylistProps) => {
             {playlist.albumCover
               .slice(0, 3)
               .reverse()
-              .map((cover: any, index: any) => (
+              .map((cover: any, coverIndex: any) => (
                 <AlbumCover
-                  key={index}
+                  key={coverIndex}
                   src={cover}
                   // alt={`Album Cover ${index + 1}`}
                   ref={(el) => (albumCoverRefs.current[index] = el)}
+                  // ref={index === 0 ? albumCoverRef : null}
                   crossOrigin="anonymous"
                   onLoad={() => handleImageLoad(index)} // 이미지 로드 상태 추적
                 />

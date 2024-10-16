@@ -7,6 +7,7 @@ import PlaylistCardMini from "../components/PlaylistCardMini";
 import AlbumGrid from "../components/AlbumGrid";
 import FavoriteArtistCard from "../components/FavoriteArtistCard";
 import AlbumPostCard from "../components/AlbumPostCard";
+import AlbumChatCard from "../components/AlbumChatCard";
 import useStore from "../store/store";
 
 const Container = styled.div`
@@ -288,6 +289,63 @@ interface MusicProfileData {
   ];
 }
 
+interface PostData {
+  type: string;
+  postId: number;
+  content: string;
+  createAt: string;
+  updateAt: string;
+  author: {
+    id: number;
+    username: string;
+    profilePicture: string;
+    dnas: {
+      dnaKey: number;
+      dnaName: string;
+    }[];
+  };
+  album: {
+    id: number;
+    title: string;
+    albumCover: string;
+    artistName: string;
+    genre: string;
+  };
+}
+
+interface ChatData {
+  type: string;
+  albumDetail: {
+    id: number;
+    title: string;
+    albumCover: string;
+    artistName: string;
+    genre: string;
+  };
+  albumChatCommentId: number;
+  content: string;
+  createAt: string;
+  updateAt: string;
+  author: {
+    id: number;
+    username: string;
+    profilePicture: string;
+    dnas: {
+      dnaKey: number;
+      dnaName: string;
+    }[];
+  };
+}
+
+interface ActivityDataList {
+  postDetail: PostData[];
+  albumChatDetail: ChatData[];
+}
+
+type mergeActivityData = PostData | ChatData;
+
+type ActivityData = mergeActivityData[];
+
 const EditBtn = styled.div`
   display: flex;
   flex-direction: row;
@@ -306,7 +364,7 @@ const EditBtn = styled.div`
 function MusicProfilePage() {
   const [tabBtn, setTabBtn] = useState(1);
   const [musicProfileData, setMusicProfileData] = useState<MusicProfileData>();
-  const [activityData, setActivityData] = useState();
+  const [activityData, setActivityData] = useState<ActivityData>([]);
   const navigate = useNavigate();
   const location = useLocation();
   const profileId = location.state;
@@ -383,7 +441,23 @@ function MusicProfilePage() {
           console.log("set PostList");
           const data = await response.json();
           console.log(data);
-          setActivityData(data);
+          // setActivityData(data);
+          // postDetail과 albumChatDetail 배열을 합치기
+          //const mergedData = [...data.postDetail, ...data.albumChatDetail];
+          const mergedData = [
+            ...data.postDetail.map((post: any) => ({ ...post, type: "post" as const })),
+            ...data.albumChatDetail.map((chat: any) => ({ ...chat, type: "chat" as const })),
+          ];
+
+          // createAt 기준으로 내림차순 정렬
+          mergedData.sort((a, b) => {
+            const stB = b.updateAt === null ? b.createAt : b.updateAt;
+            const stA = a.updateAt === null ? a.createAt : a.updateAt;
+            return stB - stA;
+          });
+
+          console.log(mergedData); // 정렬된 데이터 확인
+          setActivityData(mergedData);
         } else if (response.status === 401) {
           console.log("reissuing Token");
           const reissueToken = await fetch(reissueTokenUrl, {
@@ -514,16 +588,19 @@ function MusicProfilePage() {
         ) : (
           <>
             {" "}
-            {activityData.length > 0 ? (
-              activityData.map((albumPost) => (
-                <AlbumPostCard
-                  key={albumPost.postDetail.postId}
-                  albumPost={albumPost}
-                  // setAlbumPostList={setAlbumPostList}
-                ></AlbumPostCard>
-              ))
+            {activityData?.length > 0 ? (
+              activityData?.map((item) =>
+                item.type === "post" ? (
+                  <AlbumPostCard key={item.postId} albumPost={item} />
+                ) : item.type === "chat" ? (
+                  <AlbumChatCard key={item.albumChatCommentId} comment={item} />
+                ) : null
+              )
             ) : (
-              <Text fontSize="15px" margin="150px 0px 0px 0px"></Text>
+              <Text fontSize="15px" margin="150px 0px 0px 0px">
+                {" "}
+                작성한 글이 없습니다.
+              </Text>
             )}
           </>
         )}

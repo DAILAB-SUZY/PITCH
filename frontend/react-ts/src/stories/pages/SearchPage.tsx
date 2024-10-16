@@ -156,6 +156,20 @@ interface SearchResult {
   release_date: string;
 }
 
+interface SearchData {
+  albumArtist: {
+    artistId: string;
+    imageUrl: string;
+    name: string;
+  };
+  albumId: string;
+  imageUrl: string;
+  name: string;
+  total_tracks: number;
+  release_date: string;
+  postId: number;
+}
+
 function SearchPage() {
   const [albumPost, setAlbumPost] = useState<SearchResult | null>(null);
   const [searchKeyword, setSearchKeyword] = useState("");
@@ -169,7 +183,7 @@ function SearchPage() {
 
   const navigate = useNavigate();
 
-  const GoToAlbumPostEditPage = (album: SearchResult | null = null) => {
+  const GoToAlbumPostEditPage = (album: SearchData | null = null) => {
     navigate("/AlbumPostEditPage", { state: album });
   };
 
@@ -263,7 +277,7 @@ function SearchPage() {
           {!isLoading &&
             searchResult &&
             searchResult.map((album: any) => (
-              <SongArea key={album.albumId} onClick={() => GoToAlbumPostEditPage(album)}>
+              <SongArea key={album.albumId} onClick={() => GoToAlbumPostEditPage({ ...album, postId: null })}>
                 <AlbumCover>
                   <img src={album.imageUrl} width="100%" height="100%"></img>
                 </AlbumCover>
