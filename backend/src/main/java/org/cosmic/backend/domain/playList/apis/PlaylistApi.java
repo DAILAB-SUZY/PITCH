@@ -9,15 +9,17 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.cosmic.backend.domain.playList.applications.PlaylistService;
 import org.cosmic.backend.domain.playList.dtos.FollowerPlaylistDetail;
+import org.cosmic.backend.domain.playList.dtos.PlaylistAndRecommendDetail;
 import org.cosmic.backend.domain.playList.dtos.PlaylistDetail;
 import org.cosmic.backend.domain.playList.dtos.SpotifyTracksDto;
 import org.cosmic.backend.domain.playList.dtos.TrackDetail;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundArtistException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundTrackException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
-import org.cosmic.backend.domain.user.repositorys.UsersRepository;
+import org.cosmic.backend.domain.search.applications.SearchService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -35,22 +37,12 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/")
+@RequiredArgsConstructor
 @Tag(name = "Playlist 관련 API", description = "Playlist 노래 저장 및 제공")
 public class PlaylistApi {
 
   private final PlaylistService playlistService;
-  private final UsersRepository usersRepository;
-
-  /**
-   * <p>PlaylistApi의 생성자입니다.</p>
-   *
-   * @param playlistService 플레이리스트 관련 비즈니스 로직을 처리하는 서비스 클래스
-   * @param usersRepository 사용자 관련 데이터베이스 접근 레포지토리
-   */
-  public PlaylistApi(PlaylistService playlistService, UsersRepository usersRepository) {
-    this.playlistService = playlistService;
-    this.usersRepository = usersRepository;
-  }
+  private final SearchService searchService;
 
   /**
    * <p>특정 사용자의 플레이리스트 데이터를 조회합니다.</p>
@@ -59,16 +51,16 @@ public class PlaylistApi {
    * @return 플레이리스트 데이터를 포함한 리스트
    * @throws NotFoundUserException 사용자를 찾을 수 없을 때 발생합니다.
    */
-  @Transactional
   @GetMapping("/user/{userId}/playlist")
   @ApiResponse(responseCode = "404", description = "Not Found User")
   @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-      array = @ArraySchema(schema = @Schema(implementation = PlaylistDetail.class))))
+      schema = @Schema(implementation = PlaylistAndRecommendDetail.class)))
   @Operation(summary = "플레이리스트 조회", description = "특정 유저의 플레이리스트 조회")
-  public ResponseEntity<List<PlaylistDetail>> dataGive(
+  public ResponseEntity<PlaylistAndRecommendDetail> dataGive(
       @Parameter(description = "유저 id")
       @PathVariable Long userId) {
-    return ResponseEntity.ok(playlistService.open(userId));
+    return ResponseEntity.ok(new PlaylistAndRecommendDetail(playlistService.open(userId),
+        searchService.getRecommendations(userId)));
   }
 
   /**

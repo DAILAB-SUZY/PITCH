@@ -78,13 +78,9 @@ public class PlaylistService {
    * @return 플레이리스트 데이터를 포함한 리스트
    * @throws NotFoundUserException 사용자가 존재하지 않을 경우 발생합니다.
    */
-  @Transactional
   public List<PlaylistDetail> open(Long userId) {
-    if (usersRepository.findById(userId).isEmpty()) {
-      throw new NotFoundUserException();
-    }
-    return usersRepository.findById(userId).get().getPlaylist().getPlaylist_track()
-        .stream().map(Playlist_Track::toGiveDetail).toList();
+    User user = usersRepository.findById(userId).orElseThrow(NotFoundUserException::new);
+    return user.getPlaylist().getPlaylist_track().stream().map(PlaylistDetail::from).toList();
   }
 
   /**
