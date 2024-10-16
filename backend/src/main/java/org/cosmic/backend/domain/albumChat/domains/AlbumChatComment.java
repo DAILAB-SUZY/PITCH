@@ -4,9 +4,10 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.cosmic.backend.domain.albumChat.dtos.albumChat.UserAlbumChatDetail;
+import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumCommentDetail;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDetail;
 import org.cosmic.backend.domain.playList.domains.Album;
+import org.cosmic.backend.domain.post.dtos.Post.AlbumDetail;
 import org.cosmic.backend.domain.user.domains.User;
 
 import java.time.Instant;
@@ -66,17 +67,16 @@ public class AlbumChatComment {
                 .updateAt(albumChatComment.updateTime)
                 .build();
     }
-    public static List<UserAlbumChatDetail> toUserAlbumChatDetail(List<AlbumChatComment> albumChatComments) {
-        List<UserAlbumChatDetail> userAlbumChatDetails = new ArrayList<>();
+    public static List<AlbumCommentDetail> toUserAlbumChatDetail(List<AlbumChatComment> albumChatComments) {
+        List<AlbumCommentDetail> albumCommentDetails = new ArrayList<>();
         for(int i=0;i<albumChatComments.size();i++) {
-            UserAlbumChatDetail userAlbumChatDetail=new UserAlbumChatDetail();
+            AlbumCommentDetail albumCommentDetail=new AlbumCommentDetail();
             AlbumChatComment albumChatComment = albumChatComments.get(i);
-            userAlbumChatDetail.setAlbumChatCommentId(albumChatComment.getAlbumChatCommentId());
-            userAlbumChatDetail.setAuthor(User.toUserDetail(albumChatComment.user));
-            userAlbumChatDetail.setContent(albumChatComment.getContent());
-            userAlbumChatDetails.add(userAlbumChatDetail);
+            albumCommentDetail.setAlbumDetail(AlbumDetail.from(albumChatComment.getAlbum()));
+            albumCommentDetail.setAlbumChatCommentDetail(new AlbumChatCommentDetail(albumChatComment));
+            albumCommentDetails.add(albumCommentDetail);
         }
-        return userAlbumChatDetails;
+        return albumCommentDetails;
     }
     @Override
     public String toString() {

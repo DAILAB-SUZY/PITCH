@@ -70,7 +70,6 @@ public class PlaylistApi {
       @PathVariable Long userId) {
     return ResponseEntity.ok(playlistService.open(userId));
   }
-
   /**
    * <p>팔로우한 사용자의 플레이리스트 데이터를 조회합니다.</p>
    *
