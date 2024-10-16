@@ -82,7 +82,7 @@ public class Album {//앨범과 트랙은 1:N관계이며 앨범과 아티스트
 
   public static AlbumDetail toAlbumDetail(Album album) {
     return AlbumDetail.builder()
-        .id(album.getAlbumId())
+        .albumId(album.getAlbumId())
         .title(album.getTitle())
         .albumCover(album.getAlbumCover())
         .artistName(album.getArtist().getArtistName())
@@ -94,13 +94,10 @@ public class Album {//앨범과 트랙은 1:N관계이며 앨범과 아티스트
     album.forEach(albumDetail -> albumDetails.add(toAlbumDetail(albumDetail)));
     return albumDetails;
   }
+  //TODO 앨범 Detail을 플레이리스트꺼 제거
   public static AlbumChatDetail toAlbumChatDetail(Album album) {
     return AlbumChatDetail.builder()
-        .albumId(album.getAlbumId())
-        .title(album.getTitle())
-        .cover(album.getAlbumCover())
-        .genre(album.genre.toString())
-        .artistName(album.getArtist().getArtistName())
+        .albumDetail(AlbumDetail.from(album))
         .comments(
             album.getAlbumChatComments().stream().map(AlbumChatComment::toAlbumChatCommentDetail)
                 .toList())
