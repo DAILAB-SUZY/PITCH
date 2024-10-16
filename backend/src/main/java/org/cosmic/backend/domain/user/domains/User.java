@@ -170,4 +170,12 @@ public class User {
   public boolean isMe(Long userId) {
     return userId.equals(this.userId);
   }
+
+  public String getFavoriteArtistId() {
+    return getFavoriteArtist().getSpotifyArtistId();
+  }
+
+  public List<String> getPlaylistTracksIds() {
+    return getPlaylist().getSpotifyTrackIds();
+  }
 }

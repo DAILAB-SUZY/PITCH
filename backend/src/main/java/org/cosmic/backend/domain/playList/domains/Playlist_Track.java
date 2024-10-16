@@ -56,4 +56,8 @@ public class Playlist_Track {//N:M을 이어줄 연결다리
         .playlist(playlist)
         .build();
   }
+
+  public String getTrackId() {
+    return getTrack().getSpotifyTrackId();
+  }
 }

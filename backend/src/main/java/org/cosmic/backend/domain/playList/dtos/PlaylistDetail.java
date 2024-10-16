@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.cosmic.backend.domain.playList.domains.Playlist_Track;
+import org.cosmic.backend.domain.playList.domains.Track;
 
 @Data
 @AllArgsConstructor
@@ -15,6 +16,7 @@ public class PlaylistDetail {
   Long trackId;
   String title;
   String artistName;
+  Long albumId;
   String trackCover;
 
   public static PlaylistDetail from(Playlist_Track playlistTrack) {
@@ -22,7 +24,18 @@ public class PlaylistDetail {
         .trackId(playlistTrack.getTrack().getTrackId())
         .title(playlistTrack.getTrack().getTitle())
         .artistName(playlistTrack.getTrack().getArtist().getArtistName())
+        .albumId(playlistTrack.getTrack().getAlbum().getAlbumId())
         .trackCover(playlistTrack.getTrack().getTrackCover())
+        .build();
+  }
+
+  public static PlaylistDetail from(Track track) {
+    return PlaylistDetail.builder()
+        .trackId(track.getTrackId())
+        .title(track.getTitle())
+        .artistName(track.getArtist().getArtistName())
+        .albumId(track.getAlbum().getAlbumId())
+        .trackCover(track.getTrackCover())
         .build();
   }
 }
