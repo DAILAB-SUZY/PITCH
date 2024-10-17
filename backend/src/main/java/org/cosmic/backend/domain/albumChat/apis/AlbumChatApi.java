@@ -47,7 +47,7 @@ public class AlbumChatApi {
    * @return 조회된 앨범챗 데이터를 포함한 {@link ResponseEntity}
    * @throws NotFoundAlbumChatException 앨범챗을 찾을 수 없는 경우 예외를 발생시킵니다.
    */
-  @GetMapping("/open/album/{albumId}")
+  @GetMapping("/albumchat/{albumId}")
   @ApiResponse(responseCode = "404", description = "Not Found AlbumChat")
   @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(contentMediaType =
       MediaType.APPLICATION_JSON_VALUE, implementation = AlbumChatDetail.class))})
@@ -71,8 +71,8 @@ public class AlbumChatApi {
       array = @ArraySchema(schema = @Schema(implementation = AlbumDetail.class))))
   @Operation(summary = "앨범챗홈 페이지", description = "앨범 챗 많은 순으로 album정보 띄우기")
   public ResponseEntity<List<AlbumDetail>> albumChatHome(
-      @Parameter(description = "페이지 수") @RequestParam int page,
-      @Parameter(description = "제공량") @RequestParam int limit) {
+      @Parameter(description = "페이지 수") @RequestParam Integer page,
+      @Parameter(description = "제공량") @RequestParam Integer limit) {
     return ResponseEntity.ok(albumChatService.albumChatHome(page, limit));
   }
 }
