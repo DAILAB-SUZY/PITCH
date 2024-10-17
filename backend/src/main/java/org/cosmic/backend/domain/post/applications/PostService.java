@@ -32,7 +32,7 @@ public class PostService {
   private final AlbumRepository albumRepository;
 
   private List<PostAndCommentsDetail> getUsersPosts(Long userId, Pageable pageable) {
-    return postRepository.findByUser_UserId(userId, pageable).map(Post::toPostAndCommentDetail)
+    return postRepository.findByUser_UserId(userId, pageable).map(PostAndCommentsDetail::from)
         .getContent();
   }
 

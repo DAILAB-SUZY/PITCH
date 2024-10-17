@@ -27,4 +27,8 @@ public class PostAndCommentsDetail {
         .likes(UserDetail.from(post.getPostLikes().stream().map(PostLike::getUser).toList()))
         .build();
   }
+
+  public static List<PostAndCommentsDetail> from(List<Post> posts) {
+    return posts.stream().map(PostAndCommentsDetail::from).toList();
+  }
 }
