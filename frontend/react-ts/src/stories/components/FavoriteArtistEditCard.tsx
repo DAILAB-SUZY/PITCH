@@ -63,26 +63,6 @@ const GradientBG = styled.div`
   backdrop-filter: blur(0px);
 `;
 
-// const ArtistProfileArea = styled.div`
-//   width: 100%;
-//   height: auto;
-//   display: flex;
-//   justify-content: flex-start;
-//   align-items: flex-end;
-//   padding: 0px 0px 20px 20px;
-//   box-sizing: border-box;
-//   z-index: 3;
-// `;
-
-// const ArtistProfile = styled.div`
-//   position: absolute;
-//   width: 70px;
-//   height: 70px;
-//   object-fit: cover;
-//   overflow: hidden;
-//   border-radius: 50%;
-// `;
-
 const ContentArea = styled.div`
   width: 100%;
   height: 100%;
@@ -98,13 +78,18 @@ const ArtistTitleTextArea = styled.div`
   bottom: 10px;
   left: 10px; */
   width: 320px;
-  height: 50px;
+  height: 60px;
   display: flex;
   justify-content: flex-start;
   align-items: center;
   box-sizing: border-box;
   z-index: 3;
-  margin-bottom: 100px;
+  margin-bottom: 80px;
+
+  background-color: rgba(255, 102, 141, 0.2);
+  border: solid 2px ${colors.Main_Pink};
+  border-radius: 10px;
+  padding: 10px;
 `;
 
 const FavoriteAlbumArea = styled.div`
@@ -119,7 +104,12 @@ const FavoriteAlbumArea = styled.div`
   align-items: center;
   box-sizing: border-box;
   z-index: 3;
-  margin-bottom: 40px;
+  margin-bottom: 10px;
+
+  background-color: rgba(255, 102, 141, 0.2);
+  border: solid 2px ${colors.Main_Pink};
+  border-radius: 10px;
+  padding: 40px 10px;
 `;
 
 const FavoriteAlbumCover = styled.div`
@@ -132,7 +122,7 @@ const FavoriteAlbumCover = styled.div`
 
 const FavoriteAlbumTextArea = styled.div`
   width: auto;
-  height: 100%;
+  height: auto;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -153,7 +143,7 @@ const Text = styled.div<{
   opacity: ${(props) => props.opacity};
 `;
 
-function FavoriteArtistCard({ FavoriteArtistData }: FavoriteArtistProps) {
+function FavoriteArtistEditCard({ FavoriteArtistData }: FavoriteArtistProps) {
   const data = FavoriteArtistData;
   console.log(data);
   console.log(data.artistName.length);
@@ -207,4 +197,4 @@ function FavoriteArtistCard({ FavoriteArtistData }: FavoriteArtistProps) {
   );
 }
 
-export default FavoriteArtistCard;
+export default FavoriteArtistEditCard;

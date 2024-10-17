@@ -67,12 +67,13 @@ const ProfileLeftArea = styled.div`
   align-items: center;
 `;
 
-const Circle = styled.div`
+const Circle = styled.div<{ bgcolor?: string }>`
   width: 100px;
   height: 100px;
   border-radius: 100%;
   overflow: hidden;
   margin-bottom: 10px;
+  background-color: ${(props) => props.bgcolor};
 `;
 
 const FollowBtn = styled.div<{ bgcolor: string; color: string }>`
@@ -111,29 +112,19 @@ const ProfileNameArea = styled.div`
   height: 40px;
 `;
 
-const ProfileTagArea = styled.div`
+const MusicDnaArea = styled.div`
   width: 100%;
   height: 110px;
 `;
 
-const Badge = styled.div`
-  background: linear-gradient(90deg, #a3d8f7, #72df9c);
-  padding: 5px 12px;
-  border-radius: 15px;
-  color: white;
-  font-size: 14px;
-  margin: 0px 10px 12px 0px;
-  display: inline-block;
-`;
-
-const Tag = styled.div`
+const Tag = styled.div<{ color: string }>`
   margin: 0px 10px 12px 0px;
   padding: 5px 12px;
   width: auto;
   height: auto;
   font-size: 15px;
   font-family: "Rg";
-  color: black;
+  color: ${(props) => props.color};
   background-color: ${colors.BG_grey};
   /* border-color: ${colors.Tag};
   border-style: solid;
@@ -191,7 +182,8 @@ const FollowArea = styled.div`
   margin-bottom: 20px;
   background-color: ${colors.BG_grey};
   color: black;
-  padding: 10px 20px;
+  padding: 10px 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 `;
 
 const FollowBox = styled.div`
@@ -238,17 +230,31 @@ const PlaylistCardArea = styled.div`
   margin-bottom: 35px;
 `;
 
+const PlaylistCardSmall = styled.div`
+  background: linear-gradient(to top right, #989898, #f3f3f3);
+  border-radius: 12px;
+  padding: 15px;
+  /* margin-top: 20px; */
+  width: 320px;
+  height: 190px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  color: white;
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+`;
+
 interface MusicProfileData {
   userDetail: {
     id: number;
     username: string;
     profilePicture: string;
-    dnas: [
-      {
-        dnaKey: number;
-        dnaName: string;
-      },
-    ];
+    dnas: {
+      dnaKey: number;
+      dnaName: string;
+    }[];
   };
   favoriteArtist: {
     artistName: string;
@@ -264,6 +270,7 @@ interface MusicProfileData {
       albumName: string;
       albumCover: string;
       score: number;
+      spotifyId: string;
     },
   ];
   userDna: [
@@ -438,7 +445,7 @@ const EditBtn = styled.div`
   border-radius: 15px;
   padding: 10px;
   box-sizing: border-box;
-  margin-bottom: 50px;
+  margin-bottom: 80px;
   box-shadow: 0 0px 5px rgba(0, 0, 0, 0.1);
 `;
 
@@ -450,7 +457,7 @@ function MusicProfilePage() {
   const location = useLocation();
   const profileId = location.state;
   const GoToEditPage = (musicProfileData: MusicProfileData) => {
-    navigate("/MusicProfileEditPage", { state: musicProfileData });
+    navigate("/MusicProfileEditPage", { state: musicProfileData.userDetail.id });
   };
 
   const [isFollowed, setIsFollowed] = useState<boolean>();
@@ -644,9 +651,13 @@ function MusicProfilePage() {
       <Body>
         <ProfileHeaderArea>
           <ProfileLeftArea>
-            <Circle>
-              <img src={musicProfileData?.userDetail.profilePicture} width="100%" height="100%"></img>
-            </Circle>
+            {musicProfileData ? (
+              <Circle>
+                <img src={musicProfileData?.userDetail.profilePicture} width="100%" height="100%"></img>
+              </Circle>
+            ) : (
+              <Circle bgcolor={colors.BG_grey}></Circle>
+            )}
             {id !== musicProfileData?.userDetail.id &&
               (isFollowed ? (
                 <FollowBtn color={colors.BG_white} bgcolor={colors.Main_Pink} onClick={() => fetchFollow()}>
@@ -664,15 +675,31 @@ function MusicProfilePage() {
                 {musicProfileData?.userDetail.username}
               </Text>
             </ProfileNameArea>
-            <ProfileTagArea>
-              {/* <Badge>더뮤직슬레이어</Badge> */}
-              {musicProfileData?.userDetail.dnas.map((dna) => <Tag key={dna.dnaKey}>#{dna.dnaName}</Tag>)}
-            </ProfileTagArea>
+            <MusicDnaArea>
+              {musicProfileData ? (
+                musicProfileData?.userDetail.dnas.map((dna) => (
+                  <Tag key={dna.dnaKey} color={colors.Font_black}>
+                    #{dna.dnaName}
+                  </Tag>
+                ))
+              ) : (
+                <>
+                  <Tag color={colors.BG_grey}>dnadna</Tag>
+                  <Tag color={colors.BG_grey}>dnadnadna</Tag>
+                  <Tag color={colors.BG_grey}>dnadnadna</Tag>
+                  <Tag color={colors.BG_grey}>dnadna</Tag>
+                </>
+              )}
+            </MusicDnaArea>
           </ProfileRightArea>
         </ProfileHeaderArea>
-        {musicProfileData?.playlist && (
+        {musicProfileData?.playlist ? (
           <PlaylistCardArea>
             <PlaylistCardMini playlist={musicProfileData.playlist} userDetail={musicProfileData.userDetail} />
+          </PlaylistCardArea>
+        ) : (
+          <PlaylistCardArea>
+            <PlaylistCardSmall></PlaylistCardSmall>
           </PlaylistCardArea>
         )}
         <MenuArea>
@@ -730,7 +757,7 @@ function MusicProfilePage() {
                 <FavoriteArtistCard FavoriteArtistData={musicProfileData.favoriteArtist}></FavoriteArtistCard>
               )}
             </FavoriteArtistArea>
-            {musicProfileData && (
+            {musicProfileData && id === musicProfileData?.userDetail.id && (
               <EditBtn onClick={() => GoToEditPage(musicProfileData)}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

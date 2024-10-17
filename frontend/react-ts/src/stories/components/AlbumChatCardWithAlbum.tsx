@@ -10,13 +10,37 @@ const ChatCardContainer = styled.div`
   background-color: ${colors.BG_grey};
   border-radius: 12px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+  line-height: 110%;
+`;
+
+const AlbumCoverArea = styled.div`
+  width: 100px;
+  height: 100px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  overflow: hidden;
+  object-fit: cover;
+`;
+
+const CommentArea = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 240px;
+  height: 90px;
+  padding: 10px;
+  box-sizing: border-box;
 `;
 
 const ChatCardBody = styled.div`
-  margin: 10px 0px 10px 0px;
+  margin: 5px 0px 10px 0px;
   width: 90%;
   display: flex;
   flex-direction: row;
@@ -171,58 +195,63 @@ const AlbumChatCardWithAlbum = ({ comment }: commentProps) => {
 
   return (
     <ChatCardContainer>
-      <ProfileArea>
-        <ProfileImage>
-          <img src={comment.albumChatCommentDetail.author.profilePicture}></img>
-        </ProfileImage>
-        <ProfileTextArea>
-          <ProfileName>{comment.albumChatCommentDetail.author.username}</ProfileName>
-          <PostUploadTime> {timeAgo} </PostUploadTime>
-        </ProfileTextArea>
-      </ProfileArea>
-      <ChatCardBody>
-        <Text fontSize="15px">{comment.albumChatCommentDetail.content}</Text>
-      </ChatCardBody>
-      <ButtonArea>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="14"
-          height="14"
-          fill={
-            comment.albumChatCommentDetail.likes.some(
-              (like: any) => like.id === comment.albumChatCommentDetail.author.id
-            )
-              ? colors.Button_active
-              : colors.Button_deactive
-          }
-          className="bi bi-heart-fill"
-          viewBox="0 0 16 16"
-        >
-          <path
-            fillRule="evenodd"
-            d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"
-          />
-        </svg>
-        <Text fontSize="14px" color="grey" margin="0px 20px 0px 5px">
-          좋아요 {comment.albumChatCommentDetail.likes.length}개
-        </Text>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="14"
-          height="14"
-          fill="grey"
-          className="bi bi-chat-right-text-fill"
-          viewBox="0 0 16 16"
-          style={{ strokeWidth: 6 }}
-        >
-          <path d="M2 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h9.586a2 2 0 0 1 1.414.586l2 2V2a1 1 0 0 0-1-1zm12-1a2 2 0 0 1 2 2v12.793a.5.5 0 0 1-.854.353l-2.853-2.853a1 1 0 0 0-.707-.293H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z" />
-          <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6m0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5" />
-        </svg>
-        <Text fontSize="14px" color="grey" margin="0px 0px 0px 5px">
-          {/* 답글 {comment.albumChatCommentDetail.comments.length}개 */}
-          답글 ??개
-        </Text>
-      </ButtonArea>
+      <AlbumCoverArea>
+        <img src={comment.albumDetail.albumCover} width="100%" object-fit="cover"></img>
+      </AlbumCoverArea>
+      <CommentArea>
+        <ProfileArea>
+          <ProfileImage>
+            <img src={comment.albumChatCommentDetail.author.profilePicture}></img>
+          </ProfileImage>
+          <ProfileTextArea>
+            <ProfileName>{comment.albumChatCommentDetail.author.username}</ProfileName>
+            <PostUploadTime> {timeAgo} </PostUploadTime>
+          </ProfileTextArea>
+        </ProfileArea>
+        <ChatCardBody>
+          <Text fontSize="15px">{comment.albumChatCommentDetail.content}</Text>
+        </ChatCardBody>
+        <ButtonArea>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="14"
+            height="14"
+            fill={
+              comment.albumChatCommentDetail.likes.some(
+                (like: any) => like.id === comment.albumChatCommentDetail.author.id
+              )
+                ? colors.Button_active
+                : colors.Button_deactive
+            }
+            className="bi bi-heart-fill"
+            viewBox="0 0 16 16"
+          >
+            <path
+              fillRule="evenodd"
+              d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"
+            />
+          </svg>
+          <Text fontSize="14px" color="grey" margin="0px 20px 0px 5px">
+            좋아요 {comment.albumChatCommentDetail.likes.length}개
+          </Text>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="14"
+            height="14"
+            fill="grey"
+            className="bi bi-chat-right-text-fill"
+            viewBox="0 0 16 16"
+            style={{ strokeWidth: 6 }}
+          >
+            <path d="M2 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h9.586a2 2 0 0 1 1.414.586l2 2V2a1 1 0 0 0-1-1zm12-1a2 2 0 0 1 2 2v12.793a.5.5 0 0 1-.854.353l-2.853-2.853a1 1 0 0 0-.707-.293H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z" />
+            <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6m0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5" />
+          </svg>
+          <Text fontSize="14px" color="grey" margin="0px 0px 0px 5px">
+            {/* 답글 {comment.albumChatCommentDetail.comments.length}개 */}
+            답글 ??개
+          </Text>
+        </ButtonArea>
+      </CommentArea>
     </ChatCardContainer>
   );
 };

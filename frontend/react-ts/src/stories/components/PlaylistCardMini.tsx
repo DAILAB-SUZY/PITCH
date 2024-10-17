@@ -19,16 +19,21 @@ interface PlaylistProps {
     id: number;
     username: string;
     profilePicture: string;
-    dnas: [
-      {
-        dnaKey: number;
-        dnaName: string;
-      },
-    ];
+    dnas: {
+      dnaKey: number;
+      dnaName: string;
+    }[];
   };
 }
 
 // 스타일 정의
+const Container = styled.div`
+  display: flex;
+  justify-content: center;
+  width: 100vw;
+  /* padding: 20px; */
+  box-sizing: border-box;
+`;
 const PlaylistCardSmall = styled.div<{ gradient?: string }>`
   background: ${({ gradient }: { gradient?: string }) =>
     gradient || "linear-gradient(to top right, #989898, #f3f3f3)"};
@@ -143,27 +148,29 @@ const PlaylistCard = ({ playlist, userDetail }: PlaylistProps) => {
   };
 
   return (
-    <PlaylistCardSmall gradient={playlistGradient}>
-      <UserNameArea>{userDetail.username}'s Playlist</UserNameArea>
-      <SongList>
-        {playlist.slice(0, 2).map((song, index) => (
-          <SongItem key={song.trackId}>
-            <AlbumCover
-              src={song.trackCover}
-              alt="Album Cover"
-              crossOrigin="anonymous"
-              onLoad={handleImageLoad}
-              ref={index === 0 ? albumCoverRef : null}
-            />
-            <SongInfo>
-              <SongTitle>{song.title}</SongTitle>
-              <Artist>{song.artistName}</Artist>
-            </SongInfo>
-          </SongItem>
-        ))}
-      </SongList>
-      <MoreButton onClick={() => GoToPlayListPage(playlistInfo)}>더보기</MoreButton>
-    </PlaylistCardSmall>
+    <Container>
+      <PlaylistCardSmall gradient={playlistGradient}>
+        <UserNameArea>{userDetail.username}'s Playlist</UserNameArea>
+        <SongList>
+          {playlist.slice(0, 2).map((song, index) => (
+            <SongItem key={song.trackId}>
+              <AlbumCover
+                src={song.trackCover}
+                alt="Album Cover"
+                crossOrigin="anonymous"
+                onLoad={handleImageLoad}
+                ref={index === 0 ? albumCoverRef : null}
+              />
+              <SongInfo>
+                <SongTitle>{song.title}</SongTitle>
+                <Artist>{song.artistName}</Artist>
+              </SongInfo>
+            </SongItem>
+          ))}
+        </SongList>
+        <MoreButton onClick={() => GoToPlayListPage(playlistInfo)}>더보기</MoreButton>
+      </PlaylistCardSmall>
+    </Container>
   );
 };
 

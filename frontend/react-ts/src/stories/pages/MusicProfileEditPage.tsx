@@ -1,12 +1,14 @@
 import styled from "styled-components";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { colors } from "../../styles/color";
 import Nav from "../components/Nav";
 import profile from "../../img/cat.webp";
 import PlaylistCard from "../components/PlaylistCardMini";
-import AlbumGrid from "../components/AlbumGrid";
-import FavoriteArtistCard from "../components/FavoriteArtistCard";
+import AlbumGridEdit from "../components/AlbumGridEdit";
+import FavoriteArtistEditCard from "../components/FavoriteArtistEditCard";
+import PlaylistCardMini from "../components/PlaylistCardMini";
+import SearchModal from "../components/SearchModal";
 
 const Container = styled.div`
   display: flex;
@@ -16,6 +18,7 @@ const Container = styled.div`
   overflow-y: scroll;
   height: 100vh;
   width: 100vw;
+  overflow-x: hidden;
   background-color: white;
   color: black;
 `;
@@ -35,6 +38,42 @@ const Body = styled.div`
   align-items: center;
 `;
 
+const Blur = styled.div`
+  display: flex;
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  z-index: 90;
+  background-color: rgba(30, 30, 30, 0.5);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+`;
+
+const ModalArea = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+`;
+const Line = styled.div`
+  width: 95vw;
+  height: 1px;
+  background-color: ${colors.Button_deactive};
+`;
+
+const PageTitle = styled.div`
+  font-size: 30px;
+  font-family: "Bd";
+  padding: 20px 0px 10px 0px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  width: 90vw;
+`;
+
 const Text = styled.div<{
   fontFamily: string;
   fontSize: string;
@@ -45,87 +84,35 @@ const Text = styled.div<{
   margin: ${(props) => props.margin};
 `;
 
-const ProfileHeaderArea = styled.div`
-  width: 100vw;
-  height: 150px;
+const EditBtn = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: center;
   align-items: center;
-  padding-top: 20px;
-  margin-bottom: 20px;
+  justify-content: space-evenly;
+  background-color: ${colors.BG_grey};
+  width: 70px;
+  height: 30px;
+  border-radius: 15px;
+  padding: 10px;
+  box-sizing: border-box;
+  box-shadow: 0 0px 5px rgba(0, 0, 0, 0.1);
 `;
 
-const ProfileLeftArea = styled.div`
-  width: 35vw;
-  height: 100%;
+const MusicDnaArea = styled.div`
   display: flex;
+  width: 100vw;
   flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-`;
-
-const Circle = styled.div`
-  width: 100px;
-  height: 100px;
-  border-radius: 100%;
-  background-color: black;
-  overflow: hidden;
-  margin-bottom: 10px;
-`;
-
-const FollowBtn = styled.div`
-  width: 80px;
-  height: 20px;
-  font-size: 15px;
-  font-family: "Rg";
-  color: ${colors.Main_Pink};
-  background-color: white;
-  border-color: ${colors.Main_Pink};
-  border-style: solid;
-  border-width: 2px;
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  &:hover {
-    background-color: ${colors.Main_Pink};
-    color: white;
-  }
-`;
-
-const ProfileRightArea = styled.div`
-  width: 65vw;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
-  padding-top: 10px;
-`;
-
-const ProfileNameArea = styled.div`
-  width: 100%;
-  height: 40px;
+  padding: 20px;
 `;
 
 const ProfileTagArea = styled.div`
+  padding: 20px;
+  box-sizing: border-box;
   width: 100%;
-  height: 110px;
+  height: 100%;
 `;
 
-const Badge = styled.div`
-  background: linear-gradient(90deg, #a3d8f7, #72df9c);
-  padding: 5px 12px;
-  border-radius: 15px;
-  color: white;
-  font-size: 14px;
-  margin: 0px 10px 12px 0px;
-  display: inline-block;
-`;
-
-const Tag = styled.div`
+const Tag = styled.div<{ opacity: string }>`
   margin: 0px 10px 12px 0px;
   padding: 5px 12px;
   width: auto;
@@ -134,71 +121,16 @@ const Tag = styled.div`
   font-family: "Rg";
   color: black;
   background-color: ${colors.BG_grey};
-  /* border-color: ${colors.Tag};
-  border-style: solid;
-  border-width: 2px; */
   border-radius: 20px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  opacity: ${(props) => props.opacity};
 
-  &:hover {
+  /* &:hover {
     background-color: ${colors.Main_Pink};
     color: white;
-  }
-`;
-
-const MenuArea = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 50px;
-`;
-
-const TabArea = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  width: 360px;
-  margin-bottom: 20px;
-`;
-const TabBtn = styled.div<{ bgColor: string; color: string }>`
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  font-family: "Bd";
-  width: 175px;
-  height: 40px;
-  border-radius: 5px;
-  background-color: ${(props) => props.bgColor};
-  color: ${(props) => props.color};
-`;
-
-const FollowArea = styled.div`
-  width: 320px;
-  height: 50px;
-  border-radius: 10px;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-around;
-  margin-bottom: 20px;
-  background-color: ${colors.BG_grey};
-  color: black;
-  padding: 10px 20px;
-`;
-
-const FollowBox = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: auto;
-  height: 100%;
+  } */
 `;
 
 const BestAlbumArea = styled.div`
@@ -207,15 +139,27 @@ const BestAlbumArea = styled.div`
   flex-direction: column;
 `;
 
+const TitleArea = styled.div<{ margin?: string }>`
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  padding-left: 20px;
+  margin: ${(props) => props.margin};
+`;
+
 const Title = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-start;
   flex-direction: row;
-  width: 100vw;
-  padding-left: 20px;
+  width: auto;
+
   font-family: "Bd";
   font-size: 22px;
+
+  margin-right: 10px;
 `;
 
 const FavoriteArtistArea = styled.div`
@@ -244,12 +188,12 @@ const BtnArea = styled.div`
   margin-bottom: 100px;
 `;
 
-const Btn = styled.div<{ bgColor: string }>`
+const Btn = styled.div<{ bgcolor: string }>`
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-evenly;
-  background-color: ${(props) => props.bgColor};
+  background-color: ${(props) => props.bgcolor};
   width: 70px;
   height: 30px;
   border-radius: 15px;
@@ -258,113 +202,478 @@ const Btn = styled.div<{ bgColor: string }>`
   margin: 0px 20px;
   box-shadow: 0 0px 5px rgba(0, 0, 0, 0.1);
 `;
+interface MusicProfileData {
+  userDetail: {
+    id: number;
+    username: string;
+    profilePicture: string;
+    dnas: {
+      dnaKey: number;
+      dnaName: string;
+    }[];
+  };
+  favoriteArtist: {
+    artistName: string;
+    albumName: string;
+    trackName: string;
+    artistCover: string;
+    albumCover: string;
+    trackCover: string;
+  };
+  bestAlbum: [
+    {
+      albumId: number;
+      albumName: string;
+      albumCover: string;
+      score: number;
+      spotifyId: string;
+    },
+  ];
+  userDna: [
+    {
+      dnaName: string;
+    },
+  ];
+  playlist: [
+    {
+      playlistId: number;
+      trackId: number;
+      title: string;
+      artistName: string;
+      trackCover: string;
+    },
+  ];
+  followings: [
+    {
+      userId: number;
+    },
+  ];
+  followers: [
+    {
+      userId: number;
+    },
+  ];
+}
+
+interface MusicDna {
+  dnaKey: number;
+  dnaName: string;
+}
+
+interface BestAlbum {
+  albumId: number;
+  albumName: string;
+  albumCover: string;
+  score: number;
+  spotifyId: string;
+}
 
 function MusicProfileEditPage() {
-  const [tabBtn, setTabBtn] = useState(1);
+  const location = useLocation();
+  const userId = location.state;
+
+  const server = "http://203.255.81.70:8030";
+  const token = localStorage.getItem("login-token");
+  const refreshToken = localStorage.getItem("login-refreshToken");
+  const reissueTokenUrl = `${server}/api/auth/reissued`;
+  let musiProfileUrl = `${server}/api/user/${userId}/musicProfile`;
+
   const navigate = useNavigate();
   const GoToMusicProfilePage = () => {
-    navigate("/MusicProfilePage");
+    navigate("/MusicProfilePage", { state: musicProfileData?.userDetail.id });
   };
 
-  const location = useLocation();
-  const musicProfileData = location.state;
+  const [musicProfileData, setMusicProfileData] = useState<MusicProfileData>();
+  const [myMusicDna, setMyMusicDna] = useState<MusicDna[]>([]);
+  const [allMusicDna, setAllMusicDna] = useState<MusicDna[]>([]);
+  const [bestAlbum, setBestAlbum] = useState<BestAlbum[]>();
+  console.log("best Album");
+  console.log(bestAlbum);
+  const [isAlbumSearchOpen, setIsAlbumSearchOpen] = useState(false);
 
+  useEffect(() => {
+    fetchData();
+    if (musicProfileData) {
+      setMusicProfileData(musicProfileData);
+      setMyMusicDna(musicProfileData.userDetail.dnas);
+      setBestAlbum(musicProfileData.bestAlbum);
+      fetchMusicDNA();
+    }
+  }, []);
+
+  const fetchData = async () => {
+    if (token) {
+      try {
+        console.log("fetching...");
+        const response = await fetch(musiProfileUrl, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          console.log("set PostList");
+          const data = await response.json();
+          console.log(data);
+          setMusicProfileData(data);
+          setMyMusicDna(data.userDetail.dnas);
+          setBestAlbum(data.bestAlbum);
+          fetchMusicDNA();
+        } else if (response.status === 401) {
+          console.log("reissuing Token");
+          const reissueToken = await fetch(reissueTokenUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Refresh-Token": `${refreshToken}`,
+            },
+          });
+          const data = await reissueToken.json();
+          localStorage.setItem("login-token", data.token);
+          localStorage.setItem("login-refreshToken", data.refreshToken);
+          fetchData();
+        } else {
+          console.error("Failed to fetch data:", response.status);
+        }
+      } catch (error) {
+        console.error("Error fetching the JSON file:", error);
+      } finally {
+        console.log("finished");
+      }
+    }
+  };
+
+  // musicDNA 가져오기
+  const MusicDNAUrl = `${server}/api/dna`;
+  const fetchMusicDNA = async () => {
+    if (token) {
+      try {
+        console.log(`fetching Playlist...`);
+        const response = await fetch(MusicDNAUrl, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+          setAllMusicDna(
+            data.filter(
+              (dna: any) =>
+                !musicProfileData?.userDetail.dnas.some((userDna: any) => userDna.dnaKey === dna.dnaKey)
+            )
+          );
+        } else if (response.status === 401) {
+          console.log("reissuing Token");
+          const reissueToken = await fetch(reissueTokenUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Refresh-Token": `${refreshToken}`,
+            },
+          });
+          const data = await reissueToken.json();
+          localStorage.setItem("login-token", data.token);
+          localStorage.setItem("login-refreshToken", data.refreshToken);
+          fetchMusicDNA();
+        } else {
+          console.error("Failed to fetch data:", response.status);
+        }
+      } catch (error) {
+        console.error("Error fetching the JSON file:", error);
+      } finally {
+        console.log("finished");
+      }
+    }
+  };
+
+  // DNA 추가 제거
+  const addToMyDNA = (dnaKey: number) => {
+    console.log("adding DNA...");
+    if (allMusicDna && myMusicDna) {
+      console.log("start adding DNA...");
+      let addDna = allMusicDna?.find((dna) => dna.dnaKey === dnaKey);
+      if (addDna) {
+        setAllMusicDna(allMusicDna.filter((dna) => dna.dnaKey !== dnaKey));
+        setMyMusicDna([...myMusicDna, addDna]);
+        console.log("DNA added");
+        console.log(addDna);
+      }
+    }
+  };
+
+  const deleteFromMyDNA = (dnaKey: number) => {
+    console.log("deleting DNA...");
+    if (allMusicDna && myMusicDna) {
+      console.log("start deleting DNA...");
+      let deleteDna = myMusicDna?.find((dna) => dna.dnaKey === dnaKey);
+      if (deleteDna) {
+        setMyMusicDna(myMusicDna.filter((dna) => dna.dnaKey !== dnaKey));
+        setAllMusicDna([...allMusicDna, deleteDna]);
+        console.log("DNA deleted");
+        console.log(deleteDna);
+      }
+    }
+  };
+
+  // 수정사항 fetch
+  const MusicDNAPostUrl = `${server}/api/dna`;
+  const BestAlbumPostUrl = `${server}/api/bestAlbum`;
+  const postAllEdit = () => {
+    try {
+      postMusicDNA();
+      postBestAlbum();
+    } catch (error) {
+      console.error("Post fail :", error);
+    } finally {
+      GoToMusicProfilePage();
+    }
+  };
+  const postMusicDNA = async () => {
+    if (token) {
+      try {
+        console.log(`fetching Edit...`);
+        console.log(myMusicDna);
+        const response = await fetch(MusicDNAPostUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            dna: myMusicDna.map((dna) => dna.dnaKey),
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+        } else if (response.status === 401) {
+          console.log("reissuing Token");
+          const reissueToken = await fetch(reissueTokenUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Refresh-Token": `${refreshToken}`,
+            },
+          });
+          const data = await reissueToken.json();
+          localStorage.setItem("login-token", data.token);
+          localStorage.setItem("login-refreshToken", data.refreshToken);
+          postMusicDNA();
+        } else {
+          console.error("Failed to fetch data:", response.status);
+        }
+      } catch (error) {
+        console.error("Error fetching the JSON file:", error);
+      } finally {
+        console.log("finished");
+      }
+    }
+  };
+  const postBestAlbum = async () => {
+    if (token) {
+      try {
+        const response = await fetch(BestAlbumPostUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            bestalbum: bestAlbum?.map((album) => ({
+              spotifyAlbumId: album.spotifyId,
+              score: album.score,
+            })),
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+        } else if (response.status === 401) {
+          console.log("reissuing Token");
+          const reissueToken = await fetch(reissueTokenUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Refresh-Token": `${refreshToken}`,
+            },
+          });
+          const data = await reissueToken.json();
+          localStorage.setItem("login-token", data.token);
+          localStorage.setItem("login-refreshToken", data.refreshToken);
+          postBestAlbum();
+        } else {
+          console.error("Failed to fetch data:", response.status);
+        }
+      } catch (error) {
+        console.error("Error fetching the JSON file:", error);
+      } finally {
+        console.log("finished");
+      }
+    }
+  };
   return (
     <Container>
       <Header>
         <Nav page={2}></Nav>
       </Header>
+      {isAlbumSearchOpen && (
+        <Blur>
+          <ModalArea
+          // onClick={() => {
+          //   setIsAlbumSearchOpen(false);
+          // }}
+          >
+            <SearchModal
+              isAlbumSearchOpen={isAlbumSearchOpen}
+              setIsAlbumSearchOpen={setIsAlbumSearchOpen}
+              bestAlbum={bestAlbum}
+              setBestAlbum={setBestAlbum}
+            ></SearchModal>
+          </ModalArea>
+        </Blur>
+      )}
       <Body>
-        <ProfileHeaderArea>
-          <ProfileLeftArea>
-            <Circle>
-              <img src={profile} width="100%" height="100%"></img>
-            </Circle>
-            <FollowBtn>Follow</FollowBtn>
-          </ProfileLeftArea>
-          <ProfileRightArea>
-            <ProfileNameArea>
-              <Text fontFamily="Bd" fontSize="30px" margin="0px 15px 0px 0px ">
-                김준호
-              </Text>
-            </ProfileNameArea>
-            <ProfileTagArea>
-              <Tag>#여유로운</Tag>
-              <Tag>#Rock</Tag>
-              <Tag>#RnB</Tag>
-            </ProfileTagArea>
-          </ProfileRightArea>
-        </ProfileHeaderArea>
+        <PageTitle>MusicProfile 수정</PageTitle>
+        <MusicDnaArea>
+          <TitleArea>
+            <Title>Music DNA</Title>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="22"
+              height="22"
+              fill="currentColor"
+              className="bi bi-pencil-square"
+              viewBox="0 0 16 16"
+              onClick={() => console.log("dna 수정")}
+            >
+              <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+              <path
+                fillRule="evenodd"
+                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
+              />
+            </svg>
+          </TitleArea>
+          <ProfileTagArea>
+            {myMusicDna.map((dna) => (
+              <Tag
+                key={dna.dnaKey}
+                opacity="1"
+                onClick={() => {
+                  deleteFromMyDNA(dna.dnaKey);
+                }}
+              >
+                {" "}
+                #{dna.dnaName}
+              </Tag>
+            ))}
+          </ProfileTagArea>
+          <ProfileTagArea>
+            {allMusicDna.map((dna) => (
+              <Tag
+                key={dna.dnaKey}
+                opacity="0.5"
+                onClick={() => {
+                  addToMyDNA(dna.dnaKey);
+                }}
+              >
+                #{dna.dnaName}
+              </Tag>
+            ))}
+          </ProfileTagArea>
+        </MusicDnaArea>
         <PlaylistCardArea>
-          <PlaylistCard
-            playlist={{
-              playlist: { ...musicProfileData.playlist },
-              userDetail: { ...musicProfileData.userDetail },
-            }}
-          ></PlaylistCard>
+          <TitleArea margin="0px 0px 20px 20px">
+            <Title> Playlist</Title>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="22"
+              height="22"
+              fill="currentColor"
+              className="bi bi-pencil-square"
+              viewBox="0 0 16 16"
+              onClick={() => console.log("playlist 수정")}
+            >
+              <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+              <path
+                fillRule="evenodd"
+                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
+              />
+            </svg>
+          </TitleArea>
+          {musicProfileData?.playlist && (
+            <PlaylistCardMini
+              playlist={musicProfileData?.playlist}
+              userDetail={musicProfileData?.userDetail}
+            />
+          )}
         </PlaylistCardArea>
-        <MenuArea>
-          <TabArea>
-            <TabBtn
-              bgColor={tabBtn === 1 ? colors.Main_Pink : colors.BG_grey}
-              color={tabBtn === 1 ? colors.BG_white : colors.Font_black}
-              onClick={() => setTabBtn(1)}
+
+        <BestAlbumArea>
+          <TitleArea>
+            <Title>BestAlbum</Title>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="22"
+              height="22"
+              fill="currentColor"
+              className="bi bi-pencil-square"
+              viewBox="0 0 16 16"
+              onClick={() => setIsAlbumSearchOpen(true)}
             >
-              Profile
-            </TabBtn>
-            <TabBtn
-              bgColor={tabBtn === 2 ? colors.Main_Pink : colors.BG_grey}
-              color={tabBtn === 2 ? colors.BG_white : colors.Font_black}
-              onClick={() => setTabBtn(2)}
+              <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+              <path
+                fillRule="evenodd"
+                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
+              />
+            </svg>
+          </TitleArea>
+          {bestAlbum && <AlbumGridEdit bestAlbum={bestAlbum} setBestAlbum={setBestAlbum}></AlbumGridEdit>}
+        </BestAlbumArea>
+        <FavoriteArtistArea>
+          <TitleArea>
+            <Title>Favorite Artist</Title>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="22"
+              height="22"
+              fill="currentColor"
+              className="bi bi-pencil-square"
+              viewBox="0 0 16 16"
+              onClick={() => console.log("dna 수정")}
             >
-              Activity
-            </TabBtn>
-          </TabArea>
-        </MenuArea>
-        {tabBtn === 1 ? (
-          <>
-            <FollowArea>
-              <FollowBox>
-                <Text fontFamily="Bd" fontSize="15px" margin="5px">
-                  Follower
-                </Text>
-                <Text fontFamily="Rg" fontSize="15px" margin="5px">
-                  123
-                </Text>
-              </FollowBox>
-              <FollowBox>
-                <Text fontFamily="Bd" fontSize="15px" margin="5px">
-                  Follower
-                </Text>
-                <Text fontFamily="Rg" fontSize="15px" margin="5px">
-                  456
-                </Text>
-              </FollowBox>
-            </FollowArea>
-            <BestAlbumArea>
-              <Title>BestAlbum</Title>
-              <AlbumGrid AlbumData={musicProfileData}></AlbumGrid>
-            </BestAlbumArea>
-            <FavoriteArtistArea>
-              <Title>Favorite Artist</Title>
-              <FavoriteArtistCard FavoriteArtistData={musicProfileData.favoriteArtist}></FavoriteArtistCard>
-            </FavoriteArtistArea>
-            <BtnArea>
-              <Btn bgColor={colors.BG_lightpink} onClick={() => GoToMusicProfilePage()}>
-                <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 4px">
-                  저장
-                </Text>
-              </Btn>
-              <Btn bgColor={colors.BG_grey} onClick={() => GoToMusicProfilePage()}>
-                <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 4px">
-                  취소
-                </Text>
-              </Btn>
-            </BtnArea>
-          </>
-        ) : (
-          <></>
-        )}
+              <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+              <path
+                fillRule="evenodd"
+                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
+              />
+            </svg>
+          </TitleArea>
+          {musicProfileData?.favoriteArtist && (
+            <FavoriteArtistEditCard
+              FavoriteArtistData={musicProfileData?.favoriteArtist}
+            ></FavoriteArtistEditCard>
+          )}
+        </FavoriteArtistArea>
+        <BtnArea>
+          <Btn bgcolor={colors.BG_lightpink} onClick={() => postAllEdit()}>
+            <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 4px">
+              저장
+            </Text>
+          </Btn>
+          <Btn bgcolor={colors.BG_grey} onClick={() => GoToMusicProfilePage()}>
+            <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 4px">
+              취소
+            </Text>
+          </Btn>
+        </BtnArea>
       </Body>
     </Container>
   );

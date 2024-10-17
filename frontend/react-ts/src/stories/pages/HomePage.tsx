@@ -184,7 +184,7 @@ function HomePage() {
       profilePicture: string;
     }[];
   }
-  const PlaylistUrl = `${server}/api/FollowerPlaylist/user/1`;
+  const PlaylistUrl = `${server}/api/playlist/following`;
 
   // Playlist Fetching
   const fetchPlaylist = async () => {
