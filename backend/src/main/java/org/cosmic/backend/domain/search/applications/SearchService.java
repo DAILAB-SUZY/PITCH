@@ -200,7 +200,7 @@ public class SearchService {
     String url = "https://api.spotify.com/v1/recommendations?limit=5&market=KR&seed_artists={seedArtistId}&seed_tracks={seedTrackIds}";
     RestTemplate rest = new RestTemplate();
     return rest.exchange(url, HttpMethod.GET, getEntity(), SpotifyRecommend.class, spotifyArtistId,
-        String.join(",", spotifyTrackIds)).getBody();
+        String.join(",", spotifyTrackIds.stream().limit(4).toList())).getBody();
   }
 
   @Transactional
