@@ -15,7 +15,7 @@ public interface AlbumChatCommentRepository extends JpaRepository<AlbumChatComme
       "FROM AlbumChatComment acc " +
       "LEFT JOIN acc.albumChatCommentLikes acl " +
       "WHERE acc.album.albumId = :albumid " +
-      "AND acc.parentAlbumChatCommentId IS NULL " +
+      "AND acc.parentAlbumChatComment IS NULL " +
       "GROUP BY acc " +
       "ORDER BY COUNT(acl) DESC " +
       "LIMIT 10 " +
@@ -28,7 +28,7 @@ public interface AlbumChatCommentRepository extends JpaRepository<AlbumChatComme
       "SELECT acc " +
           "FROM AlbumChatComment acc " +
           "WHERE acc.album.albumId=:albumid " +
-          "AND acc.parentAlbumChatCommentId IS NULL " +
+          "AND acc.parentAlbumChatComment IS NULL " +
           "ORDER BY acc.createTime DESC" +
           " LIMIT 10 " +
           " OFFSET :count "
@@ -40,15 +40,13 @@ public interface AlbumChatCommentRepository extends JpaRepository<AlbumChatComme
       "SELECT acc " +
           "FROM AlbumChatComment acc " +
           "WHERE acc.album.albumId = :albumId " +
-          "AND acc.parentAlbumChatCommentId = :albumChatCommentId " +
+          "AND acc.parentAlbumChatComment = :albumChatCommentId " +
           "ORDER BY acc.createTime DESC"
   )
   Optional<List<AlbumChatComment>> findByAlbumIdOrderByReply(@Param("albumId") Long albumId,
       @Param("albumChatCommentId") Long albumChatCommentId);
 
   Optional<List<AlbumChatComment>> findByUser_UserId(Long userId);
-
-  Optional<List<AlbumChatComment>> findByParentAlbumChatCommentId(Long parentAlbumChatCommentId);
 
   void deleteAllByParentAlbumChatComment_AlbumChatCommentId(Long parentAlbumChatCommentId);
 }
