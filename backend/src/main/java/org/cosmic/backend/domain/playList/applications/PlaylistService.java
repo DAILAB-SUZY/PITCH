@@ -80,4 +80,8 @@ public class PlaylistService {
     User user = usersRepository.findById(userId).orElseThrow(NotFoundUserException::new);
     return user.getFollowings().stream().map(FollowerPlaylistDetail::from).toList();
   }
+
+  public List<PlaylistDetail> recommendation() {
+    return trackRepository.findRandomTracks(5).stream().map(PlaylistDetail::from).toList();
+  }
 }

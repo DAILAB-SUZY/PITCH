@@ -4,20 +4,19 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.Instant;
+import org.cosmic.backend.domain.post.entities.PostComment;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class UpdateReplyReq {
-    private String content;
 
-    public static UpdateReplyReq createUpdateReplyReq(Long userId,Long commentId,Long replyId,String content,Instant createTime) {
-        return  UpdateReplyReq.builder()
-                .content(content)
-                .build();
-    }
+  private String content;
 
+  public static UpdateReplyReq from(PostComment postComment) {
+    return UpdateReplyReq.builder()
+        .content(postComment.getContent())
+        .build();
+  }
 }

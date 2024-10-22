@@ -17,13 +17,7 @@ public class BestAlbumDetail {
   String albumName;
   String albumCover;
   Integer score;
-
-  public BestAlbumDetail(UserBestAlbum userBestAlbum) {
-    this.albumId = userBestAlbum.getAlbum().getAlbumId();
-    this.albumName = userBestAlbum.getAlbum().getTitle();
-    this.albumCover = userBestAlbum.getAlbum().getAlbumCover();
-    this.score = userBestAlbum.getScore();
-  }
+  String spotifyId;
 
   public static BestAlbumDetail from(UserBestAlbum bestAlbums) {
     return BestAlbumDetail.builder()
@@ -31,6 +25,7 @@ public class BestAlbumDetail {
         .albumName(bestAlbums.getAlbum().getTitle())
         .albumCover(bestAlbums.getAlbum().getAlbumCover())
         .score(bestAlbums.getScore())
+        .spotifyId(bestAlbums.getAlbum().getSpotifyAlbumId())
         .build();
   }
 

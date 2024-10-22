@@ -7,7 +7,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -23,9 +22,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.cosmic.backend.domain.albumChat.domains.AlbumChatComment;
 import org.cosmic.backend.domain.albumChat.domains.AlbumLike;
-import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumChatDetail;
-import org.cosmic.backend.domain.post.dtos.Post.AlbumDetail;
-import org.cosmic.backend.domain.post.dtos.Post.AlbumDto;
 import org.cosmic.backend.domain.post.entities.Post;
 import org.cosmic.backend.domain.search.dtos.SpotifyAlbum;
 
@@ -79,40 +75,6 @@ public class Album {//앨범과 트랙은 1:N관계이며 앨범과 아티스트
   @OneToMany(mappedBy = "album")
   @Builder.Default
   private List<AlbumLike> albumLike = new ArrayList<>();
-
-  public static AlbumDetail toAlbumDetail(Album album) {
-    return AlbumDetail.builder()
-        .albumId(album.getAlbumId())
-        .title(album.getTitle())
-        .albumCover(album.getAlbumCover())
-        .artistName(album.getArtist().getArtistName())
-        .genre(album.genre)
-        .build();
-  }
-  public static List<AlbumDetail> toAlbumDetail(List<Album> album) {
-    List<AlbumDetail> albumDetails = new ArrayList<>();
-    album.forEach(albumDetail -> albumDetails.add(toAlbumDetail(albumDetail)));
-    return albumDetails;
-  }
-  //TODO 앨범 Detail을 플레이리스트꺼 제거
-  public static AlbumChatDetail toAlbumChatDetail(Album album) {
-    return AlbumChatDetail.builder()
-        .albumDetail(AlbumDetail.from(album))
-        .comments(
-            album.getAlbumChatComments().stream().map(AlbumChatComment::toAlbumChatCommentDetail)
-                .toList())
-        .albumLike(
-            album.getAlbumLike().stream().map(AlbumLike::toAlbumChatAlbumLikeDetail).toList())
-        .build();
-  }
-
-  public static AlbumDto toAlbumDto(Album album) {
-    return AlbumDto.builder()
-        .albumId(album.getAlbumId())
-        .albumName(album.getTitle())
-        .artistName(album.getArtist().getArtistName())
-        .build();
-  }
 
   public static Album from(SpotifyAlbum spotifyAlbum, Artist artist) {
     return Album.builder()

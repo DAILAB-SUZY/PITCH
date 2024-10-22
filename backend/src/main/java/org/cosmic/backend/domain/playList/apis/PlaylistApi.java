@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException;
 
 /**
  * <p>플레이리스트 관련 API를 제공하는 REST 컨트롤러입니다.</p>
@@ -56,8 +57,14 @@ public class PlaylistApi {
   public ResponseEntity<PlaylistAndRecommendDetail> dataGive(
       @Parameter(description = "유저 id")
       @PathVariable Long userId) {
+    List<PlaylistDetail> recommendations;
+    try {
+      recommendations = searchService.getRecommendations(userId);
+    } catch (HttpClientErrorException e) {
+      recommendations = playlistService.recommendation();
+    }
     return ResponseEntity.ok(new PlaylistAndRecommendDetail(playlistService.open(userId),
-        searchService.getRecommendations(userId)));
+        recommendations));
   }
 
   @GetMapping("/playlist/following")
