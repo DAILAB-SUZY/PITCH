@@ -1,13 +1,13 @@
 package org.cosmic.backend.domain.auth.applications;
 
-import com.wrapper.spotify.SpotifyApi;
-import com.wrapper.spotify.exceptions.SpotifyWebApiException;
-import com.wrapper.spotify.model_objects.credentials.ClientCredentials;
-import com.wrapper.spotify.requests.authorization.client_credentials.ClientCredentialsRequest;
-import org.apache.hc.core5.http.ParseException;
+import se.michaelthelin.spotify.SpotifyApi;
+import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
+import se.michaelthelin.spotify.model_objects.credentials.ClientCredentials;
+import se.michaelthelin.spotify.requests.authorization.client_credentials.ClientCredentialsRequest;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.Map;
 
 import static java.lang.System.getenv;
@@ -39,8 +39,10 @@ public class CreateSpotifyToken {
             spotifyApi.setAccessToken(clientCredentials.getAccessToken());
             return spotifyApi.getAccessToken();
 
-        } catch (IOException | SpotifyWebApiException | ParseException e) {
+        } catch (IOException | SpotifyWebApiException e) {
             return "error";
+        } catch (org.apache.hc.core5.http.ParseException e) {
+            throw new RuntimeException(e);
         }
     }
 }
