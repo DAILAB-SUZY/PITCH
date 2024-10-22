@@ -1,47 +1,48 @@
 package org.cosmic.backend.domain.auth.applications;
 
-import static java.lang.System.getenv;
-
-import java.io.IOException;
-import java.util.Map;
-import org.apache.hc.core5.http.ParseException;
-import org.springframework.stereotype.Component;
 import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 import se.michaelthelin.spotify.model_objects.credentials.ClientCredentials;
 import se.michaelthelin.spotify.requests.authorization.client_credentials.ClientCredentialsRequest;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.Map;
+
+import static java.lang.System.getenv;
 
 @Component
 public class CreateSpotifyToken {
+    Map<String,String> env=getenv();
+    private String clientId=env.get("CLIENT_ID");
+    private String clientSecret=env.get("CLIENT_SECRET");
 
-  Map<String, String> env = getenv();
-  private String clientId = "09175c6ea56247fd9529c96cfb2b7104";
-  private String clientSecret = "9a0ed0f031ba43058aad372a30d00897";
+    private SpotifyApi spotifyApi;
 
-  private SpotifyApi spotifyApi;
-
-  // SpotifyApi 객체 초기화
-  private void initSpotifyApi() {
-    spotifyApi = new SpotifyApi.Builder()
-        .setClientId(clientId)
-        .setClientSecret(clientSecret)
-        .build();
-  }
-
-  public String accesstoken() {
-    if (spotifyApi == null) {
-      initSpotifyApi();  // 프로퍼티가 주입된 후 SpotifyApi 초기화
+    // SpotifyApi 객체 초기화
+    private void initSpotifyApi() {
+        spotifyApi = new SpotifyApi.Builder()
+                .setClientId(clientId)
+                .setClientSecret(clientSecret)
+                .build();
     }
 
-    ClientCredentialsRequest clientCredentialsRequest = spotifyApi.clientCredentials().build();
-    try {
-      final ClientCredentials clientCredentials = clientCredentialsRequest.execute();
-      spotifyApi.setAccessToken(clientCredentials.getAccessToken());
-      return spotifyApi.getAccessToken();
+    public String accesstoken() {
+        if (spotifyApi == null) {
+            initSpotifyApi();  // 프로퍼티가 주입된 후 SpotifyApi 초기화
+        }
 
-    } catch (IOException | SpotifyWebApiException | ParseException e) {
-      System.out.println("Error: " + e.getMessage());
-      return "error";
+        ClientCredentialsRequest clientCredentialsRequest = spotifyApi.clientCredentials().build();
+        try {
+            final ClientCredentials clientCredentials = clientCredentialsRequest.execute();
+            spotifyApi.setAccessToken(clientCredentials.getAccessToken());
+            return spotifyApi.getAccessToken();
+
+        } catch (IOException | SpotifyWebApiException e) {
+            return "error";
+        } catch (org.apache.hc.core5.http.ParseException e) {
+            throw new RuntimeException(e);
+        }
     }
-  }
 }

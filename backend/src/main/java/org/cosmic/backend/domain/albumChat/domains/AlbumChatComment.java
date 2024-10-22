@@ -50,6 +50,7 @@ public class AlbumChatComment {
   @Column(name = "update_time")
   private Instant updateTime;
 
+  @Builder.Default
   @OneToMany(mappedBy = "albumChatComment", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<AlbumChatCommentLike> albumChatCommentLikes = new ArrayList<>();
 
