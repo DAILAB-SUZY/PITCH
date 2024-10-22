@@ -13,15 +13,15 @@ import java.time.Instant;
 public class ArtistDetail {
     //해당 이름 가진 아티스트 정보들을 줌
     private Long artistId;
-    //private String albumName;
+    private String spotifyArtistId;
     private String artistCover;
     private String artistName;
-    //private Instant time;
 
     public ArtistDetail(Artist artist) {
         this.artistId = artist.getArtistId();
         this.artistCover = artist.getArtistCover();
         this.artistName = artist.getArtistName();
+        this.spotifyArtistId = artist.getSpotifyArtistId();
     }
 }
 

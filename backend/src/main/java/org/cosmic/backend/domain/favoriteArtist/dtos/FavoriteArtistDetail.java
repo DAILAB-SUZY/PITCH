@@ -11,13 +11,13 @@ import org.cosmic.backend.domain.favoriteArtist.domains.FavoriteArtist;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FavoriteArtistDetail {
-
   private String artistName;
   private String albumName;
   private String trackName;
   private String artistCover;
   private String albumCover;
   private String trackCover;
+  private String spotifyArtistId;
 
   public static FavoriteArtistDetail from(FavoriteArtist favoriteArtist) {
     return FavoriteArtistDetail.builder()
@@ -27,6 +27,7 @@ public class FavoriteArtistDetail {
         .artistCover(favoriteArtist.getArtist().getArtistCover())
         .albumCover(favoriteArtist.getAlbum().getAlbumCover())
         .trackCover(favoriteArtist.getTrack().getTrackCover())
+        .spotifyArtistId(favoriteArtist.getSpotifyArtistId())
         .build();
   }
 }

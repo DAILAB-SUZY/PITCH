@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TrackRepository extends JpaRepository<Track, Long> {
   
-  Optional<Track> findByTrackIdAndArtist_ArtistId(Long trackId, Long artistId);
+  Optional<Track> findBySpotifyTrackIdAndArtist_SpotifyArtistId(String spotifyTrackId, String spotifyArtistId);
 
   Optional<Track> findByTitle(String title);
 
