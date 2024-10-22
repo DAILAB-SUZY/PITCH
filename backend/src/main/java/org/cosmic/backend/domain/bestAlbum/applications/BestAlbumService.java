@@ -8,7 +8,6 @@ import org.cosmic.backend.domain.bestAlbum.dtos.BestAlbumDetail;
 import org.cosmic.backend.domain.bestAlbum.dtos.BestAlbumRequest;
 import org.cosmic.backend.domain.bestAlbum.exceptions.ExistBestAlbumException;
 import org.cosmic.backend.domain.bestAlbum.exceptions.NotMatchBestAlbumException;
-import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.post.exceptions.NotFoundAlbumException;
 import org.cosmic.backend.domain.search.applications.SearchService;
@@ -66,6 +65,14 @@ public class BestAlbumService {
     return getBestAlbumDetailList(updatedUser);
   }
 
+  private List<UserBestAlbum> getNewBestAlbums(List<BestAlbumRequest> bestAlbumList, User user) {
+    return bestAlbumList.stream()
+        .map(bestAlbum -> UserBestAlbum.from(user,
+            searchService.findAndSaveAlbumBySpotifyId(bestAlbum.spotifyAlbumId()),
+            bestAlbum.score()))
+        .toList();
+  }
+
   /**
    * 사용자의 좋아요 앨범 목록을 업데이트합니다. 기존 목록을 삭제하고 새 목록을 저장합니다.
    *
@@ -79,13 +86,9 @@ public class BestAlbumService {
   @Transactional
   public List<BestAlbumDetail> save(Long userId, List<BestAlbumRequest> bestAlbumList) {
     User user = usersRepository.findById(userId).orElseThrow(NotFoundUserException::new);
-    List<UserBestAlbum> bestAlbums = user.getBestAlbums();
-    bestAlbums.clear();
-    bestAlbumList.forEach(bestAlbum -> {
-          Album album = searchService.findAndSaveAlbumBySpotifyId(bestAlbum.spotifyAlbumId());
-          bestAlbums.add(UserBestAlbum.from(user, album, bestAlbum.score()));
-        }
-    );
+    user.getBestAlbums().clear();
+    usersRepository.saveAndFlush(user);
+    user.getBestAlbums().addAll(getNewBestAlbums(bestAlbumList, user));
     User updatedUser = usersRepository.save(user);
     return getBestAlbumDetailList(updatedUser);
   }
