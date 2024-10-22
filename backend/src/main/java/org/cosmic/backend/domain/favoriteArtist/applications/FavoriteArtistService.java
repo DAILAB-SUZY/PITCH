@@ -92,31 +92,12 @@ public class FavoriteArtistService {
      */
     @Transactional
     public FavoriteArtistDetail favoriteArtistSaveData(FavoriteRequest favoriteArtist, Long userId) {
-        Album album;
-        Track track;
-        if (usersRepository.findById(userId).isEmpty()) {
-            throw new NotFoundUserException();
-        }
-
-        if (albumRepository.findBySpotifyAlbumIdAndArtist_SpotifyArtistId(favoriteArtist.getSpotifyAlbumId(), favoriteArtist.getSpotifyArtistId()).isEmpty()
-            && trackRepository.findBySpotifyTrackIdAndArtist_SpotifyArtistId(favoriteArtist.getSpotifyTrackId(), favoriteArtist.getSpotifyArtistId()).isEmpty()){
-            album=searchService.findAndSaveAlbumBySpotifyId(favoriteArtist.getSpotifyAlbumId());
-            track=searchService.findAndSaveTrackBySpotifyId(favoriteArtist.getSpotifyTrackId());
-        }
-        else{
-            album= albumRepository.findBySpotifyAlbumId(favoriteArtist.getSpotifyAlbumId()).get();
-            track= trackRepository.findBySpotifyTrackId(favoriteArtist.getSpotifyTrackId()).get();
-        }
-        //없으면 검색해서 가져옴.
         User user = usersRepository.findByUserId(userId).orElseThrow();
-        favoriteArtistRepository.deleteByUser_UserId(user.getUserId());
-        FavoriteArtist favoriteArtist2=favoriteArtistRepository.save(FavoriteArtist.builder()
-            .artist(artistRepository.findBySpotifyArtistId(favoriteArtist.getSpotifyArtistId()).orElseThrow())
-            .track(track)
-            .album(album)
-            .user(user)
-            .build());
-
+        FavoriteArtist favoriteArtist2 = favoriteArtistRepository.findByUser_UserId(user.getUserId()).orElseThrow(NotFoundUserException::new);
+        favoriteArtist2.setArtist(searchService.findAndSaveArtistBySpotifyId(favoriteArtist.getSpotifyTrackId()));
+        favoriteArtist2.setAlbum(searchService.findAndSaveAlbumBySpotifyId(favoriteArtist.getSpotifyAlbumId()));
+        favoriteArtist2.setTrack(searchService.findAndSaveTrackBySpotifyId(favoriteArtist.getSpotifyTrackId()));
+        favoriteArtistRepository.save(favoriteArtist2);
         return FavoriteArtist.toFavoriteArtistDto(favoriteArtist2);
     }
 }
