@@ -18,6 +18,7 @@ public class FavoriteArtistDetail {
   private String artistCover;
   private String albumCover;
   private String trackCover;
+  private String spotifyArtistId;
 
   public static FavoriteArtistDetail from(FavoriteArtist favoriteArtist) {
     return FavoriteArtistDetail.builder()
