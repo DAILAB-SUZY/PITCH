@@ -1,86 +1,64 @@
 package org.cosmic.backend.domainsTest.bestAlbum;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import lombok.extern.log4j.Log4j2;
-import org.cosmic.backend.domain.auth.dtos.UserLoginDetail;
-import org.cosmic.backend.domain.bestAlbum.dtos.AlbumScoreDto;
-import org.cosmic.backend.domain.playList.domains.Album;
-import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
-import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
-import org.cosmic.backend.domain.playList.repositorys.TrackRepository;
+import org.cosmic.backend.domain.bestAlbum.domains.UserBestAlbum;
 import org.cosmic.backend.domain.user.domains.User;
-import org.cosmic.backend.domain.user.repositorys.EmailRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
-import org.cosmic.backend.domainsTest.BaseSetting;
-import org.cosmic.backend.domainsTest.UrlGenerator;
+import org.cosmic.backend.domainsTest.Creator;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
+@DataJpaTest
 @Log4j2
-public class BestAlbumRepositoryTest extends BaseSetting {
+@Import(Creator.class)
+public class BestAlbumRepositoryTest {
 
-  final ObjectMapper mapper = new ObjectMapper();
   @Autowired
-  EmailRepository emailRepository;
-  @Autowired
-  UsersRepository userRepository;
-  @Autowired
-  TrackRepository trackRepository;
-  @Autowired
-  AlbumRepository albumRepository;
-  @Autowired
-  ArtistRepository artistRepository;
-  BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+  private UsersRepository usersRepository;
 
-  UrlGenerator urlGenerator = new UrlGenerator();
-  Map<String, Object> params = new HashMap<>();
   @Autowired
-  private MockMvc mockMvc;
+  private Creator creator;
 
   @Test
   @Transactional
-  @Sql("/data/albumPost.sql")
-  public void albumAddTest() throws Exception {
-    User user = userRepository.findByEmail_Email("test1@example.com").get();
-    user.setPassword(encoder.encode(user.getPassword()));
-    UserLoginDetail userLogin = loginUser("test1@example.com");
-    Album album = albumRepository.findByTitleAndArtist_ArtistName("bam", "bibi").get();
+  public void userBestAlbumDefaultTest() {
+    User user = creator.createAndSaveUsers(1).get(0);
 
-    AlbumScoreDto albumScoreDto = AlbumScoreDto.createAlbumScoreDto(1);
-    params.clear();
-    params.put("albumId", album.getAlbumId());
-    String url = urlGenerator.buildUrl("/api/bestAlbum/{albumId}", params);
-    mockMvcHelper(HttpMethod.POST, url, albumScoreDto, userLogin.getToken()).andExpect(
-        status().isOk());
+    Assertions.assertEquals(user.getBestAlbums().size(), 0);
   }
 
   @Test
   @Transactional
-  @Sql("/data/albumPost.sql")
-  public void notMatchAlbumAddTest() throws Exception {
-    User user = userRepository.findByEmail_Email("test1@example.com").get();
-    user.setPassword(encoder.encode(user.getPassword()));
-    UserLoginDetail userLogin = loginUser("test1@example.com");
-    Album album = albumRepository.findByTitleAndArtist_ArtistName("bam", "bibi").get();
+  public void userAddBestAlbumTest() {
+    User user = creator.createAndSaveUsers(1).get(0);
+    List<UserBestAlbum> newBestAlbums = creator.createAndSaveUserBestAlbums(user, 10);
 
-    AlbumScoreDto albumScoreDto = AlbumScoreDto.createAlbumScoreDto(1);
-    params.clear();
-    params.put("albumId", 100L);
-    String url = urlGenerator.buildUrl("/api/bestAlbum/{albumId}", params);
-    mockMvcHelper(HttpMethod.POST, url, albumScoreDto, userLogin.getToken()).andExpect(
-        status().isNotFound());
+    user.getBestAlbums().addAll(newBestAlbums);
+
+    usersRepository.save(user);
+
+    Assertions.assertEquals(user.getBestAlbums().size(), 10);
+  }
+
+  @Test
+  @Transactional
+  public void userRetainAlbumTest() {
+    User user = creator.createAndSaveUsers(1).get(0);
+    List<UserBestAlbum> newBestAlbums = creator.createAndSaveUserBestAlbums(user, 10);
+    user.getBestAlbums().addAll(newBestAlbums);
+    usersRepository.save(user);
+
+    user.getBestAlbums().clear();
+    usersRepository.save(user);
+
+    user.getBestAlbums().addAll(creator.createAndSaveUserBestAlbums(user, 11, 15));
+    user.getBestAlbums().addAll(newBestAlbums);
+    usersRepository.save(user);
+    Assertions.assertEquals(user.getBestAlbums().size(), 14);
   }
 }
