@@ -82,7 +82,7 @@ public class User {
   @OneToOne(mappedBy = "user")
   private Playlist playlist;
 
-  @OneToOne(mappedBy = "user")
+  @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
   private FavoriteArtist favoriteArtist;
 
   @Builder.Default

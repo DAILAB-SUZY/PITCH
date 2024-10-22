@@ -10,16 +10,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FavoriteRequest {
-    private Long artistId;
-    private Long albumId;
-    private String cover;
-    private Long trackId;
-    public static FavoriteRequest createFavoriteReq(Long artistId, Long albumId, Long trackId, String cover) {
+    private String spotifyArtistId;
+    private String spotifyAlbumId;
+    private String spotifyTrackId;
+
+    public static FavoriteRequest createFavoriteReq(String artistId, String albumId, String trackId) {
         return  FavoriteRequest.builder()
-                .artistId(artistId)
-                .albumId(albumId)
-                .trackId(trackId)
-                .cover(cover)
+                .spotifyArtistId(artistId)
+                .spotifyAlbumId(albumId)
+                .spotifyTrackId(trackId)
                 .build();
     }
 }

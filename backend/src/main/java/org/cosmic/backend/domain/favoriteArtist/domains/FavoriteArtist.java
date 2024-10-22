@@ -53,6 +53,7 @@ public class FavoriteArtist {
         .artistCover(favoriteArtist.artist.getArtistCover())
         .albumName(favoriteArtist.track.getAlbum().getTitle())
         .trackName(favoriteArtist.track.getTitle())
+        .spotifyArtistId(favoriteArtist.artist.getSpotifyArtistId())
         .build();
   }
 

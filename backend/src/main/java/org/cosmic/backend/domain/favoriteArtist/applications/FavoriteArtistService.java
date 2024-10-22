@@ -3,15 +3,20 @@ package org.cosmic.backend.domain.favoriteArtist.applications;
 import org.cosmic.backend.domain.favoriteArtist.domains.FavoriteArtist;
 import org.cosmic.backend.domain.favoriteArtist.dtos.*;
 import org.cosmic.backend.domain.favoriteArtist.repositorys.FavoriteArtistRepository;
+import org.cosmic.backend.domain.playList.domains.Album;
+import org.cosmic.backend.domain.playList.domains.Track;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundTrackException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
 import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
 import org.cosmic.backend.domain.playList.repositorys.TrackRepository;
 import org.cosmic.backend.domain.post.exceptions.NotFoundAlbumException;
+import org.cosmic.backend.domain.search.applications.SearchService;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -31,6 +36,8 @@ public class FavoriteArtistService {
     private final UsersRepository usersRepository;
     private final FavoriteArtistRepository favoriteArtistRepository;
 
+    @Autowired
+    private SearchService searchService;
     /**
      * FavoriteArtistService의 생성자.
      *
@@ -83,25 +90,33 @@ public class FavoriteArtistService {
      * @throws NotFoundTrackException 트랙을 찾을 수 없는 경우 발생합니다.
      * @throws NotFoundAlbumException 앨범을 찾을 수 없는 경우 발생합니다.
      */
+    @Transactional
     public FavoriteArtistDetail favoriteArtistSaveData(FavoriteRequest favoriteArtist, Long userId) {
+        Album album;
+        Track track;
         if (usersRepository.findById(userId).isEmpty()) {
             throw new NotFoundUserException();
         }
-        if (trackRepository.findByTrackIdAndArtist_ArtistId(favoriteArtist.getTrackId(), favoriteArtist.getArtistId()).isEmpty()) {
-            throw new NotFoundTrackException();
+
+        if (albumRepository.findBySpotifyAlbumIdAndArtist_SpotifyArtistId(favoriteArtist.getSpotifyAlbumId(), favoriteArtist.getSpotifyArtistId()).isEmpty()
+            && trackRepository.findBySpotifyTrackIdAndArtist_SpotifyArtistId(favoriteArtist.getSpotifyTrackId(), favoriteArtist.getSpotifyArtistId()).isEmpty()){
+            album=searchService.findAndSaveAlbumBySpotifyId(favoriteArtist.getSpotifyAlbumId());
+            track=searchService.findAndSaveTrackBySpotifyId(favoriteArtist.getSpotifyTrackId());
         }
-        if (albumRepository.findByAlbumIdAndArtist_ArtistId(favoriteArtist.getAlbumId(), favoriteArtist.getArtistId()).isEmpty()) {
-            throw new NotFoundAlbumException();
+        else{
+            album= albumRepository.findBySpotifyAlbumId(favoriteArtist.getSpotifyAlbumId()).get();
+            track= trackRepository.findBySpotifyTrackId(favoriteArtist.getSpotifyTrackId()).get();
         }
+        //없으면 검색해서 가져옴.
         User user = usersRepository.findByUserId(userId).orElseThrow();
         favoriteArtistRepository.deleteByUser_UserId(user.getUserId());
-        favoriteArtistRepository.save(FavoriteArtist.builder()
-                .artist(artistRepository.findById(favoriteArtist.getArtistId()).orElseThrow())
-                .track(trackRepository.findById(favoriteArtist.getTrackId()).orElseThrow())
-                .album(albumRepository.findById(favoriteArtist.getAlbumId()).orElseThrow())
-                .user(user)
-                .build());
+        FavoriteArtist favoriteArtist2=favoriteArtistRepository.save(FavoriteArtist.builder()
+            .artist(artistRepository.findBySpotifyArtistId(favoriteArtist.getSpotifyArtistId()).orElseThrow())
+            .track(track)
+            .album(album)
+            .user(user)
+            .build());
 
-        return FavoriteArtist.toFavoriteArtistDto(favoriteArtistRepository.findByUser_UserId(userId).get());
+        return FavoriteArtist.toFavoriteArtistDto(favoriteArtist2);
     }
 }
