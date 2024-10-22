@@ -64,7 +64,6 @@ public class AlbumLikeService {
                 .stream()
                 .map(AlbumChatAlbumLikeDetail::new)
                 .collect(Collectors.toList());
-        System.out.println(test);
         return test;
     }
 

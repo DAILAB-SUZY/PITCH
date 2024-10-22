@@ -170,7 +170,6 @@ public class SearchService {
       temp = temp + albumIds.get(i) + ",";
     }
     String searchUrl = "https://api.spotify.com/v1/albums?" + temp;
-    System.out.println(searchUrl);
     HttpEntity<String> requestEntity = new HttpEntity<String>(body, headers);
     ResponseEntity<String> responseEntity = rest.exchange(searchUrl, HttpMethod.GET, requestEntity,
         String.class);

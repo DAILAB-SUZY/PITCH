@@ -125,7 +125,6 @@ public class YoutubeService {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonNode = objectMapper.readTree(response.getBody());
 
-            System.out.println(jsonNode.get("items").get(0).get("id").get("videoId").asText());
             return jsonNode.get("items").get(0).get("id").get("videoId").asText();
 
         } catch (Exception e) {
@@ -178,7 +177,6 @@ public class YoutubeService {
             playlistRepository.findByUser_UserId(userId).get().getPlaylistId()).get();
         for(int i=0; i<playlistTracks.size(); i++) {
             String query=playlistTracks.get(i).getTrack().getArtist().getArtistName()+" "+playlistTracks.get(i).getTrack().getTitle()+" official";
-            System.out.println(query);
             String videoId = searchVideo(query,accessToken);
             if (videoId != null) {
                 addVideoToPlaylist(playlistId, videoId,accessToken);

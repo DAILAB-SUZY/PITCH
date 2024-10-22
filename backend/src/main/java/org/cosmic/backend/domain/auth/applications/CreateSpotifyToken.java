@@ -40,7 +40,6 @@ public class CreateSpotifyToken {
             return spotifyApi.getAccessToken();
 
         } catch (IOException | SpotifyWebApiException | ParseException e) {
-            System.out.println("Error: " + e.getMessage());
             return "error";
         }
     }
