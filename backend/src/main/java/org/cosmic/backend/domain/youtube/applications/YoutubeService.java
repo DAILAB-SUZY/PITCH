@@ -23,7 +23,6 @@ public class YoutubeService {
     private static final String YOUTUBE_PLAYLIST_URL = "https://www.googleapis.com/youtube/v3/playlists";
     private static final String YOUTUBE_SEARCH_URL = "https://www.googleapis.com/youtube/v3/search";
     private static final String YOUTUBE_PLAYLIST_ITEMS_URL = "https://www.googleapis.com/youtube/v3/playlistItems";
-    private String accessToken;
     @Autowired
     private PlaylistTrackRepository playlistTrackRepository;
     @Autowired
@@ -59,7 +58,6 @@ public class YoutubeService {
             // 응답 본문에서 액세스 토큰 파싱
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonNode = objectMapper.readTree(response.getBody());
-            accessToken=jsonNode.get("access_token").asText();
             return jsonNode.get("access_token").asText();
 
         } catch (Exception e) {
@@ -68,7 +66,7 @@ public class YoutubeService {
         }
     }
 
-    public String createPlaylist(String title, String description) {
+    public String createPlaylist(String title, String description,String accessToken) {
         RestTemplate restTemplate = new RestTemplate();
 
         // 요청 헤더 설정
@@ -108,7 +106,7 @@ public class YoutubeService {
         }
     }
 
-    public String searchVideo(String query) {
+    public String searchVideo(String query,String accessToken) {
         RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
@@ -137,7 +135,7 @@ public class YoutubeService {
     }
 
     // 플레이리스트에 비디오 추가
-    public boolean addVideoToPlaylist(String playlistId, String videoId) {
+    public boolean addVideoToPlaylist(String playlistId, String videoId,String accessToken) {
         RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
@@ -173,20 +171,17 @@ public class YoutubeService {
         }
     }
 
-    public String createPlaylists(Long userId){
+    public String createPlaylists(Long userId,String title,String description,String accessToken){
         // 1. 플레이리스트 생성
-        String playlistId = createPlaylist("playlistTitle","설명");
-        if (playlistId.equals("Failed to create playlist.")) {
-            return "Failed to create playlist.";
-        }
+        String playlistId = createPlaylist(title,description,accessToken);
         List<Playlist_Track> playlistTracks= playlistTrackRepository.findByPlaylist_PlaylistId(
             playlistRepository.findByUser_UserId(userId).get().getPlaylistId()).get();
         for(int i=0; i<playlistTracks.size(); i++) {
             String query=playlistTracks.get(i).getTrack().getArtist().getArtistName()+" "+playlistTracks.get(i).getTrack().getTitle()+" official";
             System.out.println(query);
-            String videoId = searchVideo(query);
+            String videoId = searchVideo(query,accessToken);
             if (videoId != null) {
-                addVideoToPlaylist(playlistId, videoId);
+                addVideoToPlaylist(playlistId, videoId,accessToken);
             }
         }
         return playlistId;
