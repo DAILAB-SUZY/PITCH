@@ -27,4 +27,9 @@ public class UserDetail {
         .dnas(user.getDNAs().stream().map(DnaDetail::from).toList())
         .build();
   }
+
+  public static List<UserDetail> from(List<User> userLikes) {
+    return userLikes.stream().map(UserDetail::from).toList();
+  }
+
 }

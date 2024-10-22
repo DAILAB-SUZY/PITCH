@@ -13,7 +13,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.cosmic.backend.domain.playList.dtos.PlaylistDetail;
 
 @Data
 @NoArgsConstructor
@@ -41,20 +40,15 @@ public class Playlist_Track {//N:M을 이어줄 연결다리
   @Column(name = "track_order")
   private Integer trackOrder = 0;
 
-  public static PlaylistDetail toGiveDetail(Playlist_Track playlist_track) {
-    return PlaylistDetail.builder()
-        .trackId(playlist_track.getTrack().getTrackId())
-        .title(playlist_track.getTrack().getTitle())
-        .artistName(playlist_track.getTrack().getArtist().getArtistName())
-        .trackCover(playlist_track.getTrack().getTrackCover())
-        .build();
-  }
-
   public static Playlist_Track from(Track track, Playlist playlist) {
     return Playlist_Track.builder()
         .track(track)
         .playlist(playlist)
         .build();
+  }
+
+  public static Playlist_Track from(Track track) {
+    return Playlist_Track.from(track, null);
   }
 
   public String getTrackId() {

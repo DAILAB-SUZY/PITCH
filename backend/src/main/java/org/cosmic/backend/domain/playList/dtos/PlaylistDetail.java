@@ -18,6 +18,7 @@ public class PlaylistDetail {
   String artistName;
   Long albumId;
   String trackCover;
+  String spotifyId;
 
   public static PlaylistDetail from(Playlist_Track playlistTrack) {
     return PlaylistDetail.builder()
@@ -26,16 +27,11 @@ public class PlaylistDetail {
         .artistName(playlistTrack.getTrack().getArtist().getArtistName())
         .albumId(playlistTrack.getTrack().getAlbum().getAlbumId())
         .trackCover(playlistTrack.getTrack().getTrackCover())
+        .spotifyId(playlistTrack.getTrack().getSpotifyTrackId())
         .build();
   }
 
   public static PlaylistDetail from(Track track) {
-    return PlaylistDetail.builder()
-        .trackId(track.getTrackId())
-        .title(track.getTitle())
-        .artistName(track.getArtist().getArtistName())
-        .albumId(track.getAlbum().getAlbumId())
-        .trackCover(track.getTrackCover())
-        .build();
+    return PlaylistDetail.from(Playlist_Track.from(track));
   }
 }

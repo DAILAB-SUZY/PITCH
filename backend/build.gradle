@@ -65,7 +65,6 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.5'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-    implementation 'com.github.thelinmichael:spotify-web-api-java:6.5.4'
 
 
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
@@ -74,6 +73,7 @@ dependencies {
     implementation 'com.google.apis:google-api-services-youtube:v3-rev222-1.25.0'
     implementation 'com.google.http-client:google-http-client-jackson2:1.43.2'
 
+    implementation 'se.michaelthelin.spotify:spotify-web-api-java:8.4.1'
 }
 
 tasks.named('test') {

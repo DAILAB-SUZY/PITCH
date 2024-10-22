@@ -1,22 +1,18 @@
 package org.cosmic.backend.domain.post.applications;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.playList.exceptions.NotMatchAlbumException;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
 import org.cosmic.backend.domain.post.dtos.Post.PostAndCommentsDetail;
-import org.cosmic.backend.domain.post.dtos.Post.PostDetail;
 import org.cosmic.backend.domain.post.entities.Post;
 import org.cosmic.backend.domain.post.exceptions.NotFoundAlbumException;
 import org.cosmic.backend.domain.post.exceptions.NotFoundPostException;
 import org.cosmic.backend.domain.post.exceptions.NotMatchUserException;
 import org.cosmic.backend.domain.post.repositories.PostRepository;
-import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -36,7 +32,7 @@ public class PostService {
   private final AlbumRepository albumRepository;
 
   private List<PostAndCommentsDetail> getUsersPosts(Long userId, Pageable pageable) {
-    return postRepository.findByUser_UserId(userId, pageable).map(Post::toPostAndCommentDetail)
+    return postRepository.findByUser_UserId(userId, pageable).map(PostAndCommentsDetail::from)
         .getContent();
   }
 
@@ -50,7 +46,7 @@ public class PostService {
       return getUsersPosts(userId, pageable);
     }
     return postRepository.findAllWithCustomSorting(pageable)
-        .getContent().stream().map(Post::toPostAndCommentDetail).toList();
+        .getContent().stream().map(PostAndCommentsDetail::from).toList();
   }
 
   /**
@@ -61,10 +57,8 @@ public class PostService {
    * @throws NotFoundPostException 게시물을 찾을 수 없을 때 발생합니다.
    */
   public PostAndCommentsDetail getPostById(Long postId) {
-    if (postRepository.findById(postId).isEmpty()) {
-      throw new NotFoundPostException();
-    }
-    return Post.toPostAndCommentDetail(postRepository.findById(postId).get());
+    return PostAndCommentsDetail.from(
+        postRepository.findById(postId).orElseThrow(NotFoundPostException::new));
   }
 
   /**
@@ -76,16 +70,12 @@ public class PostService {
    */
   @Transactional
   public PostAndCommentsDetail createPost(String content, String spotifyAlbumId, Long userId) {
-    User user = userRepository.findById(userId).orElseThrow(NotFoundUserException::new);
-    Album album = albumRepository.findBySpotifyAlbumId(spotifyAlbumId)
-        .orElseThrow(NotFoundAlbumException::new);
-
-    Post post = postRepository.save(Post.builder()
+    return PostAndCommentsDetail.from(postRepository.save(Post.builder()
         .content(content)
-        .user(user)
-        .album(album)
-        .build());
-    return Post.toPostAndCommentDetail(post);
+        .user(userRepository.findById(userId).orElseThrow(NotFoundUserException::new))
+        .album(albumRepository.findBySpotifyAlbumId(spotifyAlbumId)
+            .orElseThrow(NotFoundAlbumException::new))
+        .build()));
   }
 
   private void validPostAuthor(Post post, Long userId) {
@@ -105,7 +95,7 @@ public class PostService {
     validPostAuthor(updatedPost, userId);
     updatedPost.setContent(content);
     updatedPost.setUpdateTime(Instant.now());
-    return Post.toPostAndCommentDetail(postRepository.save(updatedPost));
+    return getPostById(postRepository.save(updatedPost).getPostId());
   }
 
   /**
@@ -119,21 +109,5 @@ public class PostService {
     Post post = postRepository.findById(postId).orElseThrow(NotFoundPostException::new);
     validPostAuthor(post, userId);
     postRepository.delete(post);
-  }
-
-  @Transactional
-  public List<PostDetail> openPost(Long userId) {
-    List<PostDetail> postDetails = new ArrayList<>();
-    List<Post> posts = new ArrayList<>();
-    posts = postRepository.findByUser_UserId(userId);
-    for (int i = 0; i < posts.size(); i++) {
-      PostDetail postDetail = new PostDetail(posts.get(i).getPostId(), posts.get(i).getContent(),
-          posts.get(i).getCreateTime(), posts.get(i).getUpdateTime(),
-          User.toUserDetail(userRepository.findById(userId).get()),
-          Album.toAlbumDetail(posts.get(i).getAlbum()));//user album
-
-      postDetails.add(postDetail);
-    }
-    return postDetails;
   }
 }

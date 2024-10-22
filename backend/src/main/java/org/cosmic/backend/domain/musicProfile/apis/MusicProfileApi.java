@@ -10,6 +10,7 @@ import org.cosmic.backend.domain.musicProfile.applications.MusicProfileService;
 import org.cosmic.backend.domain.musicProfile.dtos.ActivityDetail;
 import org.cosmic.backend.domain.musicProfile.dtos.MusicProfileDetail;
 import org.cosmic.backend.domain.musicProfile.dtos.ProfileDetail;
+import org.cosmic.backend.domain.playList.applications.PlaylistService;
 import org.cosmic.backend.domain.search.applications.SearchService;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException;
 
 
 @RestController
@@ -33,6 +35,8 @@ public class MusicProfileApi {
   @Qualifier("searchService")
   @Autowired
   private SearchService searchService;
+  @Autowired
+  private PlaylistService playlistService;
 
   /**
    * <p>특정 사용자의 뮤직 프로필을 조회합니다.</p>
@@ -49,7 +53,11 @@ public class MusicProfileApi {
       @Parameter(description = "유저 id")
       @PathVariable Long userId) {
     MusicProfileDetail detail = musicProfileService.openMusicProfile(userId);
-    detail.setRecommendation(searchService.getRecommendations(userId));
+    try {
+      detail.setRecommendation(searchService.getRecommendations(userId));
+    } catch (HttpClientErrorException e) {
+      detail.setRecommendation(playlistService.recommendation());
+    }
     return ResponseEntity.ok(detail);
   }
 
