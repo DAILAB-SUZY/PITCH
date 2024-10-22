@@ -9,6 +9,7 @@ import org.cosmic.backend.domain.albumChat.domains.AlbumLike;
 import org.cosmic.backend.domain.albumChat.dtos.albumlike.AlbumChatAlbumLikeDetail;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDetail;
 import org.cosmic.backend.domain.playList.domains.Album;
+import org.cosmic.backend.domain.post.dtos.Post.AlbumDetail;
 
 import java.util.List;
 
@@ -16,21 +17,26 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class AlbumChatDetail {
-    private Long albumId;
-    private String cover;
-    private String genre;
-    private String title;
-    private String artistName;
+    AlbumDetail albumDetail;
     private List<AlbumChatCommentDetail> comments;
     private List<AlbumChatAlbumLikeDetail> albumLike;
 
     public AlbumChatDetail(Album album) {
-        this.albumId = album.getAlbumId();
-        this.cover = album.getAlbumCover();
-        this.title = album.getTitle();
-        this.artistName = album.getArtist().getArtistName();
+        this.albumDetail = AlbumDetail.from(album);
         this.comments=album.getAlbumChatComments().stream().map(AlbumChatComment::toAlbumChatCommentDetail).toList();
         this.albumLike=album.getAlbumLike().stream().map(AlbumLike::toAlbumChatAlbumLikeDetail).toList();
+    }
+
+    public static AlbumChatDetail from(AlbumChatComment albumChatComment) {
+        return AlbumChatDetail.builder()
+                .albumDetail(AlbumDetail.from(albumChatComment.getAlbum()))
+                .comments(albumChatComment.getAlbum().getAlbumChatComments().stream().map(AlbumChatComment::toAlbumChatCommentDetail).toList())
+                .albumLike(albumChatComment.getAlbum().getAlbumLike().stream().map(AlbumLike::toAlbumChatAlbumLikeDetail).toList())
+                .build();
+    }
+
+    public static List<AlbumChatDetail> from(List<AlbumChatComment> albumChatComments) {
+        return albumChatComments.stream().map(AlbumChatDetail::from).toList();
     }
 
 }

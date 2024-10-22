@@ -12,21 +12,25 @@ VALUES (
            CURRENT_TIMESTAMP
        );
 
-INSERT INTO Artist(artist_name)VALUES('bibi');
+-- Artist 테이블에 데이터 삽입
+INSERT INTO Artist(artist_name,artist_cover,spotify_artist_id) VALUES('bibi','base','base');
 
-INSERT INTO Album(title,album_cover,artist_id,created_date)
-VALUES(
-          'bam',
-          'base',
-          (SELECT Artist.artist_id FROM Artist WHERE artist_name='bibi'),
-          CURRENT_TIMESTAMP
-      );
+-- Album 테이블에 데이터 삽입
+INSERT INTO Album(title,album_cover, artist_id, created_date,spotify_album_id)
+VALUES (
+           'bam',
+           'base',
+           (SELECT Artist.artist_id FROM Artist WHERE artist_name='bibi'),
+           CURRENT_TIMESTAMP,
+           'base'
+       );
 
-INSERT INTO Track(title,album_id,artist_id)
+INSERT INTO Track(title,album_id,artist_id,spotify_track_id)
 VALUES(
           'bam',
           (SELECT Album.album_id FROM Album WHERE title='bam'),
-          (SELECT Artist.artist_id FROM Artist WHERE Artist.artist_name='bibi')
+          (SELECT Artist.artist_id FROM Artist WHERE Artist.artist_name='bibi'),
+          'base'
       );
 
 INSERT INTO post(content, user_id, album_id)

@@ -25,7 +25,6 @@ public class AlbumChatCommentDetail implements Serializable {
     private String content;
     private Instant createAt;
     private Instant updateAt;
-
     private List<AlbumChatCommentLikeDetail> likes;
     private List<AlbumChatReplyDetail> comments;
     private UserDetail author;

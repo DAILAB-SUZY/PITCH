@@ -12,6 +12,7 @@ import org.cosmic.backend.domain.albumChat.dtos.albumlike.AlbumChatAlbumLikeDeta
 import org.cosmic.backend.domain.albumChat.exceptions.ExistAlbumLikeException;
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
+import org.cosmic.backend.domain.post.dtos.Post.PostAndCommentsDetail;
 import org.cosmic.backend.domain.post.exceptions.NotFoundLikeException;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
 import org.springframework.http.MediaType;
@@ -74,37 +75,14 @@ public class AlbumLikeApi {
      * @throws NotFoundAlbumChatException 앨범챗을 찾을 수 없을 때 발생합니다.
      * @throws ExistAlbumLikeException 이미 존재하는 좋아요가 있을 때 발생합니다.
      */
-    @PostMapping("/album/{albumId}/albumLike")
-    @ApiResponse(responseCode = "404", description = "Not Found User or AlbumChat")
-    @ApiResponse(responseCode = "409", description = "Like Already Exists")
+    @PostMapping("/album/{albumId}/like")
     @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
             array = @ArraySchema(schema = @Schema(implementation = AlbumChatAlbumLikeDetail.class))))
-    @Operation(summary = "앨범챗 좋아요 생성",description = "특정 앨범의 앨범챗의 좋아요 생성")
-    public ResponseEntity<List<AlbumChatAlbumLikeDetail>> albumChatAlbumLikeCreate(
-            @Parameter(description = "앨범id")
-            @PathVariable Long albumId,
-            @AuthenticationPrincipal Long userId) {
-        return ResponseEntity.ok(likeService.albumChatAlbumLikeCreate(userId, albumId));
+    @ApiResponse(responseCode = "404", description = "Not Found User or album")
+    @Operation(summary = "앨범 좋아요 API", description = "앨범에 대해 좋아요 혹은 좋아요를 취소합니다.")
+    public ResponseEntity<List<AlbumChatAlbumLikeDetail>> likeAlbum(@PathVariable Long albumId, @AuthenticationPrincipal Long userId) {
+        return ResponseEntity.ok(likeService.likeOrUnlikeAlbum(albumId, userId));
     }
 
-    /**
-     * <p>특정 앨범에 대한 앨범챗 좋아요를 삭제합니다.</p>
-     *
-     * @param albumId 삭제할 좋아요가 있는 앨범의 ID
-     * @param userId 좋아요를 삭제하는 사용자 ID (인증된 사용자)
-     * @return 삭제 후 남은 좋아요 목록을 포함한 {@link ResponseEntity}
-     *
-     * @throws NotFoundLikeException 좋아요를 찾을 수 없을 때 발생합니다.
-     */
-    @DeleteMapping("/album/{albumId}/albumLike")
-    @ApiResponse(responseCode = "404", description = "Not Found Like")
-    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-            array = @ArraySchema(schema = @Schema(implementation = AlbumChatAlbumLikeDetail.class))))
-    @Operation(summary = "앨범챗 좋아요 삭제",description = "특정 앨범의 앨범챗의 좋아요 삭제")
-    public ResponseEntity<List<AlbumChatAlbumLikeDetail>> albumChatAlbumLikeDelete(
-            @Parameter(description = "앨범id")
-            @PathVariable Long albumId,
-            @AuthenticationPrincipal Long userId) {
-        return ResponseEntity.ok(likeService.albumChatAlbumLikeDelete(albumId, userId));
-    }
+
 }

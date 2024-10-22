@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SearchRequest {
-    private String accessToken;
-    private String q;
+
+public class SpotifySearchArtistResponse {
+    private String artistId;
+    private String imageUrl;
+    private String name;
 }

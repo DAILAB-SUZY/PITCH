@@ -19,10 +19,8 @@ public interface PlaylistRepository extends JpaRepository<Playlist,Long> {
     @Query("SELECT p " +
             "FROM Playlist p " +
             "WHERE p.user.userId IN :followerIds " +
-            "AND p.updateTime >= :timeBoundary " +
             "ORDER BY p.updateTime DESC")
     Page<Playlist> findRecentPlaylistsByFollowers(
             @Param("followerIds") List<Long> followerIds,
-            @Param("timeBoundary") Instant timeBoundary,
             Pageable pageable);
 }

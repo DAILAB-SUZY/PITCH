@@ -106,9 +106,9 @@ public class LikeService {
         }
         else{
             postLikeRepository.save(PostLike.builder()
-                    .post(postRepository.findById(postId).orElseThrow(NotFoundPostException::new))
-                    .user(usersRepository.findById(userId).orElseThrow(NotFoundUserException::new))
-                    .build());
+                .post(postRepository.findById(postId).orElseThrow(NotFoundPostException::new))
+                .user(usersRepository.findById(userId).orElseThrow(NotFoundUserException::new))
+                .build());
         }
         postLikeRepository.flush();
         return Post.toPostAndCommentDetail(postRepository.findById(postId).orElseThrow(NotFoundPostException::new));
