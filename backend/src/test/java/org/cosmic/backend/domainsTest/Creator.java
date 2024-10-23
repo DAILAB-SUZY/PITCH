@@ -5,13 +5,14 @@ import java.util.stream.IntStream;
 import org.cosmic.backend.domain.bestAlbum.domains.UserBestAlbum;
 import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.playList.domains.Artist;
+import org.cosmic.backend.domain.playList.domains.Track;
 import org.cosmic.backend.domain.user.domains.Email;
 import org.cosmic.backend.domain.user.domains.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.stereotype.Component;
+import org.springframework.boot.test.context.TestComponent;
 
-@Component
+@TestComponent
 public class Creator {
 
   @Autowired
@@ -45,6 +46,24 @@ public class Creator {
   public List<Album> createAndSaveAlbums(int size) {
     return createAndSaveAlbums(0, size);
   }
+
+  public List<Track> createAndSaveTracks(int start, int until) {
+    String baseName = "track";
+    return IntStream.range(start, until).mapToObj(idx -> createAndSaveTracks(baseName + idx))
+        .toList();
+  }
+
+  private Track createAndSaveTracks(String name) {
+    Album album = createAndSaveAlbums(name);
+    return testEntityManager.persistAndFlush(Track.builder()
+        .trackCover(name)
+        .spotifyTrackId(name)
+        .title(name)
+        .album(album)
+        .artist(album.getArtist())
+        .build());
+  }
+
 
   public List<Album> createAndSaveAlbums(int start, int until) {
     String baseName = "album";
