@@ -4,6 +4,7 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import org.cosmic.backend.domain.albumChat.domains.AlbumChatComment;
 import org.cosmic.backend.domain.albumChat.domains.AlbumLike;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDetail;
 import org.cosmic.backend.domain.playList.domains.Album;
@@ -25,5 +26,9 @@ public class AlbumChatDetail {
         .comments(AlbumChatCommentDetail.from(album.getAlbumChatComments()))
         .albumLike(UserDetail.from(album.getAlbumLike().stream().map(AlbumLike::getUser).toList()))
         .build();
+  }
+
+  public static List<AlbumChatDetail> from(List<Album> albums) {
+    return albums.stream().map(AlbumChatDetail::from).toList();
   }
 }

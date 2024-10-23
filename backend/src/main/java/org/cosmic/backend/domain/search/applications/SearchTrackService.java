@@ -31,8 +31,9 @@ public class SearchTrackService extends SearchService {
     @Autowired
     private AlbumRepository albumRepository;
 
-    public List<SpotifySearchTrackResponse> searchTrack(String accessToken,String q) throws JsonProcessingException { // q는 검색어
 
+
+    public List<SpotifySearchTrackResponse> searchTrack(String accessToken,String q) throws JsonProcessingException { // q는 검색어
         List<SpotifySearchTrackResponse> spotifySearchTrackResponses = new ArrayList<>();
         rootNode = mapper.readTree(search(accessToken,q));
         JsonNode trackitemsNode = rootNode.path("tracks").path("items");
