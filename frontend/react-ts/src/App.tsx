@@ -1,19 +1,21 @@
-import { Routes, Route, BrowserRouter, useNavigate } from "react-router-dom";
-import LoginPage from "./stories/pages/LoginPage";
-import StartPage from "./stories/pages/StartPage";
-import SignupPage from "./stories/pages/SignupPage";
-import HomePage from "./stories/pages/HomePage";
-import PlayListPage from "./stories/pages/PlayListPage";
-import AlbumChatPage from "./stories/pages/AlbumChatPage";
-import AlbumChatPostPage from "./stories/pages/AlbumChatPostPage";
-import MusicProfilePage from "./stories/pages/MusicProfilePage";
-import MusicProfileEditPage from "./stories/pages/MusicProfileEditPage";
-import AlbumPostPage from "./stories/pages/AlbumPostPage";
-import AlbumPostEditPage from "./stories/pages/AlbumPostEditPage";
-import CommentPostPage from "./stories/pages/CommentPostPage";
+import { Routes, Route, BrowserRouter } from 'react-router-dom';
+import LoginPage from './stories/pages/LoginPage';
+import StartPage from './stories/pages/StartPage';
+import SignupPage from './stories/pages/SignupPage';
+import HomePage from './stories/pages/HomePage';
+import PlayListPage from './stories/pages/PlayListPage';
+import PlayListEditPage from './stories/pages/PlayListEditPage';
+import AlbumChatPage from './stories/pages/AlbumChatPage';
+import AlbumHomePage from './stories/pages/AlbumHomePage';
+import AlbumChatPostPage from './stories/pages/AlbumChatPostPage';
+import MusicProfilePage from './stories/pages/MusicProfilePage';
+import MusicProfileEditPage from './stories/pages/MusicProfileEditPage';
+import AlbumPostPage from './stories/pages/AlbumPostPage';
+import AlbumPostEditPage from './stories/pages/AlbumPostEditPage';
+import CommentPostPage from './stories/pages/CommentPostPage';
 
-import SearchPage from "./stories/pages/SearchPage";
-import "./styles/reset.css";
+import SearchPage from './stories/pages/SearchPage';
+import './styles/reset.css';
 
 function App() {
   return (
@@ -24,7 +26,9 @@ function App() {
         <Route path="/Signup" element={<SignupPage />} />
         <Route path="/Home" element={<HomePage />} />
         <Route path="/PlayListPage" element={<PlayListPage />} />
+        <Route path="/PlayListEditPage" element={<PlayListEditPage />} />
         <Route path="/AlbumChatPage" element={<AlbumChatPage />} />
+        <Route path="/AlbumHomePage" element={<AlbumHomePage />} />
         <Route path="/AlbumChatPostPage" element={<AlbumChatPostPage />} />
         <Route path="/MusicProfilePage" element={<MusicProfilePage />} />
         <Route path="/MusicProfileEditPage" element={<MusicProfileEditPage />} />

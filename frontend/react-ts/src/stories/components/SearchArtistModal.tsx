@@ -22,15 +22,6 @@ const Container = styled.div`
   box-shadow: 0 0px 15px rgba(0, 0, 0, 0.3);
 `;
 
-const AlbumPostArea = styled.div`
-  width: 80vw;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  flex-direction: column;
-`;
-
 const SearchInputArea = styled.div`
   display: flex;
   flex-direction: column;
@@ -136,7 +127,7 @@ const AlbumCover = styled.div`
 const SongTextArea = styled.div`
   height: 80%;
   /* width: 100%; */
-  width: 300px;
+  width: 260px;
   display: flex;
   align-items: start;
   justify-content: space-between;
@@ -158,23 +149,10 @@ const Title = styled.div<{ fontSize?: string; margin?: string }>`
   text-overflow: ellipsis; // 글자가 넘어가면 말줄임(...) 표시
 `;
 
-interface AlbumSearchResult {
-  albumArtist: {
-    artistId: string;
-    imageUrl: string;
-    name: string;
-  };
-  albumId: string;
+interface ArtistSearchResult {
+  artistId: string;
   imageUrl: string;
   name: string;
-  total_tracks: number;
-  release_date: string;
-}
-
-interface ArtistSearchResult {
-  artistId : string;
-  imageUrl : string;
-  name : string;
 }
 
 interface TrackSearchResult {
@@ -199,61 +177,35 @@ interface TrackSearchResult {
   trackName: string;
   duration: string;
 }
-interface SearchData {
-  albumArtist: {
-    artistId: string;
-    imageUrl: string;
-    name: string;
-  };
-  albumId: string;
-  imageUrl: string;
-  name: string;
-  total_tracks: number;
-  release_date: string;
-  postId: number;
-}
-interface BestAlbum {
+
+interface FavoriteArtist {
   albumCover: string;
-  albumId: number;
   albumName: string;
-  score: number;
-  spotifyId: string;
-}
-interface favoriteArtist {
-  artistName: string;
-  albumName: string;
-  trackName: string;
   artistCover: string;
-  albumCover: string;
+  artistName: string;
   trackCover: string;
+  trackName: string;
+  spotifyArtistId: string;
+}
+interface FavoriteArtistSpotifyIds {
+  spotifyArtistId: string;
+  spotifyAlbumId: string;
+  spotifyTrackId: string;
 }
 
 interface SearchAlbumModalProps {
-  isAlbumSearchOpen: boolean;
   searchingTopic: string;
-  setIsAlbumSearchOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  bestAlbum: BestAlbum[] | undefined;
-  setBestAlbum: React.Dispatch<React.SetStateAction<BestAlbum[] | undefined>>;
-  favoriteArtist: favoriteArtist | undefined;
-  setFavoriteArtist: React.Dispatch<React.SetStateAction<favoriteArtist | undefined>>;
+  setIsSearchModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  favoriteArtist: FavoriteArtist | undefined;
+  setFavoriteArtist: React.Dispatch<React.SetStateAction<FavoriteArtist | undefined>>;
+  favoriteArtistSpotifyIds: FavoriteArtistSpotifyIds | undefined;
+  setFavoriteArtistSpotifyIds: React.Dispatch<React.SetStateAction<FavoriteArtistSpotifyIds | undefined>>;
 }
 
-function SearchModal({ isAlbumSearchOpen, searchingTopic, setIsAlbumSearchOpen, bestAlbum, setBestAlbum, favoriteArtist, setFavoriteArtist }: SearchAlbumModalProps) {
-  
+function SearchArtistModal({ searchingTopic, setIsSearchModalOpen, favoriteArtist, setFavoriteArtist, setFavoriteArtistSpotifyIds, favoriteArtistSpotifyIds }: SearchAlbumModalProps) {
   const [searchKeyword, setSearchKeyword] = useState('');
-  const [searchResultAlbum, setSearchResultAlbum] = useState<AlbumSearchResult[]>();
   const [searchResultArtist, setSearchResultArtist] = useState<ArtistSearchResult[]>();
-  const [searchResultArtistAlbum, setSearchResultArtistAlbum] = useState<AlbumSearchResult[]>();
-  const [searchResultArtistTrack, setSearchResultArtistTrack] = useState<TrackSearchResult[]>();
   const [isLoading, setIsLoading] = useState(false);
-
-  const [searchedFavoriteArtist, setSearchedFavoriteArtist] = useState<favoriteArtist | null>();
-
-  const navigate = useNavigate();
-
-  const GoToAlbumPostEditPage = (album: SearchData | null = null) => {
-    navigate('/AlbumPostEditPage', { state: album });
-  };
 
   const server = 'http://203.255.81.70:8030';
 
@@ -274,29 +226,17 @@ function SearchModal({ isAlbumSearchOpen, searchingTopic, setIsAlbumSearchOpen, 
     localStorage.setItem('login-refreshToken', data.refreshToken);
   };
 
-  let searchAlbumUrl = `${server}/api/searchSpotify/album/${searchKeyword}`;
-  let searchArtistUrl = `${server}/api/searchSpotify/album/${searchKeyword}`;
-  let searchArtistAlbumUrl = `${server}/api/searchSpotify/album/${searchKeyword}`;
-  let searchArtistTrackUrl = `${server}/api/searchSpotify/album/${searchKeyword}`;
+  let searchArtistUrl = `${server}/api/searchSpotify/artist/${searchKeyword}`;
   const fetchSearch = async () => {
     if (token && !isLoading) {
       setIsLoading(true);
-      if (searchingTopic === 'album') {
-        Search(searchAlbumUrl);
-      }
-      if (searchingTopic === 'artist') {
+      if (searchingTopic === 'Artist') {
         Search(searchArtistUrl);
-      }
-      if (searchingTopic === 'artist-album') {
-        Search(searchArtistAlbumUrl);
-      }
-      if (searchingTopic === 'artist-track') {
-        Search(searchArtistTrackUrl);
       }
     }
   };
 
-  const Search = async (URL : string) => {
+  const Search = async (URL: string) => {
     try {
       console.log(`searching Album : ${searchKeyword}...`);
       const response = await fetch(URL, {
@@ -308,7 +248,7 @@ function SearchModal({ isAlbumSearchOpen, searchingTopic, setIsAlbumSearchOpen, 
       });
       if (response.ok) {
         const data = await response.json();
-        setSearchResultAlbum(data);
+        setSearchResultArtist(data);
       } else if (response.status === 401) {
         ReissueToken();
         fetchSearch();
@@ -325,33 +265,41 @@ function SearchModal({ isAlbumSearchOpen, searchingTopic, setIsAlbumSearchOpen, 
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault(); // 폼 제출 동작 방지
-     // 검색 결과 초기화
+    // 검색 결과 초기화
     fetchSearch(); // 검색 실행
   };
 
-  const addBestAlbum = (album: AlbumSearchResult) => {
-    const addingAlbum: BestAlbum = {
-      albumCover: album.imageUrl,
-      albumId: 0,
-      albumName: album.name,
-      score: 0,
-      spotifyId: album.albumId,
-    };
-    if (bestAlbum) {
-      setBestAlbum([...bestAlbum, addingAlbum]);
+  const addFavoriteArtist = (artist: ArtistSearchResult) => {
+    if (favoriteArtist) {
+      const addingArtist: FavoriteArtist = {
+        albumCover: '',
+        albumName: '',
+        artistCover: artist.imageUrl,
+        artistName: artist.name,
+        trackCover: '',
+        trackName: '',
+        spotifyArtistId: artist.artistId,
+      };
+      const addArtistId: FavoriteArtistSpotifyIds = {
+        spotifyArtistId: artist.artistId,
+        spotifyAlbumId: '',
+        spotifyTrackId: '',
+      };
+      setFavoriteArtist(addingArtist);
+      setFavoriteArtistSpotifyIds(addArtistId);
+      // setFavoriteArtistSpotifyIds((prevState) => ({
+      //   ...prevState, // 기존 상태를 유지
+      //   artistId: artist.artistId, // 특정 필드만 업데이트
+      // }));
     }
-    setIsAlbumSearchOpen(false);
-  };
-
-  const addFavoriteArtistArtist = (artist: ArtistSearchResult) =>{
-    const addingFavoriteArtistArtist: 
+    setIsSearchModalOpen(false);
   };
 
   return (
     <Container>
       <SearchInputArea>
         <ButtonArea>
-          <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 10px" color={colors.Font_black} onClick={() => setIsAlbumSearchOpen(false)}>
+          <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 10px" color={colors.Font_black} onClick={() => setIsSearchModalOpen(false)}>
             취소
           </Text>
           <Text fontFamily="Bd" fontSize="20px" margin="0px" color={colors.Font_black}>
@@ -364,56 +312,28 @@ function SearchModal({ isAlbumSearchOpen, searchingTopic, setIsAlbumSearchOpen, 
         <Line></Line>
         <SearchArea>
           <form onSubmit={handleSearchSubmit}>
-            <ContentInput placeholder="앨범의 제목을 입력하세요" onChange={e => setSearchKeyword(e.target.value)}></ContentInput>
+            <ContentInput placeholder="아티스트의 이름을 입력하세요" onChange={e => setSearchKeyword(e.target.value)}></ContentInput>
           </form>
         </SearchArea>
       </SearchInputArea>
 
       <SearchResultArea>
-        {!isLoading &&
-          searchResult &&
-            (searchingTopic === "album" ?
-              searchResultAlbum.map((album: any) => (
-                <SongArea key={album.albumId} onClick={() => addBestAlbum(album)}>
-                  <AlbumCover>
-                    <img src={album.imageUrl} width="100%" height="100%"></img>
-                  </AlbumCover>
-                  <SongTextArea>
-                    <Title fontSize={'20px'}>{album.name}</Title>
-                    <Title fontSize={'15px'}>{album.albumArtist.name}</Title>
-                  </SongTextArea>
-                </SongArea>
-              ))
-            : searchingTopic === "artist" ? 
-              searchResult.map((artist: ArtistSearchResult) => (
-                <SongArea key={artist.artistId} onClick={() => addFavoriteArtistArtist(artist)}>
-                  <AlbumCover>
-                    <img src={artist.imageUrl} width="100%" height="100%"></img>
-                  </AlbumCover>
-                  <SongTextArea>
-                    <Title fontSize={'25px'}>{artist.name}</Title>
-                  </SongTextArea>
-                </SongArea>
-              )) 
-            : searchingTopic === "artist-album" ? 
-            searchResult.map((album: any) => (
-              <SongArea key={album.albumId} onClick={() => addBestAlbum(album)}>
+        {!isLoading && searchResultArtist
+          ? searchResultArtist.map((artist: ArtistSearchResult) => (
+              <SongArea key={artist.artistId} onClick={() => addFavoriteArtist(artist)}>
                 <AlbumCover>
-                  <img src={album.imageUrl} width="100%" height="100%"></img>
+                  <img src={artist.imageUrl} width="100%" height="100%"></img>
                 </AlbumCover>
                 <SongTextArea>
-                  <Title fontSize={'20px'}>{album.name}</Title>
-                  <Title fontSize={'15px'}>{album.albumArtist.name}</Title>
+                  <Title fontSize={'20px'}>{artist.name}</Title>
                 </SongTextArea>
               </SongArea>
-            )) 
-            : null
-            )
-        }
+            ))
+          : null}
         {isLoading && <Loader></Loader>}
       </SearchResultArea>
     </Container>
   );
 }
 
-export default SearchModal;
+export default SearchArtistModal;

@@ -313,6 +313,7 @@ function AlbumPostPage() {
   const GoToHomePage = () => {
     navigate("/Home");
   };
+
   const GoToAlbumPostEditPage = () => {
     let album;
     if (albumPost) {
@@ -692,7 +693,7 @@ function AlbumPostPage() {
               </svg>
             </RowAlignArea>
             {albumPost.comments.map((comment: any, index: number) => (
-              <AlbumChatCard key={index} comment={comment}></AlbumChatCard>
+              <AlbumChatCard key={index} comment={comment} ></AlbumChatCard>
             ))}
           </ChatArea>
         </>

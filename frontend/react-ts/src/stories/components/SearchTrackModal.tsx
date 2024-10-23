@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { colors } from '../../styles/color';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Loader from './Loader';
 
 const Container = styled.div`
@@ -20,15 +20,6 @@ const Container = styled.div`
   background-color: ${colors.BG_grey};
   color: ${colors.Font_black};
   box-shadow: 0 0px 15px rgba(0, 0, 0, 0.3);
-`;
-
-const AlbumPostArea = styled.div`
-  width: 80vw;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  flex-direction: column;
 `;
 
 const SearchInputArea = styled.div`
@@ -136,7 +127,7 @@ const AlbumCover = styled.div`
 const SongTextArea = styled.div`
   height: 80%;
   /* width: 100%; */
-  width: 300px;
+  width: 260px;
   display: flex;
   align-items: start;
   justify-content: space-between;
@@ -172,9 +163,9 @@ interface AlbumSearchResult {
 }
 
 interface ArtistSearchResult {
-  artistId : string;
-  imageUrl : string;
-  name : string;
+  artistId: string;
+  imageUrl: string;
+  name: string;
 }
 
 interface TrackSearchResult {
@@ -199,61 +190,36 @@ interface TrackSearchResult {
   trackName: string;
   duration: string;
 }
-interface SearchData {
-  albumArtist: {
-    artistId: string;
-    imageUrl: string;
-    name: string;
-  };
-  albumId: string;
-  imageUrl: string;
-  name: string;
-  total_tracks: number;
-  release_date: string;
-  postId: number;
-}
-interface BestAlbum {
+
+interface FavoriteArtist {
   albumCover: string;
-  albumId: number;
   albumName: string;
-  score: number;
-  spotifyId: string;
-}
-interface favoriteArtist {
-  artistName: string;
-  albumName: string;
-  trackName: string;
   artistCover: string;
-  albumCover: string;
+  artistName: string;
   trackCover: string;
+  trackName: string;
+  spotifyArtistId: string;
+}
+
+interface FavoriteArtistSpotifyIds {
+  spotifyArtistId: string;
+  spotifyAlbumId: string;
+  spotifyTrackId: string;
 }
 
 interface SearchAlbumModalProps {
-  isAlbumSearchOpen: boolean;
   searchingTopic: string;
-  setIsAlbumSearchOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  bestAlbum: BestAlbum[] | undefined;
-  setBestAlbum: React.Dispatch<React.SetStateAction<BestAlbum[] | undefined>>;
-  favoriteArtist: favoriteArtist | undefined;
-  setFavoriteArtist: React.Dispatch<React.SetStateAction<favoriteArtist | undefined>>;
+  setIsSearchModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  favoriteArtist: FavoriteArtist | undefined;
+  setFavoriteArtist: React.Dispatch<React.SetStateAction<FavoriteArtist | undefined>>;
+  favoriteArtistSpotifyIds: FavoriteArtistSpotifyIds | undefined;
+  setFavoriteArtistSpotifyIds: React.Dispatch<React.SetStateAction<FavoriteArtistSpotifyIds | undefined>>;
 }
 
-function SearchModal({ isAlbumSearchOpen, searchingTopic, setIsAlbumSearchOpen, bestAlbum, setBestAlbum, favoriteArtist, setFavoriteArtist }: SearchAlbumModalProps) {
-  
+function SearchTrackModal({ searchingTopic, setIsSearchModalOpen, favoriteArtist, setFavoriteArtist, favoriteArtistSpotifyIds, setFavoriteArtistSpotifyIds }: SearchAlbumModalProps) {
   const [searchKeyword, setSearchKeyword] = useState('');
-  const [searchResultAlbum, setSearchResultAlbum] = useState<AlbumSearchResult[]>();
-  const [searchResultArtist, setSearchResultArtist] = useState<ArtistSearchResult[]>();
-  const [searchResultArtistAlbum, setSearchResultArtistAlbum] = useState<AlbumSearchResult[]>();
-  const [searchResultArtistTrack, setSearchResultArtistTrack] = useState<TrackSearchResult[]>();
+  const [searchResultTrack, setSearchResultTrack] = useState<TrackSearchResult[]>();
   const [isLoading, setIsLoading] = useState(false);
-
-  const [searchedFavoriteArtist, setSearchedFavoriteArtist] = useState<favoriteArtist | null>();
-
-  const navigate = useNavigate();
-
-  const GoToAlbumPostEditPage = (album: SearchData | null = null) => {
-    navigate('/AlbumPostEditPage', { state: album });
-  };
 
   const server = 'http://203.255.81.70:8030';
 
@@ -274,29 +240,27 @@ function SearchModal({ isAlbumSearchOpen, searchingTopic, setIsAlbumSearchOpen, 
     localStorage.setItem('login-refreshToken', data.refreshToken);
   };
 
-  let searchAlbumUrl = `${server}/api/searchSpotify/album/${searchKeyword}`;
-  let searchArtistUrl = `${server}/api/searchSpotify/album/${searchKeyword}`;
-  let searchArtistAlbumUrl = `${server}/api/searchSpotify/album/${searchKeyword}`;
-  let searchArtistTrackUrl = `${server}/api/searchSpotify/album/${searchKeyword}`;
+  let searchTrackUrl = `${server}/api/searchSpotify/track/${searchKeyword}`;
+  let ArtistTrackUrl = `${server}/api/searchSpotify/artist/${favoriteArtistSpotifyIds?.spotifyArtistId}/track`;
+  let searchArtistTrackUrl = `${server}/api/searchSpotify/artist/${favoriteArtistSpotifyIds?.spotifyArtistId}/track`;
+
   const fetchSearch = async () => {
     if (token && !isLoading) {
       setIsLoading(true);
-      if (searchingTopic === 'album') {
-        Search(searchAlbumUrl);
+      console.log('검색시작');
+      if (searchingTopic === 'track') {
+        console.log('검색중');
+        Search(searchTrackUrl);
       }
-      if (searchingTopic === 'artist') {
-        Search(searchArtistUrl);
-      }
-      if (searchingTopic === 'artist-album') {
-        Search(searchArtistAlbumUrl);
-      }
-      if (searchingTopic === 'artist-track') {
+      if (searchingTopic === 'Artist-track') {
+        console.log('검색중');
         Search(searchArtistTrackUrl);
       }
     }
   };
 
-  const Search = async (URL : string) => {
+  const Search = async (URL: string) => {
+    console.log('searching...');
     try {
       console.log(`searching Album : ${searchKeyword}...`);
       const response = await fetch(URL, {
@@ -308,7 +272,8 @@ function SearchModal({ isAlbumSearchOpen, searchingTopic, setIsAlbumSearchOpen, 
       });
       if (response.ok) {
         const data = await response.json();
-        setSearchResultAlbum(data);
+        setSearchResultTrack(data);
+        console.log(data);
       } else if (response.status === 401) {
         ReissueToken();
         fetchSearch();
@@ -323,35 +288,45 @@ function SearchModal({ isAlbumSearchOpen, searchingTopic, setIsAlbumSearchOpen, 
     }
   };
 
+  useEffect(() => {
+    console.log(searchingTopic);
+    console.log(favoriteArtist);
+    if (searchingTopic === 'Artist-track') Search(searchArtistTrackUrl);
+  }, []);
+
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault(); // 폼 제출 동작 방지
-     // 검색 결과 초기화
+    // 검색 결과 초기화
     fetchSearch(); // 검색 실행
   };
 
-  const addBestAlbum = (album: AlbumSearchResult) => {
-    const addingAlbum: BestAlbum = {
-      albumCover: album.imageUrl,
-      albumId: 0,
-      albumName: album.name,
-      score: 0,
-      spotifyId: album.albumId,
-    };
-    if (bestAlbum) {
-      setBestAlbum([...bestAlbum, addingAlbum]);
+  const addFavoriteArtistTrack = (track: TrackSearchResult) => {
+    if (favoriteArtist && favoriteArtistSpotifyIds) {
+      const addFavoriteTrack: FavoriteArtist = {
+        albumCover: favoriteArtist.albumCover,
+        albumName: favoriteArtist.albumName,
+        artistCover: favoriteArtist.artistCover,
+        artistName: favoriteArtist.artistName,
+        trackCover: track.album.imageUrl,
+        trackName: track.trackName,
+        spotifyArtistId: favoriteArtist.spotifyArtistId,
+      };
+      const addArtistId: FavoriteArtistSpotifyIds = {
+        spotifyArtistId: favoriteArtistSpotifyIds?.spotifyArtistId,
+        spotifyAlbumId: favoriteArtistSpotifyIds.spotifyAlbumId,
+        spotifyTrackId: track.trackId,
+      };
+      setFavoriteArtistSpotifyIds(addArtistId);
+      setFavoriteArtist(addFavoriteTrack);
     }
-    setIsAlbumSearchOpen(false);
-  };
-
-  const addFavoriteArtistArtist = (artist: ArtistSearchResult) =>{
-    const addingFavoriteArtistArtist: 
+    setIsSearchModalOpen(false);
   };
 
   return (
     <Container>
       <SearchInputArea>
         <ButtonArea>
-          <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 10px" color={colors.Font_black} onClick={() => setIsAlbumSearchOpen(false)}>
+          <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 10px" color={colors.Font_black} onClick={() => setIsSearchModalOpen(false)}>
             취소
           </Text>
           <Text fontFamily="Bd" fontSize="20px" margin="0px" color={colors.Font_black}>
@@ -364,40 +339,15 @@ function SearchModal({ isAlbumSearchOpen, searchingTopic, setIsAlbumSearchOpen, 
         <Line></Line>
         <SearchArea>
           <form onSubmit={handleSearchSubmit}>
-            <ContentInput placeholder="앨범의 제목을 입력하세요" onChange={e => setSearchKeyword(e.target.value)}></ContentInput>
+            <ContentInput placeholder="노래의 제목을 입력하세요" onChange={e => setSearchKeyword(e.target.value)}></ContentInput>
           </form>
         </SearchArea>
       </SearchInputArea>
 
       <SearchResultArea>
-        {!isLoading &&
-          searchResult &&
-            (searchingTopic === "album" ?
-              searchResultAlbum.map((album: any) => (
-                <SongArea key={album.albumId} onClick={() => addBestAlbum(album)}>
-                  <AlbumCover>
-                    <img src={album.imageUrl} width="100%" height="100%"></img>
-                  </AlbumCover>
-                  <SongTextArea>
-                    <Title fontSize={'20px'}>{album.name}</Title>
-                    <Title fontSize={'15px'}>{album.albumArtist.name}</Title>
-                  </SongTextArea>
-                </SongArea>
-              ))
-            : searchingTopic === "artist" ? 
-              searchResult.map((artist: ArtistSearchResult) => (
-                <SongArea key={artist.artistId} onClick={() => addFavoriteArtistArtist(artist)}>
-                  <AlbumCover>
-                    <img src={artist.imageUrl} width="100%" height="100%"></img>
-                  </AlbumCover>
-                  <SongTextArea>
-                    <Title fontSize={'25px'}>{artist.name}</Title>
-                  </SongTextArea>
-                </SongArea>
-              )) 
-            : searchingTopic === "artist-album" ? 
-            searchResult.map((album: any) => (
-              <SongArea key={album.albumId} onClick={() => addBestAlbum(album)}>
+        {/* {!isLoading && searchResultAlbum && searchingTopic === 'track'
+          ? searchResultAlbum.map((album: any) => (
+              <SongArea key={album.albumId} onClick={() => console.log("track search")}>
                 <AlbumCover>
                   <img src={album.imageUrl} width="100%" height="100%"></img>
                 </AlbumCover>
@@ -406,14 +356,25 @@ function SearchModal({ isAlbumSearchOpen, searchingTopic, setIsAlbumSearchOpen, 
                   <Title fontSize={'15px'}>{album.albumArtist.name}</Title>
                 </SongTextArea>
               </SongArea>
-            )) 
-            : null
-            )
-        }
+            ))
+          : null} */}
+        {!isLoading && searchResultTrack && searchingTopic === 'Artist-track'
+          ? searchResultTrack.map((track: TrackSearchResult) => (
+              <SongArea key={track.trackName} onClick={() => addFavoriteArtistTrack(track)}>
+                <AlbumCover>
+                  <img src={track.album.imageUrl} width="100%" height="100%"></img>
+                </AlbumCover>
+                <SongTextArea>
+                  <Title fontSize={'20px'}>{track.trackName}</Title>
+                  <Title fontSize={'15px'}>{track.trackArtist.name}</Title>
+                </SongTextArea>
+              </SongArea>
+            ))
+          : null}
         {isLoading && <Loader></Loader>}
       </SearchResultArea>
     </Container>
   );
 }
 
-export default SearchModal;
+export default SearchTrackModal;

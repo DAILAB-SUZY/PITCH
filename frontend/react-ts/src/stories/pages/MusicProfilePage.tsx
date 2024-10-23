@@ -1,14 +1,14 @@
-import styled from "styled-components";
-import { useEffect, useRef, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { colors } from "../../styles/color";
-import Nav from "../components/Nav";
-import PlaylistCardMini from "../components/PlaylistCardMini";
-import AlbumGrid from "../components/AlbumGrid";
-import FavoriteArtistCard from "../components/FavoriteArtistCard";
-import AlbumPostCard from "../components/AlbumPostCard";
-import AlbumChatCardWithAlbum from "../components/AlbumChatCardWithAlbum";
-import useStore from "../store/store";
+import styled from 'styled-components';
+import { useEffect, useRef, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { colors } from '../../styles/color';
+import Nav from '../components/Nav';
+import PlaylistCardMini from '../components/PlaylistCardMini';
+import AlbumGrid from '../components/AlbumGrid';
+import FavoriteArtistCard from '../components/FavoriteArtistCard';
+import AlbumPostCard from '../components/AlbumPostCard';
+import AlbumChatCardWithAlbum from '../components/AlbumChatCardWithAlbum';
+import useStore from '../store/store';
 
 const Container = styled.div`
   display: flex;
@@ -42,9 +42,9 @@ const Text = styled.div<{
   fontSize?: string;
   margin?: string;
 }>`
-  font-size: ${(props) => props.fontSize};
-  font-family: ${(props) => props.fontFamily};
-  margin: ${(props) => props.margin};
+  font-size: ${props => props.fontSize};
+  font-family: ${props => props.fontFamily};
+  margin: ${props => props.margin};
 `;
 
 const ProfileHeaderArea = styled.div`
@@ -73,16 +73,16 @@ const Circle = styled.div<{ bgcolor?: string }>`
   border-radius: 100%;
   overflow: hidden;
   margin-bottom: 10px;
-  background-color: ${(props) => props.bgcolor};
+  background-color: ${props => props.bgcolor};
 `;
 
 const FollowBtn = styled.div<{ bgcolor: string; color: string }>`
   width: 90px;
   height: 20px;
   font-size: 13px;
-  font-family: "Rg";
-  color: ${(props) => props.color};
-  background-color: ${(props) => props.bgcolor};
+  font-family: 'Rg';
+  color: ${props => props.color};
+  background-color: ${props => props.bgcolor};
   border-color: ${colors.Main_Pink};
   border-style: solid;
   border-width: 2px;
@@ -123,8 +123,8 @@ const Tag = styled.div<{ color: string }>`
   width: auto;
   height: auto;
   font-size: 15px;
-  font-family: "Rg";
-  color: ${(props) => props.color};
+  font-family: 'Rg';
+  color: ${props => props.color};
   background-color: ${colors.BG_grey};
   /* border-color: ${colors.Tag};
   border-style: solid;
@@ -162,12 +162,12 @@ const TabBtn = styled.div<{ bgcolor: string; color: string }>`
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  font-family: "Bd";
+  font-family: 'Bd';
   width: 170px;
   height: 40px;
   border-radius: 5px;
-  background-color: ${(props) => props.bgcolor};
-  color: ${(props) => props.color};
+  background-color: ${props => props.bgcolor};
+  color: ${props => props.color};
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 `;
 
@@ -199,6 +199,7 @@ const BestAlbumArea = styled.div`
   display: flex;
   width: 100vw;
   flex-direction: column;
+  align-items: center;
   overflow: hidden;
 `;
 
@@ -207,10 +208,10 @@ const Title = styled.div`
   align-items: center;
   justify-content: flex-start;
   flex-direction: row;
-  width: 100vw;
+  width: 390px;
   box-sizing: border-box;
   padding-left: 20px;
-  font-family: "Bd";
+  font-family: 'Bd';
   font-size: 22px;
 `;
 
@@ -218,6 +219,8 @@ const FavoriteArtistArea = styled.div`
   display: flex;
   width: 100vw;
   flex-direction: column;
+  align-items: center;
+  overflow: hidden;
 `;
 
 const PlaylistCardArea = styled.div`
@@ -457,35 +460,35 @@ function MusicProfilePage() {
   const location = useLocation();
   const profileId = location.state;
   const GoToEditPage = (musicProfileData: MusicProfileData) => {
-    navigate("/MusicProfileEditPage", { state: musicProfileData.userDetail.id });
+    navigate('/MusicProfileEditPage', { state: musicProfileData.userDetail.id });
   };
 
   const [isFollowed, setIsFollowed] = useState<boolean>();
 
-  const { email, setEmail, name, setName, id, setId } = useStore();
+  const { name, id } = useStore();
   console.log(`id: ${id} / name: ${name}`);
-  const server = "http://203.255.81.70:8030";
+  const server = 'http://203.255.81.70:8030';
   let musiProfileUrl = `${server}/api/user/${profileId}/musicProfile`;
   let activityUrl = `${server}/api/user/${profileId}/musicProfile/activity`;
   let followUrl = `${server}/api/user/follow/${profileId}`;
   const reissueTokenUrl = `${server}/api/auth/reissued`;
-  const token = localStorage.getItem("login-token");
-  const refreshToken = localStorage.getItem("login-refreshToken");
+  const token = localStorage.getItem('login-token');
+  const refreshToken = localStorage.getItem('login-refreshToken');
 
   const fetchData = async () => {
     if (token) {
       try {
-        console.log("fetching...");
+        console.log('fetching...');
         const response = await fetch(musiProfileUrl, {
-          method: "GET",
+          method: 'GET',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         });
 
         if (response.ok) {
-          console.log("set PostList");
+          console.log('set PostList');
           const data = await response.json();
           console.log(data);
           setMusicProfileData(data);
@@ -493,32 +496,32 @@ function MusicProfilePage() {
           // 내가 현재 musicprofile 사용자 follow 되어 있는지 판단
           if (data.followers.some((user: any) => user.userId === id)) {
             setIsFollowed(true);
-            console.log("following this user");
+            console.log('following this user');
           } else {
-            console.log("NOT following this user");
+            console.log('NOT following this user');
             console.log(id);
             console.log(musicProfileData?.followers);
           }
         } else if (response.status === 401) {
-          console.log("reissuing Token");
+          console.log('reissuing Token');
           const reissueToken = await fetch(reissueTokenUrl, {
-            method: "POST",
+            method: 'POST',
             headers: {
-              "Content-Type": "application/json",
-              "Refresh-Token": `${refreshToken}`,
+              'Content-Type': 'application/json',
+              'Refresh-Token': `${refreshToken}`,
             },
           });
           const data = await reissueToken.json();
-          localStorage.setItem("login-token", data.token);
-          localStorage.setItem("login-refreshToken", data.refreshToken);
+          localStorage.setItem('login-token', data.token);
+          localStorage.setItem('login-refreshToken', data.refreshToken);
           fetchData();
         } else {
-          console.error("Failed to fetch data:", response.status);
+          console.error('Failed to fetch data:', response.status);
         }
       } catch (error) {
-        console.error("Error fetching the JSON file:", error);
+        console.error('Error fetching the JSON file:', error);
       } finally {
-        console.log("finished");
+        console.log('finished');
       }
     }
   };
@@ -529,74 +532,65 @@ function MusicProfilePage() {
   const fetchActivityData = async () => {
     if (token) {
       try {
-        console.log("fetching Activity...");
+        console.log('fetching Activity...');
         const response = await fetch(activityUrl, {
-          method: "GET",
+          method: 'GET',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         });
 
         if (response.ok) {
-          console.log("set Activity List");
+          console.log('set Activity List');
           const data = await response.json();
           console.log(data);
           // setActivityData(data);
           // postDetail과 albumChatDetail 배열을 합치기
           //const mergedData = [...data.postDetail, ...data.albumChatDetail];
-          const mergedData = [
-            ...data.albumPostList.map((post: any) => ({ ...post, type: "post" as const })),
-            ...data.albumCommentList.map((chat: any) => ({ ...chat, type: "chat" as const })),
-          ];
-          console.log("--before Sort--");
+          const mergedData = [...data.albumPostList.map((post: any) => ({ ...post, type: 'post' as const })), ...data.albumCommentList.map((chat: any) => ({ ...chat, type: 'chat' as const }))];
+          console.log('--before Sort--');
           console.log(mergedData);
 
           // createAt 기준으로 내림차순 정렬
           mergedData.sort((a, b) => {
             let stA;
             let stB;
-            if (a.type === "post") {
+            if (a.type === 'post') {
               stA = a.postDetail.updateAt === null ? a.postDetail.createAt : a.postDetail.updateAt;
-            } else if (a.type === "chat") {
-              stA =
-                a.albumChatCommentDetail.updateAt === null
-                  ? a.albumChatCommentDetail.createAt
-                  : a.albumChatCommentDetail.updateAt;
+            } else if (a.type === 'chat') {
+              stA = a.albumChatCommentDetail.updateAt === null ? a.albumChatCommentDetail.createAt : a.albumChatCommentDetail.updateAt;
             }
-            if (b.type === "post") {
+            if (b.type === 'post') {
               stB = b.postDetail.updateAt === null ? b.postDetail.createAt : b.postDetail.updateAt;
-            } else if (b.type === "chat") {
-              stB =
-                b.albumChatCommentDetail.updateAt === null
-                  ? b.albumChatCommentDetail.createAt
-                  : b.albumChatCommentDetail.updateAt;
+            } else if (b.type === 'chat') {
+              stB = b.albumChatCommentDetail.updateAt === null ? b.albumChatCommentDetail.createAt : b.albumChatCommentDetail.updateAt;
             }
             return stB - stA;
           });
-          console.log("--after Sort--");
+          console.log('--after Sort--');
           console.log(mergedData); // 정렬된 데이터 확인
           setActivityData(mergedData);
         } else if (response.status === 401) {
-          console.log("reissuing Token");
+          console.log('reissuing Token');
           const reissueToken = await fetch(reissueTokenUrl, {
-            method: "POST",
+            method: 'POST',
             headers: {
-              "Content-Type": "application/json",
-              "Refresh-Token": `${refreshToken}`,
+              'Content-Type': 'application/json',
+              'Refresh-Token': `${refreshToken}`,
             },
           });
           const data = await reissueToken.json();
-          localStorage.setItem("login-token", data.token);
-          localStorage.setItem("login-refreshToken", data.refreshToken);
+          localStorage.setItem('login-token', data.token);
+          localStorage.setItem('login-refreshToken', data.refreshToken);
           fetchActivityData();
         } else {
-          console.error("Failed to fetch data:", response.status);
+          console.error('Failed to fetch data:', response.status);
         }
       } catch (error) {
-        console.error("Error fetching the JSON file:", error);
+        console.error('Error fetching the JSON file:', error);
       } finally {
-        console.log("finished");
+        console.log('finished');
       }
     }
   };
@@ -604,40 +598,40 @@ function MusicProfilePage() {
   const fetchFollow = async () => {
     if (token) {
       try {
-        console.log("fetching...");
+        console.log('fetching...');
         const response = await fetch(followUrl, {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         });
 
         if (response.ok) {
-          console.log("following complete");
+          console.log('following complete');
           setIsFollowed(!isFollowed);
           const data = await response.json();
           console.log(data);
         } else if (response.status === 401) {
-          console.log("reissuing Token");
+          console.log('reissuing Token');
           const reissueToken = await fetch(reissueTokenUrl, {
-            method: "POST",
+            method: 'POST',
             headers: {
-              "Content-Type": "application/json",
-              "Refresh-Token": `${refreshToken}`,
+              'Content-Type': 'application/json',
+              'Refresh-Token': `${refreshToken}`,
             },
           });
           const data = await reissueToken.json();
-          localStorage.setItem("login-token", data.token);
-          localStorage.setItem("login-refreshToken", data.refreshToken);
+          localStorage.setItem('login-token', data.token);
+          localStorage.setItem('login-refreshToken', data.refreshToken);
           fetchFollow();
         } else {
-          console.error("Failed to fetch data:", response.status);
+          console.error('Failed to fetch data:', response.status);
         }
       } catch (error) {
-        console.error("Error fetching the JSON file:", error);
+        console.error('Error fetching the JSON file:', error);
       } finally {
-        console.log("finished");
+        console.log('finished');
         fetchData();
       }
     }
@@ -677,7 +671,7 @@ function MusicProfilePage() {
             </ProfileNameArea>
             <MusicDnaArea>
               {musicProfileData ? (
-                musicProfileData?.userDetail.dnas.map((dna) => (
+                musicProfileData?.userDetail.dnas.map(dna => (
                   <Tag key={dna.dnaKey} color={colors.Font_black}>
                     #{dna.dnaName}
                   </Tag>
@@ -704,11 +698,7 @@ function MusicProfilePage() {
         )}
         <MenuArea>
           <TabArea>
-            <TabBtn
-              bgcolor={tabBtn === 1 ? colors.Main_Pink : colors.BG_grey}
-              color={tabBtn === 1 ? colors.BG_white : colors.Font_black}
-              onClick={() => setTabBtn(1)}
-            >
+            <TabBtn bgcolor={tabBtn === 1 ? colors.Main_Pink : colors.BG_grey} color={tabBtn === 1 ? colors.BG_white : colors.Font_black} onClick={() => setTabBtn(1)}>
               Profile
             </TabBtn>
             <TabBtn
@@ -745,28 +735,15 @@ function MusicProfilePage() {
             </FollowArea>
             <BestAlbumArea>
               <Title>BestAlbum</Title>
-              {musicProfileData?.bestAlbum ? (
-                <AlbumGrid AlbumData={musicProfileData?.bestAlbum}></AlbumGrid>
-              ) : (
-                <Text>아직 설정하지 않았습니다.</Text>
-              )}
+              {musicProfileData?.bestAlbum ? <AlbumGrid AlbumData={musicProfileData?.bestAlbum}></AlbumGrid> : <Text>아직 설정하지 않았습니다.</Text>}
             </BestAlbumArea>
             <FavoriteArtistArea>
               <Title>Favorite Artist</Title>
-              {musicProfileData?.favoriteArtist && (
-                <FavoriteArtistCard FavoriteArtistData={musicProfileData.favoriteArtist}></FavoriteArtistCard>
-              )}
+              {musicProfileData?.favoriteArtist && <FavoriteArtistCard FavoriteArtistData={musicProfileData.favoriteArtist}></FavoriteArtistCard>}
             </FavoriteArtistArea>
             {musicProfileData && id === musicProfileData?.userDetail.id && (
               <EditBtn onClick={() => GoToEditPage(musicProfileData)}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="17"
-                  height="17"
-                  fill="currentColor"
-                  className="bi bi-pencil-square"
-                  viewBox="0 0 16 16"
-                >
+                <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="currentColor" className="bi bi-pencil-square" viewBox="0 0 16 16">
                   <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
                   <path
                     fillRule="evenodd"
@@ -781,22 +758,22 @@ function MusicProfilePage() {
           </>
         ) : (
           <>
-            {" "}
+            {' '}
             {activityData?.length > 0 ? (
               activityData?.map((item, index) => {
                 const { type, ...props } = item;
-                if (type === "post") {
+                if (type === 'post') {
                   const albumPostProps = props as PostData; // 타입 캐스팅
                   console.log(albumPostProps);
                   return <AlbumPostCard key={index} albumPost={albumPostProps} />;
-                } else if (type === "chat") {
+                } else if (type === 'chat') {
                   const albumChatProps = props as ChatData; // 타입 캐스팅
                   return <AlbumChatCardWithAlbum key={index} comment={albumChatProps} />;
                 }
               })
             ) : (
               <Text fontSize="15px" margin="150px 0px 0px 0px">
-                {" "}
+                {' '}
                 작성한 글이 없습니다.
               </Text>
             )}

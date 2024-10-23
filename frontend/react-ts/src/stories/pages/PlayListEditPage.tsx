@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { colors } from '../../styles/color';
 import Nav from '../components/Nav';
-import PlayListCard from '../components/PlayListCard';
+import PlayListEditCard from '../components/PlayListEditCard';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import ColorThief from 'colorthief';
@@ -75,16 +75,6 @@ const PlayListArea = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-`;
-
-const RecommendationArea = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin-top: 20px;
 `;
 
 const Text = styled.div<{
@@ -182,43 +172,12 @@ function PlayListPage() {
     fetchPlayList();
   }, []);
 
-  /////////////////////
-  const [playlistGradient, setPlaylistGradient] = useState<string>();
-  const albumCoverRef = useRef<HTMLImageElement | null>(null);
-
-  // ColorThief로 앨범 커버에서 색상 추출
-  const extractColors = () => {
-    const colorThief = new ColorThief();
-    const img = albumCoverRef.current;
-
-    let gradient = '#ddd'; // 기본 배경색 설정
-
-    if (img) {
-      const colors = colorThief.getPalette(img, 2); // 가장 대비되는 두 가지 색상 추출
-      const primaryColor = `rgb(${colors[0].join(',')})`;
-      const secondaryColor = `rgb(${colors[1].join(',')})`;
-      gradient = `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`;
-    }
-
-    setPlaylistGradient(gradient);
+  const navigate = useNavigate();
+  const GoToEditPage = () => {
+    navigate('/PlayListEditPage');
   };
-
-  const handleImageLoad = () => {
-    extractColors(); // 이미지 로드 후 색상 추출
-  };
-
   return (
     <Container>
-      {playListData && (
-        // 배경색 이미지 추출
-        <img
-          src={playListData?.tracks[0].trackCover}
-          ref={albumCoverRef}
-          style={{ display: 'none' }}
-          crossOrigin="anonymous" // CORS 문제 방지
-          onLoad={handleImageLoad} // 이미지 로드 시 색상 추출
-        />
-      )}
       <Header>
         <Nav page={author.page}></Nav>
       </Header>
@@ -235,18 +194,7 @@ function PlayListPage() {
             {author.username}'s PlayList
           </Text>
         </TitleArea>
-        <PlayListArea>{playListData && <PlayListCard playlist={playListData?.tracks} isEditable={author.id === id ? true : false} playlistInfo={author}></PlayListCard>}</PlayListArea>
-        <RecommendationArea>
-          <TitleArea>
-            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" className="bi bi-lightbulb" viewBox="0 0 16 16">
-              <path d="M2 6a6 6 0 1 1 10.174 4.31c-.203.196-.359.4-.453.619l-.762 1.769A.5.5 0 0 1 10.5 13a.5.5 0 0 1 0 1 .5.5 0 0 1 0 1l-.224.447a1 1 0 0 1-.894.553H6.618a1 1 0 0 1-.894-.553L5.5 15a.5.5 0 0 1 0-1 .5.5 0 0 1 0-1 .5.5 0 0 1-.46-.302l-.761-1.77a2 2 0 0 0-.453-.618A5.98 5.98 0 0 1 2 6m6-5a5 5 0 0 0-3.479 8.592c.263.254.514.564.676.941L5.83 12h4.342l.632-1.467c.162-.377.413-.687.676-.941A5 5 0 0 0 8 1" />
-            </svg>
-            <Text fontFamily="Bd" fontSize="25px" margin="0px 0px 0px 5px">
-              Recommendation
-            </Text>
-          </TitleArea>
-          <PlayListArea>{playListData && <PlayListCard playlist={playListData?.recommends} isEditable={false} playlistInfo={author}></PlayListCard>}</PlayListArea>
-        </RecommendationArea>
+        <PlayListArea>{playListData && <PlayListEditCard playlist={playListData?.tracks} isEditable={true} playlistInfo={author}></PlayListEditCard>}</PlayListArea>
       </Body>
     </Container>
   );

@@ -1,5 +1,5 @@
-import styled from "styled-components";
-import { colors } from "../../styles/color";
+import styled from 'styled-components';
+import { colors } from '../../styles/color';
 
 interface FavoriteArtistProps {
   FavoriteArtistData: {
@@ -131,13 +131,16 @@ const FavoriteAlbumCover = styled.div`
 `;
 
 const FavoriteAlbumTextArea = styled.div`
-  width: auto;
+  width: 250px;
   height: 100%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: space-around;
   margin-left: 10px;
+  white-space: nowrap;
+  overflow: hidden; // 너비를 넘어가면 안보이게
+  text-overflow: ellipsis; // 글자가 넘어가면 말줄임(...) 표시
 `;
 
 const Text = styled.div<{
@@ -146,11 +149,11 @@ const Text = styled.div<{
   color: string;
   opacity?: string;
 }>`
-  font-size: ${(props) => props.fontSize};
-  font-family: ${(props) => props.fontFamily};
-  color: ${(props) => props.color};
+  font-size: ${props => props.fontSize};
+  font-family: ${props => props.fontFamily};
+  color: ${props => props.color};
   margin-right: 15px;
-  opacity: ${(props) => props.opacity};
+  opacity: ${props => props.opacity};
 `;
 
 function FavoriteArtistCard({ FavoriteArtistData }: FavoriteArtistProps) {
@@ -164,14 +167,9 @@ function FavoriteArtistCard({ FavoriteArtistData }: FavoriteArtistProps) {
           <img src={data.artistCover} width="auto" height="100%" object-fit="cover"></img>
         </ImageArea>
         <GradientBG> </GradientBG>
-        {/* <ArtistProfileArea>
-          <ArtistProfile>
-            <img src={data.artistProfile} width="100%" height="100%" object-fit="cover"></img>
-          </ArtistProfile>
-        </ArtistProfileArea> */}
         <ContentArea>
           <ArtistTitleTextArea>
-            <Text fontFamily="Bd" fontSize={data.artistName.length > 10 ? "40px" : "50px"} color="white">
+            <Text fontFamily="Bd" fontSize={data.artistName.length > 10 ? '40px' : '50px'} color="white">
               {data.artistName}
             </Text>
           </ArtistTitleTextArea>

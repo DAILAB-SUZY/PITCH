@@ -1,15 +1,15 @@
-import styled from "styled-components";
-import { colors } from "../../styles/color";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import home_active from "../../img/home_on.png";
-import home_deactive from "../../img/home.png";
-import Profile_active from "../../img/profile_on.png";
-import Profile_deactive from "../../img/profile.png";
-import albumChat_active from "../../img/albumChat_on.png";
-import albumChat_deactive from "../../img/albumChat.png";
-import logo from "../../img/logo.png";
-import useStore from "../store/store";
+import styled from 'styled-components';
+import { colors } from '../../styles/color';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import home_active from '../../img/home_on.png';
+import home_deactive from '../../img/home.png';
+import Profile_active from '../../img/profile_on.png';
+import Profile_deactive from '../../img/profile.png';
+import albumChat_active from '../../img/albumChat_on.png';
+import albumChat_deactive from '../../img/albumChat.png';
+import logo from '../../img/logo.png';
+import useStore from '../store/store';
 
 interface NavProps {
   // onClick?: () => void;
@@ -54,10 +54,10 @@ const Button = styled.div`
 `;
 
 const Title = styled.div<{ fontSize: string; margin: string; color: string }>`
-  font-size: ${(props) => props.fontSize};
-  margin: ${(props) => props.margin};
-  color: ${(props) => props.color};
-  font-family: "Bd";
+  font-size: ${props => props.fontSize};
+  margin: ${props => props.margin};
+  color: ${props => props.color};
+  font-family: 'Bd';
   white-space: nowrap;
 `;
 
@@ -67,16 +67,16 @@ const Nav = ({ page }: NavProps) => {
   const navigate = useNavigate();
 
   const GoToHomePage = () => {
-    navigate("/Home");
+    navigate('/Home');
   };
   const GoToMusicProfilePage = () => {
-    navigate("/MusicProfilePage", { state: id });
+    navigate('/MusicProfilePage', { state: id });
   };
-  const GoToAlbumChatPage = () => {
-    navigate("/AlbumChatPage");
+  const GoToAlbumHomePage = () => {
+    navigate('/AlbumHomePage');
   };
   const GoToStartPage = () => {
-    navigate("/");
+    navigate('/');
   };
   const [activeNav, setActiveNav] = useState(page);
 
@@ -87,19 +87,11 @@ const Nav = ({ page }: NavProps) => {
         <Button
           onClick={() => {
             setActiveNav(1);
-            GoToHomePage();
+            GoToAlbumHomePage();
           }}
         >
-          {activeNav === 1 ? (
-            <img src={home_active} width="35px" height="35px"></img>
-          ) : (
-            <img src={home_deactive} width="20px" height="20px"></img>
-          )}
-          <Title
-            color={activeNav === 1 ? colors.Main_Pink : colors.Button_deactive}
-            fontSize={activeNav === 1 ? "25px" : "13px"}
-            margin="0px 5px"
-          >
+          {activeNav === 1 ? <img src={home_active} width="35px" height="35px"></img> : <img src={home_deactive} width="20px" height="20px"></img>}
+          <Title color={activeNav === 1 ? colors.Main_Pink : colors.Button_deactive} fontSize={activeNav === 1 ? '25px' : '13px'} margin="0px 5px">
             Home
           </Title>
         </Button>
@@ -109,37 +101,21 @@ const Nav = ({ page }: NavProps) => {
             GoToMusicProfilePage();
           }}
         >
-          {activeNav === 2 ? (
-            <img src={Profile_active} width="35px" height="35px"></img>
-          ) : (
-            <img src={Profile_deactive} width="20px" height="20px"></img>
-          )}
+          {activeNav === 2 ? <img src={Profile_active} width="35px" height="35px"></img> : <img src={Profile_deactive} width="20px" height="20px"></img>}
 
-          <Title
-            color={activeNav === 2 ? colors.Main_Pink : colors.Button_deactive}
-            fontSize={activeNav === 2 ? "25px" : "13px"}
-            margin="0px 5px"
-          >
+          <Title color={activeNav === 2 ? colors.Main_Pink : colors.Button_deactive} fontSize={activeNav === 2 ? '25px' : '13px'} margin="0px 5px">
             Music Profile
           </Title>
         </Button>
         <Button
           onClick={() => {
             setActiveNav(2);
-            GoToAlbumChatPage();
+            GoToAlbumHomePage();
           }}
         >
-          {activeNav === 3 ? (
-            <img src={albumChat_active} width="35px" height="35px"></img>
-          ) : (
-            <img src={albumChat_deactive} width="20px" height="20px"></img>
-          )}
+          {activeNav === 3 ? <img src={albumChat_active} width="35px" height="35px"></img> : <img src={albumChat_deactive} width="20px" height="20px"></img>}
 
-          <Title
-            color={activeNav === 3 ? colors.Main_Pink : colors.Button_deactive}
-            fontSize={activeNav === 3 ? "25px" : "13px"}
-            margin="0px 5px"
-          >
+          <Title color={activeNav === 3 ? colors.Main_Pink : colors.Button_deactive} fontSize={activeNav === 3 ? '25px' : '13px'} margin="0px 5px">
             Album Chat
           </Title>
         </Button>

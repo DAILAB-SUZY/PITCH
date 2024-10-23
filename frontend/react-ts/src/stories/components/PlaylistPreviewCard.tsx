@@ -1,9 +1,7 @@
-import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
-import { useEffect, useRef, useState } from "react";
-import { colors } from "../../styles/color";
-
-import ColorThief from "colorthief";
+import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import ColorThief from 'colorthief';
 
 // import Vibrant from "node-vibrant";
 // // import { Palette } from "node-vibrant/lib/color";
@@ -34,7 +32,7 @@ const PlaylistContainer = styled.div`
 
 // 각 플레이리스트 박스
 const PlaylistBox = styled.div<{ bggradient: string }>`
-  background: ${({ bggradient }) => bggradient || "#ddd"};
+  background: ${({ bggradient }) => bggradient || '#ddd'};
   border-radius: 12px;
   width: 170px;
   height: 220px;
@@ -110,42 +108,15 @@ const UserNameArea = styled.div`
 // 사용자 이름 스타일
 const UserName = styled.div<{ fontFamily: string }>`
   font-size: 13px;
-  font-family: ${(props) => props.fontFamily};
+  font-family: ${props => props.fontFamily};
   color: white;
 `;
 
 const PlaylistPreviewCard = ({ playlists }: PlaylistProps) => {
   const navigate = useNavigate();
   const GoToPlayListPage = (author: {}) => {
-    navigate("/PlayListPage", { state: author });
+    navigate('/PlayListPage', { state: author });
   };
-
-  // const [playlistGradients, setPlaylistGradients] = useState<string[]>([]);
-  // // node-vibrant를 사용해 두 가지 주요 색상을 추출하고 그라데이션으로 배경색 설정
-  // const extractColors = async (imageUrls: string[]) => {
-  //   const gradients: string[] = await Promise.all(
-  //     imageUrls.map(async (imageUrl) => {
-  //       try {
-  //         const vibrant = await Vibrant.from(imageUrl).getPalette();
-  //         console.log("get palette");
-  //         const primaryColor = vibrant.Vibrant?.hex || "#ddd";
-  //         const secondaryColor = vibrant.DarkVibrant?.hex || "#bbb";
-  //         return `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`;
-  //       } catch (error) {
-  //         console.error("색상 추출 오류: ", error);
-  //         return "#ddd"; // 오류 발생 시 기본 배경색
-  //       }
-  //     })
-  //   );
-  //   setPlaylistGradients(gradients);
-  // };
-  // const albumCoverRefs = useRef<(HTMLImageElement | null)[]>([]);
-
-  // useEffect(() => {
-  //   // 첫 번째 이미지 URL만 사용해서 색상 추출
-  //   const firstImages = playlists.map((playlist) => playlist.albumCover[0]);
-  //   extractColors(firstImages);
-  // }, [playlists]);
 
   const [playlistGradients, setPlaylistGradients] = useState<string[]>([]);
   const albumCoverRefs = useRef<(HTMLImageElement | null)[]>([]);
@@ -161,20 +132,20 @@ const PlaylistPreviewCard = ({ playlists }: PlaylistProps) => {
   // ColorThief로 앨범 커버에서 색상 추출
   const extractColors = () => {
     const colorThief = new ColorThief();
-    const gradients: string[] = albumCoverRefs.current.map((img) => {
+    const gradients: string[] = albumCoverRefs.current.map(img => {
       if (img && img.complete) {
         const colors = colorThief.getPalette(img, 2); // 가장 대비되는 두 가지 색상 추출
-        const primaryColor = `rgb(${colors[0].join(",")})`;
-        const secondaryColor = `rgb(${colors[1].join(",")})`;
+        const primaryColor = `rgb(${colors[0].join(',')})`;
+        const secondaryColor = `rgb(${colors[1].join(',')})`;
         return `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`;
       }
-      return "#ddd"; // 이미지가 없거나 완전히 로드되지 않은 경우
+      return '#ddd'; // 이미지가 없거나 완전히 로드되지 않은 경우
     });
     setPlaylistGradients(gradients);
   };
 
   const handleImageLoad = (index: number) => {
-    setImagesLoaded((prev) => {
+    setImagesLoaded(prev => {
       const newLoaded = [...prev];
       newLoaded[index] = true;
       return newLoaded;
@@ -184,11 +155,7 @@ const PlaylistPreviewCard = ({ playlists }: PlaylistProps) => {
   return (
     <PlaylistContainer>
       {playlists.map((playlist, index) => (
-        <PlaylistBox
-          key={playlist.playlistId}
-          bggradient={playlistGradients[index] || "#ddd"}
-          onClick={() => GoToPlayListPage({ ...playlist.author, page: 1 })}
-        >
+        <PlaylistBox key={playlist.playlistId} bggradient={playlistGradients[index] || '#ddd'} onClick={() => GoToPlayListPage({ ...playlist.author, page: 1 })}>
           <AlbumCoverStack>
             {playlist.albumCover
               .slice(0, 3)
@@ -198,7 +165,7 @@ const PlaylistPreviewCard = ({ playlists }: PlaylistProps) => {
                   key={coverIndex}
                   src={cover}
                   // alt={`Album Cover ${index + 1}`}
-                  ref={(el) => (albumCoverRefs.current[index] = el)}
+                  ref={el => (albumCoverRefs.current[index] = el)}
                   // ref={index === 0 ? albumCoverRef : null}
                   crossOrigin="anonymous"
                   onLoad={() => handleImageLoad(index)} // 이미지 로드 상태 추적

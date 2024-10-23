@@ -125,7 +125,7 @@ interface PlaylistProps {
   playlistInfo: playlistInfo;
 }
 
-const PlayListBox = ({ playlist, isEditable, playlistInfo }: PlaylistProps) => {
+const PlayListEditCard = ({ playlist, isEditable, playlistInfo }: PlaylistProps) => {
   const [playlistGradient, setPlaylistGradient] = useState<string>();
   const albumCoverRef = useRef<HTMLImageElement | null>(null);
 
@@ -206,4 +206,4 @@ const PlayListBox = ({ playlist, isEditable, playlistInfo }: PlaylistProps) => {
   );
 };
 
-export default PlayListBox;
+export default PlayListEditCard;

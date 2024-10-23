@@ -1,16 +1,5 @@
-import styled from "styled-components";
-import { colors } from "../../styles/color";
-
-interface FavoriteArtistProps {
-  FavoriteArtistData: {
-    albumCover: string;
-    albumName: string;
-    artistCover: string;
-    artistName: string;
-    trackCover: string;
-    trackName: string;
-  };
-}
+import styled from 'styled-components';
+import { colors } from '../../styles/color';
 
 const FavoriteArtistArea = styled.div`
   display: flex;
@@ -97,7 +86,7 @@ const FavoriteAlbumArea = styled.div`
   bottom: 10px;
   left: 10px; */
   width: 320px;
-  height: 50px;
+  height: 60px;
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
@@ -113,16 +102,24 @@ const FavoriteAlbumArea = styled.div`
 `;
 
 const FavoriteAlbumCover = styled.div`
-  width: 70px;
-  height: 70px;
+  width: 60px;
+  height: 60px;
   object-fit: cover;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 10%;
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 여기서 스타일 적용 */
+  }
 `;
 
 const FavoriteAlbumTextArea = styled.div`
-  width: auto;
-  height: auto;
+  width: 220px;
+  height: 60px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -136,17 +133,28 @@ const Text = styled.div<{
   color: string;
   opacity?: string;
 }>`
-  font-size: ${(props) => props.fontSize};
-  font-family: ${(props) => props.fontFamily};
-  color: ${(props) => props.color};
+  font-size: ${props => props.fontSize};
+  font-family: ${props => props.fontFamily};
+  color: ${props => props.color};
   margin-right: 15px;
-  opacity: ${(props) => props.opacity};
+  opacity: ${props => props.opacity};
 `;
 
-function FavoriteArtistEditCard({ FavoriteArtistData }: FavoriteArtistProps) {
+interface FavoriteArtistProps {
+  FavoriteArtistData: {
+    artistCover: string;
+    artistName: string;
+    albumCover: string;
+    albumName: string;
+    trackCover: string;
+    trackName: string;
+  };
+  openSearch: (topic: string) => void;
+}
+
+function FavoriteArtistEditCard({ FavoriteArtistData, openSearch }: FavoriteArtistProps) {
   const data = FavoriteArtistData;
   console.log(data);
-  console.log(data.artistName.length);
   return (
     <FavoriteArtistArea>
       <BG>
@@ -154,21 +162,22 @@ function FavoriteArtistEditCard({ FavoriteArtistData }: FavoriteArtistProps) {
           <img src={data.artistCover} width="auto" height="100%" object-fit="cover"></img>
         </ImageArea>
         <GradientBG> </GradientBG>
-        {/* <ArtistProfileArea>
-          <ArtistProfile>
-            <img src={data.artistProfile} width="100%" height="100%" object-fit="cover"></img>
-          </ArtistProfile>
-        </ArtistProfileArea> */}
         <ContentArea>
-          <ArtistTitleTextArea>
-            <Text fontFamily="Bd" fontSize={data.artistName.length > 10 ? "40px" : "50px"} color="white">
+          <ArtistTitleTextArea
+            onClick={() => {
+              openSearch('Artist');
+            }}
+          >
+            <Text fontFamily="Bd" fontSize={data.artistName.length > 10 ? '40px' : '50px'} color="white">
               {data.artistName}
             </Text>
           </ArtistTitleTextArea>
-          <FavoriteAlbumArea>
-            <FavoriteAlbumCover>
-              <img src={data.albumCover} width="100%" height="100%" object-fit="cover"></img>
-            </FavoriteAlbumCover>
+          <FavoriteAlbumArea
+            onClick={() => {
+              openSearch('Artist-album');
+            }}
+          >
+            <FavoriteAlbumCover>{data.albumCover !== '' ? <img src={data.albumCover} width="100%" height="100%" object-fit="cover"></img> : null}</FavoriteAlbumCover>
             <FavoriteAlbumTextArea>
               <Text fontFamily="Rg" fontSize="15px" color="white" opacity="0.7">
                 Favorite Album
@@ -178,10 +187,12 @@ function FavoriteArtistEditCard({ FavoriteArtistData }: FavoriteArtistProps) {
               </Text>
             </FavoriteAlbumTextArea>
           </FavoriteAlbumArea>
-          <FavoriteAlbumArea>
-            <FavoriteAlbumCover>
-              <img src={data.trackCover} width="100%" height="100%" object-fit="cover"></img>
-            </FavoriteAlbumCover>
+          <FavoriteAlbumArea
+            onClick={() => {
+              openSearch('Artist-track');
+            }}
+          >
+            <FavoriteAlbumCover>{data.trackCover !== '' ? <img src={data.trackCover} width="100%" height="100%" object-fit="cover"></img> : null}</FavoriteAlbumCover>
             <FavoriteAlbumTextArea>
               <Text fontFamily="Rg" fontSize="15px" color="white" opacity="0.7">
                 Favorite Song

@@ -1,14 +1,14 @@
-import styled from "styled-components";
-import { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { colors } from "../../styles/color";
-import Nav from "../components/Nav";
-import profile from "../../img/cat.webp";
-import PlaylistCard from "../components/PlaylistCardMini";
-import AlbumGridEdit from "../components/AlbumGridEdit";
-import FavoriteArtistEditCard from "../components/FavoriteArtistEditCard";
-import PlaylistCardMini from "../components/PlaylistCardMini";
-import SearchModal from "../components/SearchModal";
+import styled from 'styled-components';
+import { SetStateAction, useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { colors } from '../../styles/color';
+import Nav from '../components/Nav';
+import PlaylistCardMini from '../components/PlaylistCardMini';
+import AlbumGridEdit from '../components/AlbumGridEdit';
+import FavoriteArtistEditCard from '../components/FavoriteArtistEditCard';
+import SearchAlbumModal from '../components/SearchAlbumModal';
+import SearchArtistModal from '../components/SearchArtistModal';
+import SearchTrackModal from '../components/SearchTrackModal';
 
 const Container = styled.div`
   display: flex;
@@ -65,13 +65,14 @@ const Line = styled.div`
 
 const PageTitle = styled.div`
   font-size: 30px;
-  font-family: "Bd";
+  font-family: 'Bd';
   padding: 20px 0px 10px 0px;
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
   width: 90vw;
+  gap: 2px;
 `;
 
 const Text = styled.div<{
@@ -79,9 +80,9 @@ const Text = styled.div<{
   fontSize: string;
   margin: string;
 }>`
-  font-size: ${(props) => props.fontSize};
-  font-family: ${(props) => props.fontFamily};
-  margin: ${(props) => props.margin};
+  font-size: ${props => props.fontSize};
+  font-family: ${props => props.fontFamily};
+  margin: ${props => props.margin};
 `;
 
 const EditBtn = styled.div`
@@ -118,14 +119,14 @@ const Tag = styled.div<{ opacity: string }>`
   width: auto;
   height: auto;
   font-size: 15px;
-  font-family: "Rg";
+  font-family: 'Rg';
   color: black;
   background-color: ${colors.BG_grey};
   border-radius: 20px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  opacity: ${(props) => props.opacity};
+  opacity: ${props => props.opacity};
 
   /* &:hover {
     background-color: ${colors.Main_Pink};
@@ -146,7 +147,7 @@ const TitleArea = styled.div<{ margin?: string }>`
   justify-content: flex-start;
   align-items: center;
   padding-left: 20px;
-  margin: ${(props) => props.margin};
+  margin: ${props => props.margin};
 `;
 
 const Title = styled.div`
@@ -156,7 +157,7 @@ const Title = styled.div`
   flex-direction: row;
   width: auto;
 
-  font-family: "Bd";
+  font-family: 'Bd';
   font-size: 22px;
 
   margin-right: 10px;
@@ -193,15 +194,16 @@ const Btn = styled.div<{ bgcolor: string }>`
   flex-direction: row;
   align-items: center;
   justify-content: space-evenly;
-  background-color: ${(props) => props.bgcolor};
-  width: 70px;
-  height: 30px;
-  border-radius: 15px;
+  background-color: ${props => props.bgcolor};
+  width: 100px;
+  height: 35px;
+  border-radius: 10px;
   padding: 10px;
   box-sizing: border-box;
   margin: 0px 20px;
   box-shadow: 0 0px 5px rgba(0, 0, 0, 0.1);
 `;
+
 interface MusicProfileData {
   userDetail: {
     id: number;
@@ -219,6 +221,7 @@ interface MusicProfileData {
     artistCover: string;
     albumCover: string;
     trackCover: string;
+    spotifyArtistId: string;
   };
   bestAlbum: [
     {
@@ -268,28 +271,45 @@ interface BestAlbum {
   spotifyId: string;
 }
 
+interface FavoriteArtist {
+  artistCover: string;
+  artistName: string;
+  albumCover: string;
+  albumName: string;
+  trackCover: string;
+  trackName: string;
+  spotifyArtistId: string;
+}
+
+interface FavoriteArtistSpotifyIds {
+  spotifyArtistId: string;
+  spotifyAlbumId: string;
+  spotifyTrackId: string;
+}
+
 function MusicProfileEditPage() {
   const location = useLocation();
   const userId = location.state;
 
-  const server = "http://203.255.81.70:8030";
-  const token = localStorage.getItem("login-token");
-  const refreshToken = localStorage.getItem("login-refreshToken");
+  const server = 'http://203.255.81.70:8030';
+  const token = localStorage.getItem('login-token');
+  const refreshToken = localStorage.getItem('login-refreshToken');
   const reissueTokenUrl = `${server}/api/auth/reissued`;
   let musiProfileUrl = `${server}/api/user/${userId}/musicProfile`;
 
   const navigate = useNavigate();
   const GoToMusicProfilePage = () => {
-    navigate("/MusicProfilePage", { state: musicProfileData?.userDetail.id });
+    navigate('/MusicProfilePage', { state: musicProfileData?.userDetail.id });
   };
 
   const [musicProfileData, setMusicProfileData] = useState<MusicProfileData>();
   const [myMusicDna, setMyMusicDna] = useState<MusicDna[]>([]);
   const [allMusicDna, setAllMusicDna] = useState<MusicDna[]>([]);
   const [bestAlbum, setBestAlbum] = useState<BestAlbum[]>();
-  console.log("best Album");
-  console.log(bestAlbum);
-  const [isAlbumSearchOpen, setIsAlbumSearchOpen] = useState(false);
+  const [favoriteArtist, setFavoriteArtist] = useState<FavoriteArtist>();
+  const [favoriteArtistSpotifyIds, setFavoriteArtistSpotifyIds] = useState<FavoriteArtistSpotifyIds>();
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const [searchingTopic, setSearchingTopic] = useState('');
 
   useEffect(() => {
     fetchData();
@@ -304,43 +324,44 @@ function MusicProfileEditPage() {
   const fetchData = async () => {
     if (token) {
       try {
-        console.log("fetching...");
+        console.log('fetching...');
         const response = await fetch(musiProfileUrl, {
-          method: "GET",
+          method: 'GET',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         });
 
         if (response.ok) {
-          console.log("set PostList");
+          console.log('set PostList');
           const data = await response.json();
           console.log(data);
           setMusicProfileData(data);
           setMyMusicDna(data.userDetail.dnas);
           setBestAlbum(data.bestAlbum);
+          setFavoriteArtist(data.favoriteArtist);
           fetchMusicDNA();
         } else if (response.status === 401) {
-          console.log("reissuing Token");
+          console.log('reissuing Token');
           const reissueToken = await fetch(reissueTokenUrl, {
-            method: "POST",
+            method: 'POST',
             headers: {
-              "Content-Type": "application/json",
-              "Refresh-Token": `${refreshToken}`,
+              'Content-Type': 'application/json',
+              'Refresh-Token': `${refreshToken}`,
             },
           });
           const data = await reissueToken.json();
-          localStorage.setItem("login-token", data.token);
-          localStorage.setItem("login-refreshToken", data.refreshToken);
+          localStorage.setItem('login-token', data.token);
+          localStorage.setItem('login-refreshToken', data.refreshToken);
           fetchData();
         } else {
-          console.error("Failed to fetch data:", response.status);
+          console.error('Failed to fetch data:', response.status);
         }
       } catch (error) {
-        console.error("Error fetching the JSON file:", error);
+        console.error('Error fetching the JSON file:', error);
       } finally {
-        console.log("finished");
+        console.log('finished');
       }
     }
   };
@@ -352,9 +373,9 @@ function MusicProfileEditPage() {
       try {
         console.log(`fetching Playlist...`);
         const response = await fetch(MusicDNAUrl, {
-          method: "GET",
+          method: 'GET',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         });
@@ -362,60 +383,55 @@ function MusicProfileEditPage() {
         if (response.ok) {
           const data = await response.json();
           console.log(data);
-          setAllMusicDna(
-            data.filter(
-              (dna: any) =>
-                !musicProfileData?.userDetail.dnas.some((userDna: any) => userDna.dnaKey === dna.dnaKey)
-            )
-          );
+          setAllMusicDna(data);
         } else if (response.status === 401) {
-          console.log("reissuing Token");
+          console.log('reissuing Token');
           const reissueToken = await fetch(reissueTokenUrl, {
-            method: "POST",
+            method: 'POST',
             headers: {
-              "Content-Type": "application/json",
-              "Refresh-Token": `${refreshToken}`,
+              'Content-Type': 'application/json',
+              'Refresh-Token': `${refreshToken}`,
             },
           });
           const data = await reissueToken.json();
-          localStorage.setItem("login-token", data.token);
-          localStorage.setItem("login-refreshToken", data.refreshToken);
+          localStorage.setItem('login-token', data.token);
+          localStorage.setItem('login-refreshToken', data.refreshToken);
           fetchMusicDNA();
         } else {
-          console.error("Failed to fetch data:", response.status);
+          console.error('Failed to fetch data:', response.status);
         }
       } catch (error) {
-        console.error("Error fetching the JSON file:", error);
+        console.error('Error fetching the JSON file:', error);
       } finally {
-        console.log("finished");
+        console.log('finished');
       }
     }
   };
 
   // DNA 추가 제거
   const addToMyDNA = (dnaKey: number) => {
-    console.log("adding DNA...");
+    console.log('adding DNA...');
     if (allMusicDna && myMusicDna) {
-      console.log("start adding DNA...");
-      let addDna = allMusicDna?.find((dna) => dna.dnaKey === dnaKey);
+      console.log('start adding DNA...');
+      let addDna = allMusicDna?.find(dna => dna.dnaKey === dnaKey);
       if (addDna) {
-        setAllMusicDna(allMusicDna.filter((dna) => dna.dnaKey !== dnaKey));
+        setAllMusicDna(allMusicDna.filter(dna => dna.dnaKey !== dnaKey));
         setMyMusicDna([...myMusicDna, addDna]);
-        console.log("DNA added");
+        console.log('DNA added');
         console.log(addDna);
       }
     }
   };
 
   const deleteFromMyDNA = (dnaKey: number) => {
-    console.log("deleting DNA...");
+    console.log('deleting DNA...');
     if (allMusicDna && myMusicDna) {
-      console.log("start deleting DNA...");
-      let deleteDna = myMusicDna?.find((dna) => dna.dnaKey === dnaKey);
+      console.log('start deleting DNA...');
+      let deleteDna = myMusicDna?.find(dna => dna.dnaKey === dnaKey);
       if (deleteDna) {
-        setMyMusicDna(myMusicDna.filter((dna) => dna.dnaKey !== dnaKey));
+        setMyMusicDna(myMusicDna.filter(dna => dna.dnaKey !== dnaKey));
         setAllMusicDna([...allMusicDna, deleteDna]);
-        console.log("DNA deleted");
+        console.log('DNA deleted');
         console.log(deleteDna);
       }
     }
@@ -424,12 +440,14 @@ function MusicProfileEditPage() {
   // 수정사항 fetch
   const MusicDNAPostUrl = `${server}/api/dna`;
   const BestAlbumPostUrl = `${server}/api/bestAlbum`;
-  const postAllEdit = () => {
+  const FavoriteArtistPostUrl = `${server}/api/favoriteArtist`;
+  const postAllEdit = async () => {
     try {
-      postMusicDNA();
-      postBestAlbum();
+      await postMusicDNA();
+      await postBestAlbum();
+      await postFavoriteArtist();
     } catch (error) {
-      console.error("Post fail :", error);
+      console.error('Post fail :', error);
     } finally {
       GoToMusicProfilePage();
     }
@@ -437,16 +455,16 @@ function MusicProfileEditPage() {
   const postMusicDNA = async () => {
     if (token) {
       try {
-        console.log(`fetching Edit...`);
+        console.log(`updating DNA...`);
         console.log(myMusicDna);
         const response = await fetch(MusicDNAPostUrl, {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            dna: myMusicDna.map((dna) => dna.dnaKey),
+            dna: myMusicDna.map(dna => dna.dnaKey),
           }),
         });
 
@@ -454,39 +472,40 @@ function MusicProfileEditPage() {
           const data = await response.json();
           console.log(data);
         } else if (response.status === 401) {
-          console.log("reissuing Token");
+          console.log('reissuing Token');
           const reissueToken = await fetch(reissueTokenUrl, {
-            method: "POST",
+            method: 'POST',
             headers: {
-              "Content-Type": "application/json",
-              "Refresh-Token": `${refreshToken}`,
+              'Content-Type': 'application/json',
+              'Refresh-Token': `${refreshToken}`,
             },
           });
           const data = await reissueToken.json();
-          localStorage.setItem("login-token", data.token);
-          localStorage.setItem("login-refreshToken", data.refreshToken);
+          localStorage.setItem('login-token', data.token);
+          localStorage.setItem('login-refreshToken', data.refreshToken);
           postMusicDNA();
         } else {
-          console.error("Failed to fetch data:", response.status);
+          console.error('Failed to fetch data:', response.status);
         }
       } catch (error) {
-        console.error("Error fetching the JSON file:", error);
+        console.error('Error fetching the JSON file:', error);
       } finally {
-        console.log("finished");
+        console.log('DNA updated');
       }
     }
   };
   const postBestAlbum = async () => {
+    console.log('Best ALbum Updating...');
     if (token) {
       try {
         const response = await fetch(BestAlbumPostUrl, {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            bestalbum: bestAlbum?.map((album) => ({
+            bestalbum: bestAlbum?.map(album => ({
               spotifyAlbumId: album.spotifyId,
               score: album.score,
             })),
@@ -496,73 +515,140 @@ function MusicProfileEditPage() {
         if (response.ok) {
           const data = await response.json();
           console.log(data);
+          console.log('Best Album 200');
         } else if (response.status === 401) {
-          console.log("reissuing Token");
+          console.log('reissuing Token');
           const reissueToken = await fetch(reissueTokenUrl, {
-            method: "POST",
+            method: 'POST',
             headers: {
-              "Content-Type": "application/json",
-              "Refresh-Token": `${refreshToken}`,
+              'Content-Type': 'application/json',
+              'Refresh-Token': `${refreshToken}`,
             },
           });
           const data = await reissueToken.json();
-          localStorage.setItem("login-token", data.token);
-          localStorage.setItem("login-refreshToken", data.refreshToken);
+          localStorage.setItem('login-token', data.token);
+          localStorage.setItem('login-refreshToken', data.refreshToken);
           postBestAlbum();
         } else {
-          console.error("Failed to fetch data:", response.status);
+          console.error('Failed to fetch data:', response.status);
         }
       } catch (error) {
-        console.error("Error fetching the JSON file:", error);
+        console.error('Error fetching the JSON file:', error);
       } finally {
-        console.log("finished");
+        console.log('Best ALbum Updated');
       }
     }
   };
+  const postFavoriteArtist = async () => {
+    console.log('Favorite Artist Updating...');
+    if (token) {
+      try {
+        const response = await fetch(FavoriteArtistPostUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            spotifyArtistId: favoriteArtistSpotifyIds?.spotifyArtistId,
+            spotifyAlbumId: favoriteArtistSpotifyIds?.spotifyAlbumId,
+            spotifyTrackId: favoriteArtistSpotifyIds?.spotifyTrackId,
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log('favorite artist 200');
+          console.log(data);
+        } else if (response.status === 401) {
+          console.log('reissuing Token');
+          const reissueToken = await fetch(reissueTokenUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Refresh-Token': `${refreshToken}`,
+            },
+          });
+          const data = await reissueToken.json();
+          localStorage.setItem('login-token', data.token);
+          localStorage.setItem('login-refreshToken', data.refreshToken);
+          postFavoriteArtist();
+        } else {
+          console.error('Failed to fetch data:', response.status);
+        }
+      } catch (error) {
+        console.error('Error fetching the JSON file:', error);
+      } finally {
+        console.log('Favorite Artist Updated');
+      }
+    }
+  };
+
+  // searchPage 열기
+  const openSearch = (topic: string) => {
+    setSearchingTopic(topic);
+    setIsSearchModalOpen(true);
+  };
+
   return (
     <Container>
       <Header>
         <Nav page={2}></Nav>
       </Header>
-      {isAlbumSearchOpen && (
+      {isSearchModalOpen && (
         <Blur>
-          <ModalArea
-          // onClick={() => {
-          //   setIsAlbumSearchOpen(false);
-          // }}
-          >
-            <SearchModal
-              isAlbumSearchOpen={isAlbumSearchOpen}
-              setIsAlbumSearchOpen={setIsAlbumSearchOpen}
-              bestAlbum={bestAlbum}
-              setBestAlbum={setBestAlbum}
-            ></SearchModal>
+          <ModalArea>
+            {searchingTopic === 'Album' || searchingTopic === 'Artist-album' ? (
+              <SearchAlbumModal
+                searchingTopic={searchingTopic}
+                setIsSearchModalOpen={setIsSearchModalOpen}
+                bestAlbum={bestAlbum}
+                setBestAlbum={setBestAlbum}
+                favoriteArtist={favoriteArtist}
+                setFavoriteArtist={setFavoriteArtist}
+                favoriteArtistSpotifyIds={favoriteArtistSpotifyIds}
+                setFavoriteArtistSpotifyIds={setFavoriteArtistSpotifyIds}
+              ></SearchAlbumModal>
+            ) : searchingTopic === 'Artist' ? (
+              <SearchArtistModal
+                searchingTopic={searchingTopic}
+                setIsSearchModalOpen={setIsSearchModalOpen}
+                favoriteArtist={favoriteArtist}
+                setFavoriteArtist={setFavoriteArtist}
+                favoriteArtistSpotifyIds={favoriteArtistSpotifyIds}
+                setFavoriteArtistSpotifyIds={setFavoriteArtistSpotifyIds}
+              ></SearchArtistModal>
+            ) : searchingTopic === 'Artist-track' ? (
+              <SearchTrackModal
+                searchingTopic={searchingTopic}
+                setIsSearchModalOpen={setIsSearchModalOpen}
+                favoriteArtist={favoriteArtist}
+                setFavoriteArtist={setFavoriteArtist}
+                favoriteArtistSpotifyIds={favoriteArtistSpotifyIds}
+                setFavoriteArtistSpotifyIds={setFavoriteArtistSpotifyIds}
+              ></SearchTrackModal>
+            ) : null}
           </ModalArea>
         </Blur>
       )}
       <Body>
-        <PageTitle>MusicProfile 수정</PageTitle>
+        <PageTitle>
+          <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" className="bi bi-pencil-square" viewBox="0 0 16 16" onClick={() => console.log('dna 수정')}>
+            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+            <path
+              fillRule="evenodd"
+              d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
+            />
+          </svg>
+          <Title></Title>
+          MusicProfile 수정
+        </PageTitle>
         <MusicDnaArea>
           <TitleArea>
             <Title>Music DNA</Title>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="22"
-              height="22"
-              fill="currentColor"
-              className="bi bi-pencil-square"
-              viewBox="0 0 16 16"
-              onClick={() => console.log("dna 수정")}
-            >
-              <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-              <path
-                fillRule="evenodd"
-                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
-              />
-            </svg>
           </TitleArea>
           <ProfileTagArea>
-            {myMusicDna.map((dna) => (
+            {myMusicDna.map(dna => (
               <Tag
                 key={dna.dnaKey}
                 opacity="1"
@@ -570,100 +656,56 @@ function MusicProfileEditPage() {
                   deleteFromMyDNA(dna.dnaKey);
                 }}
               >
-                {" "}
+                {' '}
                 #{dna.dnaName}
               </Tag>
             ))}
           </ProfileTagArea>
           <ProfileTagArea>
-            {allMusicDna.map((dna) => (
-              <Tag
-                key={dna.dnaKey}
-                opacity="0.5"
-                onClick={() => {
-                  addToMyDNA(dna.dnaKey);
-                }}
-              >
-                #{dna.dnaName}
-              </Tag>
-            ))}
+            {allMusicDna
+              .filter((dna: any) => !myMusicDna.some((userDna: any) => userDna.dnaKey === dna.dnaKey))
+              .map(dna => (
+                <Tag
+                  key={dna.dnaKey}
+                  opacity="0.3"
+                  onClick={() => {
+                    addToMyDNA(dna.dnaKey);
+                  }}
+                >
+                  #{dna.dnaName}
+                </Tag>
+              ))}
           </ProfileTagArea>
         </MusicDnaArea>
-        <PlaylistCardArea>
+        {/* <PlaylistCardArea>
           <TitleArea margin="0px 0px 20px 20px">
             <Title> Playlist</Title>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="22"
-              height="22"
-              fill="currentColor"
-              className="bi bi-pencil-square"
-              viewBox="0 0 16 16"
-              onClick={() => console.log("playlist 수정")}
-            >
-              <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-              <path
-                fillRule="evenodd"
-                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
-              />
-            </svg>
           </TitleArea>
-          {musicProfileData?.playlist && (
-            <PlaylistCardMini
-              playlist={musicProfileData?.playlist}
-              userDetail={musicProfileData?.userDetail}
-            />
-          )}
-        </PlaylistCardArea>
+          {musicProfileData?.playlist && <PlaylistCardMini playlist={musicProfileData?.playlist} userDetail={musicProfileData?.userDetail} />}
+        </PlaylistCardArea> */}
 
         <BestAlbumArea>
           <TitleArea>
             <Title>BestAlbum</Title>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="22"
-              height="22"
-              fill="currentColor"
-              className="bi bi-pencil-square"
-              viewBox="0 0 16 16"
-              onClick={() => setIsAlbumSearchOpen(true)}
-            >
-              <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-              <path
-                fillRule="evenodd"
-                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
-              />
-            </svg>
+            {/* <svg onClick={() => openSearch('Album')} xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-plus-circle" viewBox="0 0 16 16">
+              <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+              <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
+            </svg> */}
+            <Title onClick={() => openSearch('Album')} color={colors.Button_green}>
+              {' '}
+              +{' '}
+            </Title>
           </TitleArea>
           {bestAlbum && <AlbumGridEdit bestAlbum={bestAlbum} setBestAlbum={setBestAlbum}></AlbumGridEdit>}
         </BestAlbumArea>
         <FavoriteArtistArea>
           <TitleArea>
             <Title>Favorite Artist</Title>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="22"
-              height="22"
-              fill="currentColor"
-              className="bi bi-pencil-square"
-              viewBox="0 0 16 16"
-              onClick={() => console.log("dna 수정")}
-            >
-              <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-              <path
-                fillRule="evenodd"
-                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
-              />
-            </svg>
           </TitleArea>
-          {musicProfileData?.favoriteArtist && (
-            <FavoriteArtistEditCard
-              FavoriteArtistData={musicProfileData?.favoriteArtist}
-            ></FavoriteArtistEditCard>
-          )}
+          {favoriteArtist && <FavoriteArtistEditCard FavoriteArtistData={favoriteArtist} openSearch={openSearch}></FavoriteArtistEditCard>}
         </FavoriteArtistArea>
         <BtnArea>
-          <Btn bgcolor={colors.BG_lightpink} onClick={() => postAllEdit()}>
+          <Btn bgcolor={colors.Button_green} onClick={() => postAllEdit()}>
             <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 4px">
               저장
             </Text>
