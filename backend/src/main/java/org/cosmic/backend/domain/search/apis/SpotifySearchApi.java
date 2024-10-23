@@ -13,7 +13,6 @@ import org.cosmic.backend.domain.auth.applications.CreateSpotifyToken;
 import org.cosmic.backend.domain.search.applications.SearchAlbumService;
 import org.cosmic.backend.domain.search.applications.SearchArtistService;
 import org.cosmic.backend.domain.search.applications.SearchTrackService;
-import org.cosmic.backend.domain.search.dtos.ArtistTrackResponse;
 import org.cosmic.backend.domain.search.dtos.SpotifySearchAlbumResponse;
 import org.cosmic.backend.domain.search.dtos.SpotifySearchArtistResponse;
 import org.cosmic.backend.domain.search.dtos.SpotifySearchTrackResponse;

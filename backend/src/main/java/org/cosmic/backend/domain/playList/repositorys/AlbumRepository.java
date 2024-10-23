@@ -25,8 +25,11 @@ public interface AlbumRepository extends JpaRepository<Album,Long> {
     @Query("SELECT new org.cosmic.backend.domain.favoriteArtist.dtos.ArtistDetail(A.artist.artistId, A.albumCover, A.artist.artistName) FROM Album A WHERE A.artist.artistName = :artistName")
     List<ArtistDetail> findAllArtistDataByArtistId(String artistName);
 
-    @Query("SELECT a FROM Album a LEFT JOIN a.albumChatComments acc GROUP BY a.id ORDER BY COUNT(acc) DESC")
+    @Query("SELECT a FROM Album a LEFT JOIN a.albumChatComments acc GROUP BY a.albumId ORDER BY COUNT(acc) DESC,a.albumId ASC ")
     Page<Album> findAlbumsOrderByCommentCount(Pageable pageable);
+
+    @Query("SELECT a FROM Album a LEFT JOIN a.albumLike al GROUP BY a.albumId ORDER BY COUNT(al) DESC, a.albumId ASC ")
+    Page<Album> findAlbumsOrderByAlbumLikeCount(Pageable pageable);
 
     Optional<Album> findBySpotifyAlbumId(String spotifyAlbumId);
 }

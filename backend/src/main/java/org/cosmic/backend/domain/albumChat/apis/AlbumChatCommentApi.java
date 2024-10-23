@@ -44,7 +44,6 @@ public class AlbumChatCommentApi {
   public AlbumChatCommentApi(AlbumChatCommentService commentService) {
     this.commentService = commentService;
   }
-
   /**
    * <p>특정 앨범의 앨범챗 댓글을 조회합니다.</p>
    *
@@ -53,6 +52,7 @@ public class AlbumChatCommentApi {
    * @param count   조회할 댓글의 수
    * @return 앨범챗 댓글 목록을 포함한 {@link ResponseEntity}
    */
+
   @Transactional
   @GetMapping("/album/{albumId}/comment")
   @ApiResponse(responseCode = "404", description = "Not Found Album")
@@ -78,7 +78,7 @@ public class AlbumChatCommentApi {
    * @param userId  댓글을 생성한 사용자의 ID (인증된 사용자)
    * @return 생성된 댓글 목록을 포함한 {@link ResponseEntity}
    */
-  @PostMapping("/albumchat/{albumId}/comment")
+  @PostMapping("/album/{albumId}/comment")
   @Transactional
   @ApiResponse(responseCode = "404", description = "Not Found User or Album")
   @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,

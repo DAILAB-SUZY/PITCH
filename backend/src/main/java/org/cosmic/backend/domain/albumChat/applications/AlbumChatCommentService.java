@@ -11,6 +11,7 @@ import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatCommentLikeRepos
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatCommentRepository;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
+import org.cosmic.backend.domain.post.exceptions.NotFoundCommentException;
 import org.cosmic.backend.domain.post.exceptions.NotMatchUserException;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.springframework.stereotype.Service;
@@ -86,8 +87,12 @@ public class AlbumChatCommentService {
 //  }
 
   private AlbumChatComment getParentId(Long commentId) {
-    return commentRepository.findById(commentId)
-        .orElseThrow(NotFoundAlbumChatCommentException::new);
+    if(commentId==null) {
+      return null;
+    }
+    else{
+      return commentRepository.findById(commentId).get();
+    }
   }
 
   /**
@@ -103,15 +108,16 @@ public class AlbumChatCommentService {
   public AlbumChatDetail albumChatCommentCreate(Long albumId,
       AlbumChatCommentRequest comment, Long userId) {
     AlbumChatComment albumChatComment = AlbumChatComment.from(
-        albumRepository.findById(albumId).orElseThrow(NotFoundAlbumChatException::new),
-        userRepository.findById(userId).orElseThrow(NotFoundUserException::new),
-        comment.getContent());
-    try {
-      albumChatComment.setParentAlbumChatComment(
-          getParentId(comment.getParentAlbumChatCommentId()));
-    } catch (IllegalArgumentException e) {
-      albumChatComment.setParentAlbumChatComment(null);
-    }
+      albumRepository.findById(albumId).orElseThrow(NotFoundAlbumChatException::new),
+      userRepository.findById(userId).orElseThrow(NotFoundUserException::new),
+      comment.getContent());
+      if(getParentId(comment.getParentAlbumChatCommentId())!=null)
+      {
+        albumChatComment.setParentAlbumChatComment(getParentId(comment.getParentAlbumChatCommentId()));
+      }
+      else{
+        albumChatComment.setParentAlbumChatComment(null);
+      }
     commentRepository.save(albumChatComment);
     return getAlbumChatComment(albumId, comment.getSorted(), comment.getCount());
   }
