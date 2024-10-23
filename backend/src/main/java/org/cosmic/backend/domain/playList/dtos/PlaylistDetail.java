@@ -19,6 +19,7 @@ public class PlaylistDetail {
   Long albumId;
   String trackCover;
   String spotifyId;
+  Integer trackOrder;
 
   public static PlaylistDetail from(Playlist_Track playlistTrack) {
     return PlaylistDetail.builder()
@@ -28,6 +29,7 @@ public class PlaylistDetail {
         .albumId(playlistTrack.getTrack().getAlbum().getAlbumId())
         .trackCover(playlistTrack.getTrack().getTrackCover())
         .spotifyId(playlistTrack.getTrack().getSpotifyTrackId())
+        .trackOrder(playlistTrack.getTrackOrder())
         .build();
   }
 
