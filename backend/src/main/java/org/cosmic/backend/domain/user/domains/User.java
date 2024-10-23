@@ -15,6 +15,7 @@ import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,7 +39,8 @@ import org.cosmic.backend.domain.user.dtos.UserDetail;
 @AllArgsConstructor
 @Builder
 @Table(name = "users")  // 테이블 이름이 'user'인 경우
-@EqualsAndHashCode(exclude = {"email", "playlist", "posts", "postComments", "postLikes"})
+@EqualsAndHashCode(exclude = {"email", "playlist", "posts", "postComments", "postLikes",
+    "favoriteArtist"})
 public class User {
 
   @Id
@@ -82,7 +84,7 @@ public class User {
   @OneToOne(mappedBy = "user")
   private Playlist playlist;
 
-  @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
+  @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
   private FavoriteArtist favoriteArtist;
 
   @Builder.Default
@@ -153,7 +155,7 @@ public class User {
   }
 
   public List<MusicDna> getDNAs() {
-    return List.of(dna1, dna2, dna3, dna4);
+    return Stream.of(dna1, dna2, dna3, dna4).filter(Objects::nonNull).toList();
   }
 
   public void setDNAs(List<MusicDna> dnaList) {
