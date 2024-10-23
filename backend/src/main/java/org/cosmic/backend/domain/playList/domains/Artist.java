@@ -6,7 +6,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,8 +41,8 @@ public class Artist {//
   @Builder.Default
   private List<Album> album = new ArrayList<>();
 
-  @OneToOne(mappedBy = "artist")
-  private FavoriteArtist favoriteArtist;
+  @OneToMany(mappedBy = "artist")
+  private List<FavoriteArtist> favoriteArtists;
 
   //아티스트 1 트랙 N
   @OneToMany(mappedBy = "artist")
