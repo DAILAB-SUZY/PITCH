@@ -62,17 +62,32 @@ public class AlbumChatApi {
    *
    * <p>사용자는 페이지와 제공량을 설정하여, 좋아요나 댓글이 많은 순으로 정렬된 앨범 정보를 가져옵니다.</p>
    *
+   * @return 조회된 앨범 챗 데이터를 포함한 {@link ResponseEntity} 리스트
+   */
+  @GetMapping("/albumchat/chat")
+  @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+      array = @ArraySchema(schema = @Schema(implementation = AlbumChatDetail.class))))
+  @Operation(summary = "앨범챗홈 페이지", description = "앨범 챗 많은 순으로 album정보 띄우기")
+  public ResponseEntity<List<AlbumChatDetail>> albumChatHomeChat(){
+    return ResponseEntity.ok(albumChatService.albumChatHomeChat());
+  }
+
+  /**
+   * <p>앨범챗 홈 페이지에서 앨범 챗이 많은 순으로 앨범 정보를 조회하는 메서드입니다.</p>
+   *
+   * <p>사용자는 페이지와 제공량을 설정하여, 좋아요나 댓글이 많은 순으로 정렬된 앨범 정보를 가져옵니다.</p>
+   *
    * @param page  조회할 페이지 번호
    * @param limit 페이지당 조회할 앨범의 수
    * @return 조회된 앨범 챗 데이터를 포함한 {@link ResponseEntity} 리스트
    */
-  @GetMapping("/albumchat")
+  @GetMapping("/albumchat/like")
   @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-      array = @ArraySchema(schema = @Schema(implementation = AlbumDetail.class))))
-  @Operation(summary = "앨범챗홈 페이지", description = "앨범 챗 많은 순으로 album정보 띄우기")
-  public ResponseEntity<List<AlbumDetail>> albumChatHome(
-      @Parameter(description = "페이지 수") @RequestParam Integer page,
-      @Parameter(description = "제공량") @RequestParam Integer limit) {
-    return ResponseEntity.ok(albumChatService.albumChatHome(page, limit));
+          array = @ArraySchema(schema = @Schema(implementation = AlbumChatDetail.class))))
+  @Operation(summary = "앨범챗홈 좋아요 페이지", description = "앨범 챗 좋아요 많은 순으로 정보 띄우기")
+  public ResponseEntity<List<AlbumChatDetail>> albumChatHomeLike(
+          @Parameter(description = "페이지 수") @RequestParam Integer page,
+          @Parameter(description = "제공량") @RequestParam Integer limit) {
+    return ResponseEntity.ok(albumChatService.albumChatHomeLike(page, limit));
   }
 }

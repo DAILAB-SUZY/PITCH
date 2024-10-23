@@ -54,14 +54,14 @@ public class SecurityConfig {
                 );
 
         //filter등록 후 매 요청마다 CorsFilter 실행한 후에 jwtAuthenticationFilter 실행한다.
-        http.addFilterAfter(
+        /*http.addFilterAfter(
                 jwtAuthenticationFilter,
                 CorsFilter.class
         );
         http.addFilterBefore(
                 exceptionHandlerFilter,
                 JwtAuthenticationFilter.class
-        );
+        );*/
          return http.build();
     }
 }

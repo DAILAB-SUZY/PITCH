@@ -42,12 +42,21 @@ public class AlbumChatService {
     return AlbumChatDetail.from(album);
   }
 
-  private List<Album> getAlbumsSortedByCommentCount(int page, int limit) {
-    Pageable pageable = PageRequest.of(page, limit);
+  private List<Album> getAlbumsSortedByCommentCount(Integer limit) {
+    Pageable pageable = PageRequest.of(0,limit);
     return albumRepository.findAlbumsOrderByCommentCount(pageable).getContent();
   }
 
-  public List<AlbumDetail> albumChatHome(int page, int limit) {
-    return AlbumDetail.from(getAlbumsSortedByCommentCount(page, limit));
+  public List<AlbumChatDetail> albumChatHomeChat() {
+    return AlbumChatDetail.from(getAlbumsSortedByCommentCount(5));
+  }
+
+  private List<Album> getAlbumsSortedByLikeCount(Integer page,Integer limit) {
+    Pageable pageable = PageRequest.of(page,limit);
+    return albumRepository.findAlbumsOrderByAlbumLikeCount(pageable).getContent();
+  }
+
+  public List<AlbumChatDetail> albumChatHomeLike(Integer page,Integer limit) {
+    return AlbumChatDetail.from(getAlbumsSortedByLikeCount(page,limit));
   }
 }

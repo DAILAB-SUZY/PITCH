@@ -15,11 +15,11 @@ public class AlbumChatCommentRequest {
     private String content;
     private Instant createTime;
     private String sorted;
-    private int count;
+    private Integer count;
     private Long parentAlbumChatCommentId;
 
     public static AlbumChatCommentRequest createAlbumChatCommentReq(
-         String content, Instant createTime,String sorted,int count,Long parentAlbumChatCommentId) {
+         String content, Instant createTime,String sorted,Integer count,Long parentAlbumChatCommentId) {
         return  AlbumChatCommentRequest.builder()
                 .content(content)
                 .createTime(createTime)
