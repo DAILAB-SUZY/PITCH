@@ -58,6 +58,9 @@ public class PlaylistService {
             .playlist(playlist)
             .build())
         .forEach(playlist.getPlaylist_track()::add);
+    for(int i=1;i<=playlist.getPlaylist_track().size();i++) {
+      playlist.getPlaylist_track().get(i-1).setTrackOrder(i);
+    }
     playlist.setUpdateTime(Instant.now());
     playlistRepository.save(playlist);
     return open(userId);
