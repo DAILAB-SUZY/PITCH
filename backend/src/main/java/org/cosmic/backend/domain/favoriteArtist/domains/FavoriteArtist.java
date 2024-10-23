@@ -1,11 +1,10 @@
 package org.cosmic.backend.domain.favoriteArtist.domains;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
-import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -25,24 +24,26 @@ import org.cosmic.backend.domain.user.domains.User;
 @Entity
 @Builder
 @Table(name = "`FavoriteArtist`")
-@IdClass(FavoriteArtistPK.class)
 public class FavoriteArtist {
 
   @Id
-  @OneToOne(fetch = FetchType.LAZY)
+  private Long id;
+
+  @ManyToOne
   @JoinColumn(name = "artist_id")
   private Artist artist;
 
-  @Id
   @OneToOne
+  @MapsId
   @JoinColumn(name = "user_id")
   private User user;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  private Track track;
+  @ManyToOne
+  @Builder.Default
+  private Track track = new Track();
 
   @Builder.Default
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne
   private Album album = new Album(); // @Builder.Default 추가
 
   public static FavoriteArtistDetail toFavoriteArtistDto(FavoriteArtist favoriteArtist) {
