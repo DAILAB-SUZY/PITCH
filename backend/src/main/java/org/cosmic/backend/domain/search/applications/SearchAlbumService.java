@@ -165,7 +165,6 @@ public class SearchAlbumService extends SearchService {
   }
 
   public List<SpotifySearchAlbumResponse> searchAlbumByArtistIdAndAlbumName(String accessToken, String artistId, String albumName) throws JsonProcessingException { // q는 검색어
-    //TODO 아티스트의 LOVE라고 했을 때 그 아티스트가 가지고 있는 LOVE관련된 것들 다 가져오기.
     List<SpotifySearchAlbumResponse> responses=new ArrayList<>();
 
     rootNode = mapper.readTree(searchSpotifyAlbumName(accessToken,albumName));
@@ -173,7 +172,6 @@ public class SearchAlbumService extends SearchService {
     boolean check=false;
     for(int i=0;i<items.size();i++){
       SpotifySearchAlbumResponse response = new SpotifySearchAlbumResponse();
-      System.out.println(items.get(i).path("artists"));
        if(items.get(i).path("artists").get(0).path("id").asText().equals(artistId))
        {
          JsonNode item = items.get(i);
