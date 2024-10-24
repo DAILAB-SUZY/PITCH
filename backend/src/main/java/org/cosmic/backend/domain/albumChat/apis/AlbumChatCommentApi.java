@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import org.cosmic.backend.domain.albumChat.applications.AlbumChatCommentService;
-import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumChatDetail;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDetail;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentRequest;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
@@ -36,7 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
 @ApiCommonResponses
 @Tag(name = "앨범 챗 관련 API", description = "앨범 챗 댓글/대댓글/좋아요 제공")
 @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-    array = @ArraySchema(schema = @Schema(implementation = AlbumChatDetail.class))))
+    array = @ArraySchema(schema = @Schema(implementation = AlbumChatCommentDetail.class))))
 public class AlbumChatCommentApi {
 
   private final AlbumChatCommentService commentService;
