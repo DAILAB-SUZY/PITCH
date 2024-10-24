@@ -76,6 +76,19 @@ public class PostApi {
     return ResponseEntity.ok(postService.getPosts(userId, page, limit));
   }
 
+  @GetMapping("/{spotifyAlbumId}/post")
+  @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+      array = @ArraySchema(schema = @Schema(implementation = PostAndCommentsDetail.class))))
+  @Operation(summary = "앨범에 대한 포스트 조회 API", description = "spotifyAlbumId에 대응하는 Album에 대한 albumpost들을 모두 가져옵니다.")
+  public ResponseEntity<List<PostAndCommentsDetail>> getAlbumPostsBySpotifyAlbumId(
+      @PathVariable String spotifyAlbumId,
+      @Parameter(description = "페이지 번호(0부터 시작)", required = true)
+      @RequestParam Integer page,
+      @Parameter(description = "페이지 당 포스트 수", required = true)
+      @RequestParam Integer limit) {
+    return ResponseEntity.ok(postService.getPostsBySpotifyAlbumId(spotifyAlbumId, page, limit));
+  }
+
   /**
    * 특정 게시물 ID로 게시물을 조회합니다.
    *

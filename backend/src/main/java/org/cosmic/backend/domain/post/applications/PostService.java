@@ -110,4 +110,10 @@ public class PostService {
     validPostAuthor(post, userId);
     postRepository.delete(post);
   }
+
+  public List<PostAndCommentsDetail> getPostsBySpotifyAlbumId(String spotifyAlbumId, Integer page,
+      Integer limit) {
+    return PostAndCommentsDetail.from(postRepository.findAllByAlbum_SpotifyAlbumId(spotifyAlbumId,
+        PageRequest.of(page, limit)).getContent());
+  }
 }
