@@ -235,6 +235,7 @@ function PlayListPage() {
           setPlayListData(data);
           console.log('posted PlayList:');
           console.log(data);
+          GoToPlayListPage(author);
         } else if (response.status === 401) {
           console.log('reissuing Token');
           const reissueToken = await fetch(reissueTokenUrl, {
@@ -293,21 +294,27 @@ function PlayListPage() {
           </Text>
         </TitleArea>
         <PlayListArea>
-          {playListData && <PlayListEditCard playlist={playListData.tracks} isEditable={true} playlistInfo={author} setIsSearchModalOpen={setIsSearchModalOpen}></PlayListEditCard>}
+          {playListData && (
+            <PlayListEditCard playlist={playListData.tracks} setPlayListData={setPlayListData} isEditable={true} playlistInfo={author} setIsSearchModalOpen={setIsSearchModalOpen}></PlayListEditCard>
+          )}
         </PlayListArea>
         <ButtonContainer>
           <Btn
             bgcolor={colors.Button_green}
             onClick={() => {
               postPlayList();
-              GoToPlayListPage(author);
             }}
           >
             <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 4px">
               저장
             </Text>
           </Btn>
-          <Btn bgcolor={colors.BG_grey} onClick={() => {}}>
+          <Btn
+            bgcolor={colors.BG_grey}
+            onClick={() => {
+              GoToPlayListPage(author);
+            }}
+          >
             <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 4px">
               취소
             </Text>

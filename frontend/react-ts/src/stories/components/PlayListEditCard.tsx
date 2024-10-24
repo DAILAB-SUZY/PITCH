@@ -71,6 +71,20 @@ const SongTextArea = styled.div`
   overflow: hidden; // 너비를 넘어가면 안보이게
   text-overflow: ellipsis; // 글자가 넘어가면 말줄임(...) 표시
 `;
+const Btn = styled.div<{ bgcolor: string }>`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+  background-color: ${props => props.bgcolor};
+  width: 100px;
+  height: 35px;
+  border-radius: 10px;
+  padding: 10px;
+  box-sizing: border-box;
+  margin: 0px 20px;
+  box-shadow: 0 0px 5px rgba(0, 0, 0, 0.1);
+`;
 
 const Text = styled.div<{
   fontFamily?: string;
@@ -120,16 +134,59 @@ interface playlistInfo {
   page: number;
 }
 
+interface track {
+  albumId: number;
+  artistName: string;
+  spotifyId: string;
+  title: string;
+  trackCover: string;
+  trackId: number;
+  trackOrder: number;
+}
+
+interface recommend {
+  trackId: number;
+  title: string;
+  artistName: string;
+  albumId: number;
+  trackCover: string;
+}
+
+interface PlayListData {
+  tracks: track[];
+  recommends: recommend[];
+}
+
 interface PlaylistProps {
   playlist: SongData[] | RecommendSongData[];
   isEditable: boolean;
   playlistInfo: playlistInfo;
   setIsSearchModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setPlayListData: React.Dispatch<React.SetStateAction<PlayListData | undefined>>;
 }
 
-const PlayListEditCard = ({ playlist, isEditable, playlistInfo, setIsSearchModalOpen }: PlaylistProps) => {
+const PlayListEditCard = ({ playlist, isEditable, playlistInfo, setIsSearchModalOpen, setPlayListData }: PlaylistProps) => {
   const [playlistGradient, setPlaylistGradient] = useState<string>();
   const albumCoverRef = useRef<HTMLImageElement | null>(null);
+
+  const handleTrackRemove = (trackIdToRemove: number) => {
+    setPlayListData(prevData => {
+      if (!prevData) {
+        // prevData가 undefined일 경우 아무것도 하지 않음
+        return prevData;
+      }
+
+      // 기존 트랙 배열에서 삭제할 트랙을 필터링
+      const updatedTracks = prevData.tracks.filter(track => track.trackId !== trackIdToRemove);
+
+      console.log(updatedTracks);
+      return {
+        ...prevData,
+        tracks: updatedTracks,
+        recommends: prevData.recommends || [], // 추천은 그대로 유지
+      };
+    });
+  };
 
   // ColorThief로 앨범 커버에서 색상 추출
   const extractColors = () => {
@@ -199,6 +256,16 @@ const PlayListEditCard = ({ playlist, isEditable, playlistInfo, setIsSearchModal
               {song.artistName}
             </Title>
           </SongTextArea>
+          <Btn
+            bgcolor="red"
+            onClick={() => {
+              handleTrackRemove(song.trackId);
+            }}
+          >
+            <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 4px">
+              삭제
+            </Text>
+          </Btn>
         </SongArea>
       ))}
     </PlayListCardContainer>
