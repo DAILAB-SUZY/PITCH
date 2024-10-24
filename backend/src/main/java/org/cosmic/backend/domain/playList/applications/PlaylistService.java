@@ -14,6 +14,7 @@ import org.cosmic.backend.domain.playList.exceptions.NotFoundTrackException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.playList.repositorys.PlaylistRepository;
 import org.cosmic.backend.domain.playList.repositorys.TrackRepository;
+import org.cosmic.backend.domain.post.dtos.Post.AlbumDetail;
 import org.cosmic.backend.domain.search.applications.SearchService;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
@@ -58,8 +59,8 @@ public class PlaylistService {
             .playlist(playlist)
             .build())
         .forEach(playlist.getPlaylist_track()::add);
-    for(int i=1;i<=playlist.getPlaylist_track().size();i++) {
-      playlist.getPlaylist_track().get(i-1).setTrackOrder(i);
+    for (int i = 1; i <= playlist.getPlaylist_track().size(); i++) {
+      playlist.getPlaylist_track().get(i - 1).setTrackOrder(i);
     }
     playlist.setUpdateTime(Instant.now());
     playlistRepository.save(playlist);
@@ -86,5 +87,15 @@ public class PlaylistService {
 
   public List<PlaylistDetail> recommendation() {
     return trackRepository.findRandomTracks(5).stream().map(PlaylistDetail::from).toList();
+  }
+
+  /**
+   * 앨범 정보를 Detail DTO로 제공합니다.
+   *
+   * @param spotifyAlbumId 스포티파이 AlbumId
+   * @return Album -> AlbumDetail
+   */
+  public AlbumDetail getAlbumDetail(String spotifyAlbumId) {
+    return AlbumDetail.from(searchService.findAndSaveAlbumBySpotifyId(spotifyAlbumId));
   }
 }

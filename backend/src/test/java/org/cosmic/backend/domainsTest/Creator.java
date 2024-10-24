@@ -2,6 +2,9 @@ package org.cosmic.backend.domainsTest;
 
 import java.util.List;
 import java.util.stream.IntStream;
+import org.cosmic.backend.domain.albumChat.domains.AlbumChatComment;
+import org.cosmic.backend.domain.albumChat.domains.AlbumChatCommentLike;
+import org.cosmic.backend.domain.albumChat.domains.AlbumLike;
 import org.cosmic.backend.domain.bestAlbum.domains.UserBestAlbum;
 import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.playList.domains.Artist;
@@ -18,13 +21,60 @@ public class Creator {
   @Autowired
   private TestEntityManager testEntityManager;
 
-  public List<User> createAndSaveUsers(int size) {
-    String baseName = "username";
-    return IntStream.range(0, size).mapToObj(idx -> createAndSaveUser(baseName + idx)).toList();
+  public List<AlbumLike> createAndSaveAlbumLikes(Album album, List<User> users) {
+    return users.stream().map(user -> createAndSaveAlbumLike(album, user)).toList();
   }
 
-  private User createAndSaveUser(String username) {
+  private AlbumLike createAndSaveAlbumLike(Album album, User user) {
+    return testEntityManager.persistAndFlush(AlbumLike.builder().album(album).user(user).build());
+  }
+
+  public List<User> createAndSaveUsers(int size) {
+    return createAndSaveUsers(size, "username");
+  }
+
+  public List<User> createAndSaveUsers(int size, String basename) {
+    return IntStream.range(0, size).mapToObj(idx -> createAndSaveUser(basename + idx)).toList();
+  }
+
+  public User createAndSaveUser(String username) {
     return testEntityManager.persistAndFlush(createUser(username));
+  }
+
+  public AlbumChatComment createAndSaveAlbumChat(Album album, User user, String content) {
+    return testEntityManager.persistAndFlush(AlbumChatComment.from(album, user, content));
+  }
+
+  public AlbumChatComment createAndSaveAlbumChatComment(AlbumChatComment albumChatComment,
+      User user, String content) {
+    return testEntityManager.persistAndFlush(AlbumChatComment.builder()
+        .album(albumChatComment.getAlbum())
+        .user(user)
+        .content(content)
+        .parentAlbumChatComment(albumChatComment)
+        .build());
+  }
+
+  public List<AlbumChatComment> createAndSaveAlbumChatComments(AlbumChatComment albumChatComment,
+      List<User> users, String content) {
+    return users.stream()
+        .map(user -> createAndSaveAlbumChatComment(albumChatComment, user, content))
+        .toList();
+  }
+
+  public AlbumChatCommentLike createAndSaveAlbumChatLike(AlbumChatComment albumChatComment,
+      User user) {
+    return testEntityManager.persistAndFlush(AlbumChatCommentLike.builder()
+        .user(user)
+        .albumChatComment(albumChatComment)
+        .build());
+  }
+
+  public List<AlbumChatCommentLike> createAndSaveAlbumChatLikes(AlbumChatComment albumChatcomment,
+      List<User> users) {
+    return users.stream()
+        .map(user -> createAndSaveAlbumChatLike(albumChatcomment, user))
+        .toList();
   }
 
   private User createUser(String username) {
@@ -71,7 +121,7 @@ public class Creator {
         .toList();
   }
 
-  private Album createAndSaveAlbums(String baseName) {
+  public Album createAndSaveAlbums(String baseName) {
     return testEntityManager.persistAndFlush(Album.builder()
         .artist(testEntityManager.persistAndFlush(
             Artist.builder()
@@ -84,5 +134,11 @@ public class Creator {
         .title(baseName)
         .build()
     );
+  }
+
+  public List<AlbumChatComment> createAndSaveAlbumChats(Album album, User user, String content,
+      int start, int until) {
+    return IntStream.range(start, until)
+        .mapToObj(idx -> createAndSaveAlbumChat(album, user, content)).toList();
   }
 }
