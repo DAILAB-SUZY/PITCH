@@ -1,5 +1,6 @@
 package org.cosmic.backend.domain.youtube.apis;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -28,18 +29,19 @@ public class YoutubeApi {
     @GetMapping("/callback/google")
     public ResponseEntity<String> createPlaylist(
             @Parameter(description = "유저 인증 코드")
-            @RequestParam("code") String code) {
+            @RequestParam("code") String code) throws JsonProcessingException {
         return ResponseEntity.ok(youtubeService.getAccessToken(code));//인증이되어있는지안되어있느지
     }
 
     @ApiResponse(responseCode = "200", content = {@Content(schema=@Schema(contentMediaType = MediaType.APPLICATION_JSON_VALUE
             ,implementation= String.class))})
+    @ApiResponse(responseCode = "401", description = "Unauthrized youtube")
     @Operation(summary = "플레이리스트 공유",description = "Token을 활용한 특정 유저 유튜브에 플레이리스트 공유")
     @PostMapping("/createPlaylist")
     public ResponseEntity<String> createPlaylist(
             @Parameter(description = "플레이리스트 내용 및 accesstoken발급")
             @RequestBody PlaylistInforDetail playlistInforDetail,
-            @AuthenticationPrincipal Long userId){
+            @AuthenticationPrincipal Long userId) throws JsonProcessingException {
         String playlistId = youtubeService.createPlaylists(userId,playlistInforDetail.getTitle(),playlistInforDetail.getDescription(),playlistInforDetail.getYoutubeaccesstoken());
         return ResponseEntity.ok(playlistId);
     }

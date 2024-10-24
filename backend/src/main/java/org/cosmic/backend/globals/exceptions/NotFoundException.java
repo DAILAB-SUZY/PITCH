@@ -1,7 +1,6 @@
 package org.cosmic.backend.globals.exceptions;
 
 public class NotFoundException extends RuntimeException{
-
     protected static final String notFoundAlbumChatCommentError_Message="Not found albumChatComment";
     protected static final String notFoundAlbumChatCommentLikeError_Message="Not found albumChatComment";
     protected static final String notFoundAlbumChatError_Message="Not found albumChat page";

@@ -1,8 +1,11 @@
 package org.cosmic.backend.domain.youtube.applications;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.cosmic.backend.domain.playList.domains.Playlist_Track;
+import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.playList.repositorys.PlaylistRepository;
 import org.cosmic.backend.domain.playList.repositorys.PlaylistTrackRepository;
+import org.cosmic.backend.domain.youtube.exceptions.AuthorizationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -29,7 +32,7 @@ public class YoutubeService {
     private PlaylistRepository playlistRepository;
 
     // 액세스 토큰을 요청하는 메서드
-    public String getAccessToken(String authorizationCode) {
+    public String getAccessToken(String authorizationCode) throws JsonProcessingException {
         RestTemplate restTemplate = new RestTemplate();
 
         // 요청 본문 데이터 준비 (MultiValueMap 사용)
@@ -46,27 +49,23 @@ public class YoutubeService {
         // 요청 엔티티 생성
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(requestBody, headers);
 
-        try {
-            // Google 서버로 POST 요청 전송
-            ResponseEntity<String> response = restTemplate.exchange(
-                    TOKEN_URL,
-                    HttpMethod.POST,
-                    request,
-                    String.class
-            );
+        // Google 서버로 POST 요청 전송
+        ResponseEntity<String> response = restTemplate.exchange(
+                TOKEN_URL,
+                HttpMethod.POST,
+                request,
+                String.class
+        );
 
-            // 응답 본문에서 액세스 토큰 파싱
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode = objectMapper.readTree(response.getBody());
-            return jsonNode.get("access_token").asText();
+        // 응답 본문에서 액세스 토큰 파싱
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = objectMapper.readTree(response.getBody());
+        return jsonNode.get("access_token").asText();
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "Failed to get access token";
-        }
+
     }
 
-    public String createPlaylist(String title, String description,String accessToken) {
+    public String createPlaylist(String title, String description,String accessToken) throws JsonProcessingException {
         RestTemplate restTemplate = new RestTemplate();
 
         // 요청 헤더 설정
@@ -87,23 +86,19 @@ public class YoutubeService {
 
         HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
 
-        try {
-            ResponseEntity<String> response = restTemplate.exchange(
-                    YOUTUBE_PLAYLIST_URL + "?part=snippet",
-                    HttpMethod.POST,
-                    request,
-                    String.class
-            );
+        ResponseEntity<String> response = restTemplate.exchange(
+                YOUTUBE_PLAYLIST_URL + "?part=snippet",
+                HttpMethod.POST,
+                request,
+                String.class
+        );
 
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode = objectMapper.readTree(response.getBody());
-            // 생성된 플레이리스트 ID 반환
-            return jsonNode.get("id").asText();
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = objectMapper.readTree(response.getBody());
+        // 생성된 플레이리스트 ID 반환
+        return jsonNode.get("id").asText();
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "Failed to create playlist.";
-        }
+
     }
 
     public String searchVideo(String query,String accessToken) {
@@ -170,8 +165,14 @@ public class YoutubeService {
         }
     }
 
-    public String createPlaylists(Long userId,String title,String description,String accessToken){
+    public String createPlaylists(Long userId,String title,String description,String accessToken) throws JsonProcessingException {
         // 1. 플레이리스트 생성
+        if(title==null){title="";}
+        if(description==null){description="";}
+        if (accessToken==null) {
+            throw new AuthorizationException();
+        }
+
         String playlistId = createPlaylist(title,description,accessToken);
         List<Playlist_Track> playlistTracks= playlistTrackRepository.findByPlaylist_PlaylistId(
             playlistRepository.findByUser_UserId(userId).get().getPlaylistId()).get();
