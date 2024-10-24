@@ -5,7 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.cosmic.backend.domain.albumChat.domains.AlbumLike;
 import org.cosmic.backend.domain.playList.domains.Album;
+import org.cosmic.backend.domain.user.dtos.UserDetail;
 
 @Data
 @Builder
@@ -19,6 +21,7 @@ public class AlbumDetail {
   private String artistName;
   private String genre;
   private String spotifyId;
+  private List<UserDetail> likes;
 
   public static AlbumDetail from(Album album) {
     return AlbumDetail.builder()
@@ -28,6 +31,7 @@ public class AlbumDetail {
         .artistName(album.getArtist().getArtistName())
         .genre(album.getGenre())
         .spotifyId(album.getSpotifyAlbumId())
+        .likes(UserDetail.from(album.getAlbumLike().stream().map(AlbumLike::getUser).toList()))
         .build();
   }
 
