@@ -17,8 +17,8 @@ import java.util.List;
 @Service
 public class YoutubeService {
     private static final String TOKEN_URL = "https://oauth2.googleapis.com/token";
-    private final String clientId = System.getenv("YOUTUBECLIENT_ID");
-    private final String clientSecret = System.getenv("YOUTUBECLIENT_SECRET");
+    private final String clientId = System.getenv("YOUTUBE_CLIENT_ID");
+    private final String clientSecret = System.getenv("YOUTUBE_CLIENT_SECRET");
     private final String redirectUri = "http://localhost:8080/oauth2/callback/google";
     private static final String YOUTUBE_PLAYLIST_URL = "https://www.googleapis.com/youtube/v3/playlists";
     private static final String YOUTUBE_SEARCH_URL = "https://www.googleapis.com/youtube/v3/search";

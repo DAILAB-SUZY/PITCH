@@ -48,7 +48,6 @@ public class SecurityConfig {
                 .requestMatchers("/swagger-ui/**").permitAll()
                 .requestMatchers("/v3/api-docs/**").permitAll()
                 .anyRequest().authenticated()
-
             ).oauth2Login(oauth2 -> oauth2
                         .defaultSuccessUrl("/oauth2/callback/google", true)
                 );
