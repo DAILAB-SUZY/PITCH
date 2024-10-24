@@ -20,7 +20,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
-@DataJpaTest
+@DataJpaTest(showSql = false)
 @Log4j2
 @Import(Creator.class)
 public class AlbumChatRepositoryTest {

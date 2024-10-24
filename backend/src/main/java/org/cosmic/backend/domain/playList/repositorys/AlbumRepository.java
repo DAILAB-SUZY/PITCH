@@ -35,13 +35,7 @@ public interface AlbumRepository extends JpaRepository<Album, Long> {
   @Query("SELECT a FROM Album a LEFT JOIN a.albumChatComments acc GROUP BY a.albumId ORDER BY COUNT(acc) DESC,a.albumId ASC ")
   Page<Album> findAlbumsOrderByCommentCount(Pageable pageable);
 
-  @Query(value =
-      "SELECT a.album_id, album_cover, created_date, genre, spotify_album_id, title, artist_id\n" +
-          "FROM album a\n" +
-          "LEFT JOIN album_like al\n" +
-          "ON a.album_id=al.album_id\n" +
-          "GROUP BY a.album_id\n" +
-          "ORDER BY COUNT(al.user_id) DESC, a.album_id", nativeQuery = true)
+  @Query("SELECT a FROM Album a LEFT JOIN a.albumLike al GROUP BY a.albumId ORDER BY COUNT(al.user) DESC,a.albumId ASC")
   Page<Album> findAlbumsOrderByAlbumLikeCount(Pageable pageable);
 
   Optional<Album> findBySpotifyAlbumId(String spotifyAlbumId);
