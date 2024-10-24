@@ -335,12 +335,18 @@ function MusicProfileEditPage() {
 
         if (response.ok) {
           console.log('set PostList');
-          const data = await response.json();
+          const data: MusicProfileData = await response.json();
           console.log(data);
           setMusicProfileData(data);
           setMyMusicDna(data.userDetail.dnas);
           setBestAlbum(data.bestAlbum);
           setFavoriteArtist(data.favoriteArtist);
+          const spotifyId = {
+            spotifyArtistId: data.favoriteArtist.spotifyArtistId,
+            spotifyAlbumId: '',
+            spotifyTrackId: '',
+          };
+          setFavoriteArtistSpotifyIds(spotifyId);
           fetchMusicDNA();
         } else if (response.status === 401) {
           console.log('reissuing Token');

@@ -7,6 +7,7 @@ import PlayListPage from './stories/pages/PlayListPage';
 import PlayListEditPage from './stories/pages/PlayListEditPage';
 import AlbumChatPage from './stories/pages/AlbumChatPage';
 import AlbumHomePage from './stories/pages/AlbumHomePage';
+import AlbumPage from './stories/pages/AlbumPage';
 import AlbumChatPostPage from './stories/pages/AlbumChatPostPage';
 import MusicProfilePage from './stories/pages/MusicProfilePage';
 import MusicProfileEditPage from './stories/pages/MusicProfileEditPage';
@@ -29,6 +30,7 @@ function App() {
         <Route path="/PlayListEditPage" element={<PlayListEditPage />} />
         <Route path="/AlbumChatPage" element={<AlbumChatPage />} />
         <Route path="/AlbumHomePage" element={<AlbumHomePage />} />
+        <Route path="/AlbumPage" element={<AlbumPage />} />
         <Route path="/AlbumChatPostPage" element={<AlbumChatPostPage />} />
         <Route path="/MusicProfilePage" element={<MusicProfilePage />} />
         <Route path="/MusicProfileEditPage" element={<MusicProfileEditPage />} />

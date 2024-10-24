@@ -87,7 +87,7 @@ const Nav = ({ page }: NavProps) => {
         <Button
           onClick={() => {
             setActiveNav(1);
-            GoToAlbumHomePage();
+            GoToHomePage();
           }}
         >
           {activeNav === 1 ? <img src={home_active} width="35px" height="35px"></img> : <img src={home_deactive} width="20px" height="20px"></img>}
@@ -116,7 +116,7 @@ const Nav = ({ page }: NavProps) => {
           {activeNav === 3 ? <img src={albumChat_active} width="35px" height="35px"></img> : <img src={albumChat_deactive} width="20px" height="20px"></img>}
 
           <Title color={activeNav === 3 ? colors.Main_Pink : colors.Button_deactive} fontSize={activeNav === 3 ? '25px' : '13px'} margin="0px 5px">
-            Album Chat
+            Albums
           </Title>
         </Button>
       </ButtonArea>
