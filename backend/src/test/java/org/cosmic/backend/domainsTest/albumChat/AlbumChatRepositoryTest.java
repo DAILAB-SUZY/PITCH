@@ -1,12 +1,14 @@
 package org.cosmic.backend.domainsTest.albumChat;
 
 import java.util.List;
+import java.util.stream.IntStream;
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.albumChat.domains.AlbumChatComment;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDetail;
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatCommentException;
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatCommentRepository;
 import org.cosmic.backend.domain.playList.domains.Album;
+import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domainsTest.Creator;
 import org.junit.jupiter.api.Assertions;
@@ -15,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
 @DataJpaTest
@@ -24,6 +27,9 @@ public class AlbumChatRepositoryTest {
 
   @Autowired
   private AlbumChatCommentRepository albumChatCommentRepository;
+
+  @Autowired
+  private AlbumRepository albumRepository;
 
   @Autowired
   private Creator creator;
@@ -119,5 +125,26 @@ public class AlbumChatRepositoryTest {
     Assertions.assertEquals(5, AlbumChatCommentDetail.from(comments.get(0)).getComments().size());
   }
 
-  
+  @Test
+  @DisplayName("앨범챗 댓글 많은 순으로 조회")
+  @Transactional
+  public void getAlbumChatOrderComments() {
+    List<Album> albums = creator.createAndSaveAlbums(0, 5);
+    User user = creator.createAndSaveUser("testman");
+    albums.forEach(album -> {
+      int commentCount = (int) (Math.random() * 100) % 100;
+      album.getAlbumChatComments()
+          .addAll(creator.createAndSaveAlbumChats(album, user, "test", 0, commentCount));
+    });
+
+    List<Album> commentOrderedAlbums = albumRepository.findAlbumsOrderByCommentCount(
+        PageRequest.of(0, 5)).getContent();
+
+    IntStream.range(1, commentOrderedAlbums.size()).forEach(i -> {
+      log.info(commentOrderedAlbums.get(i).getAlbumChatComments().size());
+      Assertions.assertTrue(
+          commentOrderedAlbums.get(i - 1).getAlbumChatComments().size() >= commentOrderedAlbums.get(
+              i).getAlbumChatComments().size());
+    });
+  }
 }
