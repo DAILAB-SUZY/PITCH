@@ -14,7 +14,7 @@ import MusicProfileEditPage from './stories/pages/MusicProfileEditPage';
 import AlbumPostPage from './stories/pages/AlbumPostPage';
 import AlbumPostEditPage from './stories/pages/AlbumPostEditPage';
 import CommentPostPage from './stories/pages/CommentPostPage';
-
+import FollowPage from './stories/pages/FollowPage';
 import SearchPage from './stories/pages/SearchPage';
 import './styles/reset.css';
 
@@ -38,6 +38,7 @@ function App() {
         <Route path="/AlbumPostEditPage" element={<AlbumPostEditPage />} />
         <Route path="/CommentPostPage" element={<CommentPostPage />} />
         <Route path="/SearchPage" element={<SearchPage />} />
+        <Route path="/FollowPage" element={<FollowPage />} />
       </Routes>
     </BrowserRouter>
   );

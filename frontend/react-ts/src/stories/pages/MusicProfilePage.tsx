@@ -463,6 +463,16 @@ function MusicProfilePage() {
   const GoToEditPage = (musicProfileData: MusicProfileData) => {
     navigate('/MusicProfileEditPage', { state: musicProfileData.userDetail.id });
   };
+  const GoToFollowPage = (musicProfileData: MusicProfileData) => {
+    navigate('/FollowPage', {
+      state: {
+        userId: musicProfileData.userDetail.id,
+        userName: musicProfileData.userDetail.username,
+        followings: musicProfileData.followings,
+        followers: musicProfileData.followers,
+      },
+    });
+  };
 
   const [isFollowed, setIsFollowed] = useState<boolean>();
 
@@ -728,9 +738,9 @@ function MusicProfilePage() {
             </TabBtn>
           </TabArea>
         </MenuArea>
-        {tabBtn === 1 ? (
+        {tabBtn === 1 && musicProfileData ? (
           <>
-            <FollowArea>
+            <FollowArea onClick={() => GoToFollowPage(musicProfileData)}>
               <FollowBox>
                 <Text fontFamily="Bd" fontSize="15px" margin="5px">
                   Follower
