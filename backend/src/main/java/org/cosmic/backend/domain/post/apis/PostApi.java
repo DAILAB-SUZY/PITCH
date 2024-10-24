@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
  * 게시물(Post) 관련 API를 제공하는 REST 컨트롤러입니다. 게시물 조회, 생성, 수정, 삭제 및 앨범/아티스트 검색 기능을 제공합니다.
  */
 @RestController
-@RequestMapping("/api/album/post")
+@RequestMapping("/api/album")
 @ApiCommonResponses
 @Tag(name = "앨범 포스트 관련 API", description = "앨범 포스트 및 댓글/대댓글/좋아요")
 public class PostApi {
@@ -60,7 +60,7 @@ public class PostApi {
    * @return 사용자의 모든 게시물을 포함한 요청 객체 리스트
    * @throws NotFoundUserException 사용자를 찾을 수 없을 때 발생합니다.
    */
-  @GetMapping("")
+  @GetMapping("/post")
   @ApiResponse(responseCode = "404", description = "Not Found User")
   @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
       array = @ArraySchema(schema = @Schema(implementation = PostAndCommentsDetail.class))))
@@ -83,7 +83,7 @@ public class PostApi {
    * @return 조회된 게시물의 요청 객체
    * @throws NotFoundPostException 게시물을 찾을 수 없을 때 발생합니다.
    */
-  @GetMapping("/{postId}")
+  @GetMapping("/post/{postId}")
   @ApiResponse(responseCode = "200", content = @Content(
       mediaType = MediaType.APPLICATION_JSON_VALUE,
       schema = @Schema(implementation = PostAndCommentsDetail.class)
@@ -101,7 +101,7 @@ public class PostApi {
    * @return 생성된 게시물의 DTO 객체
    * @throws NotFoundAlbumException 앨범을 찾을 수 없을 때 발생합니다.
    */
-  @PostMapping("")
+  @PostMapping("/post")
   @ApiResponse(responseCode = "200", content = @Content(
       mediaType = MediaType.APPLICATION_JSON_VALUE,
       schema = @Schema(implementation = PostAndCommentsDetail.class)
@@ -127,7 +127,7 @@ public class PostApi {
    * @return 수정 성공 메시지를 포함한 {@link ResponseEntity}
    * @throws NotFoundPostException 게시물을 찾을 수 없을 때 발생합니다.
    */
-  @PostMapping("/{postId}")
+  @PostMapping("/post/{postId}")
   @ApiResponse(responseCode = "200", content = @Content(
       mediaType = MediaType.APPLICATION_JSON_VALUE,
       schema = @Schema(implementation = PostAndCommentsDetail.class)
@@ -145,7 +145,7 @@ public class PostApi {
    * @return 삭제 성공 메시지를 포함한 {@link ResponseEntity}
    * @throws NotFoundPostException 게시물을 찾을 수 없을 때 발생합니다.
    */
-  @DeleteMapping("/{postId}")
+  @DeleteMapping("/post/{postId}")
   @ApiResponse(responseCode = "404", description = "Not Found Post")
   @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
       schema = @Schema(implementation = PostDetail.class)))
