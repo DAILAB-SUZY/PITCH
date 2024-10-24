@@ -3,6 +3,7 @@ package org.cosmic.backend.domainsTest.albumChat;
 import java.util.List;
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.albumChat.domains.AlbumChatComment;
+import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDetail;
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatCommentException;
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatCommentRepository;
 import org.cosmic.backend.domain.playList.domains.Album;
@@ -50,24 +51,22 @@ public class AlbumChatRepositoryTest {
     Album album = creator.createAndSaveAlbums("testAlbum");
     User user = creator.createAndSaveUser("testman");
 
+    AlbumChatComment albumChat = albumChatCommentRepository.save(AlbumChatComment.from(
+        album,
+        user,
+        "goods"
+    ));
+
     AlbumChatComment albumChatComment = AlbumChatComment.from(
         album,
         user,
         "bad"
     );
-    albumChatComment.setParentAlbumChatComment(
-        albumChatCommentRepository.save(AlbumChatComment.from(
-            album,
-            user,
-            "goods"
-        ))
-    );
-    AlbumChatComment created = albumChatCommentRepository.save(albumChatComment);
-    Assertions.assertEquals("goods", created.getParentAlbumChatComment().getContent());
-  }
+    albumChatComment.setParentAlbumChatComment(albumChat);
 
-  private AlbumChatComment createAndSaveAlbumChat(Album album, User user, String content) {
-    return albumChatCommentRepository.save(AlbumChatComment.from(album, user, content));
+    albumChat.getChildComments().add(albumChatComment);
+
+    Assertions.assertEquals("bad", albumChat.getChildComments().get(0).getContent());
   }
 
   @Test
@@ -109,11 +108,16 @@ public class AlbumChatRepositoryTest {
     Album album = creator.createAndSaveAlbums("testAlbum");
     User user = creator.createAndSaveUser("testman");
     AlbumChatComment chat = creator.createAndSaveAlbumChat(album, user, "goods");
-    creator.createAndSaveAlbumChatComments(chat, List.of(user, user, user, user, user), "dd");
+    chat.getChildComments().addAll(
+        creator.createAndSaveAlbumChatComments(chat, List.of(user, user, user, user, user), "dd"));
 
-    List<AlbumChatComment> comments = albumChatCommentRepository.findByAlbum_AlbumId(
-        album.getAlbumId()).get();
+    List<AlbumChatComment> comments = albumChatCommentRepository.findAllByAlbum_AlbumIdAndParentAlbumChatCommentIsNull(
+        album.getAlbumId());
 
     Assertions.assertEquals(1, comments.size());
+    Assertions.assertEquals(5, comments.get(0).getChildComments().size());
+    Assertions.assertEquals(5, AlbumChatCommentDetail.from(comments.get(0)).getComments().size());
   }
+
+  
 }
