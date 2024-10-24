@@ -2,10 +2,7 @@ package org.cosmic.backend.domain.albumChat.dtos.comment;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -39,35 +36,11 @@ public class AlbumChatCommentDetail implements Serializable {
     this.author = User.toUserDetail(albumChatComment.getUser());
   }
 
-  private static Map<AlbumChatComment, List<AlbumChatComment>> getGroupedMap(
-      List<AlbumChatComment> postComments) {
-    Map<AlbumChatComment, List<AlbumChatComment>> groupedMap = new HashMap<>();
-    for (AlbumChatComment postComment : postComments) {
-      try {
-        groupedMap.get(postComment.getParentAlbumChatComment()).add(postComment);
-      } catch (NullPointerException e) {
-        groupedMap.put(postComment, new ArrayList<>());
-      }
-    }
-    return groupedMap;
-  }
-
   public static List<AlbumChatCommentDetail> from(List<AlbumChatComment> albumChatComments) {
-    return getGroupedMap(albumChatComments).entrySet()
-        .stream()
-        .map(entry -> AlbumChatCommentDetail.from(entry.getKey(), entry.getValue()))
-        .sorted((o1, o2) -> o2.recentTime().compareTo(o1.recentTime()))
-        .toList();
+    return albumChatComments.stream().map(AlbumChatCommentDetail::from).toList();
   }
 
-  private static AlbumChatCommentDetail from(AlbumChatComment parent,
-      List<AlbumChatComment> children) {
-    AlbumChatCommentDetail detail = AlbumChatCommentDetail.from(parent);
-    detail.setComments(AlbumChatReplyDetail.from(children));
-    return detail;
-  }
-
-  private static AlbumChatCommentDetail from(AlbumChatComment albumChatComment) {
+  public static AlbumChatCommentDetail from(AlbumChatComment albumChatComment) {
     return AlbumChatCommentDetail.builder()
         .albumChatCommentId(albumChatComment.getAlbumChatCommentId())
         .content(albumChatComment.getContent())
@@ -76,12 +49,8 @@ public class AlbumChatCommentDetail implements Serializable {
         .likes(UserDetail.from(
             albumChatComment.getAlbumChatCommentLikes().stream().map(AlbumChatCommentLike::getUser)
                 .toList()))
-        .comments(List.of())
+        .comments(AlbumChatReplyDetail.from(albumChatComment.getChildComments()))
         .author(UserDetail.from(albumChatComment.getUser()))
         .build();
-  }
-
-  private Instant recentTime() {
-    return updateAt == null ? createAt : updateAt;
   }
 }

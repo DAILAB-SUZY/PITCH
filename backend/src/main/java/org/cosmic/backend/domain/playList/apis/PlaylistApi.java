@@ -16,6 +16,7 @@ import org.cosmic.backend.domain.playList.dtos.PlaylistDetail;
 import org.cosmic.backend.domain.playList.dtos.SpotifyTracksDto;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundTrackException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
+import org.cosmic.backend.domain.post.dtos.Post.AlbumDetail;
 import org.cosmic.backend.domain.search.applications.SearchService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -96,5 +97,16 @@ public class PlaylistApi {
       @RequestBody SpotifyTracksDto playlist,
       @AuthenticationPrincipal Long userId) {
     return ResponseEntity.ok(playlistService.save(userId, playlist));
+  }
+
+  @Tag(name = "앨범 챗 관련 API", description = "앨범 챗 댓글/대댓글/좋아요 제공")
+  @GetMapping("/album/{spotifyAlbumId}")
+  @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+      schema = @Schema(implementation = AlbumDetail.class)))
+  @Operation(summary = "앨범 디테일 제공 API", description = "스포티파이 앨범 ID를 통해 앨범 디테일 정보를 제공")
+  public ResponseEntity<AlbumDetail> getAlbumDetail(
+      @Parameter(description = "Spotify에서 사용하는 Album ID")
+      @PathVariable String spotifyAlbumId) {
+    return ResponseEntity.ok(playlistService.getAlbumDetail(spotifyAlbumId));
   }
 }
