@@ -207,19 +207,88 @@ interface FavoriteArtistSpotifyIds {
   spotifyTrackId: string;
 }
 
-interface SearchAlbumModalProps {
-  searchingTopic: string;
-  setIsSearchModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  favoriteArtist: FavoriteArtist | undefined;
-  setFavoriteArtist: React.Dispatch<React.SetStateAction<FavoriteArtist | undefined>>;
-  favoriteArtistSpotifyIds: FavoriteArtistSpotifyIds | undefined;
-  setFavoriteArtistSpotifyIds: React.Dispatch<React.SetStateAction<FavoriteArtistSpotifyIds | undefined>>;
+interface track {
+  albumId: number;
+  artistName: string;
+  spotifyId: string;
+  title: string;
+  trackCover: string;
+  trackId: number;
+  trackOrder: number;
 }
 
-function SearchTrackModal({ searchingTopic, setIsSearchModalOpen, favoriteArtist, setFavoriteArtist, favoriteArtistSpotifyIds, setFavoriteArtistSpotifyIds }: SearchAlbumModalProps) {
+interface recommend {
+  trackId: number;
+  title: string;
+  artistName: string;
+  albumId: number;
+  trackCover: string;
+}
+
+interface PlayListData {
+  tracks: track[];
+  recommends: recommend[];
+}
+
+interface SearchAlbumModalProps {
+  searchingTopic?: string; // optional
+  setIsSearchModalOpen: React.Dispatch<React.SetStateAction<boolean>>; // optional
+  favoriteArtist?: FavoriteArtist; // optional
+  setFavoriteArtist?: React.Dispatch<React.SetStateAction<FavoriteArtist | undefined>>; // optional
+  favoriteArtistSpotifyIds?: FavoriteArtistSpotifyIds; // optional
+  setFavoriteArtistSpotifyIds?: React.Dispatch<React.SetStateAction<FavoriteArtistSpotifyIds | undefined>>; // optional
+  tracks: track[];
+  setPlayListData: React.Dispatch<React.SetStateAction<PlayListData | undefined>>;
+}
+
+function SearchTrackModal(props: SearchAlbumModalProps) {
+  const { searchingTopic, setIsSearchModalOpen, favoriteArtist, setFavoriteArtist, favoriteArtistSpotifyIds, setFavoriteArtistSpotifyIds, tracks, setPlayListData } = props || {};
   const [searchKeyword, setSearchKeyword] = useState('');
   const [searchResultTrack, setSearchResultTrack] = useState<TrackSearchResult[]>();
   const [isLoading, setIsLoading] = useState(false);
+
+  const handleTrackUpdate = (newTrack: TrackSearchResult) => {
+    console.log(newTrack);
+    setPlayListData(prevData => {
+      if (!prevData) {
+        // prevData가 undefined일 경우 초기값으로 설정
+        return {
+          tracks: [
+            {
+              albumId: 0, // 기본값 설정
+              artistName: newTrack.trackArtist.name || 'Unknown Artist', // artistName이 없을 경우 기본값 설정
+              spotifyId: newTrack.trackId, // 예시로 trackId 사용
+              title: newTrack.trackName || 'Unknown Title', // title이 없을 경우 기본값 설정
+              trackCover: newTrack.album.imageUrl || '', // trackCover가 없을 경우 기본값 설정
+              trackId: newTrack.trackId, // trackId
+              trackOrder: 1, // 새 트랙의 순서 설정
+            },
+          ],
+          recommends: [], // 추천도 빈 배열로 초기화
+        };
+      }
+
+      // newSong 객체 생성
+      const newSong = {
+        albumId: 0, // 기본값 설정
+        artistName: newTrack.trackArtist.name || 'Unknown Artist', // artistName이 없을 경우 기본값 설정
+        spotifyId: newTrack.trackId, // 예시로 trackId 사용
+        title: newTrack.trackName || 'Unknown Title', // title이 없을 경우 기본값 설정
+        trackCover: newTrack.album.imageUrl || '', // trackCover가 없을 경우 기본값 설정
+        trackId: newTrack.trackId, // trackId
+        trackOrder: prevData.tracks.length + 1, // 새 트랙의 순서 설정
+      };
+
+      // 기존 트랙 배열에 새로운 트랙 추가
+      const updatedTracks = [...prevData.tracks, newSong];
+      console.log(updatedTracks);
+      return {
+        ...prevData,
+        tracks: updatedTracks,
+        recommends: prevData.recommends || [], // 추천이 없을 경우 빈 배열로 설정
+      };
+    });
+  };
 
   const server = 'http://203.255.81.70:8030';
 
@@ -345,22 +414,34 @@ function SearchTrackModal({ searchingTopic, setIsSearchModalOpen, favoriteArtist
       </SearchInputArea>
 
       <SearchResultArea>
-        {/* {!isLoading && searchResultAlbum && searchingTopic === 'track'
-          ? searchResultAlbum.map((album: any) => (
-              <SongArea key={album.albumId} onClick={() => console.log("track search")}>
+        {!isLoading && searchResultTrack && searchingTopic === 'track'
+          ? searchResultTrack.map((track: any) => (
+              <SongArea
+                key={track.albumId}
+                onClick={() => {
+                  handleTrackUpdate(track);
+                  setIsSearchModalOpen(false);
+                }}
+              >
                 <AlbumCover>
-                  <img src={album.imageUrl} width="100%" height="100%"></img>
+                  <img src={track.album.imageUrl} width="100%" height="100%"></img>
                 </AlbumCover>
                 <SongTextArea>
-                  <Title fontSize={'20px'}>{album.name}</Title>
-                  <Title fontSize={'15px'}>{album.albumArtist.name}</Title>
+                  <Title fontSize={'20px'}>{track.trackName}</Title>
+                  <Title fontSize={'15px'}>{track.trackArtist.name}</Title>
                 </SongTextArea>
               </SongArea>
             ))
-          : null} */}
+          : null}
         {!isLoading && searchResultTrack && searchingTopic === 'Artist-track'
           ? searchResultTrack.map((track: TrackSearchResult) => (
-              <SongArea key={track.trackName} onClick={() => addFavoriteArtistTrack(track)}>
+              <SongArea
+                key={track.trackName}
+                onClick={() => {
+                  addFavoriteArtistTrack(track);
+                  setIsSearchModalOpen(false);
+                }}
+              >
                 <AlbumCover>
                   <img src={track.album.imageUrl} width="100%" height="100%"></img>
                 </AlbumCover>

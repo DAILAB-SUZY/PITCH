@@ -3,6 +3,7 @@ import { colors } from '../../styles/color';
 import ColorThief from 'colorthief';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import SearchTrackModal from './SearchTrackModal';
 
 const PlayListCardContainer = styled.div<{ gradient?: string }>`
   width: 360px;
@@ -123,9 +124,10 @@ interface PlaylistProps {
   playlist: SongData[] | RecommendSongData[];
   isEditable: boolean;
   playlistInfo: playlistInfo;
+  setIsSearchModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const PlayListEditCard = ({ playlist, isEditable, playlistInfo }: PlaylistProps) => {
+const PlayListEditCard = ({ playlist, isEditable, playlistInfo, setIsSearchModalOpen }: PlaylistProps) => {
   const [playlistGradient, setPlaylistGradient] = useState<string>();
   const albumCoverRef = useRef<HTMLImageElement | null>(null);
 
@@ -164,17 +166,14 @@ const PlayListEditCard = ({ playlist, isEditable, playlistInfo }: PlaylistProps)
         {isEditable && (
           <EditBtn
             onClick={() => {
-              GoToEditPage();
+              setIsSearchModalOpen(true);
             }}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill={colors.BG_grey} className="bi bi-list-ul" viewBox="0 0 16 16">
-              <path
-                fill-rule="evenodd"
-                d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m-3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2m0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2m0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2"
-              />
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill={colors.BG_grey} viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2" />
             </svg>
             <Text fontSize={'14px'} fontFamily="Rg" margin="0px 0px 0px 5px " opacity="0.8">
-              수정
+              추가
             </Text>
           </EditBtn>
         )}
