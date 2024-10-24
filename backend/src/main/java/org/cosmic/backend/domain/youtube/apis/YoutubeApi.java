@@ -16,7 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-
+@RequestMapping("/oauth2")
 @RestController
 public class YoutubeApi {
     @Autowired
@@ -25,7 +25,7 @@ public class YoutubeApi {
     @ApiResponse(responseCode = "200", content = {@Content(schema=@Schema(contentMediaType = MediaType.APPLICATION_JSON_VALUE
             ,implementation= String.class))})
     @Operation(summary = "OAUTH로그인 후 AccessToken발급",description = "사용자가 OAUTH로그인을 완료하면 코드를 활용해 Token을 발급함")
-    @GetMapping("/oauth2/callback/google")
+    @GetMapping("/callback/google")
     public ResponseEntity<String> createPlaylist(
             @Parameter(description = "유저 인증 코드")
             @RequestParam("code") String code) {
@@ -35,7 +35,7 @@ public class YoutubeApi {
     @ApiResponse(responseCode = "200", content = {@Content(schema=@Schema(contentMediaType = MediaType.APPLICATION_JSON_VALUE
             ,implementation= String.class))})
     @Operation(summary = "플레이리스트 공유",description = "Token을 활용한 특정 유저 유튜브에 플레이리스트 공유")
-    @PostMapping("/api/createPlaylist")
+    @PostMapping("/createPlaylist")
     public ResponseEntity<String> createPlaylist(
             @Parameter(description = "플레이리스트 내용 및 accesstoken발급")
             @RequestBody PlaylistInforDetail playlistInforDetail,

@@ -11,5 +11,6 @@ import lombok.NoArgsConstructor;
 public class PlaylistInforDetail {
     private String description;
     private String title;
+    @
     private String youtubeaccesstoken;
 }

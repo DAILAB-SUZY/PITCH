@@ -28,27 +28,48 @@ public class SecurityConfig {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.exceptionHandlerFilter = exceptionHandlerFilter;
     }
-
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(AbstractHttpConfigurer::disable)
-            .httpBasic(AbstractHttpConfigurer::disable)
-            .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(
-                    SessionCreationPolicy.STATELESS
-            )).authorizeHttpRequests(authorize ->
-                authorize
-                .requestMatchers("/oauth2/**").permitAll()
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/user").permitAll()
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/example").permitAll()
-                .requestMatchers("/api/mail/**").permitAll()
-                .requestMatchers("/api/**").permitAll()
-                .requestMatchers("/swagger-ui/**").permitAll()
-                .requestMatchers("/v3/api-docs/**").permitAll()
-                .anyRequest().authenticated()
-            ).oauth2Login(oauth2 -> oauth2
+                .csrf(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(
+                        SessionCreationPolicy.STATELESS
+                )).authorizeHttpRequests(authorize ->
+                        authorize
+                                .requestMatchers("/api/auth/**").permitAll()
+                                .requestMatchers("/api/user").permitAll()
+                                .requestMatchers("/example").permitAll()
+                                .requestMatchers("/api/mail/**").permitAll()
+                                .requestMatchers("/api/**").permitAll()
+                                .requestMatchers("/swagger-ui/**").permitAll()
+                                .requestMatchers("/v3/api-docs/**").permitAll()
+                                .anyRequest().authenticated()
+                );
+
+        //filter등록 후 매 요청마다 CorsFilter 실행한 후에 jwtAuthenticationFilter 실행한다.
+        http.addFilterAfter(
+                jwtAuthenticationFilter,
+                CorsFilter.class
+        );
+        http.addFilterBefore(
+                exceptionHandlerFilter,
+                JwtAuthenticationFilter.class
+        );
+        return http.build();
+    }
+    @Bean
+    public SecurityFilterChain oauthSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(
+                        SessionCreationPolicy.STATELESS
+                )).authorizeHttpRequests(authorize ->
+                        authorize
+                                .requestMatchers("/oauth2/**").permitAll()
+                                .anyRequest().authenticated()
+                ).oauth2Login(oauth2 -> oauth2
                         .defaultSuccessUrl("/oauth2/callback/google", true)
                 );
 
@@ -61,6 +82,11 @@ public class SecurityConfig {
                 exceptionHandlerFilter,
                 JwtAuthenticationFilter.class
         );
-         return http.build();
+        return http.build();
     }
+
+
+
+
+
 }
