@@ -1,130 +1,253 @@
-import styled from "styled-components";
-import { colors } from "../../styles/color";
-import logo from "../../img/logo.png";
-import BottomNav from "../components/BottomNav";
-import PlaylistCircle from "../components/PlaylistCircle";
-import PlayListBox from "../components/PlayListBox";
-import profile from "../../img/cat.webp";
+import styled from 'styled-components';
+import { colors } from '../../styles/color';
+import Nav from '../components/Nav';
+import PlayListCard from '../components/PlayListCard';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import ColorThief from 'colorthief';
+import useStore from '../store/store';
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  height: 98vh;
+  overflow-y: scroll;
+  height: 100vh;
   width: 100vw;
   background-color: white;
   color: black;
-  margin-bottom: 10vh;
 `;
 
-const HeaderContainer = styled.div`
-  width: 100vw;
-  height: 250px;
+const Header = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: center;
   flex-direction: column;
-`;
-
-const RowContainer = styled.div`
-  width: 80vw;
-  margin-right: 20vw;
-  display: flex;
+  justify-content: center;
   align-items: center;
-  justify-content: space-evenly;
-  flex-direction: row;
 `;
-
-const RightAlignContainer = styled.div`
-  width: 90vw;
-  height: 4vh;
+const Body = styled.div`
+  margin-top: 130px;
   display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
   align-items: center;
-  justify-content: end;
+`;
+
+const TitleArea = styled.div`
+  width: 100%;
+  height: 40px;
+  display: flex;
   flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 10px;
+  margin: 5px 0px 10px 0px;
 `;
-
-const Title = styled.div<{ fontSize: string; margin: string }>`
-  font-size: ${(props) => props.fontSize};
-  margin: ${(props) => props.margin};
-  font-family: "Bd";
-`;
-
-const Circle = styled.div`
-  width: 50px;
-  height: 50px;
+const Circle = styled.div<{ bgcolor?: string }>`
+  width: 35px;
+  height: 35px;
   border-radius: 100%;
-  background-color: black;
   overflow: hidden;
+  margin-right: 10px;
+  background-color: ${props => props.bgcolor};
+  object-fit: cover;
 `;
 
-const ModBtn = styled.div`
-  width: 20vw;
-  height: 4vh;
-  background-color: lightgrey;
-  border-bottom-left-radius: 2vh;
-  border-bottom-right-radius: 2vh;
-  border-top-right-radius: 2vh;
-  border-top-left-radius: 2vh;
+const EditBtn = styled.div`
   display: flex;
+  flex-direction: row;
   align-items: center;
   justify-content: space-evenly;
-  flex-direction: row;
+  background-color: ${colors.BG_grey};
+  width: auto;
+  height: auto;
+  border-radius: 50%;
+  padding: 10px;
+  box-sizing: border-box;
+
+  box-shadow: 0 0px 5px rgba(0, 0, 0, 0.1);
 `;
 
-const BottomNavContainer = styled.div`
+const PlayListArea = styled.div`
+  width: 100%;
+  height: 100%;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-color: white;
 `;
 
-const PlayList = styled.div`
-  width: 90vw;
-  height: 60vh;
+const RecommendationArea = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
 `;
+
+const Text = styled.div<{
+  fontFamily?: string;
+  fontSize?: string;
+  margin?: string;
+}>`
+  font-size: ${props => props.fontSize};
+  font-family: ${props => props.fontFamily};
+  margin: ${props => props.margin};
+`;
+
+interface track {
+  playlistId: number;
+  trackId: number;
+  title: string;
+  artistName: string;
+  trackCover: string;
+}
+
+interface recommend {
+  trackId: number;
+  title: string;
+  artistName: string;
+  albumId: number;
+  trackCover: string;
+}
+interface PlayListData {
+  tracks: track[];
+  recommends: recommend[];
+}
+
+interface playlistInfo {
+  id: number;
+  username: string;
+  profilePicture: string;
+  page: number;
+}
 
 function PlayListPage() {
+  const [playListData, setPlayListData] = useState<PlayListData>();
+
+  const location = useLocation();
+  const author: playlistInfo = location.state;
+  const { id } = useStore();
+  const token = localStorage.getItem('login-token');
+  const refreshToken = localStorage.getItem('login-refreshToken');
+  const server = 'http://203.255.81.70:8030';
+  const reissueTokenUrl = `${server}/api/auth/reissued`;
+
+  const PlayListURL = `${server}/api/user/${author.id}/playlist`;
+
+  const fetchPlayList = async () => {
+    if (token) {
+      try {
+        console.log(`fetching Playlist...`);
+        const response = await fetch(PlayListURL, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setPlayListData(data);
+          console.log('fetched PlayList:');
+          console.log(data);
+        } else if (response.status === 401) {
+          console.log('reissuing Token');
+          const reissueToken = await fetch(reissueTokenUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Refresh-Token': `${refreshToken}`,
+            },
+          });
+          const data = await reissueToken.json();
+          localStorage.setItem('login-token', data.token);
+          localStorage.setItem('login-refreshToken', data.refreshToken);
+          fetchPlayList();
+        } else {
+          console.error('Failed to fetch data:', response.status);
+        }
+      } catch (error) {
+        console.error('Error fetching the JSON file:', error);
+      } finally {
+        console.log('finished');
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchPlayList();
+  }, []);
+
+  /////////////////////
+  const [playlistGradient, setPlaylistGradient] = useState<string>();
+  const albumCoverRef = useRef<HTMLImageElement | null>(null);
+
+  // ColorThief로 앨범 커버에서 색상 추출
+  const extractColors = () => {
+    const colorThief = new ColorThief();
+    const img = albumCoverRef.current;
+
+    let gradient = '#ddd'; // 기본 배경색 설정
+
+    if (img) {
+      const colors = colorThief.getPalette(img, 2); // 가장 대비되는 두 가지 색상 추출
+      const primaryColor = `rgb(${colors[0].join(',')})`;
+      const secondaryColor = `rgb(${colors[1].join(',')})`;
+      gradient = `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`;
+    }
+
+    setPlaylistGradient(gradient);
+  };
+
+  const handleImageLoad = () => {
+    extractColors(); // 이미지 로드 후 색상 추출
+  };
+
   return (
     <Container>
-      <HeaderContainer>
-        <img src={logo} width="80px" height="80px"></img>
-        <RowContainer>
-          <Circle>
-            <img src={profile} width="100%" height="100%"></img>
-          </Circle>
-          <Title fontSize={"25px"}>이준석's Playlist</Title>
-        </RowContainer>
-        <RightAlignContainer>
-          <ModBtn>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              fill="currentColor"
-              viewBox="0 0 16 16"
-            >
-              <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-              <path
-                fill-rule="evenodd"
-                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
-              />
+      {playListData && (
+        // 배경색 이미지 추출
+        <img
+          src={playListData?.tracks[0].trackCover}
+          ref={albumCoverRef}
+          style={{ display: 'none' }}
+          crossOrigin="anonymous" // CORS 문제 방지
+          onLoad={handleImageLoad} // 이미지 로드 시 색상 추출
+        />
+      )}
+      <Header>
+        <Nav page={author.page}></Nav>
+      </Header>
+      <Body>
+        <TitleArea>
+          {playListData ? (
+            <Circle>
+              <img src={author.profilePicture} width="100%" height="100%" object-fit="cover"></img>
+            </Circle>
+          ) : (
+            <Circle bgcolor={colors.BG_grey}></Circle>
+          )}
+          <Text fontFamily="Bd" fontSize="25px">
+            {author.username}'s PlayList
+          </Text>
+        </TitleArea>
+        <PlayListArea>{playListData && <PlayListCard playlist={playListData?.tracks} isEditable={author.id === id ? true : false} playlistInfo={author}></PlayListCard>}</PlayListArea>
+        <RecommendationArea>
+          <TitleArea>
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" className="bi bi-lightbulb" viewBox="0 0 16 16">
+              <path d="M2 6a6 6 0 1 1 10.174 4.31c-.203.196-.359.4-.453.619l-.762 1.769A.5.5 0 0 1 10.5 13a.5.5 0 0 1 0 1 .5.5 0 0 1 0 1l-.224.447a1 1 0 0 1-.894.553H6.618a1 1 0 0 1-.894-.553L5.5 15a.5.5 0 0 1 0-1 .5.5 0 0 1 0-1 .5.5 0 0 1-.46-.302l-.761-1.77a2 2 0 0 0-.453-.618A5.98 5.98 0 0 1 2 6m6-5a5 5 0 0 0-3.479 8.592c.263.254.514.564.676.941L5.83 12h4.342l.632-1.467c.162-.377.413-.687.676-.941A5 5 0 0 0 8 1" />
             </svg>
-            <Title fontSize={"16px"}>수정</Title>
-          </ModBtn>
-        </RightAlignContainer>
-      </HeaderContainer>
-      <PlayList>
-        <PlayListBox></PlayListBox>
-      </PlayList>
-      <BottomNavContainer>
-        <BottomNav></BottomNav>
-      </BottomNavContainer>
+            <Text fontFamily="Bd" fontSize="25px" margin="0px 0px 0px 5px">
+              Recommendation
+            </Text>
+          </TitleArea>
+          <PlayListArea>{playListData && <PlayListCard playlist={playListData?.recommends} isEditable={false} playlistInfo={author}></PlayListCard>}</PlayListArea>
+        </RecommendationArea>
+      </Body>
     </Container>
   );
 }

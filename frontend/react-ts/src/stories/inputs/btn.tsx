@@ -2,9 +2,9 @@ import styled from "styled-components";
 import { colors } from "../../styles/color";
 interface BtnProps {
   text: string;
-  fontsize?: string;
-  width?: string;
-  height?: string;
+  fontSize: string;
+  width: string;
+  height: string;
   onClick?: () => void;
 }
 const Btnstyle = styled.div<{
@@ -33,14 +33,9 @@ const Btnstyle = styled.div<{
     color: white;
   }
 `;
-const Btn = ({ text, fontsize, width, height, onClick }: BtnProps) => {
+const Btn = ({ text, fontSize, width, height, onClick }: BtnProps) => {
   return (
-    <Btnstyle
-      onClick={onClick}
-      fontsize={fontsize}
-      width={width}
-      height={height}
-    >
+    <Btnstyle onClick={onClick} fontSize={fontSize} width={width} height={height}>
       {" "}
       {text}{" "}
     </Btnstyle>

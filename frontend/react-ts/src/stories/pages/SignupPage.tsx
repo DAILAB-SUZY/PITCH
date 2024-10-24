@@ -7,7 +7,7 @@ import InputBox from "../inputs/InputBox";
 import { useState } from "react";
 import useStore from "../store/store";
 
-const Title = styled.div<{ fontSize: string; margin: string }>`
+const Title = styled.div<{ fontSize?: string; margin?: string }>`
   font-size: ${(props) => props.fontSize};
   margin: ${(props) => props.margin};
   font-family: "Bd";
@@ -22,7 +22,7 @@ const Container = styled.div`
   background-color: ${colors.BG_grey};
   color: ${colors.Font_black};
 `;
-const LeftAlignContainer = styled.div`
+const LeftAlignArea = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
@@ -31,14 +31,14 @@ const LeftAlignContainer = styled.div`
   margin: 10px;
   padding: 0;
 `;
-const RightAlignContainer = styled.div`
+const RightAlignArea = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
   width: 100%;
 `;
-const WrappingContainer = styled.div<{
+const SignupArea = styled.div<{
   flex_direction: string;
   justify_content: string;
 }>`
@@ -48,7 +48,7 @@ const WrappingContainer = styled.div<{
   align-items: center;
   width: 70vw;
 `;
-const StackConatiner = styled.div`
+const CenterAlignArea = styled.div`
   position: relative;
 `;
 function SignupPage() {
@@ -56,19 +56,20 @@ function SignupPage() {
   const [confirm, setConfirm] = useState("");
   const [checkcode, setCheckcode] = useState("");
   const [idError, setIdError] = useState("이메일를 입력해주세요.");
-  const [passwordError, setPasswordError] =
-    useState("비밀번호를 입력해주세요.");
+  const [passwordError, setPasswordError] = useState("비밀번호를 입력해주세요.");
   const [confirmError, setConfirmError] = useState("");
   const [codecheckError, setCodecheckError] = useState("");
   const [noticeMail, setNoticeMail] = useState("");
+
+  const [password, setPassword] = useState("");
 
   // const email = UserInfoStore((state) => state.email)
   const email = useStore((state) => state.email);
   const setEmail = useStore((state) => state.setEmail);
   const name = useStore((state) => state.name);
   const setName = useStore((state) => state.setName);
-  const password = useStore((state) => state.password);
-  const setPassword = useStore((state) => state.setPassword);
+  // const password = useStore((state) => state.password);
+  // const setPassword = useStore((state) => state.setPassword);
 
   const idCheckHandler = async (email: string) => {
     const check = /[a-z0-9]+@[a-z]+\.[a-z]{2,3}/;
@@ -91,9 +92,7 @@ function SignupPage() {
       setPasswordError("비밀번호를 입력해주세요.");
       return false;
     } else if (!passwordRegex.test(password)) {
-      setPasswordError(
-        "비밀번호는 8~16자의 영소문자, 숫자, !@*&-_만 입력 가능합니다."
-      );
+      setPasswordError("비밀번호는 8~16자의 영소문자, 숫자, !@*&-_만 입력 가능합니다.");
       return false;
     } else if (confirm !== password) {
       setPasswordError("");
@@ -131,13 +130,11 @@ function SignupPage() {
   const GoToLoginPage = () => {
     navigate("/Login");
   };
-  // const [itemid, setItemid] = useState('');
-  // const onChange = (event) => {
-  //   setItemid(event.target.value);
-  // }
-  let url = "http://10.255.81.70:8030/mail/request";
-  let checkCodeUrl = "http://10.255.81.70:8030/mail/verify";
-  let signUpUrl = "http://10.255.81.70:8030/user/register";
+
+  const server = "http://203.255.81.70:8030";
+  let url = server + "/api/mail/request";
+  let checkCodeUrl = server + "/api/mail/verify";
+  let signUpUrl = server + "/api/user";
 
   const emailcheck = () => {
     if (idError != "") return;
@@ -216,97 +213,52 @@ function SignupPage() {
 
   return (
     <Container>
-      <WrappingContainer flex_direction="column" justify_content="center">
-        <img
-          src={logo}
-          width="150px"
-          height="150px"
-          onClick={GoToStartPage}
-        ></img>
+      <SignupArea flex_direction="column" justify_content="center">
+        <img src={logo} width="150px" height="150px" onClick={GoToStartPage}></img>
         <Title fontSize="30px" margin="10px">
           회원가입
         </Title>
-        <RightAlignContainer>
+        <RightAlignArea>
           <Title fontSize="20px">이름</Title>
-        </RightAlignContainer>
-        <InputBox
-          name="name"
-          placeholder="이름"
-          onChange={(e) => setName(e.target.value)}
-        ></InputBox>
-        <RightAlignContainer>
+        </RightAlignArea>
+        <InputBox name="name" placeholder="이름" onChange={(e) => setName(e.target.value)}></InputBox>
+        <RightAlignArea>
           <Title fontSize="20px">E-mail</Title>
-        </RightAlignContainer>
-        <StackConatiner>
-          <InputBox
-            name="E-Mail"
-            placeholder="E-mail"
-            onChange={onChangeIdHandler}
-          ></InputBox>
-          <Btn
-            width="70px"
-            height="33px"
-            fontsize="15px"
-            text="인증요청"
-            onClick={emailcheck}
-          ></Btn>
-        </StackConatiner>
-        <RightAlignContainer>
+        </RightAlignArea>
+        <CenterAlignArea>
+          <InputBox name="E-Mail" placeholder="E-mail" onChange={onChangeIdHandler}></InputBox>
+          <Btn width="70px" height="33px" fontSize="15px" text="인증요청" onClick={emailcheck}></Btn>
+        </CenterAlignArea>
+        <RightAlignArea>
           {idError && <small style={{ color: "red" }}>{idError}</small>}
           {noticeMail && <small>{noticeMail}</small>}
-        </RightAlignContainer>
-        <StackConatiner>
+        </RightAlignArea>
+        <CenterAlignArea>
           <InputBox
             name="auth"
             placeholder="인증번호 입력"
             onChange={(e) => setCheckcode(e.target.value)}
           ></InputBox>
-          <Btn
-            width="70px"
-            height="33px"
-            fontsize="15px"
-            text="인증확인"
-            onClick={codeCheck}
-          ></Btn>
-        </StackConatiner>
-        <RightAlignContainer>
-          {codecheckError && <small>{codecheckError}</small>}
-        </RightAlignContainer>
-        <RightAlignContainer>
+          <Btn width="70px" height="33px" fontSize="15px" text="인증확인" onClick={codeCheck}></Btn>
+        </CenterAlignArea>
+        <RightAlignArea>{codecheckError && <small>{codecheckError}</small>}</RightAlignArea>
+        <RightAlignArea>
           <Title fontSize="20px">Password</Title>
-        </RightAlignContainer>
+        </RightAlignArea>
 
-        <InputBox
-          name="password"
-          placeholder="Password"
-          onChange={onChangePasswordHandler}
-        ></InputBox>
-        <RightAlignContainer>
-          {passwordError && (
-            <small style={{ color: "red" }}>{passwordError}</small>
-          )}
-        </RightAlignContainer>
-        <InputBox
-          name="confirm"
-          placeholder="Password 확인"
-          onChange={onChangePasswordHandler}
-        ></InputBox>
-        <RightAlignContainer>
-          {confirmError && (
-            <small style={{ color: "red" }}>{confirmError}</small>
-          )}
-        </RightAlignContainer>
-        <StackConatiner>
-          <LeftAlignContainer></LeftAlignContainer>
-          <Btn
-            width="100px"
-            height="33px"
-            fontsize="15px"
-            text="가입"
-            onClick={signupHandler}
-          ></Btn>
-        </StackConatiner>
-      </WrappingContainer>
+        <InputBox name="password" placeholder="Password" onChange={onChangePasswordHandler}></InputBox>
+        <RightAlignArea>
+          {passwordError && <small style={{ color: "red" }}>{passwordError}</small>}
+        </RightAlignArea>
+        <InputBox name="confirm" placeholder="Password 확인" onChange={onChangePasswordHandler}></InputBox>
+        <RightAlignArea>
+          {confirmError && <small style={{ color: "red" }}>{confirmError}</small>}
+        </RightAlignArea>
+        <CenterAlignArea>
+          <LeftAlignArea></LeftAlignArea>
+          <Btn width="100px" height="33px" fontSize="15px" text="가입" onClick={signupHandler}></Btn>
+        </CenterAlignArea>
+      </SignupArea>
     </Container>
   );
 }

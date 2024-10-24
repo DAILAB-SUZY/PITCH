@@ -10,6 +10,12 @@
   font-weight: normal;
 }
 
+@font-face {
+  font-family: "Mon";
+  src: url("../src/font/Montserrat-ExtraBold.otf") format("opentype");
+  font-weight: bold;
+}
+
 :root {
   font-family: "Bd";
   color-scheme: light dark;
@@ -33,6 +39,10 @@ body {
   /* place-items: center; */
   /* min-width: 320px;
   min-height: 100vh; */
+}
+
+::-webkit-scrollbar {
+  display: none;
 }
 /* a {
   font-weight: 500;
