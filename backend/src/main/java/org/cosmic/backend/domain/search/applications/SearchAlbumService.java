@@ -13,10 +13,7 @@ import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.playList.domains.Artist;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
 import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
-import org.cosmic.backend.domain.search.dtos.SpotifyAlbum;
-import org.cosmic.backend.domain.search.dtos.SpotifyArtist;
-import org.cosmic.backend.domain.search.dtos.SpotifySearchAlbumResponse;
-import org.cosmic.backend.domain.search.dtos.SpotifySearchArtistResponse;
+import org.cosmic.backend.domain.search.dtos.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -165,5 +162,47 @@ public class SearchAlbumService extends SearchService {
     spotifyAlbum.artists()
         .set(0, searchService.findArtistBySpotifyId(spotifyAlbum.artists().get(0).id()));
     saveAlbumByAlbumDto(spotifyAlbum, saveArtistByArtistDto(spotifyAlbum.artists().get(0)));
+  }
+
+  public List<SpotifySearchAlbumResponse> searchAlbumByArtistIdAndAlbumName(String accessToken, String artistId, String albumName) throws JsonProcessingException { // q는 검색어
+    List<SpotifySearchAlbumResponse> responses=new ArrayList<>();
+
+    rootNode = mapper.readTree(searchSpotifyAlbumName(accessToken,albumName));
+    JsonNode items = rootNode.path("albums").path("items");
+    boolean check=false;
+    for(int i=0;i<items.size();i++){
+      SpotifySearchAlbumResponse response = new SpotifySearchAlbumResponse();
+       if(items.get(i).path("artists").get(0).path("id").asText().equals(artistId))
+       {
+         JsonNode item = items.get(i);
+         response.setRelease_date(item.path("release_date").asText());
+         response.setAlbumId(item.path("id").asText());
+         response.setName(item.path("name").asText());
+         response.setTotal_tracks(item.path("total_tracks").asInt());
+         response.setImageUrl(items.get(i).path("images").get(0).path("url").asText());
+         item = items.get(i).path("artists");
+
+         for (int j = 0; j < item.size(); j++) {
+           SpotifySearchArtistResponse spotifySearchArtistResponse = new SpotifySearchArtistResponse();
+           JsonNode artistsNode = item.get(j);
+           spotifySearchArtistResponse.setArtistId(artistsNode.path("id").asText());
+           spotifySearchArtistResponse.setName(artistsNode.path("name").asText());
+           String datas = searchSpotifyArtist(accessToken,artistsNode.path("id").asText());
+           rootNode = mapper.readTree(datas);
+           JsonNode artistNode = rootNode.path("images");
+           String imgUrl = artistNode.get(0).path("url").asText();
+           spotifySearchArtistResponse.setImageUrl(imgUrl);
+           response.setAlbumArtist(spotifySearchArtistResponse);
+         }
+         check=true;
+       }
+       if(check){
+         responses.add(response);
+         check=false;
+       }
+
+    }
+
+    return responses;
   }
 }
