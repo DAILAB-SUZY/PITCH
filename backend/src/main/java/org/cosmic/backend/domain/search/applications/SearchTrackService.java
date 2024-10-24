@@ -9,6 +9,7 @@ import org.cosmic.backend.domain.playList.domains.Track;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
 import org.cosmic.backend.domain.playList.repositorys.ArtistRepository;
 import org.cosmic.backend.domain.playList.repositorys.TrackRepository;
+import org.cosmic.backend.domain.search.dtos.ArtistTrackResponse;
 import org.cosmic.backend.domain.search.dtos.SpotifySearchAlbumResponse;
 import org.cosmic.backend.domain.search.dtos.SpotifySearchArtistResponse;
 import org.cosmic.backend.domain.search.dtos.SpotifySearchTrackResponse;
@@ -142,9 +143,30 @@ public class SearchTrackService extends SearchService {
         return spotifySearchTrackResponses;
     }
 
-    public List<SpotifySearchTrackResponse> searchTrackId(String accessToken,String trackId) throws JsonProcessingException { // q는 검색어
-        rootNode = mapper.readTree(searchSpotifyTrack(accessToken,trackId));
-        List<SpotifySearchTrackResponse> spotifySearchTrackResponses = new ArrayList<>();
-        return spotifySearchTrackResponses;
+    public List<ArtistTrackResponse> searchTrackByArtistIdAndTrackName(String accessToken, String artistId, String trackName) throws JsonProcessingException { // q는 검색어
+        rootNode = mapper.readTree(searchSpotifyTrack(accessToken,trackName));
+        JsonNode items = rootNode.path("tracks").path("items");
+        List<ArtistTrackResponse> responses=new ArrayList<>();
+
+        for (JsonNode item : items) {
+            JsonNode artistNode = item.path("artists").get(0); // 첫 번째 아티스트 정보 사용
+            if (artistNode.path("id").asText().equals(artistId)) {
+                String trackId = item.path("id").asText();
+                String trackNameResult = item.path("name").asText();
+                String duration = item.path("duration_ms").asText();
+                String imgUrl = item.path("album").path("images").get(0).path("url").asText();
+
+                ArtistTrackResponse response = new ArtistTrackResponse();
+                response.setTrackId(trackId);
+                response.setTrackName(trackNameResult);
+                response.setDuration(duration);
+                response.setImgUrl(imgUrl);
+                responses.add(response);
+            }
+        }
+        return responses;
     }
+
+
+
 }

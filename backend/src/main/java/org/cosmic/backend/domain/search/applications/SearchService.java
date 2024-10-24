@@ -57,11 +57,20 @@ public class SearchService {
     return rest.exchange(searchUrl, HttpMethod.GET, requestEntity,String.class).getBody();
   }
 
-  public String searchSpotifyTrack(String accessToken, String trackId) {
+  public String searchSpotifyTrack(String accessToken, String trackName) {
     RestTemplate rest = new RestTemplate();
     HttpHeaders headers = new HttpHeaders();
     headers = setting(accessToken, headers);
-    String searchUrl = "https://api.spotify.com/v1/tracks/" + trackId;
+    String searchUrl = "https://api.spotify.com/v1/search?q=" + trackName+"&type=track";
+    HttpEntity<String> requestEntity = new HttpEntity<String>("", headers);
+    return rest.exchange(searchUrl, HttpMethod.GET, requestEntity,String.class).getBody();
+  }
+
+  public String searchSpotifyAlbumName(String accessToken, String albumName) {
+    RestTemplate rest = new RestTemplate();
+    HttpHeaders headers = new HttpHeaders();
+    headers = setting(accessToken, headers);
+    String searchUrl = "https://api.spotify.com/v1/search?q=" + albumName+"&type=album";
     HttpEntity<String> requestEntity = new HttpEntity<String>("", headers);
     return rest.exchange(searchUrl, HttpMethod.GET, requestEntity,String.class).getBody();
   }
