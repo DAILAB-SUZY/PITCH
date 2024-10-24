@@ -52,7 +52,7 @@ public interface AlbumChatCommentRepository extends JpaRepository<AlbumChatComme
   Optional<List<AlbumChatComment>> findByAlbumIdOrderByReply(@Param("albumId") Long albumId,
       @Param("albumChatCommentId") Long albumChatCommentId);
 
-  @Query("SELECT acc FROM AlbumChatComment acc WHERE acc.parentAlbumChatComment IS NULL ORDER BY COALESCE(acc.updateTime, acc.createTime) DESC")
+  @Query("SELECT acc FROM AlbumChatComment acc WHERE acc.parentAlbumChatComment IS NULL AND acc.album.spotifyAlbumId = :spotifyAlbumId ORDER BY COALESCE(acc.updateTime, acc.createTime) DESC")
   Page<AlbumChatComment> findByAlbum_SpotifyAlbumIdOrderByTime(String spotifyAlbumId,
       Pageable pageable);
 
@@ -60,7 +60,7 @@ public interface AlbumChatCommentRepository extends JpaRepository<AlbumChatComme
 
   void deleteAllByParentAlbumChatComment_AlbumChatCommentId(Long parentAlbumChatCommentId);
 
-  @Query("SELECT acc FROM AlbumChatComment acc LEFT JOIN acc.albumChatCommentLikes acl WHERE acc.parentAlbumChatComment IS NULL ORDER BY COUNT(acl) DESC")
+  @Query("SELECT acc FROM AlbumChatComment acc LEFT JOIN acc.albumChatCommentLikes acl WHERE acc.parentAlbumChatComment IS NULL AND acc.album.spotifyAlbumId = :spotifyAlbumId ORDER BY COUNT(acl) DESC")
   Page<AlbumChatComment> findByAlbum_SpotifyAlbumIdOrderByLike(String spotifyAlbumId,
       Pageable pageable);
 }
