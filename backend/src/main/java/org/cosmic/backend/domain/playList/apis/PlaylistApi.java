@@ -99,6 +99,7 @@ public class PlaylistApi {
     return ResponseEntity.ok(playlistService.save(userId, playlist));
   }
 
+  @Tag(name = "앨범 챗 관련 API", description = "앨범 챗 댓글/대댓글/좋아요 제공")
   @GetMapping("/album/{spotifyAlbumId}")
   @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
       schema = @Schema(implementation = AlbumDetail.class)))

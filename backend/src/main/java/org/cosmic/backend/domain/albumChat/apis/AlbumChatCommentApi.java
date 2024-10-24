@@ -60,11 +60,11 @@ public class AlbumChatCommentApi {
   @Transactional
   @GetMapping("/{spotifyAlbumId}/albumchat")
   @ApiResponse(responseCode = "404", description = "Not Found Album")
-  @Operation(summary = "댓글 조회", description = "특정 앨범의 앨범챗 댓글 조회", hidden = true)
+  @Operation(summary = "댓글 조회", description = "특정 앨범의 앨범챗 댓글 조회, sorted가 'recent'인 경우 최신순으로 정렬하고 그 외에는 album_like 순으로 정렬됩니다.")
   public ResponseEntity<List<AlbumChatCommentDetail>> getAlbumChatComment(
       @Parameter(description = "앨범 id")
       @PathVariable("spotifyAlbumId") String spotifyAlbumId,
-      @Parameter(description = "댓글 정렬")
+      @Parameter(description = "댓글 정렬", required = false)
       @RequestParam String sorted,
       @Parameter(description = "페이지 수")
       @RequestParam Integer page,
@@ -86,7 +86,7 @@ public class AlbumChatCommentApi {
   @PostMapping("/{spotifyAlbumID}/albumchat")
   @Transactional
   @ApiResponse(responseCode = "404", description = "Not Found User or Album")
-  @Operation(summary = "댓글 생성", description = "특정 앨범챗 댓글 생성, content와 parentAlbumChatCommentId를 채워주세요. parentAlbumChatCommentId는 albumchatComment의 ID입니다.")
+  @Operation(summary = "댓글 생성", description = "특정 앨범챗 댓글 생성, content와 대댓글인 경우 parentAlbumChatCommentId를 채워주세요. parentAlbumChatCommentId는 albumchatComment의 ID입니다.sorted가 'recent'인 경우 최신순으로 정렬하고 그 외에는 album_like 순으로 정렬됩니다.")
   public ResponseEntity<List<AlbumChatCommentDetail>> albumChatCommentCreate(
       @Parameter(description = "앨범id")
       @PathVariable String spotifyAlbumID,
@@ -110,7 +110,7 @@ public class AlbumChatCommentApi {
   @Transactional
   @ApiResponse(responseCode = "400", description = "Not Match Album or User")
   @ApiResponse(responseCode = "404", description = "Not Found AlbumChatComment Or User")
-  @Operation(summary = "댓글 수정", description = "특정 앨범챗 댓글 수정")
+  @Operation(summary = "댓글 수정", description = "특정 앨범챗 댓글 수정, request body에 content만 채워서 넣으면 됨. sorted가 'recent'인 경우 최신순으로 정렬하고 그 외에는 album_like 순으로 정렬됩니다.")
   public ResponseEntity<List<AlbumChatCommentDetail>> albumChatCommentUpdate(
       @Parameter(description = "앨범 id")
       @PathVariable String spotifyAlbumId,
@@ -134,13 +134,13 @@ public class AlbumChatCommentApi {
   @DeleteMapping("/{spotifyAlbumId}/albumchat/{albumChatId}")
   @Transactional
   @ApiResponse(responseCode = "404", description = "Not Found AlbumChatComment")
-  @Operation(summary = "특정 앨범의 앨범챗 댓글 삭제")
+  @Operation(summary = "특정 앨범의 앨범챗 댓글 삭제, sorted가 'recent'인 경우 최신순으로 정렬하고 그 외에는 album_like 순으로 정렬됩니다.")
   public ResponseEntity<List<AlbumChatCommentDetail>> albumChatCommentDelete(
       @Parameter(description = "앨범 id")
       @PathVariable String spotifyAlbumId,
       @Parameter(description = "앨범챗 댓글 id")
       @PathVariable Long albumChatId,
-      @Parameter(description = "댓글 정렬")
+      @Parameter(description = "댓글 정렬", required = false)
       @RequestParam String sorted) {
     return ResponseEntity.ok(
         commentService.albumChatCommentDelete(spotifyAlbumId, albumChatId, sorted));

@@ -11,12 +11,10 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.cosmic.backend.domain.albumChat.applications.AlbumChatService;
 import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumChatDetail;
-import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatException;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,25 +34,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class AlbumChatApi {
 
   private final AlbumChatService albumChatService;
-
-  /**
-   * <p>특정 앨범의 앨범챗을 조회하는 메서드입니다.</p>
-   *
-   * <p>사용자는 앨범 ID를 기반으로 앨범챗을 조회할 수 있습니다.</p>
-   *
-   * @param spotifyAlbumId 조회할 앨범의 ID
-   * @return 조회된 앨범챗 데이터를 포함한 {@link ResponseEntity}
-   * @throws NotFoundAlbumChatException 앨범챗을 찾을 수 없는 경우 예외를 발생시킵니다.
-   */
-//  @GetMapping("/{spotifyAlbumId}/albumchat/")
-  @ApiResponse(responseCode = "404", description = "Not Found AlbumChat")
-  @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(contentMediaType =
-      MediaType.APPLICATION_JSON_VALUE, implementation = AlbumChatDetail.class))})
-  @Operation(summary = "앨범챗 조회", description = "특정 앨범의 앨범챗 조회", deprecated = true)
-  public ResponseEntity<AlbumChatDetail> getAlbumChatById(
-      @Parameter(description = "앨범id") @PathVariable("spotifyAlbumId") String spotifyAlbumId) {
-    return ResponseEntity.ok(albumChatService.getAlbumChatById(spotifyAlbumId));
-  }
 
   /**
    * <p>앨범챗 홈 페이지에서 앨범 챗이 많은 순으로 앨범 정보를 조회하는 메서드입니다.</p>
