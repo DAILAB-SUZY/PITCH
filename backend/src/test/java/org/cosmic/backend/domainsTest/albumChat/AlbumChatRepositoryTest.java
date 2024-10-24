@@ -36,7 +36,6 @@ public class AlbumChatRepositoryTest {
 
   @Test
   @DisplayName("앨범챗 생성 테스트")
-  @Transactional
   public void createAlbumChatTest() {
     Album album = creator.createAndSaveAlbums("testAlbum");
     User user = creator.createAndSaveUser("testman");
@@ -145,6 +144,29 @@ public class AlbumChatRepositoryTest {
       Assertions.assertTrue(
           commentOrderedAlbums.get(i - 1).getAlbumChatComments().size() >= commentOrderedAlbums.get(
               i).getAlbumChatComments().size());
+    });
+  }
+
+  @Test
+  @DisplayName("좋아요 많은 순으로 조회")
+  @Transactional
+  public void getAlbumChatOrderLikes() {
+    List<Album> albums = creator.createAndSaveAlbums(0, 5);
+    albums.forEach(album -> {
+      int commentCount = (int) (Math.random() * 100) % 100;
+      album.getAlbumLike()
+          .addAll(creator.createAndSaveAlbumLikes(album,
+              creator.createAndSaveUsers(commentCount, album.getTitle())));
+    });
+
+    List<Album> likeOrderedAlbums = albumRepository.findAlbumsOrderByAlbumLikeCount(
+        PageRequest.of(0, 5)).getContent();
+
+    IntStream.range(1, likeOrderedAlbums.size()).forEach(i -> {
+      log.info(likeOrderedAlbums.get(i).getAlbumLike().size());
+      Assertions.assertTrue(
+          likeOrderedAlbums.get(i - 1).getAlbumLike().size() >= likeOrderedAlbums.get(i)
+              .getAlbumLike().size());
     });
   }
 }
