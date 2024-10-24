@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.cosmic.backend.domain.albumChat.applications.AlbumChatService;
 import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumChatDetail;
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatException;
-import org.cosmic.backend.domain.post.dtos.Post.AlbumDetail;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
  * <p>주요 기능으로는 앨범챗 조회, 앨범챗 홈 페이지에서 많은 앨범 챗을 가져오는 기능을 포함합니다.</p>
  */
 @RestController
-@RequestMapping("/api/")
+@RequestMapping("/api/album")
 @ApiCommonResponses
 @Tag(name = "앨범 챗 관련 API", description = "앨범 챗 댓글/대댓글/좋아요 제공")
 @RequiredArgsConstructor
@@ -43,18 +42,18 @@ public class AlbumChatApi {
    *
    * <p>사용자는 앨범 ID를 기반으로 앨범챗을 조회할 수 있습니다.</p>
    *
-   * @param albumId 조회할 앨범의 ID
+   * @param spotifyAlbumId 조회할 앨범의 ID
    * @return 조회된 앨범챗 데이터를 포함한 {@link ResponseEntity}
    * @throws NotFoundAlbumChatException 앨범챗을 찾을 수 없는 경우 예외를 발생시킵니다.
    */
-  @GetMapping("/albumchat/{albumId}")
+//  @GetMapping("/{spotifyAlbumId}/albumchat/")
   @ApiResponse(responseCode = "404", description = "Not Found AlbumChat")
   @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(contentMediaType =
       MediaType.APPLICATION_JSON_VALUE, implementation = AlbumChatDetail.class))})
-  @Operation(summary = "앨범챗 조회", description = "특정 앨범의 앨범챗 조회")
+  @Operation(summary = "앨범챗 조회", description = "특정 앨범의 앨범챗 조회", deprecated = true)
   public ResponseEntity<AlbumChatDetail> getAlbumChatById(
-      @Parameter(description = "앨범id") @PathVariable("albumId") Long albumId) {
-    return ResponseEntity.ok(albumChatService.getAlbumChatById(albumId));
+      @Parameter(description = "앨범id") @PathVariable("spotifyAlbumId") String spotifyAlbumId) {
+    return ResponseEntity.ok(albumChatService.getAlbumChatById(spotifyAlbumId));
   }
 
   /**
@@ -68,7 +67,7 @@ public class AlbumChatApi {
   @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
       array = @ArraySchema(schema = @Schema(implementation = AlbumChatDetail.class))))
   @Operation(summary = "앨범챗홈 페이지", description = "앨범 챗 많은 순으로 album정보 띄우기")
-  public ResponseEntity<List<AlbumChatDetail>> albumChatHomeChat(){
+  public ResponseEntity<List<AlbumChatDetail>> albumChatHomeChat() {
     return ResponseEntity.ok(albumChatService.albumChatHomeChat());
   }
 
@@ -83,11 +82,11 @@ public class AlbumChatApi {
    */
   @GetMapping("/albumchat/like")
   @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-          array = @ArraySchema(schema = @Schema(implementation = AlbumChatDetail.class))))
+      array = @ArraySchema(schema = @Schema(implementation = AlbumChatDetail.class))))
   @Operation(summary = "앨범챗홈 좋아요 페이지", description = "앨범 챗 좋아요 많은 순으로 정보 띄우기")
   public ResponseEntity<List<AlbumChatDetail>> albumChatHomeLike(
-          @Parameter(description = "페이지 수") @RequestParam Integer page,
-          @Parameter(description = "제공량") @RequestParam Integer limit) {
+      @Parameter(description = "페이지 수") @RequestParam Integer page,
+      @Parameter(description = "제공량") @RequestParam Integer limit) {
     return ResponseEntity.ok(albumChatService.albumChatHomeLike(page, limit));
   }
 }
