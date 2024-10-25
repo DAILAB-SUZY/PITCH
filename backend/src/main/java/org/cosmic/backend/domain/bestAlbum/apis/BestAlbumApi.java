@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.cosmic.backend.domain.bestAlbum.applications.BestAlbumService;
 import org.cosmic.backend.domain.bestAlbum.dtos.AlbumScoreDto;
 import org.cosmic.backend.domain.bestAlbum.dtos.BestAlbumDetail;
@@ -39,18 +40,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/")
 @ApiCommonResponses
 @Tag(name = "베스트 앨범 관련 API", description = "베스트 앨범 정보 제공 및 저장")
+@RequiredArgsConstructor
 public class BestAlbumApi {
 
   private final BestAlbumService bestAlbumService;
-
-  /**
-   * BestAlbumApi의 생성자.
-   *
-   * @param bestAlbumService 베스트 앨범 서비스 클래스의 인스턴스
-   */
-  public BestAlbumApi(BestAlbumService bestAlbumService) {
-    this.bestAlbumService = bestAlbumService;
-  }
 
   /**
    * <p>특정 유저의 베스트 앨범 목록을 제공합니다.</p>
@@ -73,13 +66,13 @@ public class BestAlbumApi {
   /**
    * <p>특정 유저에게 베스트 앨범을 추가합니다.</p>
    *
-   * @param albumScoreDto 추가할 앨범에 대한 점수 정보
-   * @param albumId       추가할 앨범의 ID
-   * @param userId        유저의 ID
+   * @param albumScoreDto  추가할 앨범에 대한 점수 정보
+   * @param spotifyAlbumId 추가할 앨범의 ID
+   * @param userId         유저의 ID
    * @return 업데이트된 베스트 앨범 목록
    */
   @Transactional
-  @PostMapping("/bestAlbum/{albumId}")
+  @PostMapping("/bestAlbum/{spotifyAlbumId}")
   @ApiResponse(responseCode = "404", description = "Not Found User or Album")
   @ApiResponse(responseCode = "409", description = "Exist BestAlbum")
   @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -89,10 +82,11 @@ public class BestAlbumApi {
       @Parameter(description = "별점")
       @RequestBody AlbumScoreDto albumScoreDto,
       @Parameter(description = "추가할 앨범id")
-      @PathVariable String albumId,
+      @PathVariable String spotifyAlbumId,
       @AuthenticationPrincipal Long userId
   ) {
-    return ResponseEntity.ok(bestAlbumService.add(albumScoreDto.getScore(), userId, albumId));
+    return ResponseEntity.ok(
+        bestAlbumService.add(albumScoreDto.getScore(), userId, spotifyAlbumId));
   }
 
   /**

@@ -44,4 +44,11 @@ public class AlbumLike {
         .updateAt(albumLike.updateTime)
         .build();
   }
+
+  public static AlbumLike from(Album album, User user) {
+    return AlbumLike.builder()
+        .album(album)
+        .user(user)
+        .build();
+  }
 }

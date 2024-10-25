@@ -47,28 +47,29 @@ public class SpotifySearchTrackApi {
         searchTrackService.searchTrack(createSpotifyToken.accesstoken(), name));
   }
 
-  @GetMapping("/searchSpotify/artist/{artistId}/track")
+  @GetMapping("/searchSpotify/artist/{spotifyArtistId}/track")
   @Operation(summary = "특정 아티스트의 노래들 조회")
   @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
       array = @ArraySchema(schema = @Schema(implementation = SpotifySearchTrackResponse.class))))
   public ResponseEntity<List<SpotifySearchTrackResponse>> searchTrackByArtistId(
-      @Parameter(description = "앨범 이름")
-      @PathVariable String artistId) throws JsonProcessingException { //q는 검색어
+      @Parameter(description = "아티스트 Id")
+      @PathVariable String spotifyArtistId) throws JsonProcessingException { //q는 검색어
     return ResponseEntity.ok(
-        searchArtistService.searchTrackByArtistId(createSpotifyToken.accesstoken(), artistId));
+        searchArtistService.searchTrackByArtistId(createSpotifyToken.accesstoken(),
+            spotifyArtistId));
   }
 
-  @GetMapping("/searchSpotify/artist/{artistId}/track/{trackName}")
+  @GetMapping("/searchSpotify/artist/{spotifyArtistId}/track/{trackName}")
   @Operation(summary = "특정 아티스트의 노래들 조회")
   @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
       array = @ArraySchema(schema = @Schema(implementation = ArtistTrackResponse.class))))
   public ResponseEntity<List<ArtistTrackResponse>> searchTrackByArtistIdAndTrackName(
-      @Parameter(description = "앨범 이름")
-      @PathVariable String artistId, @PathVariable String trackName)
+      @Parameter(description = "아티스트 Id")
+      @PathVariable String spotifyArtistId, @PathVariable String trackName)
       throws JsonProcessingException { //q는 검색어
     return ResponseEntity.ok(
         searchTrackService.searchTrackByArtistIdAndTrackName(createSpotifyToken.accesstoken(),
-            artistId, trackName));
+            spotifyArtistId, trackName));
   }
 
 }

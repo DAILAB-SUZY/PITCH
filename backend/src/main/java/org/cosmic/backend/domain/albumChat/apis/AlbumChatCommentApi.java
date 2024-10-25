@@ -64,11 +64,11 @@ public class AlbumChatCommentApi {
       @Parameter(description = "앨범 id")
       @PathVariable("spotifyAlbumId") String spotifyAlbumId,
       @Parameter(description = "댓글 정렬", required = false)
-      @RequestParam String sorted,
+      @RequestParam(required = false, defaultValue = "recent") String sorted,
       @Parameter(description = "페이지 수")
-      @RequestParam Integer page,
+      @RequestParam(required = false, defaultValue = "0") Integer page,
       @Parameter(description = "제공량")
-      @RequestParam Integer limit
+      @RequestParam(required = false, defaultValue = "5") Integer limit
   ) {
     return ResponseEntity.ok(
         commentService.getAlbumChatComment(spotifyAlbumId, sorted, page, limit));
