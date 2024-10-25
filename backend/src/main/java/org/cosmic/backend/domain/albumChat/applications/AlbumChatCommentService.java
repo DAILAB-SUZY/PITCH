@@ -29,6 +29,7 @@ public class AlbumChatCommentService {
   private final AlbumRepository albumRepository;
   private final AlbumChatCommentRepository commentRepository;
   private final UsersRepository userRepository;
+  private final AlbumChatCommentRepository albumChatCommentRepository;
 
   private List<AlbumChatComment> getCommentsSortedBy(String spotifyAlbumId, String sorted,
       Pageable pageable) {
@@ -52,7 +53,7 @@ public class AlbumChatCommentService {
    * @return 댓글 목록을 포함한 리스트
    * @throws NotFoundAlbumChatException 앨범을 찾을 수 없을 때 발생합니다.
    */
-  public List<AlbumChatCommentDetail> getAlbumChatComment(String spotifyAlbumId, String sorted) {
+  private List<AlbumChatCommentDetail> getAlbumChatComment(String spotifyAlbumId, String sorted) {
     return getAlbumChatComment(spotifyAlbumId, sorted, 0, 5);
   }
 
@@ -61,6 +62,11 @@ public class AlbumChatCommentService {
       Integer limit) {
     return AlbumChatCommentDetail.from(
         getCommentsSortedBy(spotifyAlbumId, sorted, getPageable(page, limit)));
+  }
+
+  public AlbumChatCommentDetail getAlbumChat(Long albumChatId) {
+    return AlbumChatCommentDetail.from(albumChatCommentRepository.findById(albumChatId)
+        .orElseThrow(NotFoundAlbumChatCommentException::new));
   }
 
   private AlbumChatComment getParentComment(Long commentId) {
