@@ -14,6 +14,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -32,6 +33,7 @@ import org.cosmic.backend.domain.post.entities.Post;
 import org.cosmic.backend.domain.post.entities.PostComment;
 import org.cosmic.backend.domain.post.entities.PostLike;
 import org.cosmic.backend.domain.user.dtos.UserDetail;
+import org.springframework.security.core.GrantedAuthority;
 
 @Data
 @NoArgsConstructor
@@ -41,7 +43,7 @@ import org.cosmic.backend.domain.user.dtos.UserDetail;
 @Table(name = "users")  // 테이블 이름이 'user'인 경우
 @EqualsAndHashCode(exclude = {"email", "playlist", "posts", "postComments", "postLikes",
     "favoriteArtist"})
-public class User {
+public class User implements MyUserDetails {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -179,5 +181,30 @@ public class User {
 
   public List<String> getPlaylistTracksIds() {
     return getPlaylist().getSpotifyTrackIds();
+  }
+
+  @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    return List.of();
+  }
+
+  @Override
+  public boolean isAccountNonExpired() {
+    return email.getVerified();
+  }
+
+  @Override
+  public boolean isAccountNonLocked() {
+    return email.getVerified();
+  }
+
+  @Override
+  public boolean isCredentialsNonExpired() {
+    return email.getVerified();
+  }
+
+  @Override
+  public boolean isEnabled() {
+    return email.getVerified();
   }
 }
