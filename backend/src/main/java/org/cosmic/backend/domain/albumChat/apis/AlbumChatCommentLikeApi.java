@@ -57,7 +57,7 @@ public class AlbumChatCommentLikeApi {
    * @return 좋아요 목록을 포함한 {@link ResponseEntity}
    * @throws NotFoundAlbumChatCommentException 앨범챗 댓글을 찾을 수 없을 때 발생합니다.
    */
-  @GetMapping("/album/{albumId}/comment/{albumChatCommentId}/commentLike")
+  @GetMapping("/album/{spotifyAlbumId}/comment/{albumChatCommentId}/commentLike")
   @ApiResponse(responseCode = "404", description = "Not Found AlbumChatComment")
   @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
       array = @ArraySchema(schema = @Schema(implementation = AlbumChatCommentLikeDetail.class))))
