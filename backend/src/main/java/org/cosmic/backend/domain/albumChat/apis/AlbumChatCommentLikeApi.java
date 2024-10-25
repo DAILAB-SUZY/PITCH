@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -72,20 +71,14 @@ public class AlbumChatCommentLikeApi {
   @PostMapping("/album/{spotifyAlbumId}/comment/{albumChatCommentId}/commentLike")
   @ApiResponse(responseCode = "200", content = {
       @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-          array = @ArraySchema(schema = @Schema(implementation = AlbumChatCommentDetail.class)))
+          schema = @Schema(implementation = AlbumChatCommentDetail.class))
   })
   @ApiResponse(responseCode = "404", description = "Not Found User or AlbumChat")
   @Operation(summary = "앨범 챗 댓글 좋아요 API", description = "앨범 챗 특정 댓글에 대해 좋아요 혹은 좋아요를 취소합니다.")
-  public ResponseEntity<List<AlbumChatCommentDetail>> likeAlbumChat(
+  public ResponseEntity<AlbumChatCommentDetail> likeAlbumChat(
       @PathVariable String spotifyAlbumId,
       @PathVariable Long albumChatCommentId,
-      @AuthenticationPrincipal Long userId,
-      @Parameter(description = "댓글 정렬", required = false)
-      @RequestParam(required = false, defaultValue = "recent") String sorted,
-      @Parameter(description = "페이지 수")
-      @RequestParam(required = false, defaultValue = "0") Integer page,
-      @Parameter(description = "제공량")
-      @RequestParam(required = false, defaultValue = "5") Integer limit
+      @AuthenticationPrincipal Long userId
   ) {
     try {
       likeService.unlike(albumChatCommentId, userId);
@@ -93,7 +86,7 @@ public class AlbumChatCommentLikeApi {
       likeService.like(albumChatCommentId, userId);
     }
     return ResponseEntity.ok(
-        albumChatCommentService.getAlbumChatComment(spotifyAlbumId, sorted, page, limit));
+        albumChatCommentService.getAlbumChat(albumChatCommentId));
   }
 
 
