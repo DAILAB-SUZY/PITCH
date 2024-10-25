@@ -1,6 +1,7 @@
 package org.cosmic.backend.domain.search.applications;
 
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
+import org.cosmic.backend.domain.search.dtos.OtherUserFollowDetail;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.dtos.UserDetail;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
@@ -15,11 +16,11 @@ public class SearchUserService {
     @Autowired
     private UsersRepository usersRepository;
 
-    public List<UserDetail> searchUser(String name){
+    public List<OtherUserFollowDetail> searchUser(String name){
         Optional<List<User>> optionalUsers = usersRepository.findByUsername(name);
         if(optionalUsers.isEmpty()){
             throw new NotFoundUserException();
         }
-        return User.toUserDetail(optionalUsers.get());
+        return OtherUserFollowDetail.from(optionalUsers.get());
     }
 }

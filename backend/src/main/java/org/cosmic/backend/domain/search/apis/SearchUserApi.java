@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.cosmic.backend.domain.search.applications.SearchUserService;
+import org.cosmic.backend.domain.search.dtos.OtherUserFollowDetail;
 import org.cosmic.backend.domain.search.dtos.SpotifySearchAlbumResponse;
 import org.cosmic.backend.domain.user.dtos.UserDetail;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
@@ -30,13 +31,12 @@ public class SearchUserApi {
     @Autowired
     SearchUserService searchUserService;
 
-    //친구 찾기
     @GetMapping("/{name}")
     @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-            array = @ArraySchema(schema = @Schema(implementation = UserDetail.class))))
+            array = @ArraySchema(schema = @Schema(implementation = OtherUserFollowDetail.class))))
     @ApiResponse(responseCode = "404", description = "Not Found User")
     @Operation(summary = "유저 조회",description = "유저 이름 검색을 통한 유저들 조회")
-    public ResponseEntity<List<UserDetail>> searchAlbum(
+    public ResponseEntity<List<OtherUserFollowDetail>> searchAlbum(
             @Parameter(description = "유저 이름")
             @PathVariable String name){
         return ResponseEntity.ok(

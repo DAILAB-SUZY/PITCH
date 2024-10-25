@@ -131,10 +131,6 @@ public class User {
         .build();
   }
 
-  public static List<UserDetail> toUserDetail(List<User> users) {
-    return users.stream().map(User::toUserDetail).toList();
-  }
-
   private List<DnaDetail> toDnaDetails() {
     return Stream.of(dna1, dna2, dna3, dna4).map(dna -> dna != null ? DnaDetail.from(dna) : null)
         .toList();
