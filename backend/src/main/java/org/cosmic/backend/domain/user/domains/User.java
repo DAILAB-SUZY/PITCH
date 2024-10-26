@@ -207,4 +207,9 @@ public class User implements MyUserDetails {
   public boolean isEnabled() {
     return email.getVerified();
   }
+
+  @Override
+  public String getId() {
+    return String.valueOf(userId);
+  }
 }
