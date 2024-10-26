@@ -6,7 +6,6 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: 'pitch'
-    restart: 'always'
     environment:
       - MAIL_ADDRESS=${MAIL_ADDRESS}
       - MAIL_PASSWORD=${MAIL_PASSWORD}
@@ -16,6 +15,9 @@ services:
       - YOUTUBE_CLIENT_ID=${YOUTUBE_CLIENT_ID}
       - YOUTUBE_CLIENT_SECRET=${YOUTUBE_CLIENT_SECRET}
       - REDIRECTION_ORIGIN=${REDIRECTION_ORIGIN}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_ACCESS_EXPIRATION=${JWT_ACCESS_EXPIRATION}
+      - JWT_REFRESH_EXPIRATION=${JWT_REFRESH_EXPIRATION}
     ports:
       - '8082:8080'
     depends_on:
@@ -25,6 +27,7 @@ services:
   postgres:
     image: 'postgres:latest'
     container_name: 'postgresql'
+    restart: 'always'
     environment:
       - 'POSTGRES_DB=pitch'
       - 'POSTGRES_PASSWORD=secret'

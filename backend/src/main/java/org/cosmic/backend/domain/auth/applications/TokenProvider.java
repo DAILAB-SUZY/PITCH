@@ -1,6 +1,5 @@
 package org.cosmic.backend.domain.auth.applications;
 
-import com.google.api.client.util.Value;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -13,7 +12,9 @@ import java.util.concurrent.TimeUnit;
 import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.cosmic.backend.domain.auth.exceptions.CredentialNotMatchException;
 import org.cosmic.backend.domain.user.domains.MyUserDetails;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -27,15 +28,15 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class TokenProvider {
 
-  @Value("${app.jwt.secret}")
+  private final RedisTemplate<String, String> redisTemplate;
+  @Value(value = "${app.jwt.secret}")
   private String KEY;
-  @Value("${app.jwt.access-expiration}")
+  @Value(value = "${app.jwt.access-expiration}")
   private Long ACCESS_EXPIRATION;
-  @Value("${app.jwt.refresh-expiration}")
+  @Value(value = "${app.jwt.refresh-expiration}")
   private Long REFRESH_EXPIRATION;
-  @Value("${spring.application.name}")
+  @Value(value = "${spring.application.name}")
   private String ISSUER;
-  private RedisTemplate<String, String> redisTemplate;
 
   private SecretKey getSignInKey() {
     return Keys.hmacShaKeyFor(Decoders.BASE64.decode(KEY));
@@ -45,7 +46,7 @@ public class TokenProvider {
     Instant now = Instant.now();
     return Jwts.builder()
         .signWith(getSignInKey())
-        .subject(user.getEmail().getEmail())
+        .subject(user.getId())
         .issuedAt(new Date(now.getEpochSecond()))
         .expiration(Date.from(now.plus(expiration, unit)))
         .issuer(ISSUER)
@@ -79,7 +80,7 @@ public class TokenProvider {
    */
   public String createRefreshToken(MyUserDetails user) {
     String token = createToken(user, REFRESH_EXPIRATION, ChronoUnit.DAYS);
-    saveTokenInRedis(token, user.getEmail().getEmail());
+    saveTokenInRedis(token, user.getId());
     return token;
   }
 
@@ -92,7 +93,7 @@ public class TokenProvider {
    * @throws io.jsonwebtoken.UnsupportedJwtException 토큰 형식이 지원되지 않는 경우 발생합니다.
    * @throws io.jsonwebtoken.MalformedJwtException   토큰 형식이 잘못된 경우 발생합니다.
    */
-  public String validateAndGetUserId(String token) {
+  public String validateAndGetId(String token) {
     Claims claims = Jwts.parser()
         .verifyWith(getSignInKey())
         .build()
@@ -101,7 +102,10 @@ public class TokenProvider {
     return claims.getSubject();
   }
 
-  public Boolean validateRefreshToken(String token) {
-    return redisTemplate.hasKey(token);
+  public String validateRefreshTokenAndGetId(String token) {
+    if (!redisTemplate.hasKey(token)) {
+      throw new CredentialNotMatchException();
+    }
+    return validateAndGetId(token);
   }
 }
