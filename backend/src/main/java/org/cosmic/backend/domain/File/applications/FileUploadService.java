@@ -2,6 +2,8 @@ package org.cosmic.backend.domain.File.applications;
 
 import lombok.RequiredArgsConstructor;
 import org.cosmic.backend.domain.File.exceptions.ImageSaveFailedException;
+import org.cosmic.backend.domain.File.exceptions.NotFoundFileException;
+import org.cosmic.backend.domain.File.exceptions.NotReadableException;
 import org.cosmic.backend.domain.File.utils.FileNameUtil;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.user.domains.User;
@@ -30,7 +32,7 @@ public class FileUploadService {
     private UsersRepository usersRepository;
 
     @Transactional
-    public void uploadFile(Long userId, MultipartFile profileImage) throws ImageSaveFailedException, MalformedURLException {
+    public void uploadFile(Long userId, MultipartFile profileImage) {
         File directory = new File(uploadDirectory);
         if (!directory.exists()) {
             directory.mkdirs();
@@ -45,7 +47,7 @@ public class FileUploadService {
             try {
                 profileImage.transferTo(new File(fullPath));
             } catch (IOException e) {
-                throw new ImageSaveFailedException("이미지 저장에 실패하였습니다.");
+                throw new ImageSaveFailedException();
             }
         }
 
@@ -59,13 +61,12 @@ public class FileUploadService {
         Path filePath = Paths.get(uploadDirectory).resolve(fileName).normalize();
         Resource resource = new UrlResource(filePath.toUri());
 
-        if (resource.exists() && resource.isReadable()) {
-            // 파일 찾았으니까 해당 파일을 보내줌.
-            return resource;
-        } else {
-            throw new RuntimeException("파일을 찾을 수 없거나 읽을 수 없습니다: " + filePath);
+        if(!resource.exists()) {
+            throw new NotFoundFileException();
         }
-
+        if(!resource.isReadable()) {
+            throw new NotReadableException();
+        }
+        return resource;
     }
-
 }
