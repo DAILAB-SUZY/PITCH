@@ -3,10 +3,7 @@ package org.cosmic.backend.globals.handlers;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.cosmic.backend.globals.dto.ErrorResponse;
-import org.cosmic.backend.globals.exceptions.BadRequestException;
-import org.cosmic.backend.globals.exceptions.ConflictException;
-import org.cosmic.backend.globals.exceptions.NotFoundException;
-import org.cosmic.backend.globals.exceptions.UnAuthorizationException;
+import org.cosmic.backend.globals.exceptions.*;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,7 +55,14 @@ public class GlobalExceptionHandler {
     }
     @ExceptionHandler(ConflictException.class)
     public ResponseEntity<ErrorResponse> handlerConflictException(ConflictException e) {
-        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(), e.getMessage());
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.CONFLICT.value(), e.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
+
+    @ExceptionHandler(InternalServerErrorException.class)
+    public ResponseEntity<ErrorResponse> handlerInternalServerErrorException(InternalServerErrorException e) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+    }
+
 }

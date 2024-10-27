@@ -73,14 +73,17 @@ public class FavoriteArtistService {
   @Transactional
   public FavoriteArtistDetail favoriteArtistSaveData(FavoriteRequest favoriteArtist, Long userId) {
     User user = usersRepository.findByUserId(userId).orElseThrow();
-    FavoriteArtist favoriteArtist2 = favoriteArtistRepository.findByUser_UserId(user.getUserId())
-        .orElseThrow(NotFoundUserException::new);
+    FavoriteArtist favoriteArtist2=new FavoriteArtist();
+    if(favoriteArtistRepository.findByUser_UserId(user.getUserId()).isPresent()){
+      favoriteArtist2=favoriteArtistRepository.findByUser_UserId(user.getUserId()).get();
+    }
     favoriteArtist2.setArtist(
         searchService.findAndSaveArtistBySpotifyId(favoriteArtist.getSpotifyArtistId()));
     favoriteArtist2.setAlbum(
         searchService.findAndSaveAlbumBySpotifyId(favoriteArtist.getSpotifyAlbumId()));
     favoriteArtist2.setTrack(
         searchService.findAndSaveTrackBySpotifyId(favoriteArtist.getSpotifyTrackId()));
+    favoriteArtist2.setUser(usersRepository.findById(userId).get());
     favoriteArtistRepository.save(favoriteArtist2);
     return FavoriteArtist.toFavoriteArtistDto(favoriteArtist2);
   }
