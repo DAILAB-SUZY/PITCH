@@ -124,11 +124,15 @@ public class User implements MyUserDetails {
     this.create_time = Instant.now();
   }
 
+  private static String getOriginProfilePicture(String profilePicture) {
+    return String.format("%s/api/file/%s", ServerProperty.getServerOrigin(), profilePicture);
+  }
+
   public static UserDetail toUserDetail(User user) {
     return UserDetail.builder()
         .id(user.userId)
         .username(user.username)
-        .profilePicture(user.profilePicture)
+        .profilePicture(getOriginProfilePicture(user.profilePicture))
         .dnas(user.toDnaDetails())
         .build();
   }
