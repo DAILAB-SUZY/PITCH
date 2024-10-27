@@ -102,6 +102,10 @@ public class TokenProvider {
     return claims.getSubject();
   }
 
+  public Long validateAndGetLongId(String token) {
+    return Long.valueOf(validateAndGetId(token));
+  }
+
   public String validateRefreshTokenAndGetId(String token) {
     if (!redisTemplate.hasKey(token)) {
       throw new CredentialNotMatchException();

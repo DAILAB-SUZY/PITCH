@@ -10,6 +10,7 @@ import org.cosmic.backend.domain.playList.domains.Playlist;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.playList.repositorys.PlaylistRepository;
 import org.cosmic.backend.domain.user.domains.Email;
+import org.cosmic.backend.domain.user.domains.MyUserDetails;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.dtos.JoinRequest;
 import org.cosmic.backend.domain.user.dtos.UserDetail;
@@ -19,6 +20,8 @@ import org.cosmic.backend.domain.user.exceptions.NotMatchPasswordException;
 import org.cosmic.backend.domain.user.repositorys.EmailRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +34,7 @@ import org.springframework.stereotype.Service;
 @Log4j2
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserService implements UserDetailsService {
 
   @Autowired
   private TokenProvider tokenProvider;
@@ -117,5 +120,15 @@ public class UserService {
   public UserDetail getUserDetail(Long userId) {
     return User.toUserDetail(
         usersRepository.findById(userId).orElseThrow(NotFoundUserException::new));
+  }
+
+  @Override
+  public MyUserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
+    return loadUserByUsername(Long.parseLong(userId));
+  }
+  
+  public MyUserDetails loadUserByUsername(Long userId) throws UsernameNotFoundException {
+    return usersRepository.findById(userId)
+        .orElseThrow(NotFoundUserException::new);
   }
 }
