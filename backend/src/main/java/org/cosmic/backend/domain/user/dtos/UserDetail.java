@@ -20,12 +20,7 @@ public class UserDetail {
   private List<DnaDetail> dnas;
 
   public static UserDetail from(User user) {
-    return UserDetail.builder()
-        .id(user.getUserId())
-        .username(user.getUsername())
-        .profilePicture(user.getProfilePicture())
-        .dnas(user.getDNAs().stream().map(DnaDetail::from).toList())
-        .build();
+    return User.toUserDetail(user);
   }
 
   public static List<UserDetail> from(List<User> userLikes) {

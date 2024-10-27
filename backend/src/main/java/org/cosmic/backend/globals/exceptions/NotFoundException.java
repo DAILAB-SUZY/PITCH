@@ -6,7 +6,8 @@ public class NotFoundException extends RuntimeException{
     protected static final String notFoundAlbumChatCommentLikeError_Message="Not found albumChatComment";
     protected static final String notFoundAlbumChatError_Message="Not found albumChat page";
     protected static final String notFoundEmotionError_Message="Not Found Emotion";
-    protected static final String notExistEmailError_Message="\"Not found email";
+    protected static final String notExistEmailError_Message="Not found email";
+    protected static final String notFoundFileError_Message="Not found file";
 
     public NotFoundException(String errorMessage) {
         super(errorMessage);
@@ -30,5 +31,9 @@ public class NotFoundException extends RuntimeException{
     public static String getNotFoundEmotionError()
     {
         return notFoundEmotionError_Message;
+    }
+    public static String getNotFoundFileError()
+    {
+        return notFoundFileError_Message;
     }
 }
