@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.user.applications.UserService;
 import org.cosmic.backend.domain.user.dtos.JoinRequest;
 import org.cosmic.backend.domain.user.dtos.UserDetail;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/")
 @ApiCommonResponses
 @Tag(name = "유저 관련 API", description = "로그인 및 회원가입")
+@Log4j2
 public class UserApi {
 
   private final UserService userService;
