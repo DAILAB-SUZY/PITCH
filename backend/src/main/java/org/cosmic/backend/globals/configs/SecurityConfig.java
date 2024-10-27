@@ -1,5 +1,6 @@
 package org.cosmic.backend.globals.configs;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.globals.filters.JwtAuthenticationFilter;
@@ -32,15 +33,19 @@ public class SecurityConfig {
             UsernamePasswordAuthenticationFilter.class)
         .authorizeHttpRequests(authorize ->
             authorize
+                .requestMatchers("/api/auth/**", "/api/mail/**", "/api/user").permitAll()
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers("/oauth2/**").permitAll()
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/mail/**").permitAll()
-                .requestMatchers("/api/user").permitAll()
-                .requestMatchers("/example").permitAll()
                 .requestMatchers("/api/**").authenticated()
-                .requestMatchers("/swagger-ui/**").permitAll()
-                .requestMatchers("/v3/api-docs/**").permitAll()
-                .anyRequest().authenticated())
+                .anyRequest().permitAll())
+        .exceptionHandling(exceptionHAndlerFilter -> {
+          exceptionHAndlerFilter
+              .authenticationEntryPoint((request, response, authException) -> response.sendError(
+                  HttpServletResponse.SC_UNAUTHORIZED, "로그인이 필요합니다."));
+        })
+        .oauth2Login(oauth2 -> oauth2
+            .defaultSuccessUrl("/oauth2/callback/google", true)
+        )
     ;
     return http.build();
   }
