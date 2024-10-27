@@ -2,7 +2,6 @@ package org.cosmic.backend.domain.user.applications;
 
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.auth.applications.TokenProvider;
 import org.cosmic.backend.domain.auth.dtos.UserLoginDetail;
@@ -11,6 +10,7 @@ import org.cosmic.backend.domain.playList.domains.Playlist;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.playList.repositorys.PlaylistRepository;
 import org.cosmic.backend.domain.user.domains.Email;
+import org.cosmic.backend.domain.user.domains.MyUserDetails;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.dtos.JoinRequest;
 import org.cosmic.backend.domain.user.dtos.UserDetail;
@@ -20,7 +20,8 @@ import org.cosmic.backend.domain.user.exceptions.NotMatchPasswordException;
 import org.cosmic.backend.domain.user.repositorys.EmailRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -33,8 +34,7 @@ import org.springframework.stereotype.Service;
 @Log4j2
 @Service
 @RequiredArgsConstructor
-@Setter
-public class UserService {
+public class UserService implements UserDetailsService {
 
   @Autowired
   private TokenProvider tokenProvider;
@@ -42,8 +42,6 @@ public class UserService {
   private UsersRepository usersRepository;
   @Autowired
   private EmailRepository emailRepository;
-  @Autowired
-  private RedisTemplate<String, String> redisTemplate;
   @Autowired
   private PlaylistRepository playlistRepository;
 
@@ -95,33 +93,8 @@ public class UserService {
       throw new CredentialNotMatchException();
     }
 
-    return UserLoginDetail.builder()
-        .refreshToken(tokenProvider.createRefreshToken(user))
-        .token(tokenProvider.create(user))
-        .email(email)
-        .username(user.getUsername())
-        .id(user.getUserId())
-        .build();
-  }
-
-  /**
-   * <p>이메일을 이용해 사용자 정보를 반환합니다.</p>
-   *
-   * @param email 사용자의 이메일
-   * @return 사용자의 로그인 정보를 포함한 객체
-   * @throws CredentialNotMatchException 사용자를 찾을 수 없을 때 발생합니다.
-   */
-  private UserLoginDetail getByEmail(String email) {
-    User user = usersRepository.findById(Long.parseLong(email))
-        .orElseThrow(CredentialNotMatchException::new);
-
-    return UserLoginDetail.builder()
-        .refreshToken(tokenProvider.createRefreshToken(user))
-        .token(tokenProvider.create(user))
-        .email(user.getEmail().getEmail())
-        .username(user.getUsername())
-        .id(user.getUserId())
-        .build();
+    return UserLoginDetail.from(user, tokenProvider.create(user),
+        tokenProvider.createRefreshToken(user));
   }
 
   /**
@@ -132,12 +105,10 @@ public class UserService {
    * @throws CredentialNotMatchException 리프레시 토큰이 유효하지 않거나 일치하지 않을 때 발생합니다.
    */
   public UserLoginDetail getUserByRefreshToken(String refreshToken) {
-    String email = tokenProvider.validateAndGetUserId(refreshToken);
-    if (email == null) {
-      throw new CredentialNotMatchException();
-    }
-    redisTemplate.opsForValue().getAndDelete(email);
-    return getByEmail(email);
+    User user = usersRepository.findById(
+            Long.parseLong(tokenProvider.validateRefreshTokenAndGetId(refreshToken)))
+        .orElseThrow(NotFoundUserException::new);
+    return UserLoginDetail.from(user, tokenProvider.create(user), refreshToken);
   }
 
   /**
@@ -149,5 +120,15 @@ public class UserService {
   public UserDetail getUserDetail(Long userId) {
     return User.toUserDetail(
         usersRepository.findById(userId).orElseThrow(NotFoundUserException::new));
+  }
+
+  @Override
+  public MyUserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
+    return loadUserByUsername(Long.parseLong(userId));
+  }
+  
+  public MyUserDetails loadUserByUsername(Long userId) throws UsernameNotFoundException {
+    return usersRepository.findById(userId)
+        .orElseThrow(NotFoundUserException::new);
   }
 }
