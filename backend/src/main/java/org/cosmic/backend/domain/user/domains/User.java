@@ -62,7 +62,7 @@ public class User implements MyUserDetails {
 
   @Builder.Default
   @Column()
-  private String profilePicture = "basic_profile.png";
+  private String profilePicture = "basic_profile.webp";
 
   @Builder.Default
   @Column()
