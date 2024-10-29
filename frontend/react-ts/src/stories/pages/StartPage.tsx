@@ -3,7 +3,7 @@ import logo from "../../img/logo_withText.png";
 import { colors } from "../../styles/color";
 import { useNavigate } from "react-router-dom";
 
-const ImgContainer = styled.div`
+const Container = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -18,14 +18,9 @@ function StartPage() {
     navigate("/Login");
   };
   return (
-    <ImgContainer>
-      <img
-        src={logo}
-        width="100px"
-        height="100px"
-        onClick={GoToLoginPage}
-      ></img>
-    </ImgContainer>
+    <Container>
+      <img src={logo} width="100px" height="100px" onClick={GoToLoginPage}></img>
+    </Container>
   );
 }
 
