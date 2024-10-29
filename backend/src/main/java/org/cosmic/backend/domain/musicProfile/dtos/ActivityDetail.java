@@ -20,7 +20,7 @@ public class ActivityDetail {//post와 작성했던 앨범챗들을 가져옴.
   public static ActivityDetail from(User user) {
     return ActivityDetail.builder()
         .albumPostList(PostAndCommentsDetail.from(user.getPosts()))
-        .albumCommentList(AlbumCommentDetail.from(user.getAlbumChatComments()))
+        .albumCommentList(AlbumCommentDetail.fromNullParentAlbumChat(user.getAlbumChatComments()))
         .build();
   }
 }

@@ -33,6 +33,7 @@ public class AlbumChatCommentDetail implements Serializable {
     this.updateAt = albumChatComment.getUpdateTime();
     this.likes = albumChatComment.getAlbumChatCommentLikes().stream()
         .map(a -> UserDetail.from(a.getUser())).toList();
+    this.comments=AlbumChatReplyDetail.from(albumChatComment.getChildComments());
     this.author = User.toUserDetail(albumChatComment.getUser());
   }
 
