@@ -6,15 +6,13 @@ import org.cosmic.backend.domain.user.domains.User;
 public record FollowDto(Long userId, String username, String profilePicture) {
 
   static public FollowDto from(Follow follow) {
-    return new FollowDto(follow.getOther().getUserId(),
-        follow.getOther().getUsername(),
-        follow.getOther().getProfilePicture());
+    return from(follow.getOther());
   }
 
   static public FollowDto from(User user) {
     return new FollowDto(user.getUserId(),
         user.getUsername(),
-        user.getProfilePicture());
+        User.getOriginProfilePicture(user.getProfilePicture()));
   }
 
   static public FollowDto following(Follow follow) {

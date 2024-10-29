@@ -128,7 +128,7 @@ public class User implements MyUserDetails {
     this.create_time = Instant.now();
   }
 
-  private static String getOriginProfilePicture(String profilePicture) {
+  public static String getOriginProfilePicture(String profilePicture) {
     return String.format("%s/api/file/%s", ServerProperty.getServerOrigin(), profilePicture);
   }
 
@@ -142,7 +142,8 @@ public class User implements MyUserDetails {
   }
 
   private List<DnaDetail> toDnaDetails(User user) {
-    return Stream.of(user.getDna1(), user.getDna2(), user.getDna3(), user.getDna4()).map(dna -> dna != null ? DnaDetail.from(dna) : null)
+    return Stream.of(user.getDna1(), user.getDna2(), user.getDna3(), user.getDna4())
+        .map(dna -> dna != null ? DnaDetail.from(dna) : null)
         .toList();
   }
 
