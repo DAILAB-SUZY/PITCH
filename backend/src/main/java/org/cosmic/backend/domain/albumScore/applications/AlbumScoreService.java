@@ -3,6 +3,7 @@ package org.cosmic.backend.domain.albumScore.applications;
 import org.cosmic.backend.domain.albumScore.domains.AlbumScore;
 import org.cosmic.backend.domain.albumScore.repositorys.AlbumScoreRepository;
 import org.cosmic.backend.domain.playList.domains.Album;
+import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
 import org.cosmic.backend.domain.post.dtos.Post.AlbumDetail;
 import org.cosmic.backend.domain.post.exceptions.NotFoundAlbumException;
@@ -33,6 +34,7 @@ public class AlbumScoreService
 
     public List<AlbumDetail> getScore(Long userId){
         //해당 유저의 모든 점수 매긴 앨범들 가져오기.
+        usersRepository.findById(userId).orElseThrow(NotFoundUserException::new);
         return AlbumDetail.fromByAlbumScore(albumScoreRepository.findByUser_UserId(userId));
     }
 
