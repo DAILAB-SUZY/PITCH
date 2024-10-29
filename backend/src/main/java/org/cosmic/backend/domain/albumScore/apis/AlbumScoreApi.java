@@ -1,5 +1,6 @@
 package org.cosmic.backend.domain.albumScore.apis;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.cosmic.backend.domain.albumScore.applications.AlbumScoreService;
 import org.cosmic.backend.domain.albumScore.dtos.AlbumScoreDto;
 import org.cosmic.backend.domain.post.dtos.Post.AlbumDetail;
@@ -11,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/")
+@Tag(name = "베스트 앨범 관련 API", description = "베스트 앨범 정보 제공 및 저장")
 public class AlbumScoreApi {
     @Autowired
     private AlbumScoreService albumScoreService;
