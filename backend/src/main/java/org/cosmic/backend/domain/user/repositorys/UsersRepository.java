@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import org.cosmic.backend.domain.user.domains.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface UsersRepository extends JpaRepository<User, Long> {
 
@@ -11,5 +13,6 @@ public interface UsersRepository extends JpaRepository<User, Long> {
 
   Optional<User> findByUserId(Long userId);//key로 찾기
 
-  Optional<List<User>> findByUsername(String name);
+  @Query("SELECT u FROM User u WHERE u.username LIKE CONCAT('%', :name, '%') ORDER BY u.userId" )
+  Optional<List<User>> findByUsername(@Param("name") String name);
 }

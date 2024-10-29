@@ -35,7 +35,7 @@ public class SearchUserApi {
     @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
             array = @ArraySchema(schema = @Schema(implementation = OtherUserFollowDetail.class))))
     @ApiResponse(responseCode = "404", description = "Not Found User")
-    @Operation(summary = "유저 조회",description = "유저 이름 검색을 통한 유저들 조회")
+    @Operation(summary = "유저 조회",description = "유저 이름 포함 검색을 통한 유저들 조회")
     public ResponseEntity<List<OtherUserFollowDetail>> searchAlbum(
             @Parameter(description = "유저 이름")
             @PathVariable String name){
