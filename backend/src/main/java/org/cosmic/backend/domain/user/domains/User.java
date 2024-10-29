@@ -62,7 +62,7 @@ public class User implements MyUserDetails {
 
   @Builder.Default
   @Column()
-  private String profilePicture = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT9wcivPzk14xFzT39uTuyuwulGq92EpDXUfw&s";
+  private String profilePicture = "basic_profile.png";
 
   @Builder.Default
   @Column()
