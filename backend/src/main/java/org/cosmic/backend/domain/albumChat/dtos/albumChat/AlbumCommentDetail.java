@@ -18,14 +18,24 @@ public class AlbumCommentDetail {//특정 유저가 작성한 앨범챗들.
   AlbumDetail albumDetail;
   AlbumChatCommentDetail albumChatCommentDetail;
 
-  public static AlbumCommentDetail from(AlbumChatComment albumChatComment) {
+  public static List<AlbumCommentDetail> fromNullParentAlbumChat(List<AlbumChatComment> albumChatComments) {
+    return albumChatComments.stream()
+            .filter(comment -> comment.getParentAlbumChatComment() == null)  // parent가 null인 경우만 필터링
+            .map(AlbumCommentDetail::from)
+            .toList();
+  }
+  public static AlbumCommentDetail from(AlbumChatComment albumChatComment)
+  {
     return AlbumCommentDetail.builder()
-        .albumDetail(AlbumDetail.from(albumChatComment.getAlbum()))
-        .albumChatCommentDetail(new AlbumChatCommentDetail(albumChatComment))
-        .build();
+      .albumDetail(AlbumDetail.from(albumChatComment.getAlbum()))
+      .albumChatCommentDetail(new AlbumChatCommentDetail(albumChatComment))
+      .build();
   }
 
   public static List<AlbumCommentDetail> from(List<AlbumChatComment> albumChatComments) {
     return albumChatComments.stream().map(AlbumCommentDetail::from).toList();
   }
+
+
+
 }
