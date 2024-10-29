@@ -1,7 +1,5 @@
 import styled from 'styled-components';
 import { colors } from '../../styles/color';
-import { useLocation, useNavigate } from 'react-router-dom';
-import useStore from '../store/store';
 import { useEffect, useState } from 'react';
 
 const ProfileArea = styled.div`
@@ -48,38 +46,6 @@ const ChatCardBody = styled.div`
   line-height: 120%;
 `;
 
-const CommentButtonArea = styled.div`
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  margin: 0 10 0 10px;
-`;
-
-const CommentArea = styled.div`
-  display: flex;
-  width: 100vw;
-  height: auto;
-  /* overflow: hidden; */
-  align-items: center;
-  justify-content: flex-start;
-  flex-direction: column;
-  margin: 0px;
-  padding: 10px;
-  box-sizing: border-box;
-  background-color: ${colors.BG_grey};
-  z-index: 10;
-`;
-
-const CommentCommentArea = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: auto;
-`;
-
 const CommentCommentCard = styled.div`
   display: flex;
   flex-direction: row;
@@ -109,11 +75,6 @@ const CommentCommentContent = styled.div`
   padding: 10px;
   box-sizing: border-box;
 `;
-const Line = styled.div`
-  width: 95vw;
-  height: 1px;
-  background-color: ${colors.Button_deactive};
-`;
 const Text = styled.div<{ fontSize?: string; margin?: string; fontFamily?: string; color?: string }>`
   font-size: ${props => props.fontSize};
   margin: ${props => props.margin};
@@ -132,15 +93,6 @@ interface User {
   dnas: DNA[];
 }
 
-interface AlbumDetail {
-  albumId: number;
-  title: string;
-  albumCover: string;
-  artistName: string;
-  genre: string;
-  spotifyId: string;
-}
-
 interface AlbumChatComment {
   albumChatCommentId: number;
   content: string;
@@ -155,16 +107,11 @@ interface AlbumData {
   comment: AlbumChatComment;
   spotifyAlbumId: string;
 }
-function AlbumChatCommentCard({ comment, spotifyAlbumId }: AlbumData) {
+function AlbumChatCommentCard({ comment }: AlbumData) {
   ////// Post 시간 계산 //////
   const CreateTime = comment.createAt;
   const UpdatedTime = comment.updateAt;
   const [timeAgo, setTimeAgo] = useState<string>('');
-  const server = 'http://203.255.81.70:8030';
-  const reissueTokenUrl = `${server}/api/auth/reissued`;
-  const [token, setToken] = useState(localStorage.getItem('login-token'));
-  const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   console.log(timeAgo);
   useEffect(() => {
@@ -203,105 +150,6 @@ function AlbumChatCommentCard({ comment, spotifyAlbumId }: AlbumData) {
     }
   };
   /////////////
-
-  // 수정/삭제 버튼
-  const editMenu = () => {
-    console.log('edit');
-    setIsDropdownOpen(!isDropdownOpen);
-  };
-
-  // chat 좋아요 상태 확인
-
-  // 좋아요 설정
-  //   const [isPostLiked, setIsPostLiked] = useState(false);
-  //   const [likesCount, setLikesCount] = useState<number>(0);
-  //   const { id, name } = useStore();
-  //   useEffect(() => {
-  //     if (comment) {
-  //       setLikesCount(comment.likes.length);
-  //       if (comment.likes.some((like: any) => like.id === id)) {
-  //         setIsPostLiked(true);
-  //       }
-  //     }
-  //   }, [comment]);
-
-  //   const CommentLikeUrl = server + `/api/album/${spotifyAlbumId}/comment/${comment.albumChatCommentId}/commentLike`;
-
-  //   const changeCommentLike = async () => {
-  //     console.log('changing Like');
-  //     if (isPostLiked && comment) {
-  //       // 이미 좋아요를 눌렀다면 좋아요 취소
-  //       setIsPostLiked(false);
-  //       setLikesCount(likesCount - 1);
-  //       comment.likes = comment.likes.filter((like: any) => like.id !== id);
-  //     } else {
-  //       // 좋아요 누르기
-  //       setIsPostLiked(true);
-  //       setLikesCount(likesCount + 1);
-  //       comment.likes.push({
-  //         id: id,
-  //         username: name,
-  //         profilePicture: 'string',
-  //         dnas: [],
-  //       });
-  //     }
-  //     fetchLike();
-  //     // like 데이터 POST 요청
-  //   };
-
-  //   const fetchLike = async () => {
-  //     if (token) {
-  //       console.log('fetching Like Data');
-  //       try {
-  //         const response = await fetch(CommentLikeUrl, {
-  //           method: 'POST',
-  //           headers: {
-  //             'Content-Type': 'application/json',
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         });
-  //         if (response.ok) {
-  //           const data = await response.json();
-  //           if (data.likes.some((like: any) => like.id === id)) {
-  //             console.log('like 추가');
-  //           } else {
-  //             console.log('like 삭제');
-  //           }
-  //         } else if (response.status === 401) {
-  //           await ReissueToken();
-  //           fetchLike();
-  //         } else {
-  //           console.error('Failed to fetch data:', response.status);
-  //         }
-  //       } catch (error) {
-  //         console.error('like 실패:', error);
-  //       }
-  //     }
-  //   };
-
-  const ReissueToken = async () => {
-    console.log('reissuing Token');
-    try {
-      const response = await fetch(reissueTokenUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Refresh-Token': `${refreshToken}`,
-        },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('login-token', data.token);
-        localStorage.setItem('login-refreshToken', data.refreshToken);
-        setToken(data.token);
-        setRefreshToken(data.refreshToken);
-      } else {
-        console.error('failed to reissue token', response.status);
-      }
-    } catch (error) {
-      console.error('Refresh Token 재발급 실패', error);
-    }
-  };
 
   return (
     <CommentCommentCard>

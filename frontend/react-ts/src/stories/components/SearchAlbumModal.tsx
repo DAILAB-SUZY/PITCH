@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import { colors } from '../../styles/color';
-import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import Loader from './Loader';
 

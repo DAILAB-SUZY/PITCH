@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { colors } from '../../styles/color';
 import AlbumPostCard from './AlbumPostCard';
 import { useEffect, useState } from 'react';
 

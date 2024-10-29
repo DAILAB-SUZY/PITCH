@@ -4,8 +4,6 @@ import Nav from '../components/Nav';
 import MostCommentedCard from '../components/MostCommentedCard';
 import MostLikedCard from '../components/MostLikedCard';
 import { useNavigate } from 'react-router-dom';
-import cover1 from '../../img/aespa2.jpg';
-import artistProfile from '../../img/aespaProfile.jpg';
 import { useEffect, useRef, useState } from 'react';
 import Loader from '../components/Loader';
 
@@ -118,22 +116,10 @@ const AlbumListArea = styled.div`
   padding: 10px;
 `;
 
-const Line = styled.div`
-  width: 90vw;
-  border-bottom: 1px;
-`;
-
 const Title = styled.div<{ fontSize: string; margin?: string }>`
   font-size: ${props => props.fontSize};
   margin: ${props => props.margin};
   font-family: 'Bd';
-`;
-const Text = styled.div<{ fontSize?: string; margin?: string; fontFamily?: string; opacity?: number; color?: string }>`
-  font-size: ${props => props.fontSize};
-  margin: ${props => props.margin};
-  font-family: ${props => props.fontFamily};
-  opacity: ${props => props.opacity};
-  color: ${props => props.color};
 `;
 
 interface DNA {

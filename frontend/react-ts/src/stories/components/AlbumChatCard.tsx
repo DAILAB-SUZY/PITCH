@@ -99,15 +99,6 @@ interface User {
   dnas: DNA[];
 }
 
-interface AlbumDetail {
-  albumId: number;
-  title: string;
-  albumCover: string;
-  artistName: string;
-  genre: string;
-  spotifyId: string;
-}
-
 interface AlbumChatComment {
   albumChatCommentId: number;
   content: string;
@@ -117,8 +108,6 @@ interface AlbumChatComment {
   comments: AlbumChatComment[]; // 재귀적 구조
   author: User;
 }
-
-interface AlbumLike extends User {} // User와 동일한 구조 확장
 
 interface AlbumData {
   comment: AlbumChatComment;
@@ -134,7 +123,6 @@ const AlbumChatCard = ({ comment, spotifyAlbumId }: AlbumData) => {
   const reissueTokenUrl = `${server}/api/auth/reissued`;
   const [token, setToken] = useState(localStorage.getItem('login-token'));
   const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   //console.log(`album id : ${albumId}`);
   useEffect(() => {
@@ -171,13 +159,6 @@ const AlbumChatCard = ({ comment, spotifyAlbumId }: AlbumData) => {
     } else {
       return `${daysAgo}일 전`;
     }
-  };
-  /////////////
-
-  // 수정/삭제 버튼
-  const editMenu = () => {
-    console.log('edit');
-    setIsDropdownOpen(!isDropdownOpen);
   };
 
   // chat 좋아요 상태 확인

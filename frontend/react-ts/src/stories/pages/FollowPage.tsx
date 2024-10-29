@@ -1,7 +1,6 @@
 import styled from 'styled-components';
-import logo from '../../img/logo_withText.png';
 import { colors } from '../../styles/color';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import FollowBox from '../components/FollowBox';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -111,7 +110,6 @@ function FollowPage() {
   const reissueTokenUrl = `${server}/api/auth/reissued`;
   const [token, setToken] = useState(localStorage.getItem('login-token'));
   const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const GetFollowerURL = `${server}/api/user/${userId}/follower`;
   const GetFollowingURL = `${server}/api/user/${userId}/following`;
   const SetFollowUrl = `${server}/api/user/follow/`;

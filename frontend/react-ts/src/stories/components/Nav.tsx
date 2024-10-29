@@ -62,7 +62,7 @@ const Title = styled.div<{ fontSize: string; margin: string; color: string }>`
 `;
 
 const Nav = ({ page }: NavProps) => {
-  const { email, setEmail, name, setName, id, setId } = useStore();
+  const { id } = useStore();
 
   const navigate = useNavigate();
 

@@ -1,9 +1,5 @@
 import styled from 'styled-components';
 import { colors } from '../../styles/color';
-import { useNavigate } from 'react-router-dom';
-import cover1 from '../../img/aespa2.jpg';
-import artistProfile from '../../img/aespaProfile.jpg';
-import { useState } from 'react';
 
 const CommentCardArea = styled.div`
   display: flex;
@@ -98,13 +94,7 @@ const ProfileArea = styled.div`
   flex-direction: row;
   margin-top: 20px;
 `;
-const PostUploadTime = styled.div`
-  display: flex;
-  font-size: 10px;
-  font-family: 'Rg';
-  margin: 0px 0px 2px 10px;
-  color: ${colors.BG_grey};
-`;
+
 const ProfileTextArea = styled.div`
   display: flex;
   justify-content: flex-start;
@@ -133,15 +123,6 @@ const ChatCardBody = styled.div`
   justify-content: space-between;
 `;
 
-const Title = styled.div<{ fontSize: string; margin?: string }>`
-  font-size: ${props => props.fontSize};
-  margin: ${props => props.margin};
-  font-family: 'Bd';
-
-  white-space: nowrap;
-  overflow: hidden; // 너비를 넘어가면 안보이게
-  text-overflow: ellipsis; // 글자가 넘어가면 말줄임(...) 표시
-`;
 const Text = styled.div<{ fontSize?: string; margin?: string; fontFamily?: string; opacity?: number; color?: string; width?: string }>`
   font-size: ${props => props.fontSize};
   margin: ${props => props.margin};

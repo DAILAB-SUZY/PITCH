@@ -3,7 +3,6 @@ import { colors } from '../../styles/color';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useStore from '../store/store';
-import useAlbumPostStore from '../store/albumPostStore';
 
 const AlbumPostContainer = styled.div`
   width: 350px;

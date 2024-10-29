@@ -114,35 +114,6 @@ const CommentCommentArea = styled.div`
   height: auto;
 `;
 
-const CommentCommentCard = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-`;
-const CommentCommentIcon = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-end;
-  width: 40px;
-  height: 100%;
-  margin-top: 30px;
-`;
-
-const CommentCommentContent = styled.div`
-  display: flex;
-  width: 100vw;
-  height: auto;
-  /* overflow: hidden; */
-  align-items: center;
-  justify-content: flex-start;
-  flex-direction: column;
-  margin: 0px;
-  padding: 10px;
-  box-sizing: border-box;
-`;
 const Line = styled.div`
   width: 95vw;
   height: 1px;
@@ -166,15 +137,6 @@ interface User {
   dnas: DNA[];
 }
 
-interface AlbumDetail {
-  albumId: number;
-  title: string;
-  albumCover: string;
-  artistName: string;
-  genre: string;
-  spotifyId: string;
-}
-
 interface AlbumChatComment {
   albumChatCommentId: number;
   content: string;
@@ -184,8 +146,6 @@ interface AlbumChatComment {
   comments: AlbumChatComment[]; // 재귀적 구조
   author: User;
 }
-
-interface AlbumLike extends User {} // User와 동일한 구조 확장
 
 interface AlbumData {
   comment: AlbumChatComment;
@@ -208,7 +168,6 @@ function AlbumChatPage() {
   const reissueTokenUrl = `${server}/api/auth/reissued`;
   const [token, setToken] = useState(localStorage.getItem('login-token'));
   const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   console.log(timeAgo);
   useEffect(() => {
@@ -247,12 +206,6 @@ function AlbumChatPage() {
     }
   };
   /////////////
-
-  // 수정/삭제 버튼
-  const editMenu = () => {
-    console.log('edit');
-    setIsDropdownOpen(!isDropdownOpen);
-  };
 
   // chat 좋아요 상태 확인
 

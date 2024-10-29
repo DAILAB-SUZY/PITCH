@@ -1,16 +1,16 @@
-import styled from "styled-components";
-import Btn from "../inputs/btn";
-import { colors } from "../../styles/color";
-import logo from "../../img/logo_withText.png";
-import { useNavigate } from "react-router-dom";
-import InputBox from "../inputs/InputBox";
-import { useState } from "react";
-import useStore from "../store/store";
+import styled from 'styled-components';
+import Btn from '../inputs/btn';
+import { colors } from '../../styles/color';
+import logo from '../../img/logo_withText.png';
+import { useNavigate } from 'react-router-dom';
+import InputBox from '../inputs/InputBox';
+import { useState } from 'react';
+import useStore from '../store/store';
 
 const Title = styled.div<{ fontSize?: string; margin?: string }>`
-  font-size: ${(props) => props.fontSize};
-  margin: ${(props) => props.margin};
-  font-family: "Bd";
+  font-size: ${props => props.fontSize};
+  margin: ${props => props.margin};
+  font-family: 'Bd';
 `;
 const Container = styled.div`
   display: flex;
@@ -43,8 +43,8 @@ const SignupArea = styled.div<{
   justify_content: string;
 }>`
   display: flex;
-  flex-direction: ${(props) => props.flex_direction};
-  justify-content: ${(props) => props.justify_content};
+  flex-direction: ${props => props.flex_direction};
+  justify-content: ${props => props.justify_content};
   align-items: center;
   width: 70vw;
 `;
@@ -52,55 +52,54 @@ const CenterAlignArea = styled.div`
   position: relative;
 `;
 function SignupPage() {
-  const [id, setId] = useState("");
-  const [confirm, setConfirm] = useState("");
-  const [checkcode, setCheckcode] = useState("");
-  const [idError, setIdError] = useState("이메일를 입력해주세요.");
-  const [passwordError, setPasswordError] = useState("비밀번호를 입력해주세요.");
-  const [confirmError, setConfirmError] = useState("");
-  const [codecheckError, setCodecheckError] = useState("");
-  const [noticeMail, setNoticeMail] = useState("");
+  const [confirm, setConfirm] = useState('');
+  const [checkcode, setCheckcode] = useState('');
+  const [idError, setIdError] = useState('이메일를 입력해주세요.');
+  const [passwordError, setPasswordError] = useState('비밀번호를 입력해주세요.');
+  const [confirmError, setConfirmError] = useState('');
+  const [codecheckError, setCodecheckError] = useState('');
+  const [noticeMail, setNoticeMail] = useState('');
 
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState('');
 
   // const email = UserInfoStore((state) => state.email)
-  const email = useStore((state) => state.email);
-  const setEmail = useStore((state) => state.setEmail);
-  const name = useStore((state) => state.name);
-  const setName = useStore((state) => state.setName);
+  const email = useStore(state => state.email);
+  const setEmail = useStore(state => state.setEmail);
+  const name = useStore(state => state.name);
+  const setName = useStore(state => state.setName);
   // const password = useStore((state) => state.password);
   // const setPassword = useStore((state) => state.setPassword);
 
   const idCheckHandler = async (email: string) => {
     const check = /[a-z0-9]+@[a-z]+\.[a-z]{2,3}/;
 
-    if (email === "") {
-      setIdError("이메일를 입력해주세요.");
+    if (email === '') {
+      setIdError('이메일를 입력해주세요.');
       return false;
     } else if (!check.test(email)) {
-      setIdError("이메일의 형식이 아닙니다.");
+      setIdError('이메일의 형식이 아닙니다.');
       return true;
     } else {
-      setIdError("");
+      setIdError('');
       return false;
     }
   };
 
   const passwordCheckHandler = (password: string, confirm: string) => {
     const passwordRegex = /^[a-z\d!@*&-_]{8,16}$/;
-    if (password === "") {
-      setPasswordError("비밀번호를 입력해주세요.");
+    if (password === '') {
+      setPasswordError('비밀번호를 입력해주세요.');
       return false;
     } else if (!passwordRegex.test(password)) {
-      setPasswordError("비밀번호는 8~16자의 영소문자, 숫자, !@*&-_만 입력 가능합니다.");
+      setPasswordError('비밀번호는 8~16자의 영소문자, 숫자, !@*&-_만 입력 가능합니다.');
       return false;
     } else if (confirm !== password) {
-      setPasswordError("");
-      setConfirmError("비밀번호가 일치하지 않습니다.");
+      setPasswordError('');
+      setConfirmError('비밀번호가 일치하지 않습니다.');
       return false;
     } else {
-      setPasswordError("");
-      setConfirmError("");
+      setPasswordError('');
+      setConfirmError('');
       return true;
     }
   };
@@ -114,7 +113,7 @@ function SignupPage() {
 
   const onChangePasswordHandler = (e: any) => {
     const { name, value } = e.target;
-    if (name === "password") {
+    if (name === 'password') {
       setPassword(value);
       passwordCheckHandler(value, confirm);
     } else {
@@ -125,27 +124,27 @@ function SignupPage() {
 
   const navigate = useNavigate();
   const GoToStartPage = () => {
-    navigate("/");
+    navigate('/');
   };
   const GoToLoginPage = () => {
-    navigate("/Login");
+    navigate('/Login');
   };
 
-  const server = "http://203.255.81.70:8030";
-  let url = server + "/api/mail/request";
-  let checkCodeUrl = server + "/api/mail/verify";
-  let signUpUrl = server + "/api/user";
+  const server = 'http://203.255.81.70:8030';
+  let url = server + '/api/mail/request';
+  let checkCodeUrl = server + '/api/mail/verify';
+  let signUpUrl = server + '/api/user';
 
   const emailcheck = () => {
-    if (idError != "") return;
-    setNoticeMail("인증 메일을 발송했습니다. 3분 이내 입력해주세요.");
+    if (idError != '') return;
+    setNoticeMail('인증 메일을 발송했습니다. 3분 이내 입력해주세요.');
     const fetchDatas = async () => {
-      console.log("emailcheck");
+      console.log('emailcheck');
       console.log(email);
       const response = await fetch(url, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email: email }),
       });
@@ -157,45 +156,45 @@ function SignupPage() {
 
   const codeCheck = () => {
     const fetchDatas = async () => {
-      console.log("인증번호 확인");
+      console.log('인증번호 확인');
       const response = await fetch(checkCodeUrl, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email: email, code: checkcode }),
       });
       const data = await response.json();
       console.log(response.status);
-      if (response.status == 200) setCodecheckError("인증번호 확인되었습니다.");
-      else setCodecheckError("인증번호를 다시 확인해주십시오.");
+      if (response.status == 200) setCodecheckError('인증번호 확인되었습니다.');
+      else setCodecheckError('인증번호를 다시 확인해주십시오.');
       console.log(data);
     };
     fetchDatas();
   };
 
   const signupHandler = () => {
-    if (idError != "") {
-      alert("Email 형식을 확인해주세요.");
+    if (idError != '') {
+      alert('Email 형식을 확인해주세요.');
       return;
     }
-    if (passwordError != "") {
-      alert("패스워드 형식을 확인해주세요.");
+    if (passwordError != '') {
+      alert('패스워드 형식을 확인해주세요.');
       return;
     }
-    if (confirmError != "") {
-      alert("패스워드가 일치하는지 확인해주세요.");
+    if (confirmError != '') {
+      alert('패스워드가 일치하는지 확인해주세요.');
       return;
     }
     console.log(name);
     const fetchDatas = async () => {
-      console.log("회원가입");
+      console.log('회원가입');
       console.log(email);
       console.log(password);
       const response = await fetch(signUpUrl, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           email: email,
@@ -221,7 +220,7 @@ function SignupPage() {
         <RightAlignArea>
           <Title fontSize="20px">이름</Title>
         </RightAlignArea>
-        <InputBox name="name" placeholder="이름" onChange={(e) => setName(e.target.value)}></InputBox>
+        <InputBox name="name" placeholder="이름" onChange={e => setName(e.target.value)}></InputBox>
         <RightAlignArea>
           <Title fontSize="20px">E-mail</Title>
         </RightAlignArea>
@@ -230,15 +229,11 @@ function SignupPage() {
           <Btn width="70px" height="33px" fontSize="15px" text="인증요청" onClick={emailcheck}></Btn>
         </CenterAlignArea>
         <RightAlignArea>
-          {idError && <small style={{ color: "red" }}>{idError}</small>}
+          {idError && <small style={{ color: 'red' }}>{idError}</small>}
           {noticeMail && <small>{noticeMail}</small>}
         </RightAlignArea>
         <CenterAlignArea>
-          <InputBox
-            name="auth"
-            placeholder="인증번호 입력"
-            onChange={(e) => setCheckcode(e.target.value)}
-          ></InputBox>
+          <InputBox name="auth" placeholder="인증번호 입력" onChange={e => setCheckcode(e.target.value)}></InputBox>
           <Btn width="70px" height="33px" fontSize="15px" text="인증확인" onClick={codeCheck}></Btn>
         </CenterAlignArea>
         <RightAlignArea>{codecheckError && <small>{codecheckError}</small>}</RightAlignArea>
@@ -247,13 +242,9 @@ function SignupPage() {
         </RightAlignArea>
 
         <InputBox name="password" placeholder="Password" onChange={onChangePasswordHandler}></InputBox>
-        <RightAlignArea>
-          {passwordError && <small style={{ color: "red" }}>{passwordError}</small>}
-        </RightAlignArea>
+        <RightAlignArea>{passwordError && <small style={{ color: 'red' }}>{passwordError}</small>}</RightAlignArea>
         <InputBox name="confirm" placeholder="Password 확인" onChange={onChangePasswordHandler}></InputBox>
-        <RightAlignArea>
-          {confirmError && <small style={{ color: "red" }}>{confirmError}</small>}
-        </RightAlignArea>
+        <RightAlignArea>{confirmError && <small style={{ color: 'red' }}>{confirmError}</small>}</RightAlignArea>
         <CenterAlignArea>
           <LeftAlignArea></LeftAlignArea>
           <Btn width="100px" height="33px" fontSize="15px" text="가입" onClick={signupHandler}></Btn>

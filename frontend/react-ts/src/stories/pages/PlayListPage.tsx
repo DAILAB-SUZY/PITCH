@@ -3,8 +3,8 @@ import { colors } from '../../styles/color';
 import Nav from '../components/Nav';
 import PlayListCard from '../components/PlayListCard';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useEffect, useRef, useState } from 'react';
-import ColorThief from 'colorthief';
+import { useEffect, useState } from 'react';
+
 import useStore from '../store/store';
 
 const Container = styled.div`
@@ -61,21 +61,6 @@ const Circle = styled.div<{ bgcolor?: string }>`
   margin-right: 10px;
   background-color: ${props => props.bgcolor};
   object-fit: cover;
-`;
-
-const EditBtn = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-evenly;
-  background-color: ${colors.BG_grey};
-  width: auto;
-  height: auto;
-  border-radius: 50%;
-  padding: 10px;
-  box-sizing: border-box;
-
-  box-shadow: 0 0px 5px rgba(0, 0, 0, 0.1);
 `;
 
 const PlayListArea = styled.div`
@@ -208,29 +193,27 @@ function PlayListPage() {
   }, []);
 
   /////////////////////
-  const [playlistGradient, setPlaylistGradient] = useState<string>();
-  const albumCoverRef = useRef<HTMLImageElement | null>(null);
+  // const [playlistGradient, setPlaylistGradient] = useState<string>();
+  //const albumCoverRef = useRef<HTMLImageElement | null>(null);
 
   // ColorThief로 앨범 커버에서 색상 추출
-  const extractColors = () => {
-    const colorThief = new ColorThief();
-    const img = albumCoverRef.current;
+  // const extractColors = () => {
+  //   const colorThief = new ColorThief();
+  //   const img = albumCoverRef.current;
 
-    let gradient = '#ddd'; // 기본 배경색 설정
+  //   if (img) {
+  //     const colors = colorThief.getPalette(img, 2); // 가장 대비되는 두 가지 색상 추출
+  //     const primaryColor = `rgb(${colors[0].join(',')})`;
+  //     const secondaryColor = `rgb(${colors[1].join(',')})`;
+  //     //const gradient = `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`;
+  //   }
 
-    if (img) {
-      const colors = colorThief.getPalette(img, 2); // 가장 대비되는 두 가지 색상 추출
-      const primaryColor = `rgb(${colors[0].join(',')})`;
-      const secondaryColor = `rgb(${colors[1].join(',')})`;
-      gradient = `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`;
-    }
+  //   // setPlaylistGradient(gradient);
+  // };
 
-    setPlaylistGradient(gradient);
-  };
-
-  const handleImageLoad = () => {
-    extractColors(); // 이미지 로드 후 색상 추출
-  };
+  // const handleImageLoad = () => {
+  //   extractColors(); // 이미지 로드 후 색상 추출
+  // };
 
   const navigate = useNavigate();
   const GoToMusicProfilePage = (userId: number) => {
@@ -239,7 +222,7 @@ function PlayListPage() {
 
   return (
     <Container>
-      {playListData && (
+      {/* {playListData?.tracks.length !== 0 && (
         // 배경색 이미지 추출
         <img
           src={playListData?.tracks[0].trackCover}
@@ -248,7 +231,7 @@ function PlayListPage() {
           crossOrigin="anonymous" // CORS 문제 방지
           onLoad={handleImageLoad} // 이미지 로드 시 색상 추출
         />
-      )}
+      )} */}
       <Header>
         <Nav page={author.page}></Nav>
       </Header>

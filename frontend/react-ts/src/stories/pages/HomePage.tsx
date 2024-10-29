@@ -6,7 +6,6 @@ import Nav from '../components/Nav';
 import AlbumPostCard from '../components/AlbumPostCard';
 import PlaylistPreviewCard from '../components/PlaylistPreviewCard';
 import useStore from '../store/store';
-import useAlbumPostStore from '../store/albumPostStore';
 
 const Container = styled.div`
   display: flex;

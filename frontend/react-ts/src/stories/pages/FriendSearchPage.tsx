@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import { colors } from '../../styles/color';
-import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import Loader from '../components/Loader';
 import FollowBox from '../components/FollowBox';
@@ -100,50 +99,6 @@ const SearchResultArea = styled.div`
   z-index: 10;
 `;
 
-const SongArea = styled.div`
-  width: 100%;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: start;
-  flex-direction: row;
-  margin: 10px 0px 10px 0px;
-`;
-
-const AlbumCover = styled.div`
-  width: 50px;
-  height: 50px;
-  border-radius: 8px;
-  background-color: black;
-  margin: 10px;
-  overflow: hidden;
-`;
-
-const SongTextArea = styled.div`
-  height: 80%;
-  /* width: 100%; */
-  width: 300px;
-  display: flex;
-  align-items: start;
-  justify-content: space-between;
-  flex-direction: column;
-  white-space: nowrap;
-  overflow: hidden; // 너비를 넘어가면 안보이게
-  text-overflow: ellipsis; // 글자가 넘어가면 말줄임(...) 표시
-`;
-
-const Title = styled.div<{ fontSize?: string; margin?: string }>`
-  font-size: ${props => props.fontSize};
-  margin: ${props => props.margin};
-  font-family: 'Bd';
-  color: ${colors.Font_black};
-  width: 100%;
-  height: 100%;
-  white-space: nowrap;
-  overflow: hidden; // 너비를 넘어가면 안보이게
-  text-overflow: ellipsis; // 글자가 넘어가면 말줄임(...) 표시
-`;
-
 interface FollowData {
   userId: number;
   username: string;
@@ -180,13 +135,13 @@ function FriendSearchPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [token, setToken] = useState(localStorage.getItem('login-token'));
   const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
-  const { email, name, id } = useStore();
+  const { id } = useStore();
   console.log('기존 배열');
   console.log(searchResult);
 
   // const { email, setEmail, name, setName, id, setId } = useStore();
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const server = 'http://203.255.81.70:8030';
 

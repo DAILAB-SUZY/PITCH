@@ -112,11 +112,6 @@ const AlbumPostCommentCard = ({ comment }: commentProps) => {
   const CreateTime = comment?.createAt;
   const UpdatedTime = comment?.updateAt;
   const [timeAgo, setTimeAgo] = useState<string>('');
-  const server = 'http://203.255.81.70:8030';
-  const reissueTokenUrl = `${server}/api/auth/reissued`;
-  const [token, setToken] = useState(localStorage.getItem('login-token'));
-  const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   useEffect(() => {
     const updateTimeAgo = () => {
@@ -154,12 +149,6 @@ const AlbumPostCommentCard = ({ comment }: commentProps) => {
     }
   };
   /////////////
-
-  // 수정/삭제 버튼
-  const editMenu = () => {
-    console.log('edit');
-    setIsDropdownOpen(!isDropdownOpen);
-  };
 
   // 삭제요청
   // const deleteComment = async () => {
