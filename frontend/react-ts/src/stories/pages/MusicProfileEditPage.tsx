@@ -1,9 +1,8 @@
 import styled from 'styled-components';
-import { SetStateAction, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { colors } from '../../styles/color';
 import Nav from '../components/Nav';
-import PlaylistCardMini from '../components/PlaylistCardMini';
 import AlbumGridEdit from '../components/AlbumGridEdit';
 import FavoriteArtistEditCard from '../components/FavoriteArtistEditCard';
 import SearchAlbumModal from '../components/SearchAlbumModal';
@@ -57,11 +56,6 @@ const ModalArea = styled.div`
   width: 100vw;
   height: 100vh;
 `;
-const Line = styled.div`
-  width: 95vw;
-  height: 1px;
-  background-color: ${colors.Button_deactive};
-`;
 
 const PageTitle = styled.div`
   font-size: 30px;
@@ -83,20 +77,6 @@ const Text = styled.div<{
   font-size: ${props => props.fontSize};
   font-family: ${props => props.fontFamily};
   margin: ${props => props.margin};
-`;
-
-const EditBtn = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-evenly;
-  background-color: ${colors.BG_grey};
-  width: 70px;
-  height: 30px;
-  border-radius: 15px;
-  padding: 10px;
-  box-sizing: border-box;
-  box-shadow: 0 0px 5px rgba(0, 0, 0, 0.1);
 `;
 
 const MusicDnaArea = styled.div`
@@ -167,16 +147,6 @@ const FavoriteArtistArea = styled.div`
   display: flex;
   width: 100vw;
   flex-direction: column;
-`;
-
-const PlaylistCardArea = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 100vw;
-  height: auto;
-  margin-bottom: 35px;
 `;
 
 const BtnArea = styled.div`

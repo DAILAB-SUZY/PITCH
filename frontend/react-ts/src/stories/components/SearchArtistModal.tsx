@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import { colors } from '../../styles/color';
-import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import Loader from './Loader';
 
@@ -155,29 +154,6 @@ interface ArtistSearchResult {
   name: string;
 }
 
-interface TrackSearchResult {
-  trackArtist: {
-    artistId: string;
-    imageUrl: string;
-    name: string;
-  };
-  album: {
-    albumArtist: {
-      artistId: string;
-      imageUrl: string;
-      name: string;
-    };
-    albumId: string;
-    imageUrl: string;
-    name: string;
-    total_tracks: number;
-    release_date: string;
-  };
-  trackId: string;
-  trackName: string;
-  duration: string;
-}
-
 interface FavoriteArtist {
   albumCover: string;
   albumName: string;
@@ -202,7 +178,7 @@ interface SearchAlbumModalProps {
   setFavoriteArtistSpotifyIds: React.Dispatch<React.SetStateAction<FavoriteArtistSpotifyIds | undefined>>;
 }
 
-function SearchArtistModal({ searchingTopic, setIsSearchModalOpen, favoriteArtist, setFavoriteArtist, setFavoriteArtistSpotifyIds, favoriteArtistSpotifyIds }: SearchAlbumModalProps) {
+function SearchArtistModal({ searchingTopic, setIsSearchModalOpen, favoriteArtist, setFavoriteArtist, setFavoriteArtistSpotifyIds }: SearchAlbumModalProps) {
   const [searchKeyword, setSearchKeyword] = useState('');
   const [searchResultArtist, setSearchResultArtist] = useState<ArtistSearchResult[]>();
   const [isLoading, setIsLoading] = useState(false);

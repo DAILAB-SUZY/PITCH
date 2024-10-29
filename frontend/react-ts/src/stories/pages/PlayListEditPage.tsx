@@ -3,9 +3,7 @@ import { colors } from '../../styles/color';
 import Nav from '../components/Nav';
 import PlayListEditCard from '../components/PlayListEditCard';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useEffect, useRef, useState } from 'react';
-import ColorThief from 'colorthief';
-import useStore from '../store/store';
+import { useEffect, useState } from 'react';
 import SearchTrackModal from '../components/SearchTrackModal';
 const Container = styled.div`
   display: flex;
@@ -51,21 +49,6 @@ const Circle = styled.div<{ bgcolor?: string }>`
   margin-right: 10px;
   background-color: ${props => props.bgcolor};
   object-fit: cover;
-`;
-
-const EditBtn = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-evenly;
-  background-color: ${colors.BG_grey};
-  width: auto;
-  height: auto;
-  border-radius: 50%;
-  padding: 10px;
-  box-sizing: border-box;
-
-  box-shadow: 0 0px 5px rgba(0, 0, 0, 0.1);
 `;
 
 const PlayListArea = styled.div`
@@ -165,7 +148,6 @@ function PlayListPage() {
 
   const location = useLocation();
   const author: playlistInfo = location.state;
-  const { id } = useStore();
   const [token, setToken] = useState(localStorage.getItem('login-token'));
   const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
   const server = 'http://203.255.81.70:8030';

@@ -4,7 +4,6 @@ import { useRef, useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import AlbumChatCard from '../components/AlbumPostCommentCard';
 import useStore from '../store/store';
-import useAlbumPostStore from '../store/albumPostStore';
 
 const Container = styled.div`
   display: flex;
@@ -302,7 +301,7 @@ interface albumPost {
 function AlbumPostPage() {
   const location = useLocation();
   const [albumPost, setAlbumPost] = useState<albumPost>();
-  const [albumPostId, setAlbumPostId] = useState(location.state);
+  const [albumPostId, setAlbumPostId] = useState();
   const server = 'http://203.255.81.70:8030';
   const reissueTokenUrl = `${server}/api/auth/reissued`;
   const [token, setToken] = useState(localStorage.getItem('login-token'));
@@ -386,6 +385,7 @@ function AlbumPostPage() {
 
   useEffect(() => {
     fetchAlbumPost();
+    setAlbumPostId(location.state);
   }, []);
 
   // Post 시간 계산에 필요한 상태 관리
@@ -426,7 +426,7 @@ function AlbumPostPage() {
   };
   /////////////
 
-  const { email, setEmail, name, setName, id, setId } = useStore();
+  const { name, id } = useStore();
 
   // Post 좋아요 상태 확인
   const [isPostLiked, setIsPostLiked] = useState(false);

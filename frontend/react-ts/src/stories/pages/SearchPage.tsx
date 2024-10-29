@@ -171,7 +171,6 @@ interface SearchData {
 }
 
 function SearchPage() {
-  const [albumPost, setAlbumPost] = useState<SearchResult | null>(null);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [searchResult, setSearchResult] = useState<SearchResult[]>();
   const [isLoading, setIsLoading] = useState(false);

@@ -1,8 +1,7 @@
-import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
-import useStore from "../store/store";
-import ColorThief from "colorthief";
-import { useEffect, useRef, useState } from "react";
+import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
+import ColorThief from 'colorthief';
+import { useRef, useState } from 'react';
 
 // Props 타입 정의
 interface PlaylistProps {
@@ -35,8 +34,7 @@ const Container = styled.div`
   box-sizing: border-box;
 `;
 const PlaylistCardSmall = styled.div<{ gradient?: string }>`
-  background: ${({ gradient }: { gradient?: string }) =>
-    gradient || "linear-gradient(to top right, #989898, #f3f3f3)"};
+  background: ${({ gradient }: { gradient?: string }) => gradient || 'linear-gradient(to top right, #989898, #f3f3f3)'};
   border-radius: 12px;
   padding: 15px;
   width: 320px;
@@ -114,7 +112,7 @@ const PlaylistCard = ({ playlist, userDetail }: PlaylistProps) => {
   //const { email, setEmail, name, setName, id, setId } = useStore();
   const navigate = useNavigate();
   const GoToPlayListPage = (author: {}) => {
-    navigate("/PlayListPage", { state: author });
+    navigate('/PlayListPage', { state: author });
   };
 
   const playlistInfo = {
@@ -131,12 +129,12 @@ const PlaylistCard = ({ playlist, userDetail }: PlaylistProps) => {
     const colorThief = new ColorThief();
     const img = albumCoverRef.current;
 
-    let gradient = "#ddd"; // 기본 배경색 설정
+    let gradient = '#ddd'; // 기본 배경색 설정
 
     if (img) {
       const colors = colorThief.getPalette(img, 2); // 가장 대비되는 두 가지 색상 추출
-      const primaryColor = `rgb(${colors[0].join(",")})`;
-      const secondaryColor = `rgb(${colors[1].join(",")})`;
+      const primaryColor = `rgb(${colors[0].join(',')})`;
+      const secondaryColor = `rgb(${colors[1].join(',')})`;
       gradient = `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`;
     }
 
@@ -154,13 +152,7 @@ const PlaylistCard = ({ playlist, userDetail }: PlaylistProps) => {
         <SongList>
           {playlist.slice(0, 2).map((song, index) => (
             <SongItem key={song.trackId}>
-              <AlbumCover
-                src={song.trackCover}
-                alt="Album Cover"
-                crossOrigin="anonymous"
-                onLoad={handleImageLoad}
-                ref={index === 0 ? albumCoverRef : null}
-              />
+              <AlbumCover src={song.trackCover} alt="Album Cover" crossOrigin="anonymous" onLoad={handleImageLoad} ref={index === 0 ? albumCoverRef : null} />
               <SongInfo>
                 <SongTitle>{song.title}</SongTitle>
                 <Artist>{song.artistName}</Artist>

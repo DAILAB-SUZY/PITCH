@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import { colors } from '../../styles/color';
-import { useEffect, useRef, useState } from 'react';
 import useStore from '../store/store';
 import { useNavigate } from 'react-router-dom';
 
@@ -66,7 +65,7 @@ interface FollowProps {
 }
 
 const FollowBox = ({ name, profile, userId, ChangeFollow, isFollowing }: FollowProps) => {
-  const { email, id } = useStore();
+  const { id } = useStore();
   const navigate = useNavigate();
   const GoToMusicProfilePage = (userId: number) => {
     navigate('/MusicProfilePage', { state: userId });

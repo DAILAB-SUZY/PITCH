@@ -4,7 +4,7 @@ import Nav from '../components/Nav';
 import AlbumPageChatTab from '../components/AlbumPageChatTab';
 import AlbumPagePostTab from '../components/AlbumPagePostTab';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Loader from '../components/Loader';
 import useStore from '../store/store';
 
@@ -176,23 +176,6 @@ const Line = styled.div`
   /* width: 320px; */
   height: 1px;
   background-color: ${colors.Button_deactive};
-`;
-
-const Title = styled.div<{ fontSize: string; margin?: string }>`
-  font-size: ${props => props.fontSize};
-  margin: ${props => props.margin};
-  font-family: 'Bd';
-
-  width: 100%;
-  box-sizing: border-box;
-  padding: 10px 10px 0px 30px;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-
-  white-space: nowrap;
-  overflow: hidden; // 너비를 넘어가면 안보이게
-  text-overflow: ellipsis; // 글자가 넘어가면 말줄임(...) 표시
 `;
 const Text = styled.div<{ fontSize?: string; margin?: string; fontFamily?: string; opacity?: number; color?: string; width?: string }>`
   font-size: ${props => props.fontSize};

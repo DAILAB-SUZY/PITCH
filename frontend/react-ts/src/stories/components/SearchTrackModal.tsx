@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import { colors } from '../../styles/color';
-import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import Loader from './Loader';
 
@@ -148,26 +147,6 @@ const Title = styled.div<{ fontSize?: string; margin?: string }>`
   overflow: hidden; // 너비를 넘어가면 안보이게
   text-overflow: ellipsis; // 글자가 넘어가면 말줄임(...) 표시
 `;
-
-interface AlbumSearchResult {
-  albumArtist: {
-    artistId: string;
-    imageUrl: string;
-    name: string;
-  };
-  albumId: string;
-  imageUrl: string;
-  name: string;
-  total_tracks: number;
-  release_date: string;
-}
-
-interface ArtistSearchResult {
-  artistId: string;
-  imageUrl: string;
-  name: string;
-}
-
 interface TrackSearchResult {
   trackArtist: {
     artistId: string;
@@ -230,64 +209,66 @@ interface PlayListData {
   recommends: recommend[];
 }
 
-interface SearchAlbumModalProps {
+interface SearchTrackModalProps {
   searchingTopic?: string; // optional
   setIsSearchModalOpen: React.Dispatch<React.SetStateAction<boolean>>; // optional
   favoriteArtist?: FavoriteArtist; // optional
   setFavoriteArtist?: React.Dispatch<React.SetStateAction<FavoriteArtist | undefined>>; // optional
   favoriteArtistSpotifyIds?: FavoriteArtistSpotifyIds; // optional
   setFavoriteArtistSpotifyIds?: React.Dispatch<React.SetStateAction<FavoriteArtistSpotifyIds | undefined>>; // optional
-  tracks: track[];
-  setPlayListData: React.Dispatch<React.SetStateAction<PlayListData | undefined>>;
+  tracks?: track[];
+  setPlayListData?: React.Dispatch<React.SetStateAction<PlayListData | undefined>>;
 }
 
-function SearchTrackModal(props: SearchAlbumModalProps) {
-  const { searchingTopic, setIsSearchModalOpen, favoriteArtist, setFavoriteArtist, favoriteArtistSpotifyIds, setFavoriteArtistSpotifyIds, tracks, setPlayListData } = props || {};
+function SearchTrackModal(props: SearchTrackModalProps) {
+  const { searchingTopic, setIsSearchModalOpen, favoriteArtist, setFavoriteArtist, favoriteArtistSpotifyIds, setFavoriteArtistSpotifyIds, setPlayListData } = props || {};
   const [searchKeyword, setSearchKeyword] = useState('');
   const [searchResultTrack, setSearchResultTrack] = useState<TrackSearchResult[]>();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleTrackUpdate = (newTrack: TrackSearchResult) => {
     console.log(newTrack);
-    setPlayListData(prevData => {
-      if (!prevData) {
-        // prevData가 undefined일 경우 초기값으로 설정
-        return {
-          tracks: [
-            {
-              albumId: 0, // 기본값 설정
-              artistName: newTrack.trackArtist.name || 'Unknown Artist', // artistName이 없을 경우 기본값 설정
-              spotifyId: newTrack.trackId, // 예시로 trackId 사용
-              title: newTrack.trackName || 'Unknown Title', // title이 없을 경우 기본값 설정
-              trackCover: newTrack.album.imageUrl || '', // trackCover가 없을 경우 기본값 설정
-              trackId: newTrack.trackId, // trackId
-              trackOrder: 1, // 새 트랙의 순서 설정
-            },
-          ],
-          recommends: [], // 추천도 빈 배열로 초기화
+    if (setPlayListData) {
+      setPlayListData(prevData => {
+        if (!prevData) {
+          // prevData가 undefined일 경우 초기값으로 설정
+          return {
+            tracks: [
+              // {
+              //   albumId: 0, // 기본값 설정
+              //   artistName: newTrack.trackArtist.name || 'Unknown Artist', // artistName이 없을 경우 기본값 설정
+              //   spotifyId: newTrack.trackId, // 예시로 trackId 사용
+              //   title: newTrack.trackName || 'Unknown Title', // title이 없을 경우 기본값 설정
+              //   trackCover: newTrack.album.imageUrl || '', // trackCover가 없을 경우 기본값 설정
+              //   trackId: newTrack.trackId, // trackId
+              //   trackOrder: 1, // 새 트랙의 순서 설정
+              // },
+            ],
+            recommends: [], // 추천도 빈 배열로 초기화
+          };
+        }
+
+        // newSong 객체 생성
+        const newSong = {
+          albumId: 0, // 기본값 설정
+          artistName: newTrack.trackArtist.name || 'Unknown Artist', // artistName이 없을 경우 기본값 설정
+          spotifyId: newTrack.trackId, // 예시로 trackId 사용
+          title: newTrack.trackName || 'Unknown Title', // title이 없을 경우 기본값 설정
+          trackCover: newTrack.album.imageUrl || '', // trackCover가 없을 경우 기본값 설정
+          trackId: 0, // trackId
+          trackOrder: prevData.tracks.length + 1, // 새 트랙의 순서 설정
         };
-      }
 
-      // newSong 객체 생성
-      const newSong = {
-        albumId: 0, // 기본값 설정
-        artistName: newTrack.trackArtist.name || 'Unknown Artist', // artistName이 없을 경우 기본값 설정
-        spotifyId: newTrack.trackId, // 예시로 trackId 사용
-        title: newTrack.trackName || 'Unknown Title', // title이 없을 경우 기본값 설정
-        trackCover: newTrack.album.imageUrl || '', // trackCover가 없을 경우 기본값 설정
-        trackId: newTrack.trackId, // trackId
-        trackOrder: prevData.tracks.length + 1, // 새 트랙의 순서 설정
-      };
-
-      // 기존 트랙 배열에 새로운 트랙 추가
-      const updatedTracks = [...prevData.tracks, newSong];
-      console.log(updatedTracks);
-      return {
-        ...prevData,
-        tracks: updatedTracks,
-        recommends: prevData.recommends || [], // 추천이 없을 경우 빈 배열로 설정
-      };
-    });
+        // 기존 트랙 배열에 새로운 트랙 추가
+        const updatedTracks = [...prevData.tracks, newSong];
+        console.log(updatedTracks);
+        return {
+          ...prevData,
+          tracks: updatedTracks,
+          recommends: prevData.recommends || [], // 추천이 없을 경우 빈 배열로 설정
+        };
+      });
+    }
   };
 
   const server = 'http://203.255.81.70:8030';
@@ -320,7 +301,6 @@ function SearchTrackModal(props: SearchAlbumModalProps) {
   };
 
   let searchTrackUrl = `${server}/api/searchSpotify/track/${searchKeyword}`;
-  let ArtistTrackUrl = `${server}/api/searchSpotify/artist/${favoriteArtistSpotifyIds?.spotifyArtistId}/track`;
   let searchArtistTrackUrl = `${server}/api/searchSpotify/artist/${favoriteArtistSpotifyIds?.spotifyArtistId}/track`;
 
   const fetchSearch = async () => {
@@ -383,7 +363,7 @@ function SearchTrackModal(props: SearchAlbumModalProps) {
   };
 
   const addFavoriteArtistTrack = (track: TrackSearchResult) => {
-    if (favoriteArtist && favoriteArtistSpotifyIds) {
+    if (favoriteArtist && favoriteArtistSpotifyIds && setFavoriteArtistSpotifyIds && setFavoriteArtist) {
       const addFavoriteTrack: FavoriteArtist = {
         albumCover: favoriteArtist.albumCover,
         albumName: favoriteArtist.albumName,

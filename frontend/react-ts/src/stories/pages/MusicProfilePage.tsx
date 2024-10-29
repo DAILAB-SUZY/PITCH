@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { colors } from '../../styles/color';
 import Nav from '../components/Nav';
@@ -539,11 +539,6 @@ interface ChatData {
       }[];
     };
   };
-}
-
-interface ActivityDataList {
-  postDetail: PostData[];
-  albumChatDetail: ChatData[];
 }
 
 type mergeActivityData = PostData | ChatData;

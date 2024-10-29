@@ -1,9 +1,7 @@
 import styled from 'styled-components';
 import { colors } from '../../styles/color';
 import ColorThief from 'colorthief';
-import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import SearchTrackModal from './SearchTrackModal';
+import { useRef, useState } from 'react';
 
 const PlayListCardContainer = styled.div<{ gradient?: string }>`
   width: 360px;
@@ -166,7 +164,7 @@ interface PlaylistProps {
   setPlayListData: React.Dispatch<React.SetStateAction<PlayListData | undefined>>;
 }
 
-const PlayListEditCard = ({ playlist, isEditable, playlistInfo, setIsSearchModalOpen, setPlayListData }: PlaylistProps) => {
+const PlayListEditCard = ({ playlist, isEditable, setIsSearchModalOpen, setPlayListData }: PlaylistProps) => {
   const [playlistGradient, setPlaylistGradient] = useState<string>();
   const albumCoverRef = useRef<HTMLImageElement | null>(null);
 
@@ -210,10 +208,10 @@ const PlayListEditCard = ({ playlist, isEditable, playlistInfo, setIsSearchModal
     extractColors(); // 이미지 로드 후 색상 추출
   };
 
-  const navigate = useNavigate();
-  const GoToEditPage = () => {
-    navigate('/PlayListEditPage', { state: playlistInfo });
-  };
+  // const navigate = useNavigate();
+  // const GoToEditPage = () => {
+  //   navigate('/PlayListEditPage', { state: playlistInfo });
+  // };
 
   return (
     <PlayListCardContainer gradient={playlistGradient}>

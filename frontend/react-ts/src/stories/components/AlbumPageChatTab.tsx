@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { colors } from '../../styles/color';
 import AlbumChatCard from './AlbumChatCard';
 import { useEffect, useRef, useState } from 'react';
 
@@ -52,15 +51,6 @@ interface User {
   dnas: DNA[];
 }
 
-interface AlbumDetail {
-  albumId: number;
-  title: string;
-  albumCover: string;
-  artistName: string;
-  genre: string;
-  spotifyId: string;
-}
-
 interface AlbumChatComment {
   albumChatCommentId: number;
   content: string;
@@ -69,14 +59,6 @@ interface AlbumChatComment {
   likes: User[];
   comments: AlbumChatComment[]; // 재귀적 구조
   author: User;
-}
-
-interface AlbumLike extends User {} // User와 동일한 구조 확장
-
-interface AlbumData {
-  albumDetail: AlbumDetail;
-  comments: AlbumChatComment[];
-  albumLike: AlbumLike[];
 }
 
 interface AlbumProps {

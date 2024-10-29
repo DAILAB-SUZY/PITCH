@@ -2,7 +2,6 @@ import styled from 'styled-components';
 import { colors } from '../../styles/color';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useRef, useEffect, useState } from 'react';
-import useStore from '../store/store';
 
 const Container = styled.div`
   display: flex;

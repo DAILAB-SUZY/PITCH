@@ -1,9 +1,6 @@
 import styled from 'styled-components';
 import { colors } from '../../styles/color';
 import { useNavigate } from 'react-router-dom';
-import cover1 from '../../img/aespa2.jpg';
-import artistProfile from '../../img/aespaProfile.jpg';
-import { useState } from 'react';
 
 const AlbumCard = styled.div`
   display: flex;

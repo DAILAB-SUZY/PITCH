@@ -2,7 +2,6 @@ import styled from 'styled-components';
 import { colors } from '../../styles/color';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useRef, useEffect, useState } from 'react';
-import useStore from '../store/store';
 
 const Container = styled.div`
   display: flex;
@@ -109,27 +108,12 @@ const ContentInput = styled.textarea`
   overflow-y: scroll; /* Prevent extra scroll bar */
 `;
 
-interface AlbumPost {
-  albumArtist: {
-    artistId: string;
-    imageUrl: string;
-    name: string;
-  };
-  albumId: string;
-  imageUrl: string;
-  name: string;
-  total_tracks: number;
-  release_date: string;
-  postId: number;
-}
-
 function CommentPostPage() {
   //   const [postContent, setPostContent] = useState("내용을 입력해주세요");
   //   const { email, setEmail, name, setName, id, setId } = useStore();
   const location = useLocation();
   const [postId, setPostId] = useState();
   const [postContent, setPostContent] = useState('');
-  const [isEditMode, setIsEditMode] = useState(false);
   const server = 'http://203.255.81.70:8030';
   const reissueTokenUrl = `${server}/api/auth/reissued`;
   const [token, setToken] = useState(localStorage.getItem('login-token'));

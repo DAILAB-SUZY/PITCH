@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { colors } from '../../styles/color';
 import ColorThief from 'colorthief';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const PlayListCardContainer = styled.div<{ gradient?: string }>`
