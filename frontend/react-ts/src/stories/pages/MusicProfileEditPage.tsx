@@ -292,8 +292,9 @@ function MusicProfileEditPage() {
   const userId = location.state;
 
   const server = 'http://203.255.81.70:8030';
-  const token = localStorage.getItem('login-token');
-  const refreshToken = localStorage.getItem('login-refreshToken');
+  const [token, setToken] = useState(localStorage.getItem('login-token'));
+  const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
+
   const reissueTokenUrl = `${server}/api/auth/reissued`;
   let musiProfileUrl = `${server}/api/user/${userId}/musicProfile`;
 
@@ -349,17 +350,7 @@ function MusicProfileEditPage() {
           setFavoriteArtistSpotifyIds(spotifyId);
           fetchMusicDNA();
         } else if (response.status === 401) {
-          console.log('reissuing Token');
-          const reissueToken = await fetch(reissueTokenUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Refresh-Token': `${refreshToken}`,
-            },
-          });
-          const data = await reissueToken.json();
-          localStorage.setItem('login-token', data.token);
-          localStorage.setItem('login-refreshToken', data.refreshToken);
+          ReissueToken();
           fetchData();
         } else {
           console.error('Failed to fetch data:', response.status);
@@ -391,17 +382,7 @@ function MusicProfileEditPage() {
           console.log(data);
           setAllMusicDna(data);
         } else if (response.status === 401) {
-          console.log('reissuing Token');
-          const reissueToken = await fetch(reissueTokenUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Refresh-Token': `${refreshToken}`,
-            },
-          });
-          const data = await reissueToken.json();
-          localStorage.setItem('login-token', data.token);
-          localStorage.setItem('login-refreshToken', data.refreshToken);
+          ReissueToken();
           fetchMusicDNA();
         } else {
           console.error('Failed to fetch data:', response.status);
@@ -478,17 +459,7 @@ function MusicProfileEditPage() {
           const data = await response.json();
           console.log(data);
         } else if (response.status === 401) {
-          console.log('reissuing Token');
-          const reissueToken = await fetch(reissueTokenUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Refresh-Token': `${refreshToken}`,
-            },
-          });
-          const data = await reissueToken.json();
-          localStorage.setItem('login-token', data.token);
-          localStorage.setItem('login-refreshToken', data.refreshToken);
+          ReissueToken();
           postMusicDNA();
         } else {
           console.error('Failed to fetch data:', response.status);
@@ -523,17 +494,7 @@ function MusicProfileEditPage() {
           console.log(data);
           console.log('Best Album 200');
         } else if (response.status === 401) {
-          console.log('reissuing Token');
-          const reissueToken = await fetch(reissueTokenUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Refresh-Token': `${refreshToken}`,
-            },
-          });
-          const data = await reissueToken.json();
-          localStorage.setItem('login-token', data.token);
-          localStorage.setItem('login-refreshToken', data.refreshToken);
+          ReissueToken();
           postBestAlbum();
         } else {
           console.error('Failed to fetch data:', response.status);
@@ -567,17 +528,7 @@ function MusicProfileEditPage() {
           console.log('favorite artist 200');
           console.log(data);
         } else if (response.status === 401) {
-          console.log('reissuing Token');
-          const reissueToken = await fetch(reissueTokenUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Refresh-Token': `${refreshToken}`,
-            },
-          });
-          const data = await reissueToken.json();
-          localStorage.setItem('login-token', data.token);
-          localStorage.setItem('login-refreshToken', data.refreshToken);
+          ReissueToken();
           postFavoriteArtist();
         } else {
           console.error('Failed to fetch data:', response.status);
@@ -587,6 +538,30 @@ function MusicProfileEditPage() {
       } finally {
         console.log('Favorite Artist Updated');
       }
+    }
+  };
+
+  const ReissueToken = async () => {
+    console.log('reissuing Token');
+    try {
+      const response = await fetch(reissueTokenUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Refresh-Token': `${refreshToken}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('login-token', data.token);
+        localStorage.setItem('login-refreshToken', data.refreshToken);
+        setToken(data.token);
+        setRefreshToken(data.refreshToken);
+      } else {
+        console.error('failed to reissue token', response.status);
+      }
+    } catch (error) {
+      console.error('Refresh Token 재발급 실패', error);
     }
   };
 

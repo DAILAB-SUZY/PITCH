@@ -1,10 +1,10 @@
-import styled from "styled-components";
-import { colors } from "../../styles/color";
-import { useRef, useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import AlbumChatCard from "../components/AlbumChatCard";
-import useStore from "../store/store";
-import useAlbumPostStore from "../store/albumPostStore";
+import styled from 'styled-components';
+import { colors } from '../../styles/color';
+import { useRef, useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import AlbumChatCard from '../components/AlbumPostCommentCard';
+import useStore from '../store/store';
+import useAlbumPostStore from '../store/albumPostStore';
 
 const Container = styled.div`
   display: flex;
@@ -91,10 +91,10 @@ const Text = styled.div<{
   color: string;
   margin: string;
 }>`
-  font-size: ${(props) => props.fontSize};
-  font-family: ${(props) => props.fontFamily};
-  color: ${(props) => props.color};
-  margin: ${(props) => props.margin};
+  font-size: ${props => props.fontSize};
+  font-family: ${props => props.fontFamily};
+  color: ${props => props.color};
+  margin: ${props => props.margin};
   max-width: 280px;
 
   // 두 줄 이상일 때 '...' 처리
@@ -129,7 +129,7 @@ const ProfileArea = styled.div`
 const PostUploadTime = styled.div`
   display: flex;
   font-size: 10px;
-  font-family: "Rg";
+  font-family: 'Rg';
   margin: 0px 0px 2px 10px;
   color: ${colors.Font_grey};
 `;
@@ -141,7 +141,7 @@ const ProfileTextArea = styled.div`
 const ProfileName = styled.div`
   display: flex;
   font-size: 20px;
-  font-family: "Rg";
+  font-family: 'Rg';
   margin-left: 10px;
   color: ${colors.Font_black};
 `;
@@ -216,7 +216,7 @@ const PostContentArea = styled.div`
   flex-direction: column;
   justify-content: space-between;
   font-size: 15px;
-  font-family: "Rg";
+  font-family: 'Rg';
   padding: 0px 10px;
   margin: 10px 0px 20px 0px;
 
@@ -303,15 +303,15 @@ function AlbumPostPage() {
   const location = useLocation();
   const [albumPost, setAlbumPost] = useState<albumPost>();
   const [albumPostId, setAlbumPostId] = useState(location.state);
-  const server = "http://203.255.81.70:8030";
+  const server = 'http://203.255.81.70:8030';
   const reissueTokenUrl = `${server}/api/auth/reissued`;
-  const [token, setToken] = useState(localStorage.getItem("login-token"));
-  const [refreshToken, setRefreshToken] = useState(localStorage.getItem("login-refreshToken"));
+  const [token, setToken] = useState(localStorage.getItem('login-token'));
+  const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
   const GoToHomePage = () => {
-    navigate("/Home");
+    navigate('/Home');
   };
 
   const GoToAlbumPostEditPage = () => {
@@ -332,54 +332,54 @@ function AlbumPostPage() {
         postId: albumPost.postDetail.postId,
       };
     }
-    navigate("/AlbumPostEditPage", { state: album });
+    navigate('/AlbumPostEditPage', { state: album });
   };
 
   const GoToCommentPostPage = () => {
-    navigate("/CommentPostPage", { state: albumPost?.postDetail.postId });
+    navigate('/CommentPostPage', { state: albumPost?.postDetail.postId });
   };
 
   const fetchAlbumPost = async () => {
-    console.log("start fetching albumPost...");
+    console.log('start fetching albumPost...');
     let albumPostUrl = `${server}/api/album/post/${albumPostId}`;
     console.log(albumPostUrl);
     if (token) {
       try {
-        console.log("fetching...");
+        console.log('fetching...');
         const response = await fetch(albumPostUrl, {
-          method: "GET",
+          method: 'GET',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log("fetching...complete");
+        console.log('fetching...complete');
 
         if (response.ok) {
-          console.log("set Post");
+          console.log('set Post');
           const data = await response.json();
           console.log(data);
           setAlbumPost(data); // 기존 데이터에 새로운 데이터를 추가
         } else if (response.status === 401) {
-          console.log("reissuing Token");
+          console.log('reissuing Token');
           const reissueToken = await fetch(reissueTokenUrl, {
-            method: "POST",
+            method: 'POST',
             headers: {
-              "Content-Type": "application/json",
-              "Refresh-Token": `${refreshToken}`,
+              'Content-Type': 'application/json',
+              'Refresh-Token': `${refreshToken}`,
             },
           });
           const data = await reissueToken.json();
-          localStorage.setItem("login-token", data.token);
-          localStorage.setItem("login-refreshToken", data.refreshToken);
+          localStorage.setItem('login-token', data.token);
+          localStorage.setItem('login-refreshToken', data.refreshToken);
           fetchAlbumPost();
         } else {
-          console.error("Failed to fetch AlbumPost data:", response.status);
+          console.error('Failed to fetch AlbumPost data:', response.status);
         }
       } catch (error) {
-        console.error("Error fetching the JSON file:", error);
+        console.error('Error fetching the JSON file:', error);
       } finally {
-        console.log("fetching Complete: ", albumPost);
+        console.log('fetching Complete: ', albumPost);
       }
     }
   };
@@ -389,10 +389,10 @@ function AlbumPostPage() {
   }, []);
 
   // Post 시간 계산에 필요한 상태 관리
-  const [timeAgo, setTimeAgo] = useState<string>("");
+  const [timeAgo, setTimeAgo] = useState<string>('');
   useEffect(() => {
     if (albumPost) {
-      console.log("getting time from post");
+      console.log('getting time from post');
       const CreateTime = albumPost.postDetail.createAt;
       const UpdatedTime = albumPost.postDetail.updateAt;
 
@@ -408,7 +408,7 @@ function AlbumPostPage() {
   }, [albumPost]);
 
   const formatTimeAgo = (unixTimestamp: number): string => {
-    console.log("time calculating");
+    console.log('time calculating');
     const currentTime = Math.floor(Date.now() / 1000); // 현재 시간 (초)
     const timeDifference = currentTime - Math.floor(unixTimestamp); // 경과 시간 (초)
 
@@ -450,7 +450,7 @@ function AlbumPostPage() {
 
   // 좋아요 상태 변경 함수
   const changePostLike = async () => {
-    console.log("changing Like");
+    console.log('changing Like');
     if (albumPost) {
       if (isPostLiked) {
         // 이미 좋아요를 눌렀다면 좋아요 취소
@@ -465,7 +465,7 @@ function AlbumPostPage() {
           id: id,
           username: name,
           // TODO: profile 이미지 링크 추가
-          profilePicture: "string",
+          profilePicture: 'string',
         });
       }
       fetchLike();
@@ -474,15 +474,14 @@ function AlbumPostPage() {
   };
 
   const fetchLike = async () => {
-    const PostLikeUrl =
-      server + "/api/album/post/" + (albumPost ? albumPost.postDetail.postId : "") + "/like";
+    const PostLikeUrl = server + '/api/album/post/' + (albumPost ? albumPost.postDetail.postId : '') + '/like';
     if (token) {
-      console.log("fetching Like Data");
+      console.log('fetching Like Data');
       try {
         const response = await fetch(PostLikeUrl, {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         });
@@ -491,81 +490,80 @@ function AlbumPostPage() {
           setAlbumPost(data);
           // replaceAlbumPostById(albumPostId, data);
           if (data.likes.some((like: any) => like.id === id)) {
-            console.log("like 추가");
+            console.log('like 추가');
           } else {
-            console.log("like 삭제");
+            console.log('like 삭제');
           }
         } else if (response.status === 401) {
-          console.log("reissuing Token");
-          const reissueToken = await fetch(reissueTokenUrl, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Refresh-Token": `${refreshToken}`,
-            },
-          });
-          const data = await reissueToken.json();
-          localStorage.setItem("login-token", data.token);
-          setToken(data.token);
-          localStorage.setItem("login-refreshToken", data.refreshToken);
-          setRefreshToken(data.refreshToken);
+          ReissueToken();
           fetchLike();
         } else {
-          console.error("Failed to fetch data:", response.status);
+          console.error('Failed to fetch data:', response.status);
         }
       } catch (error) {
-        console.error("like 실패:", error);
+        console.error('like 실패:', error);
       }
     }
   };
 
   // 수정/삭제 버튼
   const editMenu = () => {
-    console.log("edit");
+    console.log('edit');
     setIsDropdownOpen(!isDropdownOpen);
   };
 
   // 삭제요청
   const deletePost = async () => {
-    const PostDeleteUrl = server + "/api/album/post/" + (albumPost ? albumPost.postDetail.postId : "");
+    const PostDeleteUrl = server + '/api/album/post/' + (albumPost ? albumPost.postDetail.postId : '');
     if (token) {
       if (albumPost) {
-        console.log(`delete id: ${albumPost.postDetail.postId}Post...`);
+        console.log(`delete id: ${albumPost.postDetail.postId} Post...`);
       }
       try {
         const response = await fetch(PostDeleteUrl, {
-          method: "DELETE",
+          method: 'DELETE',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         });
         if (response.ok) {
-          const data = await response.json();
-          setAlbumPost(data);
-          console.log("deleted");
+          //const data = await response.json();
+          //setAlbumPost(data);
+          console.log('deleted');
           GoToHomePage();
         } else if (response.status === 401) {
-          console.log("reissuing Token");
-          const reissueToken = await fetch(reissueTokenUrl, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Refresh-Token": `${refreshToken}`,
-            },
-          });
-          const data = await reissueToken.json();
-          localStorage.setItem("login-token", data.token);
-          setToken(data.token);
-          localStorage.setItem("login-refreshToken", data.refreshToken);
-          setRefreshToken(data.refreshToken);
+          ReissueToken();
           deletePost();
         } else {
-          console.error("Failed to delete data:", response.status);
+          console.error('Failed to delete data:', response.status);
         }
       } catch (error) {
-        console.error("delete 실패:", error);
+        console.error('delete 실패:', error);
       }
+    }
+  };
+  const ReissueToken = async () => {
+    console.log('reissuing Token');
+    try {
+      const response = await fetch(reissueTokenUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Refresh-Token': `${refreshToken}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('login-token', data.token);
+        localStorage.setItem('login-refreshToken', data.refreshToken);
+        setToken(data.token);
+        setRefreshToken(data.refreshToken);
+      } else {
+        console.error('failed to reissue token', response.status);
+      }
+    } catch (error) {
+      console.error('Refresh Token 재발급 실패', error);
     }
   };
 
@@ -642,23 +640,12 @@ function AlbumPostPage() {
                   viewBox="0 0 16 16"
                   onClick={() => changePostLike()}
                 >
-                  <path
-                    fillRule="evenodd"
-                    d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"
-                  />
+                  <path fillRule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314" />
                 </svg>
                 <Text fontFamily="Rg" fontSize="14px" color="grey" margin="0px 20px 0px 3px">
                   좋아요 {albumPost.likes.length}개
                 </Text>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="14"
-                  height="14"
-                  fill="grey"
-                  className="bi bi-chat-right-text-fill"
-                  viewBox="0 0 16 16"
-                  style={{ strokeWidth: 6 }}
-                >
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="grey" className="bi bi-chat-right-text-fill" viewBox="0 0 16 16" style={{ strokeWidth: 6 }}>
                   <path d="M2 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h9.586a2 2 0 0 1 1.414.586l2 2V2a1 1 0 0 0-1-1zm12-1a2 2 0 0 1 2 2v12.793a.5.5 0 0 1-.854.353l-2.853-2.853a1 1 0 0 0-.707-.293H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z" />
                   <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6m0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5" />
                 </svg>
@@ -693,7 +680,7 @@ function AlbumPostPage() {
               </svg>
             </RowAlignArea>
             {albumPost.comments.map((comment: any, index: number) => (
-              <AlbumChatCard key={index} comment={comment} ></AlbumChatCard>
+              <AlbumChatCard key={index} comment={comment}></AlbumChatCard>
             ))}
           </ChatArea>
         </>

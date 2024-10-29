@@ -162,35 +162,6 @@ interface AlbumSearchResult {
   release_date: string;
 }
 
-interface ArtistSearchResult {
-  artistId: string;
-  imageUrl: string;
-  name: string;
-}
-
-interface TrackSearchResult {
-  trackArtist: {
-    artistId: string;
-    imageUrl: string;
-    name: string;
-  };
-  album: {
-    albumArtist: {
-      artistId: string;
-      imageUrl: string;
-      name: string;
-    };
-    albumId: string;
-    imageUrl: string;
-    name: string;
-    total_tracks: number;
-    release_date: string;
-  };
-  trackId: string;
-  trackName: string;
-  duration: string;
-}
-
 interface BestAlbum {
   albumCover: string;
   albumId: number;
@@ -243,20 +214,30 @@ function SearchModal({
   const server = 'http://203.255.81.70:8030';
 
   const reissueTokenUrl = `${server}/api/auth/reissued`;
-  const token = localStorage.getItem('login-token');
-  const refreshToken = localStorage.getItem('login-refreshToken');
+  const [token, setToken] = useState(localStorage.getItem('login-token'));
+  const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
   const ReissueToken = async () => {
     console.log('reissuing Token');
-    const reissueToken = await fetch(reissueTokenUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Refresh-Token': `${refreshToken}`,
-      },
-    });
-    const data = await reissueToken.json();
-    localStorage.setItem('login-token', data.token);
-    localStorage.setItem('login-refreshToken', data.refreshToken);
+    try {
+      const response = await fetch(reissueTokenUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Refresh-Token': `${refreshToken}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('login-token', data.token);
+        localStorage.setItem('login-refreshToken', data.refreshToken);
+        setToken(data.token);
+        setRefreshToken(data.refreshToken);
+      } else {
+        console.error('failed to reissue token', response.status);
+      }
+    } catch (error) {
+      console.error('Refresh Token 재발급 실패', error);
+    }
   };
 
   let searchAlbumUrl = `${server}/api/searchSpotify/album/${searchKeyword}`;
@@ -315,7 +296,10 @@ function SearchModal({
   useEffect(() => {
     console.log(searchingTopic);
     console.log(favoriteArtist);
-    if (searchingTopic === 'Artist-album') Search(ArtistAlbumUrl);
+    if (searchingTopic === 'Artist-album') {
+      setIsLoading(true);
+      Search(ArtistAlbumUrl);
+    }
   }, []);
 
   const handleSearchSubmit = (e: React.FormEvent) => {

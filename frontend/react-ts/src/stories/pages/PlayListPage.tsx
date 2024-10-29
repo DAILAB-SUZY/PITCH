@@ -19,6 +19,15 @@ const Container = styled.div`
   color: black;
 `;
 
+const BlankDiv = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100px;
+`;
+
 const Header = styled.div`
   display: flex;
   flex-direction: column;
@@ -31,6 +40,7 @@ const Body = styled.div`
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
+  overflow-x: hidden;
 `;
 
 const TitleArea = styled.div`
@@ -70,7 +80,7 @@ const EditBtn = styled.div`
 
 const PlayListArea = styled.div`
   width: 100%;
-  height: 100%;
+  height: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -79,7 +89,7 @@ const PlayListArea = styled.div`
 
 const RecommendationArea = styled.div`
   width: 100%;
-  height: 100%;
+  height: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -130,8 +140,9 @@ function PlayListPage() {
   const location = useLocation();
   const author: playlistInfo = location.state;
   const { id } = useStore();
-  const token = localStorage.getItem('login-token');
-  const refreshToken = localStorage.getItem('login-refreshToken');
+  const [token, setToken] = useState(localStorage.getItem('login-token'));
+  const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
+
   const server = 'http://203.255.81.70:8030';
   const reissueTokenUrl = `${server}/api/auth/reissued`;
 
@@ -155,17 +166,7 @@ function PlayListPage() {
           console.log('fetched PlayList:');
           console.log(data);
         } else if (response.status === 401) {
-          console.log('reissuing Token');
-          const reissueToken = await fetch(reissueTokenUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Refresh-Token': `${refreshToken}`,
-            },
-          });
-          const data = await reissueToken.json();
-          localStorage.setItem('login-token', data.token);
-          localStorage.setItem('login-refreshToken', data.refreshToken);
+          ReissueToken();
           fetchPlayList();
         } else {
           console.error('Failed to fetch data:', response.status);
@@ -175,6 +176,30 @@ function PlayListPage() {
       } finally {
         console.log('finished');
       }
+    }
+  };
+
+  const ReissueToken = async () => {
+    console.log('reissuing Token');
+    try {
+      const response = await fetch(reissueTokenUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Refresh-Token': `${refreshToken}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('login-token', data.token);
+        localStorage.setItem('login-refreshToken', data.refreshToken);
+        setToken(data.token);
+        setRefreshToken(data.refreshToken);
+      } else {
+        throw new Error(`failed to reissue token : ${response.status}`);
+      }
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -207,6 +232,11 @@ function PlayListPage() {
     extractColors(); // 이미지 로드 후 색상 추출
   };
 
+  const navigate = useNavigate();
+  const GoToMusicProfilePage = (userId: number) => {
+    navigate('/MusicProfilePage', { state: userId });
+  };
+
   return (
     <Container>
       {playListData && (
@@ -223,7 +253,11 @@ function PlayListPage() {
         <Nav page={author.page}></Nav>
       </Header>
       <Body>
-        <TitleArea>
+        <TitleArea
+          onClick={() => {
+            GoToMusicProfilePage(author.id);
+          }}
+        >
           {playListData ? (
             <Circle>
               <img src={author.profilePicture} width="100%" height="100%" object-fit="cover"></img>
@@ -247,6 +281,7 @@ function PlayListPage() {
           </TitleArea>
           <PlayListArea>{playListData && <PlayListCard playlist={playListData?.recommends} isEditable={false} playlistInfo={author}></PlayListCard>}</PlayListArea>
         </RecommendationArea>
+        <BlankDiv></BlankDiv>
       </Body>
     </Container>
   );

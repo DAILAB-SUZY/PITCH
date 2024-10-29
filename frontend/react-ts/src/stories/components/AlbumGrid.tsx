@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 interface AlbumDataProps {
   AlbumData: [
@@ -50,10 +50,6 @@ const AlbumImage = styled.img`
   object-fit: cover;
 `;
 
-const AlbumArea = styled.div`
-  display: flex;
-  align-items: center;
-`;
 function AlbumGrid({ AlbumData }: AlbumDataProps) {
   const midIndex = Math.ceil(AlbumData.length / 2);
   const firstRow = AlbumData.slice(0, midIndex);
@@ -63,14 +59,14 @@ function AlbumGrid({ AlbumData }: AlbumDataProps) {
     <BestAlbumArea>
       <AlbumCol>
         <AlbumRow>
-          {firstRow.map((Album) => (
+          {firstRow.map(Album => (
             <AlbumCover key={Album.albumId}>
               <AlbumImage src={Album.albumCover} alt={Album.albumName} />
             </AlbumCover>
           ))}
         </AlbumRow>
         <AlbumRow>
-          {secondRow.map((Album) => (
+          {secondRow.map(Album => (
             <AlbumCover key={Album.albumId}>
               <AlbumImage src={Album.albumCover} alt={Album.albumName} />
             </AlbumCover>

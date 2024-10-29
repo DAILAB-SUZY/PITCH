@@ -1,9 +1,10 @@
 import styled from 'styled-components';
 import { colors } from '../../styles/color';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Loader from '../components/Loader';
-
+import FollowBox from '../components/FollowBox';
+import useStore from '../store/store';
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -143,41 +144,43 @@ const Title = styled.div<{ fontSize?: string; margin?: string }>`
   text-overflow: ellipsis; // 글자가 넘어가면 말줄임(...) 표시
 `;
 
-interface SearchResult {
-  albumArtist: {
-    artistId: string;
-    imageUrl: string;
-    name: string;
-  };
-  albumId: string;
-  imageUrl: string;
-  name: string;
-  total_tracks: number;
-  release_date: string;
+interface FollowData {
+  userId: number;
+  username: string;
+  profilePicture: string;
 }
 
-interface SearchData {
-  albumArtist: {
-    artistId: string;
-    imageUrl: string;
-    name: string;
-  };
-  albumId: string;
-  imageUrl: string;
-  name: string;
-  total_tracks: number;
-  release_date: string;
-  postId: number;
+interface UserDNA {
+  dnaKey: number;
+  dnaName: string;
 }
 
-function SearchPage() {
-  const [albumPost, setAlbumPost] = useState<SearchResult | null>(null);
+interface UserProfile {
+  id: number;
+  username: string;
+  profilePicture: string;
+  dnas: UserDNA[];
+}
+
+interface FollowerFollowing {
+  userId: number;
+  username: string;
+  profilePicture: string;
+}
+
+interface UserData {
+  user: UserProfile;
+  followings: FollowerFollowing[];
+  followers: FollowerFollowing[];
+}
+
+function FriendSearchPage() {
   const [searchKeyword, setSearchKeyword] = useState('');
-  const [searchResult, setSearchResult] = useState<SearchResult[]>();
+  const [searchResult, setSearchResult] = useState<UserData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [token, setToken] = useState(localStorage.getItem('login-token'));
   const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
-
+  const { email, name, id } = useStore();
   console.log('기존 배열');
   console.log(searchResult);
 
@@ -185,16 +188,76 @@ function SearchPage() {
 
   const navigate = useNavigate();
 
-  const GoToAlbumPostEditPage = (album: SearchData | null = null) => {
-    navigate('/AlbumPostEditPage', { state: album });
-  };
-
   const server = 'http://203.255.81.70:8030';
 
+  useEffect(() => {
+    fetchFollow();
+  }, []);
   const reissueTokenUrl = `${server}/api/auth/reissued`;
 
+  const SetFollowUrl = `${server}/api/user/follow/`;
+  const ChangeFollow = async (user: number) => {
+    if (token) {
+      try {
+        console.log('fetching...');
+        const response = await fetch(SetFollowUrl + `${user}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          console.log('following complete');
+          const data = await response.json();
+          console.log(data);
+        } else if (response.status === 401) {
+          ReissueToken();
+          ChangeFollow(user);
+        } else {
+          console.error('Failed to fetch data:', response.status);
+        }
+      } catch (error) {
+        console.error('Error fetching the JSON file:', error);
+      } finally {
+        console.log('finished');
+        fetchFollow();
+      }
+    }
+  };
+  const [followings, setFollowings] = useState<FollowData[]>([]);
+
+  const GetFollowingURL = `${server}/api/user/${id}/following`;
+  const fetchFollow = async () => {
+    if (token) {
+      console.log('fetching Like Data');
+      try {
+        const response = await fetch(GetFollowingURL, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+          setFollowings(data);
+        } else if (response.status === 401) {
+          await ReissueToken();
+          fetchFollow();
+        } else {
+          console.error('Failed to fetch data:', response.status);
+        }
+      } catch (error) {
+        console.error('Fetched Follower', error);
+      }
+    }
+  };
+
   const fetchSearch = async () => {
-    let searchUrl = `${server}/api/searchSpotify/album/${searchKeyword}`;
+    let searchUrl = `${server}/api/search/user/${searchKeyword}`;
 
     if (token && !isLoading) {
       setIsLoading(true);
@@ -259,36 +322,37 @@ function SearchPage() {
     <Container>
       <AlbumPostArea>
         <ButtonArea>
-          <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 10px" color={colors.Font_black} onClick={() => GoToAlbumPostEditPage()}>
-            취소
-          </Text>
+          <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 10px" color={colors.Font_black}></Text>
           <Text fontFamily="Bd" fontSize="20px" margin="0px" color={colors.Font_black}>
-            search
+            search friends
           </Text>
-          <Text fontFamily="Rg" fontSize="15px" margin="0px 10px 0px 0px" color={colors.BG_grey}>
-            저장
-          </Text>
+          <Text fontFamily="Rg" fontSize="15px" margin="0px 10px 0px 0px" color={colors.BG_grey}></Text>
         </ButtonArea>
         <Line></Line>
         <SearchArea>
           <form onSubmit={handleSearchSubmit}>
-            <ContentInput placeholder="앨범의 제목을 입력하세요" onChange={e => setSearchKeyword(e.target.value)}></ContentInput>
+            <ContentInput placeholder="검색할 이름을 입력하세요" onChange={e => setSearchKeyword(e.target.value)}></ContentInput>
           </form>
         </SearchArea>
 
         <SearchResultArea>
           {!isLoading &&
-            searchResult &&
-            searchResult.map((album: any) => (
-              <SongArea key={album.albumId} onClick={() => GoToAlbumPostEditPage({ ...album, postId: null })}>
-                <AlbumCover>
-                  <img src={album.imageUrl} width="100%" height="100%"></img>
-                </AlbumCover>
-                <SongTextArea>
-                  <Title fontSize={'20px'}>{album.name}</Title>
-                  <Title fontSize={'15px'}>{album.albumArtist.name}</Title>
-                </SongTextArea>
-              </SongArea>
+            (searchResult.length !== 0 ? (
+              searchResult.map((follow: UserData) => {
+                return (
+                  <FollowBox
+                    name={follow.user.username}
+                    profile={follow.user.profilePicture}
+                    userId={follow.user.id}
+                    ChangeFollow={ChangeFollow}
+                    isFollowing={followings.some(user => user.userId === follow.user.id) ? true : false}
+                  ></FollowBox>
+                );
+              })
+            ) : (
+              <Text fontFamily="Rg" fontSize="17px" margin="10px 0px 0px 0px" color={colors.Font_black}>
+                없는 사용자 입니다.
+              </Text>
             ))}
           {isLoading && <Loader></Loader>}
         </SearchResultArea>
@@ -297,4 +361,4 @@ function SearchPage() {
   );
 }
 
-export default SearchPage;
+export default FriendSearchPage;

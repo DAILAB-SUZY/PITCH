@@ -151,12 +151,14 @@ const PlaylistPreviewCard = ({ playlists }: PlaylistProps) => {
       return newLoaded;
     });
   };
-
+  const GoToMusicProfilePage = (userId: number) => {
+    navigate('/MusicProfilePage', { state: userId });
+  };
   return (
     <PlaylistContainer>
       {playlists.map((playlist, index) => (
-        <PlaylistBox key={playlist.playlistId} bggradient={playlistGradients[index] || '#ddd'} onClick={() => GoToPlayListPage({ ...playlist.author, page: 1 })}>
-          <AlbumCoverStack>
+        <PlaylistBox key={playlist.playlistId} bggradient={playlistGradients[index] || '#ddd'}>
+          <AlbumCoverStack onClick={() => GoToPlayListPage({ ...playlist.author, page: 1 })}>
             {playlist.albumCover
               .slice(0, 3)
               .reverse()
@@ -172,7 +174,7 @@ const PlaylistPreviewCard = ({ playlists }: PlaylistProps) => {
                 />
               ))}
           </AlbumCoverStack>
-          <ProfileArea>
+          <ProfileArea onClick={() => GoToMusicProfilePage(playlist.author.id)}>
             <ProfileImage src={playlist.author.profilePicture} alt="Profile" />
             <UserNameArea>
               <UserName fontFamily="Bd">{playlist.author.username}'s</UserName>

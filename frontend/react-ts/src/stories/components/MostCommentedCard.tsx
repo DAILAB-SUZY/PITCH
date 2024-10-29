@@ -123,7 +123,7 @@ const ProfileImage = styled.div`
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background-color: ${colors.Main_Pink};
+  /* background-color: ${colors.Main_Pink}; */
 `;
 const ChatCardBody = styled.div`
   margin: 10px 0px 10px 0px;
@@ -154,16 +154,6 @@ const Text = styled.div<{ fontSize?: string; margin?: string; fontFamily?: strin
   overflow: hidden; // 너비를 넘어가면 안보이게
   text-overflow: ellipsis; // 글자가 넘어가면 말줄임(...) 표시
 `;
-
-interface AlbumDetail {
-  albumId: number;
-  title: string;
-  albumCover: string;
-  artistName: string;
-  genre: string;
-  spotifyId: string;
-}
-
 interface DNA {
   dnaKey: number;
   dnaName: string;
@@ -176,27 +166,33 @@ interface User {
   dnas: DNA[];
 }
 
+interface AlbumLike extends User {} // User와 동일한 구조 확장
+
+interface AlbumDetail {
+  albumId: number;
+  title: string;
+  albumCover: string;
+  artistName: string;
+  genre: string;
+  spotifyId: string;
+  likes: AlbumLike[];
+}
+
+interface CommentAuthor extends User {} // User 구조 확장
+
 interface AlbumChatComment {
   albumChatCommentId: number;
   content: string;
-  createAt: string; // ISO date string
-  updateAt: string; // ISO date string
+  createAt: string; // ISO 날짜 형식
+  updateAt: string; // ISO 날짜 형식
   likes: User[];
-  comments: AlbumChatComment[]; // Recursive structure
-  author: User;
-}
-
-interface AlbumLike {
-  id: number;
-  username: string;
-  profilePicture: string;
-  dnas: DNA[];
+  comments: AlbumChatComment[]; // 재귀적 구조
+  author: CommentAuthor;
 }
 
 interface AlbumData {
   albumDetail: AlbumDetail;
   comments: AlbumChatComment[];
-  albumLike: AlbumLike[];
 }
 
 interface AlbumProps {
@@ -221,7 +217,7 @@ function MostCommentedCard({ album }: AlbumProps) {
             </Text>
           </AlbumTitleArea>
           <CommentNumberArea>
-            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="white" className="bi bi-chat-right-text-fill" viewBox="0 0 16 16" style={{ strokeWidth: 6 }}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="white" className="bi bi-chat-right-text-fill" viewBox="0 0 16 16" style={{ strokeWidth: 6 }}>
               <path d="M2 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h9.586a2 2 0 0 1 1.414.586l2 2V2a1 1 0 0 0-1-1zm12-1a2 2 0 0 1 2 2v12.793a.5.5 0 0 1-.854.353l-2.853-2.853a1 1 0 0 0-.707-.293H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z" />
               <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6m0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5" />
             </svg>
@@ -229,7 +225,7 @@ function MostCommentedCard({ album }: AlbumProps) {
               {album.comments.length}
             </Text>
             <Text fontSize="20px" margin="0px 0px 0px 5px" fontFamily="Rg" color={colors.BG_white}>
-              comments
+              comment
             </Text>
           </CommentNumberArea>
           <CommentContentArea>

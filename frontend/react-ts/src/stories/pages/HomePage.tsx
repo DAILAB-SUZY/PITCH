@@ -90,24 +90,84 @@ const Text = styled.div<{ fontSize: string; margin: string }>`
   font-family: 'Rg';
 `;
 
-function HomePage() {
-  interface FriendsPlayList {
-    playlistId: number;
-    albumCover: string[];
-    author: {
-      id: number;
-      username: string;
-      profilePicture: string;
-    };
-  }
+interface FriendsPlayList {
+  playlistId: number;
+  albumCover: string[];
+  author: {
+    id: number;
+    username: string;
+    profilePicture: string;
+  };
+}
+interface DNA {
+  dnaKey: number;
+  dnaName: string;
+}
 
+interface User {
+  id: number;
+  username: string;
+  profilePicture: string;
+  dnas: DNA[];
+}
+
+interface Album {
+  albumId: number;
+  title: string;
+  albumCover: string;
+  artistName: string;
+  genre: string;
+  spotifyId: string;
+  likes: User[];
+}
+
+interface PostAuthor extends User {}
+
+interface PostDetail {
+  postId: number;
+  content: string;
+  createAt: number;
+  updateAt: number;
+  author: PostAuthor;
+  album: Album;
+}
+
+interface CommentAuthor extends User {}
+
+interface ChildComment {
+  id: number;
+  content: string;
+  author: CommentAuthor;
+  createTime: number;
+  updateTime: number;
+}
+
+interface Comment {
+  id: number;
+  content: string;
+  createdAt: number;
+  updatedAt: number;
+  likes: User[];
+  childComments: ChildComment[];
+  author: CommentAuthor;
+}
+
+interface AlbumPost {
+  postDetail: PostDetail;
+  comments: Comment[];
+  likes: User[];
+}
+
+function HomePage() {
   const { email, name, id } = useStore();
-  const { albumPosts, setAlbumPosts, clearAlbumPosts } = useAlbumPostStore();
+  // const { albumPosts, setAlbumPosts, clearAlbumPosts } = useAlbumPostStore();
 
   const navigate = useNavigate();
   const GoToAlbumPostEditPage = () => {
     navigate('/AlbumPostEditPage');
   };
+
+  const [albumPosts, setAlbumPosts] = useState<AlbumPost[]>([]);
 
   console.log(`${email} / ${name} / ${id}`);
   // const [albumPostList, setAlbumPostList] = useState<AlbumPost[]>([]);
@@ -126,65 +186,34 @@ function HomePage() {
 
   // Intersection Observer용 ref
   const observerRef = useRef<HTMLDivElement | null>(null);
-  const token = localStorage.getItem('login-token');
-  const refreshToken = localStorage.getItem('login-refreshToken');
-  interface AlbumPost {
-    postDetail: {
-      postId: number;
-      content: string;
-      createAt: number;
-      updateAt: number;
-      author: {
-        id: number;
-        username: string;
-        profilePicture: string;
-        dnas: {
-          dnaKey: number;
-          dnaName: string;
-        }[];
-      };
-      album: {
-        id: number;
-        title: string;
-        albumCover: string;
-        artistName: string;
-        genre: string;
-      };
-    };
+  const [token, setToken] = useState(localStorage.getItem('login-token'));
+  const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
 
-    comments: {
-      id: number;
-      content: string;
-      createdAt: number;
-      updatedAt: number;
-      likes: {
-        id: number;
-        username: string;
-        profilePicture: string;
-      }[];
-      childComments: {
-        id: number;
-        content: string;
-        author: {
-          id: number;
-          username: string;
-          profilePicture: string;
-        };
-      }[];
-      author: {
-        id: number;
-        username: string;
-        profilePicture: string;
-      };
-    }[];
-    likes: {
-      id: number;
-      username: string;
-      profilePicture: string;
-    }[];
-  }
   const PlaylistUrl = `${server}/api/playlist/following`;
 
+  const ReissueToken = async () => {
+    console.log('reissuing Token');
+    try {
+      const response = await fetch(reissueTokenUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Refresh-Token': `${refreshToken}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('login-token', data.token);
+        localStorage.setItem('login-refreshToken', data.refreshToken);
+        setToken(data.token);
+        setRefreshToken(data.refreshToken);
+      } else {
+        console.error('failed to reissue token', response.status);
+      }
+    } catch (error) {
+      console.error('Refresh Token 재발급 실패', error);
+    }
+  };
   // Playlist Fetching
   const fetchPlaylist = async () => {
     if (token) {
@@ -205,17 +234,7 @@ function HomePage() {
           console.log('fetched PlayList:');
           console.log(data);
         } else if (response.status === 401) {
-          console.log('reissuing Token');
-          const reissueToken = await fetch(reissueTokenUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Refresh-Token': `${refreshToken}`,
-            },
-          });
-          const data = await reissueToken.json();
-          localStorage.setItem('login-token', data.token);
-          localStorage.setItem('login-refreshToken', data.refreshToken);
+          ReissueToken();
           fetchPlaylist();
         } else {
           console.error('Failed to fetch data:', response.status);
@@ -228,18 +247,15 @@ function HomePage() {
     }
   };
 
-  useEffect(() => {
-    clearAlbumPosts();
-  }, [clearAlbumPosts]);
+  // useEffect(() => {
+  //   clearAlbumPosts();
+  // }, [clearAlbumPosts]);
+
   // 무한 스크롤 데이터를 가져오는 함수
   const fetchAlbumPosts = async () => {
-    console.log('start fetching albumPost...');
-    console.log(`isLoading: ${isLoading}`);
     const albumPostUrl = `${server}/api/album/post?page=${postPage}&limit=5`;
-    console.log(albumPostUrl);
     if (token && !isLoading && !isEnd) {
       setIsLoading(loading => !loading);
-      console.log(`fetching ${postPage} page Album Posts...`);
       try {
         console.log('fetching...');
         const response = await fetch(albumPostUrl, {
@@ -261,24 +277,14 @@ function HomePage() {
           }
           // 만약 첫 로딩이면
           if (postPage === 0) {
-            clearAlbumPosts();
+            //clearAlbumPosts();
           }
-          setAlbumPosts(data); // 기존 데이터에 새로운 데이터를 추가
+          setAlbumPosts(prev => [...prev, ...data]); // 기존 데이터에 새로운 데이터를 추가
           setPostPage(prevPage => prevPage + 1); // 페이지 증가
 
           console.log('albumpost ', albumPosts);
         } else if (response.status === 401) {
-          console.log('reissuing Token');
-          const reissueToken = await fetch(reissueTokenUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Refresh-Token': `${refreshToken}`,
-            },
-          });
-          const data = await reissueToken.json();
-          localStorage.setItem('login-token', data.token);
-          localStorage.setItem('login-refreshToken', data.refreshToken);
+          ReissueToken();
           fetchAlbumPosts();
         } else {
           console.error('Failed to fetch AlbumPost data:', response.status);
@@ -359,8 +365,8 @@ function HomePage() {
             </svg>
           </AlbumPostTitleArea>
           <RowAlignArea>
-            {albumPosts.length > 0 ? (
-              albumPosts.map(albumPost => (
+            {albumPosts && albumPosts.length > 0 ? (
+              albumPosts?.map(albumPost => (
                 <AlbumPostCard
                   // key={albumPost.postDetail.postId}
                   albumPost={albumPost}

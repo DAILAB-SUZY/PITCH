@@ -1,8 +1,8 @@
-import styled from "styled-components";
-import { colors } from "../../styles/color";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useRef, useEffect, useState } from "react";
-import useStore from "../store/store";
+import styled from 'styled-components';
+import { colors } from '../../styles/color';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useRef, useEffect, useState } from 'react';
+import useStore from '../store/store';
 
 const Container = styled.div`
   display: flex;
@@ -32,10 +32,10 @@ const Text = styled.div<{
   color: string;
   margin: string;
 }>`
-  font-size: ${(props) => props.fontSize};
-  font-family: ${(props) => props.fontFamily};
-  color: ${(props) => props.color};
-  margin: ${(props) => props.margin};
+  font-size: ${props => props.fontSize};
+  font-family: ${props => props.fontFamily};
+  color: ${props => props.color};
+  margin: ${props => props.margin};
   max-width: 280px;
 
   // 두 줄 이상일 때 '...' 처리
@@ -85,7 +85,7 @@ const CommentContentArea = styled.div`
   flex-direction: column;
   justify-content: space-between;
   font-size: 15px;
-  font-family: "Rg";
+  font-family: 'Rg';
   padding: 0px 10px;
   margin: 10px 0px 20px 0px;
 
@@ -128,12 +128,14 @@ function CommentPostPage() {
   //   const { email, setEmail, name, setName, id, setId } = useStore();
   const location = useLocation();
   const [postId, setPostId] = useState();
-  const [postContent, setPostContent] = useState("");
+  const [postContent, setPostContent] = useState('');
   const [isEditMode, setIsEditMode] = useState(false);
-  const server = "http://203.255.81.70:8030";
+  const server = 'http://203.255.81.70:8030';
   const reissueTokenUrl = `${server}/api/auth/reissued`;
+  const [token, setToken] = useState(localStorage.getItem('login-token'));
+  const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
 
-  console.log("postID::: ");
+  console.log('postID::: ');
   console.log(postId);
   useEffect(() => {
     // post 작성을 위해 처음 들어왔으면
@@ -152,13 +154,11 @@ function CommentPostPage() {
 
   const navigate = useNavigate();
   const GoToAlbumPostPage = () => {
-    navigate("/AlbumPostPage", { state: postId });
+    navigate('/AlbumPostPage', { state: postId });
   };
 
   // 게시물 작성
   const fetchComment = async () => {
-    const token = localStorage.getItem("login-token");
-    const refreshToken = localStorage.getItem("login-refreshToken");
     let CommentPostUrl = `${server}/api/album/post/${postId}/comment`;
     if (token) {
       try {
@@ -166,9 +166,9 @@ function CommentPostPage() {
         console.log(postId);
         console.log(postContent);
         const response = await fetch(CommentPostUrl, {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
@@ -179,30 +179,43 @@ function CommentPostPage() {
 
         if (response.ok) {
           const data = await response.json();
-          console.log("Post Comment Success");
+          console.log('Post Comment Success');
           console.log(data);
         } else if (response.status === 401) {
-          console.log("reissuing Token");
-          const reissueToken = await fetch(reissueTokenUrl, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Refresh-Token": `${refreshToken}`,
-            },
-          });
-          const data = await reissueToken.json();
-          localStorage.setItem("login-token", data.token);
-          localStorage.setItem("login-refreshToken", data.refreshToken);
+          ReissueToken();
           fetchComment();
         } else {
-          console.error("Failed to Post Comment:", response.status);
+          console.error('Failed to Post Comment:', response.status);
         }
       } catch (error) {
-        console.error("Error fetching the JSON file:", error);
+        console.error('Error fetching the JSON file:', error);
       } finally {
-        console.log("finished");
+        console.log('finished');
         GoToAlbumPostPage();
       }
+    }
+  };
+  const ReissueToken = async () => {
+    console.log('reissuing Token');
+    try {
+      const response = await fetch(reissueTokenUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Refresh-Token': `${refreshToken}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('login-token', data.token);
+        localStorage.setItem('login-refreshToken', data.refreshToken);
+        setToken(data.token);
+        setRefreshToken(data.refreshToken);
+      } else {
+        console.error('failed to reissue token', response.status);
+      }
+    } catch (error) {
+      console.error('Refresh Token 재발급 실패', error);
     }
   };
 
@@ -259,7 +272,7 @@ function CommentPostPage() {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const adjustTextareaHeight = () => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = "auto"; // Reset height to auto to calculate the new height
+      textareaRef.current.style.height = 'auto'; // Reset height to auto to calculate the new height
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`; // Adjust the height based on the content
     }
   };
@@ -268,13 +281,7 @@ function CommentPostPage() {
     <Container>
       <CommentArea>
         <ButtonArea>
-          <Text
-            fontFamily="Rg"
-            fontSize="15px"
-            margin="0px 0px 0px 10px"
-            color={colors.Font_black}
-            onClick={() => GoToAlbumPostPage()}
-          >
+          <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 10px" color={colors.Font_black} onClick={() => GoToAlbumPostPage()}>
             취소
           </Text>
           <Text fontFamily="Bd" fontSize="20px" margin="0px" color={colors.Font_black}>
@@ -299,7 +306,7 @@ function CommentPostPage() {
               ref={textareaRef}
               placeholder="댓글을 남겨주세요."
               value={postContent}
-              onChange={(e) => setPostContent(e.target.value)}
+              onChange={e => setPostContent(e.target.value)}
               onInput={adjustTextareaHeight} // Adjust height when input changes
             ></ContentInput>
             {/* </form> */}

@@ -303,76 +303,188 @@ interface MusicProfileData {
   ];
 }
 
+// interface PostData {
+//   type: string;
+//   postDetail: {
+//     postId: number;
+//     content: string;
+//     createAt: number;
+//     updateAt: number;
+//     author: {
+//       id: number;
+//       username: string;
+//       profilePicture: string;
+//       dnas: {
+//         dnaKey: number;
+//         dnaName: string;
+//       }[];
+//     };
+//     album: {
+//       id: number;
+//       title: string;
+//       albumCover: string;
+//       artistName: string;
+//       genre: string;
+//     };
+//   };
+//   comments: {
+//     id: number;
+//     content: string;
+//     createdAt: number;
+//     updatedAt: number;
+//     likes: {
+//       id: number;
+//       username: string;
+//       profilePicture: string;
+//       dnas: {
+//         dnaKey: number;
+//         dnaName: string;
+//       }[];
+//     }[];
+//     childComments: {
+//       id: number;
+//       content: string;
+//       author: {
+//         id: number;
+//         username: string;
+//         profilePicture: string;
+//         dnas: {
+//           dnaKey: number;
+//           dnaName: string;
+//         }[];
+//       };
+//     }[];
+//     author: {
+//       id: number;
+//       username: string;
+//       profilePicture: string;
+//       dnas: {
+//         dnaKey: number;
+//         dnaName: string;
+//       }[];
+//     };
+//   }[];
+//   likes: {
+//     id: number;
+//     username: string;
+//     profilePicture: string;
+//     dnas: {
+//       dnaKey: number;
+//       dnaName: string;
+//     }[];
+//   }[];
+// }
+// [];
+
+// interface ChatData {
+//   type: string;
+//   albumDetail: {
+//     albumId: number;
+//     title: string;
+//     albumCover: string;
+//     artistName: string;
+//     genre: string;
+//   };
+//   albumChatCommentDetail: {
+//     albumChatCommentId: number;
+//     content: string;
+//     createAt: number;
+//     updateAt: number;
+//     likes: {
+//       author: {
+//         id: number;
+//         username: string;
+//         profilePicture: string;
+//         dnas: {
+//           dnaKey: number;
+//           dnaName: string;
+//         }[];
+//       };
+//       updateAt: string;
+//     }[];
+//     comments: {
+//       albumChatCommentId: number;
+//       content: string;
+//       createAt: string;
+//       updateAt: string;
+//       author: {
+//         id: number;
+//         username: string;
+//         profilePicture: string;
+//         dnas: {
+//           dnaKey: number;
+//           dnaName: string;
+//         }[];
+//       };
+//     }[];
+//     author: {
+//       id: number;
+//       username: string;
+//       profilePicture: string;
+//       dnas: {
+//         dnaKey: number;
+//         dnaName: string;
+//       }[];
+//     };
+//   };
+// }
+interface DNA {
+  dnaKey: number;
+  dnaName: string;
+}
+
+interface User {
+  id: number;
+  username: string;
+  profilePicture: string;
+  dnas: DNA[];
+}
+
+interface Album {
+  albumId: number;
+  title: string;
+  albumCover: string;
+  artistName: string;
+  genre: string;
+  spotifyId: string;
+  likes: User[];
+}
+
+interface PostAuthor extends User {}
+
+interface PostDetail {
+  postId: number;
+  content: string;
+  createAt: number;
+  updateAt: number;
+  author: PostAuthor;
+  album: Album;
+}
+
+interface CommentAuthor extends User {}
+
+interface ChildComment {
+  id: number;
+  content: string;
+  author: CommentAuthor;
+  createTime: number;
+  updateTime: number;
+}
+
+interface Comment {
+  id: number;
+  content: string;
+  createdAt: number;
+  updatedAt: number;
+  likes: User[];
+  childComments: ChildComment[];
+  author: CommentAuthor;
+}
 interface PostData {
   type: string;
-  postDetail: {
-    postId: number;
-    content: string;
-    createAt: number;
-    updateAt: number;
-    author: {
-      id: number;
-      username: string;
-      profilePicture: string;
-      dnas: {
-        dnaKey: number;
-        dnaName: string;
-      }[];
-    };
-    album: {
-      id: number;
-      title: string;
-      albumCover: string;
-      artistName: string;
-      genre: string;
-    };
-  };
-  comments: {
-    id: number;
-    content: string;
-    createdAt: number;
-    updatedAt: number;
-    likes: {
-      id: number;
-      username: string;
-      profilePicture: string;
-      dnas: {
-        dnaKey: number;
-        dnaName: string;
-      }[];
-    }[];
-    childComments: {
-      id: number;
-      content: string;
-      author: {
-        id: number;
-        username: string;
-        profilePicture: string;
-        dnas: {
-          dnaKey: number;
-          dnaName: string;
-        }[];
-      };
-    }[];
-    author: {
-      id: number;
-      username: string;
-      profilePicture: string;
-      dnas: {
-        dnaKey: number;
-        dnaName: string;
-      }[];
-    };
-  }[];
-  likes: {
-    id: number;
-    username: string;
-    profilePicture: string;
-    dnas: {
-      dnaKey: number;
-      dnaName: string;
-    }[];
-  }[];
+  postDetail: PostDetail;
+  comments: Comment[];
+  likes: User[];
 }
 [];
 
@@ -468,8 +580,6 @@ function MusicProfilePage() {
       state: {
         userId: musicProfileData.userDetail.id,
         userName: musicProfileData.userDetail.username,
-        followings: musicProfileData.followings,
-        followers: musicProfileData.followers,
       },
     });
   };
@@ -483,8 +593,8 @@ function MusicProfilePage() {
   let activityUrl = `${server}/api/user/${profileId}/musicProfile/activity`;
   let followUrl = `${server}/api/user/follow/${profileId}`;
   const reissueTokenUrl = `${server}/api/auth/reissued`;
-  const token = localStorage.getItem('login-token');
-  const refreshToken = localStorage.getItem('login-refreshToken');
+  const [token, setToken] = useState(localStorage.getItem('login-token'));
+  const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
 
   const fetchData = async () => {
     if (token) {
@@ -514,17 +624,7 @@ function MusicProfilePage() {
             console.log(musicProfileData?.followers);
           }
         } else if (response.status === 401) {
-          console.log('reissuing Token');
-          const reissueToken = await fetch(reissueTokenUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Refresh-Token': `${refreshToken}`,
-            },
-          });
-          const data = await reissueToken.json();
-          localStorage.setItem('login-token', data.token);
-          localStorage.setItem('login-refreshToken', data.refreshToken);
+          ReissueToken();
           fetchData();
         } else {
           console.error('Failed to fetch data:', response.status);
@@ -534,6 +634,29 @@ function MusicProfilePage() {
       } finally {
         console.log('finished');
       }
+    }
+  };
+  const ReissueToken = async () => {
+    console.log('reissuing Token');
+    try {
+      const response = await fetch(reissueTokenUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Refresh-Token': `${refreshToken}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('login-token', data.token);
+        localStorage.setItem('login-refreshToken', data.refreshToken);
+        setToken(data.token);
+        setRefreshToken(data.refreshToken);
+      } else {
+        console.error('failed to reissue token', response.status);
+      }
+    } catch (error) {
+      console.error('Refresh Token 재발급 실패', error);
     }
   };
   useEffect(() => {
@@ -583,17 +706,7 @@ function MusicProfilePage() {
           console.log(mergedData); // 정렬된 데이터 확인
           setActivityData(mergedData);
         } else if (response.status === 401) {
-          console.log('reissuing Token');
-          const reissueToken = await fetch(reissueTokenUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Refresh-Token': `${refreshToken}`,
-            },
-          });
-          const data = await reissueToken.json();
-          localStorage.setItem('login-token', data.token);
-          localStorage.setItem('login-refreshToken', data.refreshToken);
+          ReissueToken();
           fetchActivityData();
         } else {
           console.error('Failed to fetch data:', response.status);
@@ -624,17 +737,7 @@ function MusicProfilePage() {
           const data = await response.json();
           console.log(data);
         } else if (response.status === 401) {
-          console.log('reissuing Token');
-          const reissueToken = await fetch(reissueTokenUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Refresh-Token': `${refreshToken}`,
-            },
-          });
-          const data = await reissueToken.json();
-          localStorage.setItem('login-token', data.token);
-          localStorage.setItem('login-refreshToken', data.refreshToken);
+          ReissueToken();
           fetchFollow();
         } else {
           console.error('Failed to fetch data:', response.status);

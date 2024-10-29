@@ -62,7 +62,7 @@ const AlbumCover = styled.div`
 const SongTextArea = styled.div`
   height: 80%;
   /* width: 100%; */
-  width: 270px;
+  width: 220px;
   display: flex;
   align-items: start;
   justify-content: space-between;
@@ -71,19 +71,20 @@ const SongTextArea = styled.div`
   overflow: hidden; // 너비를 넘어가면 안보이게
   text-overflow: ellipsis; // 글자가 넘어가면 말줄임(...) 표시
 `;
-const Btn = styled.div<{ bgcolor: string }>`
+const Btn = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-evenly;
-  background-color: ${props => props.bgcolor};
-  width: 100px;
+
+  width: 50px;
   height: 35px;
   border-radius: 10px;
-  padding: 10px;
+  /* padding: 10px; */
   box-sizing: border-box;
-  margin: 0px 20px;
-  box-shadow: 0 0px 5px rgba(0, 0, 0, 0.1);
+  margin: 0px 5px;
+  //box-shadow: 0 0px 5px rgba(0, 0, 0, 0.1);
+  opacity: 0.8;
 `;
 
 const Text = styled.div<{
@@ -226,11 +227,11 @@ const PlayListEditCard = ({ playlist, isEditable, playlistInfo, setIsSearchModal
               setIsSearchModalOpen(true);
             }}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill={colors.BG_grey} viewBox="0 0 16 16">
+            {/* <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill={colors.BG_grey} viewBox="0 0 16 16">
               <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2" />
-            </svg>
+            </svg> */}
             <Text fontSize={'14px'} fontFamily="Rg" margin="0px 0px 0px 5px " opacity="0.8">
-              추가
+              + 추가
             </Text>
           </EditBtn>
         )}
@@ -257,13 +258,12 @@ const PlayListEditCard = ({ playlist, isEditable, playlistInfo, setIsSearchModal
             </Title>
           </SongTextArea>
           <Btn
-            bgcolor="red"
             onClick={() => {
               handleTrackRemove(song.trackId);
             }}
           >
-            <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 4px">
-              삭제
+            <Text fontFamily="Rg" fontSize="14px" margin="0px 0px 0px 4px">
+              - 삭제
             </Text>
           </Btn>
         </SongArea>

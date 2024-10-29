@@ -6,7 +6,7 @@ import MostLikedCard from '../components/MostLikedCard';
 import { useNavigate } from 'react-router-dom';
 import cover1 from '../../img/aespa2.jpg';
 import artistProfile from '../../img/aespaProfile.jpg';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Loader from '../components/Loader';
 
 const Container = styled.div`
@@ -117,70 +117,7 @@ const AlbumListArea = styled.div`
   width: 100vw;
   padding: 10px;
 `;
-const Album = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
-  width: 140px;
-  height: 180px;
-  margin: 10px;
-`;
-const AlbumCard = styled.div`
-  position: relative;
-  display: flex;
-  width: 140px;
-  height: 140px;
-  border-radius: 8px;
-  background: linear-gradient(90deg, #6a85b6, #bac8e0);
-  box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 12px;
-  overflow: hidden;
-`;
 
-const AlbumInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-`;
-
-const AlbumImageArea = styled.div`
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  overflow: hidden;
-  width: 140px;
-  height: 140px;
-  object-fit: cover;
-  z-index: 1;
-`;
-
-const AlbumGradientBG = styled.div`
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  z-index: 2;
-  width: 140px;
-  height: 140px;
-  object-fit: cover;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(0deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 70%);
-  backdrop-filter: blur(0px);
-`;
-
-const AlbumContentArea = styled.div`
-  width: 140px;
-  height: 140px;
-  display: flex;
-  flex-direction: row;
-  align-items: flex-end;
-  justify-content: flex-end;
-  padding: 10px;
-  box-sizing: border-box;
-  z-index: 3;
-`;
 const Line = styled.div`
   width: 90vw;
   border-bottom: 1px;
@@ -199,15 +136,6 @@ const Text = styled.div<{ fontSize?: string; margin?: string; fontFamily?: strin
   color: ${props => props.color};
 `;
 
-interface AlbumDetail {
-  albumId: number;
-  title: string;
-  albumCover: string;
-  artistName: string;
-  genre: string;
-  spotifyId: string;
-}
-
 interface DNA {
   dnaKey: number;
   dnaName: string;
@@ -220,27 +148,33 @@ interface User {
   dnas: DNA[];
 }
 
+interface AlbumLike extends User {} // User와 동일한 구조 확장
+
+interface AlbumDetail {
+  albumId: number;
+  title: string;
+  albumCover: string;
+  artistName: string;
+  genre: string;
+  spotifyId: string;
+  likes: AlbumLike[];
+}
+
+interface CommentAuthor extends User {} // User 구조 확장
+
 interface AlbumChatComment {
   albumChatCommentId: number;
   content: string;
-  createAt: string; // ISO date string
-  updateAt: string; // ISO date string
+  createAt: string; // ISO 날짜 형식
+  updateAt: string; // ISO 날짜 형식
   likes: User[];
-  comments: AlbumChatComment[]; // Recursive structure
-  author: User;
-}
-
-interface AlbumLike {
-  id: number;
-  username: string;
-  profilePicture: string;
-  dnas: DNA[];
+  comments: AlbumChatComment[]; // 재귀적 구조
+  author: CommentAuthor;
 }
 
 interface AlbumData {
   albumDetail: AlbumDetail;
   comments: AlbumChatComment[];
-  albumLike: AlbumLike[];
 }
 
 interface AlbumSearchResult {
@@ -258,31 +192,38 @@ interface AlbumSearchResult {
 
 function AlbumHomePage() {
   const navigate = useNavigate();
-  const [MostCommentedAlbumList, setMostCommentedAlbumList] = useState<AlbumData[] | undefined>();
-  const [MostLikedAlbumList, setMostLikedAlbumList] = useState<AlbumData[] | undefined>();
-  const [searchResultTrack, setSearchResultTrack] = useState<AlbumSearchResult[]>();
+  const GoToAlbumPage = (spotifyAlbumId: string) => {
+    navigate('/AlbumPage', { state: spotifyAlbumId });
+  };
+  const [MostCommentedAlbumList, setMostCommentedAlbumList] = useState<AlbumData[]>([]);
+  const [MostLikedAlbumList, setMostLikedAlbumList] = useState<AlbumData[]>([]);
+  const [searchResultTrack, setSearchResultTrack] = useState<AlbumSearchResult[]>([]);
   const [isSearchMode, setIsSearchMode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState('');
+  const [pageNumber, setPageNumber] = useState(0);
+  const [isEnd, setIsEnd] = useState(false);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault(); // 폼 제출 동작 방지
     // 검색 결과 초기화
-    fetchSearch(); // 검색 실행
+    setIsSearchMode(true);
+    setSearchResultTrack([]);
+    fetchAlbum(); // 검색 실행
   };
 
   useEffect(() => {
     fetchMostCommentedData();
-    fetchMostLikedData();
+    //fetchMostLikedData();
   }, []);
 
   const server = 'http://203.255.81.70:8030';
-  let MostCommentedDataUrl = `${server}/api/albumchat/chat`;
-  let MostLikedDataUrl = `${server}/api/albumchat/like?page=0&limit=5`;
+  let MostCommentedDataUrl = `${server}/api/album/albumchat/chat`;
+
   let AlbumSearchUrl = `${server}/api/searchSpotify/album/${searchKeyword}`;
   const reissueTokenUrl = `${server}/api/auth/reissued`;
-  const token = localStorage.getItem('login-token');
-  const refreshToken = localStorage.getItem('login-refreshToken');
+  const [token, setToken] = useState(localStorage.getItem('login-token'));
+  const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
 
   const fetchMostCommentedData = async () => {
     if (token) {
@@ -302,17 +243,7 @@ function AlbumHomePage() {
           console.log(data);
           setMostCommentedAlbumList(data);
         } else if (response.status === 401) {
-          console.log('reissuing Token');
-          const reissueToken = await fetch(reissueTokenUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Refresh-Token': `${refreshToken}`,
-            },
-          });
-          const data = await reissueToken.json();
-          localStorage.setItem('login-token', data.token);
-          localStorage.setItem('login-refreshToken', data.refreshToken);
+          ReissueToken();
           fetchMostCommentedData();
         } else {
           console.error('Failed to fetch data:', response.status);
@@ -326,7 +257,9 @@ function AlbumHomePage() {
   };
 
   const fetchMostLikedData = async () => {
-    if (token) {
+    const MostLikedDataUrl = `${server}/api/album/albumchat/like?page=${pageNumber}&limit=6`;
+    if (token && !isLoading && !isEnd) {
+      setIsLoading(true);
       try {
         console.log('fetching Most Liked Albums...');
         const response = await fetch(MostLikedDataUrl, {
@@ -341,19 +274,18 @@ function AlbumHomePage() {
           console.log('set data');
           const data = await response.json();
           console.log(data);
-          setMostLikedAlbumList(data);
+          if (data.length === 0) {
+            console.log('list End');
+            setIsEnd(true);
+          }
+
+          setMostLikedAlbumList(prevList => [...prevList, ...data]);
+          setPageNumber(prevPage => prevPage + 1); // 페이지 증가
+
+          console.log('postPage: ', pageNumber);
+          console.log(MostCommentedAlbumList);
         } else if (response.status === 401) {
-          console.log('reissuing Token');
-          const reissueToken = await fetch(reissueTokenUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Refresh-Token': `${refreshToken}`,
-            },
-          });
-          const data = await reissueToken.json();
-          localStorage.setItem('login-token', data.token);
-          localStorage.setItem('login-refreshToken', data.refreshToken);
+          ReissueToken();
           fetchMostLikedData();
         } else {
           console.error('Failed to fetch data:', response.status);
@@ -362,18 +294,20 @@ function AlbumHomePage() {
         console.error('Error fetching the JSON file:', error);
       } finally {
         console.log('finished');
+        setIsLoading(false);
       }
     }
   };
 
-  const fetchSearch = async () => {
+  const fetchAlbum = async () => {
     if (token && !isLoading) {
       setIsLoading(true);
       console.log('검색시작');
-      Search(AlbumSearchUrl);
+      fetchData(AlbumSearchUrl);
     }
   };
-  const Search = async (URL: string) => {
+
+  const fetchData = async (URL: string) => {
     console.log('searching...');
     try {
       console.log(`searching Album : ${searchKeyword}...`);
@@ -391,7 +325,7 @@ function AlbumHomePage() {
         setIsSearchMode(true);
       } else if (response.status === 401) {
         ReissueToken();
-        fetchSearch();
+        fetchAlbum();
       } else {
         console.error('Failed to fetch data:', response.status);
       }
@@ -404,18 +338,55 @@ function AlbumHomePage() {
   };
   const ReissueToken = async () => {
     console.log('reissuing Token');
-    const reissueToken = await fetch(reissueTokenUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Refresh-Token': `${refreshToken}`,
-      },
-    });
-    const data = await reissueToken.json();
-    localStorage.setItem('login-token', data.token);
-    localStorage.setItem('login-refreshToken', data.refreshToken);
+    try {
+      const response = await fetch(reissueTokenUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Refresh-Token': `${refreshToken}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('login-token', data.token);
+        localStorage.setItem('login-refreshToken', data.refreshToken);
+        setToken(data.token);
+        setRefreshToken(data.refreshToken);
+      } else {
+        console.error('failed to reissue token', response.status);
+      }
+    } catch (error) {
+      console.error('Refresh Token 재발급 실패', error);
+    }
   };
 
+  // Intersection Observer용 ref
+  const observerRef = useRef<HTMLDivElement | null>(null);
+
+  // Intersection Observer 설정
+  useEffect(() => {
+    const observer = new IntersectionObserver(entries => {
+      // observerRef가 화면에 보이면 fetch 호출
+      if (!isLoading && entries[0].isIntersecting) {
+        // setPageNumber(prevPage => prevPage + 1); // 페이지 증가
+        // console.log('page++ => ', pageNumber);
+        fetchMostLikedData();
+      }
+    });
+
+    if (observerRef.current) {
+      //console.log('current: ', observerRef.current);
+      observer.observe(observerRef.current); // ref가 있는 요소를 관찰 시작
+    }
+
+    return () => {
+      console.log('start clean');
+      if (observerRef.current) {
+        console.log('clean');
+        observer.unobserve(observerRef.current); // 컴포넌트 언마운트 시 관찰 해제
+      }
+    };
+  }, [pageNumber]);
   return (
     <Container>
       <Header>
@@ -428,7 +399,7 @@ function AlbumHomePage() {
           </form>
         </SearchArea>
 
-        {!isSearchMode && !isLoading && (
+        {!isSearchMode && (
           <>
             <MostCommentedArea>
               <TitleArea>
@@ -436,7 +407,17 @@ function AlbumHomePage() {
                   Most Commented
                 </Title>
               </TitleArea>
-              <CardListArea>{MostCommentedAlbumList?.map((album, index) => <MostCommentedCard key={index} album={album}></MostCommentedCard>) ?? <p>No albums found</p>}</CardListArea>
+              <CardListArea>
+                {MostCommentedAlbumList?.map(album => (
+                  <div
+                    onClick={() => {
+                      GoToAlbumPage(album.albumDetail.spotifyId);
+                    }}
+                  >
+                    <MostCommentedCard album={album}></MostCommentedCard>
+                  </div>
+                )) ?? <p>No albums found</p>}
+              </CardListArea>
             </MostCommentedArea>
             <MostLikedArea>
               <TitleArea>
@@ -444,11 +425,17 @@ function AlbumHomePage() {
                   Most Liked
                 </Title>
               </TitleArea>
-              <AlbumListArea>{MostLikedAlbumList?.map((album, index) => <MostLikedCard key={index} album={album}></MostLikedCard>) ?? <p>No albums found</p>}</AlbumListArea>
+              <AlbumListArea>{MostLikedAlbumList?.map(album => <MostLikedCard album={album}></MostLikedCard>) ?? <p>No albums found</p>}</AlbumListArea>
             </MostLikedArea>
           </>
         )}
-        {isLoading ? <Loader></Loader> : isSearchMode ? <>wow</> : null}
+        {!isLoading && !isSearchMode && <div ref={observerRef} style={{ height: '100px', backgroundColor: 'transparent' }} />}
+        {isSearchMode && (
+          <MostLikedArea>
+            <AlbumListArea>{searchResultTrack?.map(album => <MostLikedCard album={album}></MostLikedCard>) ?? <p>No albums found</p>}</AlbumListArea>
+          </MostLikedArea>
+        )}
+        {isLoading && <Loader></Loader>}
       </Body>
     </Container>
   );

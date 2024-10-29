@@ -2,8 +2,7 @@ import styled from 'styled-components';
 import { colors } from '../../styles/color';
 import { useLocation, useNavigate } from 'react-router-dom';
 import useStore from '../store/store';
-import AlbumChatCommentCard from '../components/AlbumChatCommentCard';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -105,36 +104,10 @@ const CommentArea = styled.div`
   z-index: 10;
 `;
 
-const CommentCommentArea = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: auto;
-`;
-
-const CommentCommentCard = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-`;
-const CommentCommentIcon = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-end;
-  width: 40px;
-  height: 100%;
-  margin-top: 30px;
-`;
-
-const CommentCommentContent = styled.div`
+const CommentEditArea = styled.div`
   display: flex;
   width: 100vw;
-  height: auto;
+  height: 100%;
   /* overflow: hidden; */
   align-items: center;
   justify-content: flex-start;
@@ -142,7 +115,42 @@ const CommentCommentContent = styled.div`
   margin: 0px;
   padding: 10px;
   box-sizing: border-box;
+  background-color: ${colors.BG_grey};
+  z-index: 10;
 `;
+
+const CommentContentArea = styled.div`
+  display: flex;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+
+  /* white-space: nowrap; */
+  /* text-overflow: ellipsis; */
+
+  flex-direction: column;
+  justify-content: space-between;
+  font-size: 15px;
+  font-family: 'Rg';
+  padding: 0px 10px;
+  margin: 10px 0px 20px 0px;
+
+  transition: height ease 0.7s;
+`;
+
+const ContentInput = styled.textarea`
+  width: 100%;
+  min-height: 200px;
+  height: auto;
+  background-color: ${colors.BG_grey};
+  font-size: 15px;
+  border: 0;
+  outline: none;
+  color: ${colors.Font_black};
+  resize: none; /* User can't manually resize */
+  overflow-y: scroll; /* Prevent extra scroll bar */
+`;
+
 const Line = styled.div`
   width: 95vw;
   height: 1px;
@@ -192,13 +200,25 @@ interface AlbumData {
   spotifyAlbumId: string;
 }
 
-function AlbumChatPage() {
+function AlbumChatCommentPostPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const [AlbumChatData, setAlbumChatData] = useState<AlbumData>();
   const GoToAlbumChatCommentPostPage = () => {
-    navigate('/AlbumChatCommentPostPage', { state: AlbumChatData });
+    navigate('/AlbumChatCommentPostPage');
   };
+
+  const GoToAlbumChatPage = () => {
+    navigate('/AlbumChatPage', { state: AlbumChatData });
+  };
+
+  useEffect(() => {
+    const data = location.state;
+    setAlbumChatData(data);
+    console.log(data);
+  }, []);
+
+  const [postContent, setPostContent] = useState('');
 
   ////// Post 시간 계산 //////
   const CreateTime = AlbumChatData?.comment.createAt;
@@ -353,6 +373,53 @@ function AlbumChatPage() {
     console.log(data);
   }, []);
 
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const adjustTextareaHeight = () => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto'; // Reset height to auto to calculate the new height
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`; // Adjust the height based on the content
+    }
+  };
+
+  // Commet 작성
+  const fetchAlbumChatComment = async () => {
+    let AlbumChatPostUrl = `${server}/api/album/${AlbumChatData?.spotifyAlbumId}/albumchat`;
+    if (token) {
+      try {
+        const response = await fetch(AlbumChatPostUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            content: postContent,
+            sorted: 'recent',
+            parentAlbumChatCommentId: AlbumChatData?.comment.albumChatCommentId,
+          }),
+        });
+
+        console.log(postContent);
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Post Comment Success');
+          console.log(data);
+        } else if (response.status === 401) {
+          ReissueToken();
+          fetchAlbumChatComment();
+        } else {
+          console.error('Failed to Post Comment:', response.status);
+        }
+      } catch (error) {
+        console.error('Error fetching the JSON file:', error);
+      } finally {
+        console.log('finished');
+        GoToAlbumChatPage();
+      }
+    }
+  };
+
   return (
     <Container>
       <Body>
@@ -370,9 +437,9 @@ function AlbumChatPage() {
               margin="0px 10px 0px 0px"
               color={colors.Font_black}
               // onClick={() => (isEditMode ? console.log("fetchEdit") : fetchComment())}
-              onClick={() => GoToAlbumChatCommentPostPage()}
+              onClick={() => fetchAlbumChatComment()}
             >
-              답글작성
+              저장
             </Text>
           </ButtonArea>
           <Line></Line>
@@ -415,12 +482,23 @@ function AlbumChatPage() {
           </CommentArea>
         </CommentArea>
         <Line></Line>
-        <CommentCommentArea>
-          {AlbumChatData?.comment.comments.map(comment => <AlbumChatCommentCard comment={comment} spotifyAlbumId={AlbumChatData.spotifyAlbumId}></AlbumChatCommentCard>)}
-        </CommentCommentArea>
+        <CommentEditArea>
+          <CommentContentArea>
+            {/* <form> */}
+            <ContentInput
+              ref={textareaRef}
+              placeholder="댓글을 남겨주세요."
+              value={postContent}
+              onChange={e => setPostContent(e.target.value)}
+              onInput={adjustTextareaHeight} // Adjust height when input changes
+            ></ContentInput>
+            {/* </form> */}
+          </CommentContentArea>
+          <ButtonArea></ButtonArea>
+        </CommentEditArea>
       </Body>
     </Container>
   );
 }
 
-export default AlbumChatPage;
+export default AlbumChatCommentPostPage;

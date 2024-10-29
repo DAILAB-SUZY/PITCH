@@ -1,8 +1,8 @@
-import styled from "styled-components";
-import { colors } from "../../styles/color";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useRef, useEffect, useState } from "react";
-import useStore from "../store/store";
+import styled from 'styled-components';
+import { colors } from '../../styles/color';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useRef, useEffect, useState } from 'react';
+import useStore from '../store/store';
 
 const Container = styled.div`
   display: flex;
@@ -111,10 +111,10 @@ const Text = styled.div<{
   color: string;
   margin: string;
 }>`
-  font-size: ${(props) => props.fontSize};
-  font-family: ${(props) => props.fontFamily};
-  color: ${(props) => props.color};
-  margin: ${(props) => props.margin};
+  font-size: ${props => props.fontSize};
+  font-family: ${props => props.fontFamily};
+  color: ${props => props.color};
+  margin: ${props => props.margin};
   max-width: 280px;
 
   // 두 줄 이상일 때 '...' 처리
@@ -164,7 +164,7 @@ const PostContentArea = styled.div`
   flex-direction: column;
   justify-content: space-between;
   font-size: 15px;
-  font-family: "Rg";
+  font-family: 'Rg';
   padding: 0px 10px;
   margin: 10px 0px 20px 0px;
 
@@ -207,10 +207,12 @@ function AlbumPostEditPage() {
   //   const [postContent, setPostContent] = useState("내용을 입력해주세요");
   //   const { email, setEmail, name, setName, id, setId } = useStore();
   const location = useLocation();
-  const [postContent, setPostContent] = useState("");
+  const [postContent, setPostContent] = useState('');
   const [isEditMode, setIsEditMode] = useState(false);
-  const server = "http://203.255.81.70:8030";
+  const server = 'http://203.255.81.70:8030';
   const reissueTokenUrl = `${server}/api/auth/reissued`;
+  const [token, setToken] = useState(localStorage.getItem('login-token'));
+  const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
 
   useEffect(() => {
     console.log(location.state);
@@ -231,16 +233,14 @@ function AlbumPostEditPage() {
 
   const navigate = useNavigate();
   const GoToSearchPage = () => {
-    navigate("/SearchPage");
+    navigate('/SearchPage');
   };
   const GoToHomePage = () => {
-    navigate("/Home");
+    navigate('/Home');
   };
 
   // 게시물 작성
   const fetchPost = async () => {
-    const token = localStorage.getItem("login-token");
-    const refreshToken = localStorage.getItem("login-refreshToken");
     let PostUrl = `${server}/api/album/post`;
     if (token && albumPost) {
       try {
@@ -248,9 +248,9 @@ function AlbumPostEditPage() {
         console.log(albumPost);
         console.log(postContent);
         const response = await fetch(PostUrl, {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
@@ -262,37 +262,50 @@ function AlbumPostEditPage() {
 
         if (response.ok) {
           const data = await response.json();
-          console.log("Post Success");
+          console.log('Post Success');
           console.log(data);
           GoToHomePage();
         } else if (response.status === 401) {
-          console.log("reissuing Token");
-          const reissueToken = await fetch(reissueTokenUrl, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Refresh-Token": `${refreshToken}`,
-            },
-          });
-          const data = await reissueToken.json();
-          localStorage.setItem("login-token", data.token);
-          localStorage.setItem("login-refreshToken", data.refreshToken);
+          ReissueToken();
           fetchPost();
         } else {
-          console.error("Failed to Post data:", response.status);
+          console.error('Failed to Post data:', response.status);
         }
       } catch (error) {
-        console.error("Error fetching the JSON file:", error);
+        console.error('Error fetching the JSON file:', error);
       } finally {
-        console.log("finished");
+        console.log('finished');
       }
+    }
+  };
+  const ReissueToken = async () => {
+    console.log('reissuing Token');
+    try {
+      const response = await fetch(reissueTokenUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Refresh-Token': `${refreshToken}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('login-token', data.token);
+        localStorage.setItem('login-refreshToken', data.refreshToken);
+        setToken(data.token);
+        setRefreshToken(data.refreshToken);
+      } else {
+        console.error('failed to reissue token', response.status);
+      }
+    } catch (error) {
+      console.error('Refresh Token 재발급 실패', error);
     }
   };
 
   // 게시물 수정
   const fetchEdit = async () => {
-    const token = localStorage.getItem("login-token");
-    const refreshToken = localStorage.getItem("login-refreshToken");
+    const token = localStorage.getItem('login-token');
+    const refreshToken = localStorage.getItem('login-refreshToken');
     let EditUrl = `${server}/api/album/post/${albumPost?.postId}`;
     if (token && albumPost) {
       try {
@@ -300,9 +313,9 @@ function AlbumPostEditPage() {
         console.log(albumPost);
         console.log(postContent);
         const response = await fetch(EditUrl, {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
@@ -312,29 +325,29 @@ function AlbumPostEditPage() {
 
         if (response.ok) {
           const data = await response.json();
-          console.log("Post Success");
+          console.log('Post Success');
           console.log(data);
           GoToHomePage();
         } else if (response.status === 401) {
-          console.log("reissuing Token");
+          console.log('reissuing Token');
           const reissueToken = await fetch(reissueTokenUrl, {
-            method: "POST",
+            method: 'POST',
             headers: {
-              "Content-Type": "application/json",
-              "Refresh-Token": `${refreshToken}`,
+              'Content-Type': 'application/json',
+              'Refresh-Token': `${refreshToken}`,
             },
           });
           const data = await reissueToken.json();
-          localStorage.setItem("login-token", data.token);
-          localStorage.setItem("login-refreshToken", data.refreshToken);
+          localStorage.setItem('login-token', data.token);
+          localStorage.setItem('login-refreshToken', data.refreshToken);
           fetchPost();
         } else {
-          console.error("Failed to Post data:", response.status);
+          console.error('Failed to Post data:', response.status);
         }
       } catch (error) {
-        console.error("Error fetching the JSON file:", error);
+        console.error('Error fetching the JSON file:', error);
       } finally {
-        console.log("finished");
+        console.log('finished');
       }
     }
   };
@@ -342,7 +355,7 @@ function AlbumPostEditPage() {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const adjustTextareaHeight = () => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = "auto"; // Reset height to auto to calculate the new height
+      textareaRef.current.style.height = 'auto'; // Reset height to auto to calculate the new height
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`; // Adjust the height based on the content
     }
   };
@@ -391,25 +404,13 @@ function AlbumPostEditPage() {
           </AlbumTitleArea>
         )}
         <ButtonArea>
-          <Text
-            fontFamily="Rg"
-            fontSize="15px"
-            margin="0px 0px 0px 10px"
-            color={colors.Font_black}
-            onClick={() => GoToHomePage()}
-          >
+          <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 10px" color={colors.Font_black} onClick={() => GoToHomePage()}>
             취소
           </Text>
           <Text fontFamily="Bd" fontSize="20px" margin="0px" color={colors.Font_black}>
             Album Post
           </Text>
-          <Text
-            fontFamily="Rg"
-            fontSize="15px"
-            margin="0px 10px 0px 0px"
-            color={colors.Font_black}
-            onClick={isEditMode ? fetchEdit : fetchPost}
-          >
+          <Text fontFamily="Rg" fontSize="15px" margin="0px 10px 0px 0px" color={colors.Font_black} onClick={isEditMode ? fetchEdit : fetchPost}>
             저장
           </Text>
         </ButtonArea>
@@ -421,7 +422,7 @@ function AlbumPostEditPage() {
               ref={textareaRef}
               placeholder="앨범에 대한 자유로운 감상평을 남겨주세요."
               value={postContent}
-              onChange={(e) => setPostContent(e.target.value)}
+              onChange={e => setPostContent(e.target.value)}
               onInput={adjustTextareaHeight} // Adjust height when input changes
             ></ContentInput>
             {/* </form> */}

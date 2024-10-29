@@ -293,20 +293,30 @@ function SearchTrackModal(props: SearchAlbumModalProps) {
   const server = 'http://203.255.81.70:8030';
 
   const reissueTokenUrl = `${server}/api/auth/reissued`;
-  const token = localStorage.getItem('login-token');
-  const refreshToken = localStorage.getItem('login-refreshToken');
+  const [token, setToken] = useState(localStorage.getItem('login-token'));
+  const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
   const ReissueToken = async () => {
     console.log('reissuing Token');
-    const reissueToken = await fetch(reissueTokenUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Refresh-Token': `${refreshToken}`,
-      },
-    });
-    const data = await reissueToken.json();
-    localStorage.setItem('login-token', data.token);
-    localStorage.setItem('login-refreshToken', data.refreshToken);
+    try {
+      const response = await fetch(reissueTokenUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Refresh-Token': `${refreshToken}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('login-token', data.token);
+        localStorage.setItem('login-refreshToken', data.refreshToken);
+        setToken(data.token);
+        setRefreshToken(data.refreshToken);
+      } else {
+        console.error('failed to reissue token', response.status);
+      }
+    } catch (error) {
+      console.error('Refresh Token 재발급 실패', error);
+    }
   };
 
   let searchTrackUrl = `${server}/api/searchSpotify/track/${searchKeyword}`;
@@ -360,7 +370,10 @@ function SearchTrackModal(props: SearchAlbumModalProps) {
   useEffect(() => {
     console.log(searchingTopic);
     console.log(favoriteArtist);
-    if (searchingTopic === 'Artist-track') Search(searchArtistTrackUrl);
+    if (searchingTopic === 'Artist-track') {
+      setIsLoading(true);
+      Search(searchArtistTrackUrl);
+    }
   }, []);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
