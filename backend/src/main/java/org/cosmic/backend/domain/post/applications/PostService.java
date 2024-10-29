@@ -4,6 +4,10 @@ import java.time.Instant;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.cosmic.backend.domain.albumScore.applications.AlbumScoreService;
+import org.cosmic.backend.domain.albumScore.domains.AlbumScore;
+import org.cosmic.backend.domain.albumScore.repositorys.AlbumScoreRepository;
+import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.playList.exceptions.NotMatchAlbumException;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
@@ -13,6 +17,7 @@ import org.cosmic.backend.domain.post.exceptions.NotFoundAlbumException;
 import org.cosmic.backend.domain.post.exceptions.NotFoundPostException;
 import org.cosmic.backend.domain.post.exceptions.NotMatchUserException;
 import org.cosmic.backend.domain.post.repositories.PostRepository;
+import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,7 +35,9 @@ public class PostService {
   private final PostRepository postRepository;
   private final UsersRepository userRepository;
   private final AlbumRepository albumRepository;
+  private final AlbumScoreRepository albumScoreRepository;
 
+  private final AlbumScoreService albumScoreService;
   private List<PostAndCommentsDetail> getUsersPosts(Long userId, Pageable pageable) {
     return postRepository.findByUser_UserId(userId, pageable).map(PostAndCommentsDetail::from)
         .getContent();
@@ -69,13 +76,17 @@ public class PostService {
    * @throws NotMatchAlbumException 게시물에 해당하는 앨범을 찾을 수 없을 때 발생합니다.
    */
   @Transactional
-  public PostAndCommentsDetail createPost(String content, String spotifyAlbumId, Long userId) {
-    return PostAndCommentsDetail.from(postRepository.save(Post.builder()
+  public PostAndCommentsDetail createPost(String content, String spotifyAlbumId,Integer score, Long userId) {
+    User user= userRepository.findById(userId).orElseThrow(NotFoundUserException::new);
+    Album album=albumRepository.findBySpotifyAlbumId(spotifyAlbumId).orElseThrow(NotFoundAlbumException::new);
+    PostAndCommentsDetail postAndCommentsDetail= PostAndCommentsDetail.from(postRepository.save(Post.builder()
         .content(content)
-        .user(userRepository.findById(userId).orElseThrow(NotFoundUserException::new))
-        .album(albumRepository.findBySpotifyAlbumId(spotifyAlbumId)
-            .orElseThrow(NotFoundAlbumException::new))
+        .user(user)
+        .album(album)
         .build()));
+    albumScoreService.createAlbumScore(album,userId,score);
+    postAndCommentsDetail.getPostDetail().getAlbum().setScore(score);
+    return postAndCommentsDetail;
   }
 
   private void validPostAuthor(Post post, Long userId) {
@@ -90,12 +101,18 @@ public class PostService {
    * @throws NotFoundPostException 게시물을 찾을 수 없을 때 발생합니다.
    */
   @Transactional
-  public PostAndCommentsDetail updatePost(String content, Long postId, Long userId) {
+  public PostAndCommentsDetail updatePost(String content,Integer score, Long postId, Long userId) {
     Post updatedPost = postRepository.findById(postId).orElseThrow(NotFoundPostException::new);
+    User user = userRepository.findById(userId).orElseThrow(NotFoundUserException::new);
+    Album album=albumRepository.findBySpotifyAlbumId(updatedPost.getAlbum().getSpotifyAlbumId()).orElseThrow(NotFoundAlbumException::new);
     validPostAuthor(updatedPost, userId);
     updatedPost.setContent(content);
     updatedPost.setUpdateTime(Instant.now());
-    return getPostById(postRepository.save(updatedPost).getPostId());
+    PostAndCommentsDetail postAndCommentsDetail=getPostById(postRepository.save(updatedPost).getPostId());
+    albumScoreService.createAlbumScore(album,userId,score);
+    postAndCommentsDetail.getPostDetail().getAlbum().setScore(score);
+
+    return postAndCommentsDetail;
   }
 
   /**

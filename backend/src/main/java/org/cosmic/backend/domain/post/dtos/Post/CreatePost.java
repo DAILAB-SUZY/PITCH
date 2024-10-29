@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreatePost {
-
   private String content;
   private String title;
   private String spotifyAlbumId;
+  private Integer score;
 }

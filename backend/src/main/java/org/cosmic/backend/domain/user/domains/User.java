@@ -24,6 +24,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.cosmic.backend.domain.albumChat.domains.AlbumChatComment;
+import org.cosmic.backend.domain.albumScore.domains.AlbumScore;
 import org.cosmic.backend.domain.bestAlbum.domains.UserBestAlbum;
 import org.cosmic.backend.domain.favoriteArtist.domains.FavoriteArtist;
 import org.cosmic.backend.domain.musicDna.domains.MusicDna;
@@ -89,6 +90,9 @@ public class User implements MyUserDetails {
   @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
   private FavoriteArtist favoriteArtist;
 
+  @OneToMany(mappedBy = "user")
+  private List<AlbumScore> albumScore;
+
   @Builder.Default
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Post> posts = new ArrayList<>();
@@ -130,15 +134,15 @@ public class User implements MyUserDetails {
 
   public static UserDetail toUserDetail(User user) {
     return UserDetail.builder()
-        .id(user.userId)
-        .username(user.username)
-        .profilePicture(getOriginProfilePicture(user.profilePicture))
-        .dnas(user.toDnaDetails())
+        .id(user.getUserId())
+        .username(user.getUsername())
+        .profilePicture(getOriginProfilePicture(user.getProfilePicture()))
+        .dnas(user.toDnaDetails(user))
         .build();
   }
 
-  private List<DnaDetail> toDnaDetails() {
-    return Stream.of(dna1, dna2, dna3, dna4).map(dna -> dna != null ? DnaDetail.from(dna) : null)
+  private List<DnaDetail> toDnaDetails(User user) {
+    return Stream.of(user.getDna1(), user.getDna2(), user.getDna3(), user.getDna4()).map(dna -> dna != null ? DnaDetail.from(dna) : null)
         .toList();
   }
 

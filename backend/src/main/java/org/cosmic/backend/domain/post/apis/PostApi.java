@@ -125,12 +125,12 @@ public class PostApi {
       @AuthenticationPrincipal Long userId) {
     try {
       return ResponseEntity.ok(
-          postService.createPost(post.getContent(), post.getSpotifyAlbumId(), userId));
+          postService.createPost(post.getContent(), post.getSpotifyAlbumId(),post.getScore(), userId));
     } catch (NotFoundAlbumException e) {
       searchAlbumService.saveArtistAndAlbumBySpotifyId(post.getSpotifyAlbumId());
     }
     return ResponseEntity.ok(
-        postService.createPost(post.getContent(), post.getSpotifyAlbumId(), userId));
+        postService.createPost(post.getContent(), post.getSpotifyAlbumId(),post.getScore(), userId));
   }
 
   /**
@@ -149,7 +149,7 @@ public class PostApi {
   @Operation(summary = "특정 앨범 포스트 수정 API", description = "특정 앨범 포스트를 수정합니다.")
   public ResponseEntity<PostAndCommentsDetail> updatePost(@RequestBody UpdatePost post,
       @PathVariable Long postId, @AuthenticationPrincipal Long userId) {
-    return ResponseEntity.ok(postService.updatePost(post.getContent(), postId, userId));
+    return ResponseEntity.ok(postService.updatePost(post.getContent(),post.getScore(), postId, userId));
   }
 
   /**
