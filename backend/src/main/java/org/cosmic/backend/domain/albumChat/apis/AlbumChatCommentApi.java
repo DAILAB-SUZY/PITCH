@@ -12,6 +12,7 @@ import java.util.List;
 import org.cosmic.backend.domain.albumChat.applications.AlbumChatCommentService;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDetail;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentRequest;
+import org.cosmic.backend.domain.playList.dtos.PlaylistAndRecommendDetail;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -144,4 +145,20 @@ public class AlbumChatCommentApi {
     return ResponseEntity.ok(
         commentService.albumChatCommentDelete(spotifyAlbumId, albumChatId, sorted));
   }
+
+  @GetMapping("/{spotifyAlbumId}/albumchat/{albumChatId}")
+  @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+          schema = @Schema(implementation = AlbumChatCommentDetail.class)))
+  @Operation(summary = "특정 앨범의 앨범챗 댓글만 가져오기, sorted가 'recent'인 경우 최신순으로 정렬하고 그 외에는 album_like 순으로 정렬됩니다.")
+  public ResponseEntity<AlbumChatCommentDetail> albumChatCommentGet(
+          @Parameter(description = "앨범 id")
+          @PathVariable String spotifyAlbumId,
+          @Parameter(description = "앨범챗 댓글 id")
+          @PathVariable Long albumChatId,
+          @Parameter(description = "댓글 정렬", required = false)
+          @RequestParam String sorted) {
+      return ResponseEntity.ok(
+          commentService.albumChatCommentGet(spotifyAlbumId, albumChatId, sorted));
+  }
+
 }
