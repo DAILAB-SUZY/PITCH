@@ -45,6 +45,7 @@ import org.springframework.security.core.GrantedAuthority;
 @EqualsAndHashCode(exclude = {"email", "playlist", "posts", "postComments", "postLikes",
     "favoriteArtist"})
 public class User implements MyUserDetails {
+  private static final String NONE_ARTIST = "";
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -185,6 +186,7 @@ public class User implements MyUserDetails {
   }
 
   public String getFavoriteArtistId() {
+    if(getFavoriteArtist() == null) {return NONE_ARTIST;}
     return getFavoriteArtist().getSpotifyArtistId();
   }
 

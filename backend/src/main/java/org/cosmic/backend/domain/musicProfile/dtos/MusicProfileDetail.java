@@ -1,11 +1,14 @@
 package org.cosmic.backend.domain.musicProfile.dtos;
 
 import java.util.List;
+import java.util.Optional;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.cosmic.backend.domain.bestAlbum.dtos.BestAlbumDetail;
+import org.cosmic.backend.domain.favoriteArtist.domains.FavoriteArtist;
 import org.cosmic.backend.domain.favoriteArtist.dtos.FavoriteArtistDetail;
 import org.cosmic.backend.domain.playList.dtos.PlaylistDetail;
 import org.cosmic.backend.domain.user.domains.User;
@@ -37,4 +40,5 @@ public class MusicProfileDetail {
         .followers(user.getFollowers().stream().map(FollowDto::follower).toList())
         .build();
   }
+
 }
