@@ -32,6 +32,14 @@ public class FileUploadService {
     @Autowired
     private UsersRepository usersRepository;
 
+
+    private boolean checkFormat(String str1,String str2){
+        if(str1.equals(".jpg")||str1.equals(".png")||str2.equals(".jpeg")||str2.equals(".webp")) {
+            return true;
+        }
+        return false;
+    }
+
     @Transactional
     public void uploadFile(Long userId, MultipartFile profileImage) {
         File directory = new File(uploadDirectory);
@@ -39,9 +47,8 @@ public class FileUploadService {
             directory.mkdirs();
         }
         String originalFileName = profileImage.getOriginalFilename();
-        String temp1=originalFileName.substring(originalFileName.length()-4);
-        String temp2=originalFileName.substring(originalFileName.length()-5);
-        if(temp1.equals(".jpg")||temp1.equals(".png")||temp2.equals(".jpeg")||temp2.equals(".webp")) {
+        if(checkFormat(originalFileName.substring(originalFileName.length()-4),
+            originalFileName.substring(originalFileName.length()-5))) {
             String saveImgFileName = FileNameUtil.fileNameConvert(originalFileName).replaceAll("\\.\\w+$", ".webp");
             String fullPath = uploadDirectory +"/"+ saveImgFileName;
             User user = usersRepository.findById(userId)
