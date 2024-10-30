@@ -52,6 +52,7 @@ const CommentCard = styled.div`
 `;
 
 const ImageArea = styled.div`
+  transform: translateZ(0);
   position: absolute;
   top: 0px;
   left: 0px;
@@ -62,6 +63,9 @@ const ImageArea = styled.div`
   z-index: 1;
   box-sizing: border-box;
 
+  max-width: 599px;
+  max-height: 599px;
+
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -69,17 +73,21 @@ const ImageArea = styled.div`
 `;
 
 const GradientBG = styled.div`
+  transform: translateZ(0);
   position: absolute;
   top: 0px;
   left: 0px;
-  z-index: 2;
+  overflow: hidden;
   width: 100%;
-  height: 100%;
-  box-sizing: border-box;
+  height: 100.5%;
   object-fit: cover;
+  z-index: 2;
+  box-sizing: border-box;
+
   display: flex;
-  align-items: center;
+  flex-direction: column;
   justify-content: center;
+  align-items: center;
   background: linear-gradient(0deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 80%);
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
@@ -169,7 +177,7 @@ const ContentInfoArea = styled.div`
 `;
 
 const Line = styled.div`
-  width: 100%;
+  width: 90%;
   max-width: 500px;
   box-sizing: border-box;
   padding: 0px 20px 0px 20px;
@@ -426,7 +434,7 @@ function AlbumPage() {
           <>
             <CommentCard>
               <ImageArea>
-                <img src={albumDetail?.albumCover} width="120%" height="120%" object-fit="cover"></img>
+                <img src={albumDetail?.albumCover} width="100%" height="100%" object-fit="cover"></img>
               </ImageArea>
               <GradientBG> </GradientBG>
               <CoverImageArea>

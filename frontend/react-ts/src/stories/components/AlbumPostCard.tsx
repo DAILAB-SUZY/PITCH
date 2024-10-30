@@ -71,12 +71,7 @@ const TitleTextArea = styled.div`
   z-index: 3;
 `;
 
-const Text = styled.div<{
-  fontFamily?: string;
-  fontSize?: string;
-  margin?: string;
-  color?: string;
-}>`
+const Text = styled.div<{ fontSize?: string; fontFamily?: string; margin?: string }>`
   font-size: ${props => props.fontSize};
   font-family: ${props => props.fontFamily};
   color: ${props => props.color};
@@ -149,6 +144,12 @@ const ProfileImage = styled.div`
   height: 26px;
   border-radius: 50%;
   background-color: ${colors.BG_grey};
+`;
+const ProfileImageCircle = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 비율 유지하며 꽉 채움 */
+  object-position: center; /* 이미지 가운데 정렬 */
 `;
 
 const PostContentArea = styled.div`
@@ -495,7 +496,7 @@ const AlbumPost = ({ albumPost }: AlbumPostProps) => {
         <PostHeaderArea>
           <ProfileArea onClick={() => GoToMusicProfilePage()}>
             <ProfileImage>
-              <img src={albumPost?.postDetail.author.profilePicture} width="100%" height="100%"></img>
+              <ProfileImageCircle src={albumPost?.postDetail.author.profilePicture} alt="Profile" />
             </ProfileImage>
             <ProfileTextArea>
               <ProfileName>{albumPost?.postDetail.author.username}</ProfileName>

@@ -18,12 +18,16 @@ const FavoriteArtistArea = styled.div`
   align-items: center;
   padding: 20px;
   margin-bottom: 50px;
+  width: 90vw;
+  max-width: 600px;
 `;
 
 const BG = styled.div`
   position: relative;
   display: flex;
-  width: 360px;
+  width: 100%;
+  max-width: 600px;
+  min-width: 360px;
   height: 360px;
   border-radius: 12px;
   background: linear-gradient(90deg, #6a85b6, #bac8e0);
@@ -39,7 +43,8 @@ const ImageArea = styled.div`
   top: 0px;
   left: 0px;
 
-  width: 360px;
+  width: 100%;
+  max-width: 600px;
   height: 360px;
   /* object-fit: cover; */
   z-index: 1;
@@ -52,6 +57,7 @@ const GradientBG = styled.div`
   left: 0px;
   z-index: 2;
   width: 100%;
+  max-width: 600px;
   height: 100%;
   object-fit: cover;
   display: flex;
@@ -163,7 +169,7 @@ function FavoriteArtistCard({ FavoriteArtistData }: FavoriteArtistProps) {
     <FavoriteArtistArea>
       <BG>
         <ImageArea>
-          <img src={data.artistCover} width="auto" height="100%" object-fit="cover"></img>
+          <img src={data.artistCover} width="100%" height="auto" object-fit="cover"></img>
         </ImageArea>
         <GradientBG> </GradientBG>
         <ContentArea>

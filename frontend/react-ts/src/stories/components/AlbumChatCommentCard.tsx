@@ -34,7 +34,13 @@ const ProfileImage = styled.div`
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background-color: ${colors.Main_Pink};
+`;
+
+const ProfileImageCircle = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 비율 유지하며 꽉 채움 */
+  object-position: center; /* 이미지 가운데 정렬 */
 `;
 
 const ChatCardBody = styled.div`
@@ -164,7 +170,7 @@ function AlbumChatCommentCard({ comment }: AlbumData) {
       <CommentCommentContent>
         <ProfileArea>
           <ProfileImage>
-            <img src={comment.author.profilePicture}></img>
+            <ProfileImageCircle src={comment.author.profilePicture} alt="Profile" />
           </ProfileImage>
           <ProfileTextArea>
             <ProfileName>{comment.author.username}</ProfileName>

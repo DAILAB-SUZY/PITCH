@@ -112,7 +112,7 @@ const AlbumListArea = styled.div`
   align-items: center;
   overflow-x: scroll;
   box-sizing: border-box;
-  width: 100vw;
+  width: 380px;
   padding: 10px;
 `;
 

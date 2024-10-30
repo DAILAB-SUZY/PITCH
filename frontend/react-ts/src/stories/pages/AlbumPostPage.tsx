@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { colors } from '../../styles/color';
 import { useRef, useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import AlbumChatCard from '../components/AlbumPostCommentCard';
+import AlbumPostCommentCard from '../components/AlbumPostCommentCard';
 import useStore from '../store/store';
 
 const Container = styled.div`
@@ -19,7 +19,7 @@ const Container = styled.div`
 
 const AlbumPostArea = styled.div`
   width: 100vw;
-  height: 100%;
+  height: auto;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -159,6 +159,12 @@ const ProfileImgTextArea = styled.div`
   justify-content: flex-start;
   align-items: center;
 `;
+const ProfileImageCircle = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 비율 유지하며 꽉 채움 */
+  object-position: center; /* 이미지 가운데 정렬 */
+`;
 
 const EditBtn = styled.div`
   display: flex;
@@ -232,12 +238,24 @@ const ButtonArea = styled.div`
 
 const ChatArea = styled.div`
   width: 100vw;
-  height: 70vh;
-  overflow-y: scroll;
+  height: auto;
+  min-height: 70px;
+  /* overflow-y: scroll; */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
+
+  padding-bottom: 20px;
+`;
+
+const CommentCardArea = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  height: auto;
 `;
 
 interface albumPost {
@@ -301,7 +319,7 @@ interface albumPost {
 function AlbumPostPage() {
   const location = useLocation();
   const [albumPost, setAlbumPost] = useState<albumPost>();
-  const [albumPostId, setAlbumPostId] = useState();
+  // const [albumPostId, setAlbumPostId] = useState();
   const server = 'http://203.255.81.70:8030';
   const reissueTokenUrl = `${server}/api/auth/reissued`;
   const [token, setToken] = useState(localStorage.getItem('login-token'));
@@ -340,7 +358,7 @@ function AlbumPostPage() {
 
   const fetchAlbumPost = async () => {
     console.log('start fetching albumPost...');
-    let albumPostUrl = `${server}/api/album/post/${albumPostId}`;
+    let albumPostUrl = `${server}/api/album/post/${location.state}`;
     console.log(albumPostUrl);
     if (token) {
       try {
@@ -385,7 +403,6 @@ function AlbumPostPage() {
 
   useEffect(() => {
     fetchAlbumPost();
-    setAlbumPostId(location.state);
   }, []);
 
   // Post 시간 계산에 필요한 상태 관리
@@ -600,7 +617,7 @@ function AlbumPostPage() {
               <ProfileArea>
                 <ProfileImgTextArea>
                   <ProfileImage>
-                    <img src={albumPost.postDetail.author.profilePicture}></img>
+                    <ProfileImageCircle src={albumPost.postDetail.author.profilePicture}></ProfileImageCircle>
                   </ProfileImage>
                   <ProfileTextArea>
                     <ProfileName>{albumPost.postDetail.author.username}</ProfileName>
@@ -679,9 +696,11 @@ function AlbumPostPage() {
                 />
               </svg>
             </RowAlignArea>
-            {albumPost.comments.map((comment: any, index: number) => (
-              <AlbumChatCard key={index} comment={comment}></AlbumChatCard>
-            ))}
+            <CommentCardArea>
+              {albumPost.comments.map((comment: any, index: number) => (
+                <AlbumPostCommentCard key={index} comment={comment}></AlbumPostCommentCard>
+              ))}
+            </CommentCardArea>
           </ChatArea>
         </>
       )}

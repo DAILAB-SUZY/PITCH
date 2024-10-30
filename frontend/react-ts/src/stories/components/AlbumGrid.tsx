@@ -1,14 +1,12 @@
 import styled from 'styled-components';
 
 interface AlbumDataProps {
-  AlbumData: [
-    {
-      albumCover: string;
-      albumId: number;
-      albumName: string;
-      score: number;
-    },
-  ];
+  AlbumData: {
+    albumCover: string;
+    albumId: number;
+    albumName: string;
+    score: number;
+  }[];
 }
 const BestAlbumArea = styled.div`
   width: 100vw;

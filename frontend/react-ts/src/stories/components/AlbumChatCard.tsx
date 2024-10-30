@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { colors } from '../../styles/color';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import useStore from '../store/store';
 import { useNavigate } from 'react-router-dom';
 const ChatCardContainer = styled.div`
@@ -52,6 +52,7 @@ const ProfileArea = styled.div`
   align-items: center;
   flex-direction: row;
 `;
+
 const PostUploadTime = styled.div`
   display: flex;
   font-size: 10px;
@@ -59,6 +60,7 @@ const PostUploadTime = styled.div`
   margin: 0px 0px 2px 10px;
   color: ${colors.Font_grey};
 `;
+
 const ProfileTextArea = styled.div`
   display: flex;
   justify-content: flex-start;
@@ -77,7 +79,12 @@ const ProfileImage = styled.div`
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background-color: ${colors.Main_Pink};
+`;
+const ProfileImageCircle = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center; /* 이미지 가운데 정렬 */
 `;
 
 const ButtonArea = styled.div`
@@ -86,6 +93,38 @@ const ButtonArea = styled.div`
   align-items: center;
   justify-content: flex-end;
   margin: 0 10 0 10px;
+`;
+
+const EditBtn = styled.div`
+  display: flex;
+  position: relative;
+`;
+const DropdownMenu = styled.div`
+  position: absolute;
+  top: 25px;
+  right: 0;
+  width: 70px;
+  height: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background-color: white;
+  border-radius: 7px;
+  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
+  z-index: 10;
+  overflow: hidden;
+`;
+
+const DropdownItem = styled.div`
+  padding: 10px;
+  width: 70px;
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+  &:hover {
+    background-color: ${colors.BG_grey};
+  }
 `;
 
 interface DNA {
@@ -263,6 +302,46 @@ const AlbumChatCard = ({ comment, spotifyAlbumId }: AlbumData) => {
     navigate('/MusicProfilePage', { state: userId });
   };
 
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
+
+  // 수정/삭제 버튼
+  const editMenu = () => {
+    console.log('edit');
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  // 삭제요청
+  const deleteChat = async () => {
+    const DeleteChatUrl = server + `/api/album/${spotifyAlbumId}/albumchat/${comment.albumChatCommentId}`;
+    if (token) {
+      if (comment) {
+        console.log(`delete id: ${comment.albumChatCommentId} Chat...`);
+      }
+      try {
+        const response = await fetch(DeleteChatUrl, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (response.ok) {
+          //const data = await response.json();
+          //setAlbumPost(data);
+          console.log('deleted');
+        } else if (response.status === 401) {
+          ReissueToken();
+          deleteChat();
+        } else {
+          console.error('Failed to delete data:', response.status);
+        }
+      } catch (error) {
+        console.error('delete 실패:', error);
+      }
+    }
+  };
+
   return (
     <ChatCardContainer>
       <ProfileArea
@@ -271,12 +350,32 @@ const AlbumChatCard = ({ comment, spotifyAlbumId }: AlbumData) => {
         }}
       >
         <ProfileImage>
-          <img src={comment.author.profilePicture}></img>
+          <ProfileImageCircle src={comment.author.profilePicture} alt="Profile" />
         </ProfileImage>
         <ProfileTextArea>
           <ProfileName>{comment.author.username}</ProfileName>
           <PostUploadTime> {timeAgo} </PostUploadTime>
         </ProfileTextArea>
+        {comment.author.id === id && (
+          <EditBtn ref={dropdownRef}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              fill={colors.Font_grey}
+              className="bi bi-three-dots"
+              viewBox="0 0 16 16"
+              onClick={() => editMenu()} // 클릭 시 토글
+            >
+              <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3" />
+            </svg>
+            {isDropdownOpen && (
+              <DropdownMenu>
+                <DropdownItem onClick={() => deleteChat()}>삭제</DropdownItem>
+              </DropdownMenu>
+            )}
+          </EditBtn>
+        )}
       </ProfileArea>
       <ChatCardBody
         onClick={() => {
