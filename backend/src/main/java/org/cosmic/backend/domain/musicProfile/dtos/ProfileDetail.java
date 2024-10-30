@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.cosmic.backend.domain.bestAlbum.dtos.BestAlbumDetail;
+import org.cosmic.backend.domain.favoriteArtist.domains.FavoriteArtist;
 import org.cosmic.backend.domain.favoriteArtist.dtos.FavoriteArtistDetail;
 import org.cosmic.backend.domain.user.domains.User;
 
@@ -20,7 +21,7 @@ public class ProfileDetail {
 
   public static ProfileDetail from(User user) {
     return ProfileDetail.builder()
-        .favoriteArtist(FavoriteArtistDetail.from(user.getFavoriteArtist()))
+        .favoriteArtist(FavoriteArtistDetail.from(user.getFavoriteArtist()==null ? new FavoriteArtist(): user.getFavoriteArtist()))
         .bestAlbum(BestAlbumDetail.from(user.getBestAlbums()))
         .build();
   }

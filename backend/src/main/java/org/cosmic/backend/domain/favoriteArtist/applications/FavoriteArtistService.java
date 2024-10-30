@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.cosmic.backend.domain.favoriteArtist.domains.FavoriteArtist;
 import org.cosmic.backend.domain.favoriteArtist.dtos.FavoriteArtistDetail;
 import org.cosmic.backend.domain.favoriteArtist.dtos.FavoriteRequest;
+import org.cosmic.backend.domain.favoriteArtist.exceptions.IdNullException;
 import org.cosmic.backend.domain.favoriteArtist.repositorys.FavoriteArtistRepository;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundTrackException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
@@ -77,6 +78,10 @@ public class FavoriteArtistService {
     if(favoriteArtistRepository.findByUser_UserId(user.getUserId()).isPresent()){
       favoriteArtist2=favoriteArtistRepository.findByUser_UserId(user.getUserId()).get();
     }
+    if(favoriteArtist.getSpotifyArtistId()==null||favoriteArtist.getSpotifyTrackId()==null||favoriteArtist.getSpotifyAlbumId()==null){
+      throw new IdNullException();
+    }
+
     favoriteArtist2.setArtist(
         searchService.findAndSaveArtistBySpotifyId(favoriteArtist.getSpotifyArtistId()));
     favoriteArtist2.setAlbum(

@@ -8,6 +8,7 @@ public class BadRequestException extends RuntimeException{
     protected static final String NOT_MATCH_MUSIC_DNA_COUNT_ERROR_MESSAGE ="Need 4 MusicDna";
     protected static final String NOT_MATCH_CONDITION_ERROR_MESSAGE ="Not met password condition";
     protected static final String NOT_MATCH_PASSWORD_ERROR_MESSAGE ="Not match password";
+    protected static final String NULL_INCLUDE_ELEMENT_EXCEPTION="Include Null Element";
     protected static final String NOT_INPUT_FILE_MESSAGE="Not Input File";
 
     public BadRequestException(String errorMessage) {
@@ -37,6 +38,10 @@ public class BadRequestException extends RuntimeException{
     public static String getNotMatchBestAlbumError()
     {
         return NOT_MATCH_BEST_ALBUM_EXCEPTION;
+    }
+    public static String getNullIncludeElementException()
+    {
+        return NULL_INCLUDE_ELEMENT_EXCEPTION;
     }
     public static String getNotInputFileError()
     {

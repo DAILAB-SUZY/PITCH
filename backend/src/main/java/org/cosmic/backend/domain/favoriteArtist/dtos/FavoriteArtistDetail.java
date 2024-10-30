@@ -20,6 +20,9 @@ public class FavoriteArtistDetail {
   private String spotifyArtistId;
 
   public static FavoriteArtistDetail from(FavoriteArtist favoriteArtist) {
+    if (favoriteArtist == null) {
+      return FavoriteArtistDetail.builder().build();
+    }
     return FavoriteArtistDetail.builder()
         .artistName(favoriteArtist.getArtist().getArtistName())
         .albumName(favoriteArtist.getAlbum().getTitle())
