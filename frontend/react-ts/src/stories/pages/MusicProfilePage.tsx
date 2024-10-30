@@ -433,10 +433,10 @@ function MusicProfilePage() {
 
   const { name, id } = useStore();
   console.log(`id: ${id} / name: ${name}`);
-  const server = 'http://203.255.81.70:8030';
-  let musiProfileUrl = `${server}/api/user/${profileId}/musicProfile`;
-  let activityUrl = `${server}/api/user/${profileId}/musicProfile/activity`;
-  let followUrl = `${server}/api/user/follow/${profileId}`;
+
+  let musiProfileUrl = `/api/user/${profileId}/musicProfile`;
+  let activityUrl = `/api/user/${profileId}/musicProfile/activity`;
+  let followUrl = `/api/user/follow/${profileId}`;
 
   const fetchData = async (token: string, refreshToken: string, URL: string) => {
     fetchGET(token, refreshToken, URL).then(data => {

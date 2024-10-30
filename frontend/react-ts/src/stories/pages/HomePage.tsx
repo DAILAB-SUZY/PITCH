@@ -6,7 +6,7 @@ import Nav from '../components/Nav';
 import AlbumPostCard from '../components/AlbumPostCard';
 import PlaylistPreviewCard from '../components/PlaylistPreviewCard';
 import useStore from '../store/store';
-import { fetchGET, fetchPOST } from '../utils/fetchData';
+import { fetchGET } from '../utils/fetchData';
 
 const Container = styled.div`
   display: flex;
@@ -180,14 +180,11 @@ function HomePage() {
   console.log('albumpost: ', albumPosts);
   console.log('postPage: ', postPage);
 
-  const server = 'http://203.255.81.70:8030';
-
   // Intersection Observer용 ref
   const observerRef = useRef<HTMLDivElement | null>(null);
 
-  const PlaylistUrl = `${server}/api/playlist/following`;
-
-  // Playlist Fetching
+  const PlaylistUrl = `/api/playlist/following`;
+  const AlbumPostUrl = `/api/album/post?page=${postPage}&limit=5`;
   const fetchPlaylist = async (token: string, refreshToken: string) => {
     fetchGET(token, refreshToken, PlaylistUrl).then(data => {
       if (data) {
@@ -195,42 +192,11 @@ function HomePage() {
       }
     });
   };
-  // const fetchPlaylist = async (token: string, refreshToken: string) => {
-  //   if (token) {
-  //     try {
-  //       console.log('fetching Playlist...');
-  //       const response = await fetch(PlaylistUrl, {
-  //         method: 'GET',
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       });
-
-  //       if (response.ok) {
-  //         const data = await response.json();
-  //         setfriendsPlayList(prevList => [...prevList, ...data]);
-  //         console.log('fetched Playlist :');
-  //         console.log('fetched PlayList:');
-  //         console.log(data);
-  //       } else if (response.status === 401) {
-  //         ReissueToken();
-  //         fetchPlaylist();
-  //       } else {
-  //         console.error('Failed to fetch data:', response.status);
-  //       }
-  //     } catch (error) {
-  //       console.error('Error fetching the JSON file:', error);
-  //     } finally {
-  //       console.log('finished');
-  //     }
-  //   }
-  // };
 
   const fetchAlbumPosts = async (token: string, refreshToken: string) => {
     if (token && !isLoading && !isEnd) {
       setIsLoading(loading => !loading);
-      fetchGET(token, refreshToken, `${server}/api/album/post?page=${postPage}&limit=5`).then(data => {
+      fetchGET(token, refreshToken, AlbumPostUrl).then(data => {
         if (data) {
           console.log('set PostList');
           if (data.length === 0) {
@@ -246,54 +212,6 @@ function HomePage() {
     setIsLoading(false); // 로딩 상태 해제
   };
 
-  // 무한 스크롤 데이터를 가져오는 함수
-  // const fetchAlbumPosts = async () => {
-  //   const albumPostUrl = `${server}/api/album/post?page=${postPage}&limit=5`;
-  //   if (token && !isLoading && !isEnd) {
-  //     setIsLoading(loading => !loading);
-  //     try {
-  //       console.log('fetching...');
-  //       const response = await fetch(albumPostUrl, {
-  //         method: 'GET',
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       });
-  //       console.log('fetching...complete');
-
-  //       if (response.ok) {
-  //         console.log('set PostList');
-  //         const data: AlbumPost[] = await response.json();
-  //         console.log(data);
-  //         if (data.length === 0) {
-  //           console.log('list End');
-  //           setIsEnd(true);
-  //         }
-  //         // 만약 첫 로딩이면
-  //         if (postPage === 0) {
-  //           //clearAlbumPosts();
-  //         }
-  //         setAlbumPosts(prev => [...prev, ...data]); // 기존 데이터에 새로운 데이터를 추가
-  //         setPostPage(prevPage => prevPage + 1); // 페이지 증가
-
-  //         console.log('albumpost ', albumPosts);
-  //       } else if (response.status === 401) {
-  //         ReissueToken();
-  //         fetchAlbumPosts();
-  //       } else {
-  //         console.error('Failed to fetch AlbumPost data:', response.status);
-  //       }
-  //     } catch (error) {
-  //       console.error('Error fetching the JSON file:', error);
-  //     } finally {
-  //       setIsLoading(false); // 로딩 상태 해제
-  //       console.log('fetching Complete: ', albumPosts);
-  //       console.log(`postPage : ${postPage}`);
-  //     }
-  //   }
-  // };
-
   useEffect(() => {
     fetchPlaylist(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '');
   }, []);
@@ -303,8 +221,6 @@ function HomePage() {
     const observer = new IntersectionObserver(entries => {
       // observerRef가 화면에 보이면 fetch 호출
       if (!isLoading && entries[0].isIntersecting) {
-        // setPostPage((prevPage) => prevPage + 1); // 페이지 증가
-        // console.log("page++ => ", postPage);
         fetchAlbumPosts(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '');
       }
     });
@@ -347,7 +263,6 @@ function HomePage() {
               fill="currentColor"
               className="bi bi-pencil-square"
               viewBox="0 0 16 16"
-              //  TODO: 댓글 작성 기능 구현
               onClick={() => {
                 GoToAlbumPostEditPage();
               }}

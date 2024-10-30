@@ -310,7 +310,7 @@ function MusicProfileEditPage() {
 
   const server = 'http://203.255.81.70:8030';
 
-  let musiProfileUrl = `${server}/api/user/${userId}/musicProfile`;
+  let musiProfileUrl = `/api/user/${userId}/musicProfile`;
 
   const navigate = useNavigate();
   const GoToMusicProfilePage = () => {
@@ -356,7 +356,7 @@ function MusicProfileEditPage() {
   };
 
   // musicDNA 가져오기
-  const MusicDNAUrl = `${server}/api/dna`;
+  const MusicDNAUrl = `/api/dna`;
   const fetchMusicDNA = async (token: string, refreshToken: string) => {
     fetchGET(token, refreshToken, MusicDNAUrl).then(data => {
       setAllMusicDna(data);
@@ -393,10 +393,10 @@ function MusicProfileEditPage() {
   };
 
   // 수정사항 fetch
-  const MusicDNAPostUrl = `${server}/api/dna`;
-  const ProfilePostUrl = `${server}/api/file/`;
-  const BestAlbumPostUrl = `${server}/api/bestAlbum`;
-  const FavoriteArtistPostUrl = `${server}/api/favoriteArtist`;
+  const MusicDNAPostUrl = `/api/dna`;
+  const ProfilePostUrl = `/api/file/`;
+  const BestAlbumPostUrl = `/api/bestAlbum`;
+  const FavoriteArtistPostUrl = `/api/favoriteArtist`;
   const postAllEdit = async () => {
     const token = localStorage.getItem('login-token');
     const refreshToken = localStorage.getItem('login-refreshToken');
@@ -580,12 +580,6 @@ function MusicProfileEditPage() {
               ))}
           </ProfileTagArea>
         </MusicDnaArea>
-        {/* <PlaylistCardArea>
-          <TitleArea margin="0px 0px 20px 20px">
-            <Title> Playlist</Title>
-          </TitleArea>
-          {musicProfileData?.playlist && <PlaylistCardMini playlist={musicProfileData?.playlist} userDetail={musicProfileData?.userDetail} />}
-        </PlaylistCardArea> */}
 
         <BestAlbumArea>
           <TitleArea>

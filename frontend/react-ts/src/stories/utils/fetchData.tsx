@@ -1,4 +1,5 @@
 const server = 'http://203.255.81.70:8030';
+// const server = 'http://pitches.social';
 const reissueTokenUrl = `${server}/api/auth/reissued`;
 
 // 토큰 재발급 함수
@@ -34,7 +35,7 @@ export const fetchGET = async (token: string, refreshToken: string, URL: string)
 
   try {
     console.log('Fetching GET...');
-    const response = await fetch(URL, {
+    const response = await fetch(`${server}${URL}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -69,7 +70,7 @@ export const fetchPOST = async (token: string, refreshToken: string, URL: string
   try {
     console.log('Fetching POST...');
     console.log(Data);
-    const response = await fetch(URL, {
+    const response = await fetch(`${server}${URL}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -110,7 +111,7 @@ export const fetchPOSTFile = async (token: string, refreshToken: string, URL: st
       obj2[key] = value;
     });
     console.log(obj2);
-    const response = await fetch(URL, {
+    const response = await fetch(`${server}${URL}`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,

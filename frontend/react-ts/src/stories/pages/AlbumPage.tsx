@@ -7,6 +7,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import Loader from '../components/Loader';
 import useStore from '../store/store';
+import { fetchGET } from '../utils/fetchData';
 
 const Container = styled.div`
   display: flex;
