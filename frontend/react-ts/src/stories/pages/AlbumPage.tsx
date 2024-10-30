@@ -7,7 +7,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import Loader from '../components/Loader';
 import useStore from '../store/store';
-import { fetchGET } from '../utils/fetchData';
+import { fetchGET, fetchPOST } from '../utils/fetchData';
 
 const Container = styled.div`
   display: flex;
@@ -259,78 +259,54 @@ function AlbumPage() {
   const spotifyAlbumId = location.state;
 
   const [albumDetail, setAlbumDetail] = useState<AlbumDetail>();
-  const [isLoading, setIsLoading] = useState(false);
+
   const [tabState, setTabState] = useState('chat');
 
-  const server = 'http://203.255.81.70:8030';
-  let AlbumPageUrl = `${server}/api/album/${spotifyAlbumId}`;
-
-  const reissueTokenUrl = `${server}/api/auth/reissued`;
-  const [token, setToken] = useState(localStorage.getItem('login-token'));
-  const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
-
   useEffect(() => {
-    fetchSearch();
+    fetchAlbumDetail(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '');
   }, []);
 
-  const fetchSearch = async () => {
-    if (token && !isLoading) {
-      setIsLoading(true);
-      console.log('검색시작');
-      Search(AlbumPageUrl);
-    }
-  };
-  const Search = async (URL: string) => {
-    console.log('fetching album chat list...');
-    try {
-      const response = await fetch(URL, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setAlbumDetail(data);
-        console.log(data);
-      } else if (response.status === 401) {
-        ReissueToken();
-        fetchSearch();
-      } else {
-        console.error('Failed to fetch data:', response.status);
-      }
-    } catch (error) {
-      console.error('Error fetching the JSON file:', error);
-    } finally {
-      setIsLoading(false);
-      console.log('finished');
-    }
+  // const fetchSearch = async () => {
+  //   if (!isLoading) {
+  //     console.log('검색시작');
+  //     fetchAlbumDetail(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '');
+  //   }
+  // };
+
+  let AlbumPageUrl = `/api/album/${spotifyAlbumId}`;
+  const fetchAlbumDetail = async (token: string, refreshToken: string) => {
+    fetchGET(token, refreshToken, AlbumPageUrl).then(data => {
+      setAlbumDetail(data);
+    });
   };
 
-  const ReissueToken = async () => {
-    console.log('reissuing Token');
-    try {
-      const response = await fetch(reissueTokenUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Refresh-Token': `${refreshToken}`,
-        },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('login-token', data.token);
-        localStorage.setItem('login-refreshToken', data.refreshToken);
-        setToken(data.token);
-        setRefreshToken(data.refreshToken);
-      } else {
-        throw new Error(`failed to reissue token : ${response.status}`);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  // const Search = async (URL: string) => {
+  //   console.log('fetching album chat list...');
+  //   try {
+  //     const response = await fetch(URL, {
+  //       method: 'GET',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     if (response.ok) {
+  //       const data = await response.json();
+  //       setAlbumDetail(data);
+  //       console.log(data);
+  //     } else if (response.status === 401) {
+  //       //ReissueToken();
+  //       fetchSearch();
+  //     } else {
+  //       console.error('Failed to fetch data:', response.status);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error fetching the JSON file:', error);
+  //   } finally {
+  //     setIsLoading(false);
+  //     console.log('finished');
+  //   }
+  // };
 
   //
 
@@ -349,10 +325,9 @@ function AlbumPage() {
     }
   }, [albumDetail]);
 
-  const AlbumLikeUrl = server + `/api/album/${spotifyAlbumId}/like`;
+  const AlbumLikeUrl = `/api/album/${spotifyAlbumId}/like`;
 
   const changeAlbumLike = async () => {
-    console.log('changing Like');
     if (isAlbumLiked && albumDetail) {
       // 이미 좋아요를 눌렀다면 좋아요 취소
       setIsAlbumLiked(false);
@@ -369,39 +344,69 @@ function AlbumPage() {
         dnas: [],
       });
     }
-    fetchLike();
-    // like 데이터 POST 요청
+    fetchLike(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '');
   };
 
-  const fetchLike = async () => {
-    if (token) {
-      console.log('fetching Like Data');
-      try {
-        const response = await fetch(AlbumLikeUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (response.ok) {
-          const data = await response.json();
-          if (data.likes.some((like: any) => like.id === id)) {
-            console.log('like 추가');
-          } else {
-            console.log('like 삭제');
-          }
-        } else if (response.status === 401) {
-          ReissueToken();
-          fetchLike();
-        } else {
-          console.error('Failed to fetch data:', response.status);
-        }
-      } catch (error) {
-        console.error('like 실패:', error);
+  const fetchLike = async (token: string, refresuToken: string) => {
+    fetchPOST(token, refresuToken, AlbumLikeUrl, {}).then(data => {
+      if (data.likes.some((like: any) => like.id === id)) {
+        console.log('like 추가');
+      } else {
+        console.log('like 삭제');
       }
-    }
+    });
   };
+  // const changeAlbumLike = async () => {
+  //   console.log('changing Like');
+  //   if (isAlbumLiked && albumDetail) {
+  //     // 이미 좋아요를 눌렀다면 좋아요 취소
+  //     setIsAlbumLiked(false);
+  //     setLikesCount(likesCount - 1);
+  //     albumDetail.likes = albumDetail.likes.filter((like: any) => like.id !== id);
+  //   } else {
+  //     // 좋아요 누르기
+  //     setIsAlbumLiked(true);
+  //     setLikesCount(likesCount + 1);
+  //     albumDetail?.likes.push({
+  //       id: id,
+  //       username: name,
+  //       profilePicture: 'string',
+  //       dnas: [],
+  //     });
+  //   }
+  //   fetchLike();
+  //   // like 데이터 POST 요청
+  // };
+
+  // const fetchLike = async () => {
+  //   if (token) {
+  //     console.log('fetching Like Data');
+  //     try {
+  //       const response = await fetch(AlbumLikeUrl, {
+  //         method: 'POST',
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
+  //       if (response.ok) {
+  //         const data = await response.json();
+  //         if (data.likes.some((like: any) => like.id === id)) {
+  //           console.log('like 추가');
+  //         } else {
+  //           console.log('like 삭제');
+  //         }
+  //       } else if (response.status === 401) {
+  //         //ReissueToken();
+  //         fetchLike();
+  //       } else {
+  //         console.error('Failed to fetch data:', response.status);
+  //       }
+  //     } catch (error) {
+  //       console.error('like 실패:', error);
+  //     }
+  //   }
+  // };
 
   //
   const navigate = useNavigate();
@@ -431,130 +436,130 @@ function AlbumPage() {
         <Nav page={3}></Nav>
       </Header>
       <Body>
-        {!isLoading && (
-          <>
-            <CommentCard>
-              <ImageArea>
+        {/* {!isLoading && ( */}
+        <>
+          <CommentCard>
+            <ImageArea>
+              <img src={albumDetail?.albumCover} width="100%" height="100%" object-fit="cover"></img>
+            </ImageArea>
+            <GradientBG> </GradientBG>
+            <CoverImageArea>
+              <CoverImage>
                 <img src={albumDetail?.albumCover} width="100%" height="100%" object-fit="cover"></img>
-              </ImageArea>
-              <GradientBG> </GradientBG>
-              <CoverImageArea>
-                <CoverImage>
-                  <img src={albumDetail?.albumCover} width="100%" height="100%" object-fit="cover"></img>
-                </CoverImage>
-              </CoverImageArea>
-            </CommentCard>
-            <AlbumInfoArea>
-              <AlbumTitleArea>
-                <Text width="300px" fontSize="30px" margin="0px 0px 5px 0px" fontFamily="Bd" color={colors.Font_black}>
-                  {albumDetail?.title}
-                </Text>
-                <Text fontSize="20px" margin="0px 0px 5px 0px" fontFamily="Bd" opacity={0.6} color={colors.Font_black}>
-                  {albumDetail?.artistName}
-                </Text>
-                <Text fontSize="12px" margin="0px" fontFamily="Bd" opacity={0.5} color={colors.Font_black}>
-                  {albumDetail?.genre}
-                </Text>
-              </AlbumTitleArea>
-              <LikeNumberArea>
-                <svg
-                  onClick={() => changeAlbumLike()}
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="14"
-                  height="14"
-                  fill={isAlbumLiked ? colors.Button_active : colors.Button_deactive}
-                  className="bi bi-heart-fill"
-                  viewBox="0 0 16 16"
-                >
-                  <path fillRule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314" />
-                </svg>
-                <Text fontSize="15px" margin="0px 0px 0px 10px" fontFamily="Bd" color={colors.Font_black}>
-                  {albumDetail?.likes.length}
-                </Text>
-                <Text fontSize="15px" margin="0px 0px 0px 5px" fontFamily="Rg" color={colors.Font_black}>
-                  likes
-                </Text>
-              </LikeNumberArea>
-            </AlbumInfoArea>
-            <Line></Line>
-            <ContentArea>
-              {/* <Title fontSize="30px" margin="0px 0px 0px 0px" >
+              </CoverImage>
+            </CoverImageArea>
+          </CommentCard>
+          <AlbumInfoArea>
+            <AlbumTitleArea>
+              <Text width="300px" fontSize="30px" margin="0px 0px 5px 0px" fontFamily="Bd" color={colors.Font_black}>
+                {albumDetail?.title}
+              </Text>
+              <Text fontSize="20px" margin="0px 0px 5px 0px" fontFamily="Bd" opacity={0.6} color={colors.Font_black}>
+                {albumDetail?.artistName}
+              </Text>
+              <Text fontSize="12px" margin="0px" fontFamily="Bd" opacity={0.5} color={colors.Font_black}>
+                {albumDetail?.genre}
+              </Text>
+            </AlbumTitleArea>
+            <LikeNumberArea>
+              <svg
+                onClick={() => changeAlbumLike()}
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                fill={isAlbumLiked ? colors.Button_active : colors.Button_deactive}
+                className="bi bi-heart-fill"
+                viewBox="0 0 16 16"
+              >
+                <path fillRule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314" />
+              </svg>
+              <Text fontSize="15px" margin="0px 0px 0px 10px" fontFamily="Bd" color={colors.Font_black}>
+                {albumDetail?.likes.length}
+              </Text>
+              <Text fontSize="15px" margin="0px 0px 0px 5px" fontFamily="Rg" color={colors.Font_black}>
+                likes
+              </Text>
+            </LikeNumberArea>
+          </AlbumInfoArea>
+          <Line></Line>
+          <ContentArea>
+            {/* <Title fontSize="30px" margin="0px 0px 0px 0px" >
                 Chats
               </Title> */}
-              <TabArea>
-                <TabBtn
-                  opacity={tabState === 'chat' ? '1' : '0.3'}
-                  onClick={() => {
-                    setTabState('chat');
-                    console.log('chat');
-                  }}
-                >
-                  CHAT
-                </TabBtn>
-                <TabBtn
-                  opacity={tabState === 'post' ? '1' : '0.3'}
-                  onClick={() => {
-                    setTabState('post');
-                    console.log('post');
-                  }}
-                >
-                  POST
-                </TabBtn>
-              </TabArea>
-              {tabState === 'chat' && albumDetail && (
-                <>
-                  <ContentInfoArea>
-                    Chat 작성하기
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="20"
-                      height="20"
-                      fill="currentColor"
-                      className="bi bi-pencil-square"
-                      viewBox="0 0 16 16"
-                      onClick={() => {
-                        GoToAlbumChatPostPage();
-                      }}
-                    >
-                      <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                      <path
-                        fillRule="evenodd"
-                        d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
-                      />
-                    </svg>
-                  </ContentInfoArea>
-                  <AlbumPageChatTab spotifyAlbumId={spotifyAlbumId}></AlbumPageChatTab>
-                </>
-              )}
-              {tabState === 'post' && (
-                <>
-                  <ContentInfoArea>
-                    Post 작성하기
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="20"
-                      height="20"
-                      fill="currentColor"
-                      className="bi bi-pencil-square"
-                      viewBox="0 0 16 16"
-                      onClick={() => {
-                        GoToAlbumPostEditPage();
-                      }}
-                    >
-                      <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                      <path
-                        fillRule="evenodd"
-                        d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
-                      />
-                    </svg>
-                  </ContentInfoArea>
-                  <AlbumPagePostTab spotifyAlbumId={spotifyAlbumId}></AlbumPagePostTab>
-                </>
-              )}
-            </ContentArea>
-          </>
-        )}
-        {isLoading ? <Loader></Loader> : null}
+            <TabArea>
+              <TabBtn
+                opacity={tabState === 'chat' ? '1' : '0.3'}
+                onClick={() => {
+                  setTabState('chat');
+                  console.log('chat');
+                }}
+              >
+                CHAT
+              </TabBtn>
+              <TabBtn
+                opacity={tabState === 'post' ? '1' : '0.3'}
+                onClick={() => {
+                  setTabState('post');
+                  console.log('post');
+                }}
+              >
+                POST
+              </TabBtn>
+            </TabArea>
+            {tabState === 'chat' && albumDetail && (
+              <>
+                <ContentInfoArea>
+                  Chat 작성하기
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    fill="currentColor"
+                    className="bi bi-pencil-square"
+                    viewBox="0 0 16 16"
+                    onClick={() => {
+                      GoToAlbumChatPostPage();
+                    }}
+                  >
+                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                    <path
+                      fillRule="evenodd"
+                      d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
+                    />
+                  </svg>
+                </ContentInfoArea>
+                <AlbumPageChatTab spotifyAlbumId={spotifyAlbumId}></AlbumPageChatTab>
+              </>
+            )}
+            {tabState === 'post' && (
+              <>
+                <ContentInfoArea>
+                  Post 작성하기
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    fill="currentColor"
+                    className="bi bi-pencil-square"
+                    viewBox="0 0 16 16"
+                    onClick={() => {
+                      GoToAlbumPostEditPage();
+                    }}
+                  >
+                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                    <path
+                      fillRule="evenodd"
+                      d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
+                    />
+                  </svg>
+                </ContentInfoArea>
+                <AlbumPagePostTab spotifyAlbumId={spotifyAlbumId}></AlbumPagePostTab>
+              </>
+            )}
+          </ContentArea>
+        </>
+        {/* )} */}
+        {/* {isLoading ? <Loader></Loader> : null} */}
       </Body>
     </Container>
   );
