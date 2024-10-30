@@ -15,6 +15,7 @@ import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 
 /**
@@ -74,11 +75,13 @@ public class FavoriteArtistService {
   @Transactional
   public FavoriteArtistDetail favoriteArtistSaveData(FavoriteRequest favoriteArtist, Long userId) {
     User user = usersRepository.findByUserId(userId).orElseThrow();
-    FavoriteArtist favoriteArtist2=new FavoriteArtist();
-    if(favoriteArtistRepository.findByUser_UserId(user.getUserId()).isPresent()){
-      favoriteArtist2=favoriteArtistRepository.findByUser_UserId(user.getUserId()).get();
+    FavoriteArtist favoriteArtist2 = new FavoriteArtist();
+    if (favoriteArtistRepository.findByUser_UserId(user.getUserId()).isPresent()) {
+      favoriteArtist2 = favoriteArtistRepository.findByUser_UserId(user.getUserId()).get();
     }
-    if(favoriteArtist.getSpotifyArtistId()==null||favoriteArtist.getSpotifyTrackId()==null||favoriteArtist.getSpotifyAlbumId()==null){
+    if (StringUtils.hasText(favoriteArtist.getSpotifyArtistId()) || StringUtils.hasText(
+        favoriteArtist.getSpotifyTrackId())
+        || StringUtils.hasText(favoriteArtist.getSpotifyAlbumId())) {
       throw new IdNullException();
     }
 
