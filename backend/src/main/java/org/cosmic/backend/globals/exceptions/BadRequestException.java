@@ -2,12 +2,13 @@ package org.cosmic.backend.globals.exceptions;
 
 public class BadRequestException extends RuntimeException{
 
-    protected static final String notMatchAlbumChatError_Message="Not Match AlbumChat Exception";
-    protected static final String notMatchAlbumError_Message="Not Match Album Exception";
-    protected static final String notMatchBestAlbumError_Message="Not Match BestAlbum Exception";
-    protected static final String notMatchMusicDnaCountError_Message="Need 4 MusicDna";
-    protected static final String notMatchConditionError_Message="Not met password condition";
-    protected static final String notMatchPasswordError_Message="Not match password";
+    protected static final String NOT_MATCH_ALBUM_CHAT_EXCEPTION ="Not Match AlbumChat Exception";
+    protected static final String NOT_MATCH_ALBUM_EXCEPTION ="Not Match Album Exception";
+    protected static final String NOT_MATCH_BEST_ALBUM_EXCEPTION ="Not Match BestAlbum Exception";
+    protected static final String NOT_MATCH_MUSIC_DNA_COUNT_ERROR_MESSAGE ="Need 4 MusicDna";
+    protected static final String NOT_MATCH_CONDITION_ERROR_MESSAGE ="Not met password condition";
+    protected static final String NOT_MATCH_PASSWORD_ERROR_MESSAGE ="Not match password";
+    protected static final String NOT_INPUT_FILE_MESSAGE="Not Input File";
 
     public BadRequestException(String errorMessage) {
         super(errorMessage);
@@ -15,27 +16,30 @@ public class BadRequestException extends RuntimeException{
 
     public static String getNotMatchConditionError()
     {
-        return notMatchConditionError_Message;
+        return NOT_MATCH_CONDITION_ERROR_MESSAGE;
     }
     public static String getNotMatchPasswordError()
     {
-        return notMatchPasswordError_Message;
+        return NOT_MATCH_PASSWORD_ERROR_MESSAGE;
     }
     public static String getNotMatchMusicDnaCountError()
     {
-        return notMatchMusicDnaCountError_Message;
+        return NOT_MATCH_MUSIC_DNA_COUNT_ERROR_MESSAGE;
     }
     public static String getNotMatchAlbumChatError()
     {
-        return notMatchAlbumChatError_Message;
+        return NOT_MATCH_ALBUM_CHAT_EXCEPTION;
     }
     public static String getNotMatchAlbumError()
     {
-        return notMatchAlbumError_Message;
+        return NOT_MATCH_ALBUM_EXCEPTION;
     }
     public static String getNotMatchBestAlbumError()
     {
-        return notMatchBestAlbumError_Message;
+        return NOT_MATCH_BEST_ALBUM_EXCEPTION;
     }
-
+    public static String getNotInputFileError()
+    {
+        return NOT_INPUT_FILE_MESSAGE;
+    }
 }

@@ -8,6 +8,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.cosmic.backend.domain.File.applications.FileUploadService;
+import org.cosmic.backend.domain.File.exceptions.ExceedFileSizeException;
+import org.cosmic.backend.domain.File.exceptions.NotInputFileException;
+import org.cosmic.backend.globals.exceptions.BadRequestException;
+import org.cosmic.backend.globals.exceptions.PayLoadTooLargeException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpHeaders;
@@ -15,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 
 import org.springframework.core.io.Resource;
@@ -34,6 +39,8 @@ public class FileUploadApi {
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiResponse(responseCode = "200", content = {@Content(schema=@Schema(contentMediaType = MediaType.MULTIPART_FORM_DATA_VALUE
             ,implementation= String.class))})
+    @ApiResponse(responseCode = "400", description = "Not Input File")
+    @ApiResponse(responseCode = "415", description = "Not Match File Format")
     @ApiResponse(responseCode = "500", description = "Failed to Upload Image")
     @Operation(summary = "파일 저장",description = "프로필 사진 변경")
     public ResponseEntity<String> addFile(
@@ -42,6 +49,9 @@ public class FileUploadApi {
         @RequestPart(required = false) MultipartFile profileImage,
         @AuthenticationPrincipal Long userId
         ) {
+        if(profileImage.isEmpty()) {
+            throw new NotInputFileException();
+        }
         fileUploadService.uploadFile(userId,profileImage);
         return ResponseEntity.ok("Upload successful");
     }

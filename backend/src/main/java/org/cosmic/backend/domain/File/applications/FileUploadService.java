@@ -3,6 +3,7 @@ package org.cosmic.backend.domain.File.applications;
 import lombok.RequiredArgsConstructor;
 import org.cosmic.backend.domain.File.exceptions.ImageSaveFailedException;
 import org.cosmic.backend.domain.File.exceptions.NotFoundFileException;
+import org.cosmic.backend.domain.File.exceptions.NotMatchFileFormatException;
 import org.cosmic.backend.domain.File.exceptions.NotReadableException;
 import org.cosmic.backend.domain.File.utils.FileNameUtil;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
@@ -38,21 +39,28 @@ public class FileUploadService {
             directory.mkdirs();
         }
         String originalFileName = profileImage.getOriginalFilename();
-        String saveImgFileName = FileNameUtil.fileNameConvert(originalFileName).replaceAll("\\.\\w+$", ".webp");
-        String fullPath = uploadDirectory +"/"+ saveImgFileName;
-        User user = usersRepository.findById(userId)
-                .orElseThrow(NotFoundUserException::new);
-        // 프로필 이미지 파일 저장
-        if(!profileImage.isEmpty()) {
-            try {
-                profileImage.transferTo(new File(fullPath));
-            } catch (IOException e) {
-                throw new ImageSaveFailedException();
+        String temp1=originalFileName.substring(originalFileName.length()-4);
+        String temp2=originalFileName.substring(originalFileName.length()-5);
+        if(temp1.equals(".jpg")||temp1.equals(".png")||temp2.equals(".jpeg")||temp2.equals(".webp")) {
+            String saveImgFileName = FileNameUtil.fileNameConvert(originalFileName).replaceAll("\\.\\w+$", ".webp");
+            String fullPath = uploadDirectory +"/"+ saveImgFileName;
+            User user = usersRepository.findById(userId)
+                    .orElseThrow(NotFoundUserException::new);
+            // 프로필 이미지 파일 저장
+            if(!profileImage.isEmpty()) {
+                try {
+                    profileImage.transferTo(new File(fullPath));
+                } catch (IOException e) {
+                    throw new ImageSaveFailedException();
+                }
             }
-        }
 
-        user.setProfilePicture(saveImgFileName);
-        usersRepository.save(user);
+            user.setProfilePicture(saveImgFileName);
+            usersRepository.save(user);
+            return ;
+        }
+        throw new NotMatchFileFormatException();
+
     }
 
 
