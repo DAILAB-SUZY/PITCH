@@ -112,4 +112,8 @@ public class TokenProvider {
     }
     return validateAndGetId(token);
   }
+
+  public Long validateRefreshTokenAndGetLongId(String token) {
+    return Long.valueOf(validateRefreshTokenAndGetId(token));
+  }
 }

@@ -1,15 +1,11 @@
 package org.cosmic.backend.domain.user.applications;
 
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.auth.applications.TokenProvider;
 import org.cosmic.backend.domain.auth.dtos.UserLoginDetail;
 import org.cosmic.backend.domain.auth.exceptions.CredentialNotMatchException;
-import org.cosmic.backend.domain.playList.domains.Playlist;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
-import org.cosmic.backend.domain.playList.repositorys.PlaylistRepository;
-import org.cosmic.backend.domain.user.domains.Email;
 import org.cosmic.backend.domain.user.domains.MyUserDetails;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.dtos.JoinRequest;
@@ -22,8 +18,9 @@ import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * <p>사용자(User) 관련 비즈니스 로직을 처리하는 서비스 클래스입니다.</p>
@@ -43,7 +40,7 @@ public class UserService implements UserDetailsService {
   @Autowired
   private EmailRepository emailRepository;
   @Autowired
-  private PlaylistRepository playlistRepository;
+  private PasswordEncoder passwordEncoder;
 
   /**
    * <p>사용자를 등록합니다.</p>
@@ -53,27 +50,14 @@ public class UserService implements UserDetailsService {
    * @throws NotExistEmailException     이메일이 등록되지 않았거나 인증되지 않은 경우 발생합니다.
    * @throws NotMatchConditionException 비밀번호 조건이 충족되지 않을 때 발생합니다.
    */
+  @Transactional
   public void userRegister(JoinRequest request) {
-    BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-    if (!request.getPassword().equals(request.getCheckPassword())) {
-      throw new NotMatchPasswordException();
-    }
-    Optional<Email> emailOpt = emailRepository.findByEmail(request.getEmail());
-    if (emailOpt.isEmpty() || !emailOpt.get().getVerified()) {
-      throw new NotExistEmailException();
-    }
-    if (request.getPassword().length() < 8) {
-      throw new NotMatchConditionException();
-    }
-    User newUser = User.builder()
-        .email(emailOpt.get())
-        .username(request.getName())
-        .password(passwordEncoder.encode(request.getPassword()))
-        .build();
-    usersRepository.save(newUser);
-    Playlist playlist = Playlist.builder()
-        .user(newUser).build();
-    playlistRepository.save(playlist);
+    request.checkPasswordSame();
+    usersRepository.save(
+        User.from(request.getName(),
+            passwordEncoder.encode(request.getPassword()),
+            emailRepository.findById(request.getEmail())
+                .orElseThrow(NotExistEmailException::new)));
   }
 
   /**
@@ -85,15 +69,10 @@ public class UserService implements UserDetailsService {
    * @throws CredentialNotMatchException 이메일 또는 비밀번호가 일치하지 않을 때 발생합니다.
    */
   public UserLoginDetail getByCredentials(String email, String password) {
-    BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-    User user = usersRepository.findByEmail_Email(email)
-        .orElseThrow(CredentialNotMatchException::new);
-
-    if (!passwordEncoder.matches(password, user.getPassword())) {
-      throw new CredentialNotMatchException();
-    }
-
-    return UserLoginDetail.from(user, tokenProvider.create(user),
+    User user = usersRepository.findByEmail_Email(email).orElseThrow(NotFoundUserException::new);
+    user.checkPassword(passwordEncoder.encode(password));
+    return UserLoginDetail.from(user,
+        tokenProvider.create(user),
         tokenProvider.createRefreshToken(user));
   }
 
@@ -106,7 +85,7 @@ public class UserService implements UserDetailsService {
    */
   public UserLoginDetail getUserByRefreshToken(String refreshToken) {
     User user = usersRepository.findById(
-            Long.parseLong(tokenProvider.validateRefreshTokenAndGetId(refreshToken)))
+            tokenProvider.validateRefreshTokenAndGetLongId(refreshToken))
         .orElseThrow(NotFoundUserException::new);
     return UserLoginDetail.from(user, tokenProvider.create(user), refreshToken);
   }
@@ -126,7 +105,7 @@ public class UserService implements UserDetailsService {
   public MyUserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
     return loadUserByUsername(Long.parseLong(userId));
   }
-  
+
   public MyUserDetails loadUserByUsername(Long userId) throws UsernameNotFoundException {
     return usersRepository.findById(userId)
         .orElseThrow(NotFoundUserException::new);

@@ -12,6 +12,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,7 +46,9 @@ import org.springframework.security.core.GrantedAuthority;
 @EqualsAndHashCode(exclude = {"email", "playlist", "posts", "postComments", "postLikes",
     "favoriteArtist"})
 public class User implements MyUserDetails {
+
   private static final String NONE_ARTIST = "";
+  private static final String BASE_PROFILE_PICTURE = "basic_profile.webp";
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -62,11 +65,9 @@ public class User implements MyUserDetails {
   private String password;
 
   @Builder.Default
-  @Column()
-  private String profilePicture = "basic_profile.webp";
+  private String profilePicture = BASE_PROFILE_PICTURE;
 
   @Builder.Default
-  @Column()
   private Instant create_time = Instant.now();
 
   @ManyToOne
@@ -85,14 +86,15 @@ public class User implements MyUserDetails {
   @JoinColumn(name = "dna4_id")
   private MusicDna dna4;
 
-  @OneToOne(mappedBy = "user")
+  @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
   private Playlist playlist;
 
   @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
   private FavoriteArtist favoriteArtist;
 
-  @OneToMany(mappedBy = "user")
-  private List<AlbumScore> albumScore;
+  @Builder.Default
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<AlbumScore> albumScore = new ArrayList<>();
 
   @Builder.Default
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -129,17 +131,27 @@ public class User implements MyUserDetails {
     this.create_time = Instant.now();
   }
 
-  public static String getOriginProfilePicture(String profilePicture) {
-    return String.format("%s/api/file/%s", ServerProperty.getServerOrigin(), profilePicture);
-  }
-
   public static UserDetail toUserDetail(User user) {
     return UserDetail.builder()
         .id(user.getUserId())
         .username(user.getUsername())
-        .profilePicture(getOriginProfilePicture(user.getProfilePicture()))
+        .profilePicture(user.getOriginProfilePicture())
         .dnas(user.toDnaDetails(user))
         .build();
+  }
+
+  public static User from(@NotBlank(message = "Name cannot be blank") String name, String encode,
+      Email email) {
+    email.checkVerified();
+    return User.builder()
+        .username(name)
+        .password(encode)
+        .email(email)
+        .build();
+  }
+
+  public String getOriginProfilePicture() {
+    return String.format("%s/api/file/%s", ServerProperty.getServerOrigin(), getProfilePicture());
   }
 
   private List<DnaDetail> toDnaDetails(User user) {
@@ -174,19 +186,30 @@ public class User implements MyUserDetails {
     setDNAs(dnaList.get(0), dnaList.get(1), dnaList.get(2), dnaList.get(3));
   }
 
+  public void checkPassword(String password) {
+    if (!getPassword().equals(password)) {
+      throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+    }
+  }
+
   @PrePersist
   public void prePersist() {
-    if (this.create_time == null) {
-      this.create_time = Instant.now();  // 저장되기 전에 create_time이 null이면 현재 시간으로 설정
+    if (getPlaylist() == null) {
+      setPlaylist(Playlist.from(this));
+    }
+    if (getFavoriteArtist() == null) {
+      setFavoriteArtist(FavoriteArtist.from(this));
     }
   }
 
   public boolean isMe(Long userId) {
-    return userId.equals(this.userId);
+    return userId.equals(getUserId());
   }
 
   public String getFavoriteArtistId() {
-    if(getFavoriteArtist() == null) {return NONE_ARTIST;}
+    if (getFavoriteArtist() == null) {
+      return NONE_ARTIST;
+    }
     return getFavoriteArtist().getSpotifyArtistId();
   }
 

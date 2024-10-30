@@ -77,4 +77,10 @@ public class Email {
     }
     setVerified(true);
   }
+
+  public void checkVerified() {
+    if (!verified) {
+      throw new IllegalArgumentException("이메일 인증이 필요합니다.");
+    }
+  }
 }

@@ -141,4 +141,20 @@ public class Creator {
     return IntStream.range(start, until)
         .mapToObj(idx -> createAndSaveAlbumChat(album, user, content)).toList();
   }
+
+  public Email createAndSaveEmail(String emailAddress) {
+    Email email = Email.from(emailAddress);
+    email.setVerified(true);
+    return testEntityManager.persistAndFlush(email);
+  }
+
+  public List<Email> createAndSaveEmails(int start, int end, String baseName) {
+    return IntStream.range(start, end)
+        .mapToObj(idx -> createAndSaveEmail(baseName + idx + "@example.com"))
+        .toList();
+  }
+
+  public List<Email> createAndSaveEmails(int start, int end) {
+    return createAndSaveEmails(start, end, "username");
+  }
 }
