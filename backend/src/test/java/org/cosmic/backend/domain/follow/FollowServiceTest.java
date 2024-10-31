@@ -1,4 +1,4 @@
-package org.cosmic.backend.domainsTest.user;
+package org.cosmic.backend.domain.follow;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -6,7 +6,6 @@ import static org.mockito.Mockito.when;
 import java.util.Optional;
 import org.cosmic.backend.domain.user.applications.FollowService;
 import org.cosmic.backend.domain.user.domains.Follow;
-import org.cosmic.backend.domain.user.domains.FollowPK;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.FollowRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
@@ -44,12 +43,30 @@ public class FollowServiceTest {
   @Test
   @DisplayName("언팔로우 하기")
   public void unfollowTest() {
+    Follow follow = Follow.builder().build();
+    when(followRepository.findByUser_UserIdAndOther_UserId(1L, 2L)).thenReturn(
+        Optional.of(follow));
+
     followService.unfollow(1L, 2L);
-    verify(followRepository).deleteById(FollowPK.builder().user(1L).other(2L).build());
+    verify(followRepository).delete(follow);
+  }
+
+  @Test
+  @DisplayName("팔로잉 조회")
+  public void followingsTest() {
+    followService.followings(1L);
+    verify(followRepository).findAllByUser_UserId(1L);
+  }
+
+  @Test
+  @DisplayName("팔로워 조회")
+  public void followersTest() {
+    followService.followers(1L);
+    verify(followRepository).findAllByOther_UserId(1L);
   }
 
   private User createUser(Long userId) {
     return User.builder().userId(userId).build();
   }
-  
+
 }

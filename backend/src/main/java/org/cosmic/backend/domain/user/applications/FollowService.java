@@ -5,7 +5,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.user.domains.Follow;
-import org.cosmic.backend.domain.user.domains.FollowPK;
 import org.cosmic.backend.domain.user.dtos.FollowDto;
 import org.cosmic.backend.domain.user.repositorys.FollowRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
@@ -30,10 +29,9 @@ public class FollowService {
 
   @Transactional
   public void unfollow(Long userId, Long otherUserId) {
-    Follow follow = followRepository.findById(
-        FollowPK.builder().user(userId).other(otherUserId).build()).orElseThrow(() ->
-        new NotFoundException("follow does not exist"));
-    followRepository.deleteById(FollowPK.builder().user(userId).other(otherUserId).build());
+    Follow follow = followRepository.findByUser_UserIdAndOther_UserId(userId, otherUserId)
+        .orElseThrow(() -> new NotFoundException("follow does not exist"));
+    followRepository.delete(follow);
   }
 
   public List<FollowDto> followings(Long userId) {

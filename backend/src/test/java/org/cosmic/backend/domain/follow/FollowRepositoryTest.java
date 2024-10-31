@@ -1,7 +1,8 @@
-package org.cosmic.backend.domainsTest.user;
+package org.cosmic.backend.domain.follow;
 
 import java.util.List;
 import java.util.stream.IntStream;
+import org.cosmic.backend.AbstractContainerBaseTest;
 import org.cosmic.backend.domain.user.domains.Email;
 import org.cosmic.backend.domain.user.domains.Follow;
 import org.cosmic.backend.domain.user.domains.FollowPK;
@@ -13,11 +14,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.transaction.annotation.Transactional;
 
-@DataJpaTest
-public class FollowTest {
+public class FollowRepositoryTest extends AbstractContainerBaseTest {
 
   @Autowired
   private UsersRepository usersRepository;
