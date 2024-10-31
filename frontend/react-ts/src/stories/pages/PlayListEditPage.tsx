@@ -50,6 +50,12 @@ const Circle = styled.div<{ bgcolor?: string }>`
   background-color: ${props => props.bgcolor};
   object-fit: cover;
 `;
+const ProfileImageCircle = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 비율 유지하며 꽉 채움 */
+  object-position: center; /* 이미지 가운데 정렬 */
+`;
 
 const PlayListArea = styled.div`
   width: 100%;
@@ -279,7 +285,7 @@ function PlayListPage() {
         <TitleArea>
           {playListData ? (
             <Circle>
-              <img src={author.profilePicture} width="100%" height="100%" object-fit="cover"></img>
+              <ProfileImageCircle src={author.profilePicture} alt="Profile" />
             </Circle>
           ) : (
             <Circle bgcolor={colors.BG_grey}></Circle>

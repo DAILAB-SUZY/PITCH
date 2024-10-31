@@ -6,6 +6,7 @@ import MostLikedCard from '../components/MostLikedCard';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import Loader from '../components/Loader';
+import { fetchGET } from '../utils/fetchData';
 
 const Container = styled.div`
   display: flex;
@@ -112,7 +113,7 @@ const AlbumListArea = styled.div`
   align-items: center;
   overflow-x: scroll;
   box-sizing: border-box;
-  width: 100vw;
+  width: 380px;
   padding: 10px;
 `;
 
@@ -199,151 +200,49 @@ function AlbumHomePage() {
   };
 
   useEffect(() => {
-    fetchMostCommentedData();
+    fetchMostCommentedData(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '');
     //fetchMostLikedData();
   }, []);
 
-  const server = 'http://203.255.81.70:8030';
-  let MostCommentedDataUrl = `${server}/api/album/albumchat/chat`;
+  let AlbumSearchUrl = `/api/searchSpotify/album/${searchKeyword}`;
 
-  let AlbumSearchUrl = `${server}/api/searchSpotify/album/${searchKeyword}`;
-  const reissueTokenUrl = `${server}/api/auth/reissued`;
-  const [token, setToken] = useState(localStorage.getItem('login-token'));
-  const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
+  const MostCommentedDataUrl = `/api/album/albumchat/chat`;
+  const fetchMostCommentedData = async (token: string, refreshToken: string) => {
+    fetchGET(token, refreshToken, MostCommentedDataUrl).then(data => {
+      setMostCommentedAlbumList(data);
+    });
+  };
 
-  const fetchMostCommentedData = async () => {
-    if (token) {
-      try {
-        console.log('fetching Most Commented Albums...');
-        const response = await fetch(MostCommentedDataUrl, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (response.ok) {
-          console.log('set data');
-          const data = await response.json();
-          console.log(data);
-          setMostCommentedAlbumList(data);
-        } else if (response.status === 401) {
-          ReissueToken();
-          fetchMostCommentedData();
-        } else {
-          console.error('Failed to fetch data:', response.status);
+  const MostLikedDataUrl = `/api/album/albumchat/like?page=${pageNumber}&limit=6`;
+  const fetchMostLikedData = async (token: string, refreshToken: string) => {
+    if (!isEnd) {
+      fetchGET(token, refreshToken, MostLikedDataUrl).then(data => {
+        if (data.length === 0) {
+          console.log('list End');
+          setIsEnd(true);
         }
-      } catch (error) {
-        console.error('Error fetching the JSON file:', error);
-      } finally {
-        console.log('finished');
-      }
+
+        setMostLikedAlbumList(prevList => [...prevList, ...data]);
+        setPageNumber(prevPage => prevPage + 1); // 페이지 증가
+      });
     }
   };
 
-  const fetchMostLikedData = async () => {
-    const MostLikedDataUrl = `${server}/api/album/albumchat/like?page=${pageNumber}&limit=6`;
-    if (token && !isLoading && !isEnd) {
-      setIsLoading(true);
-      try {
-        console.log('fetching Most Liked Albums...');
-        const response = await fetch(MostLikedDataUrl, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (response.ok) {
-          console.log('set data');
-          const data = await response.json();
-          console.log(data);
-          if (data.length === 0) {
-            console.log('list End');
-            setIsEnd(true);
-          }
-
-          setMostLikedAlbumList(prevList => [...prevList, ...data]);
-          setPageNumber(prevPage => prevPage + 1); // 페이지 증가
-
-          console.log('postPage: ', pageNumber);
-          console.log(MostCommentedAlbumList);
-        } else if (response.status === 401) {
-          ReissueToken();
-          fetchMostLikedData();
-        } else {
-          console.error('Failed to fetch data:', response.status);
-        }
-      } catch (error) {
-        console.error('Error fetching the JSON file:', error);
-      } finally {
-        console.log('finished');
-        setIsLoading(false);
-      }
-    }
-  };
-
+  // 검색 실행 함수
   const fetchAlbum = async () => {
-    if (token && !isLoading) {
+    if (!isLoading) {
       setIsLoading(true);
       console.log('검색시작');
-      fetchData(AlbumSearchUrl);
+      fetchData(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '');
     }
   };
-
-  const fetchData = async (URL: string) => {
-    console.log('searching...');
-    try {
-      console.log(`searching Album : ${searchKeyword}...`);
-      const response = await fetch(URL, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setSearchResultTrack(data);
-        console.log(data);
-        setIsSearchMode(true);
-      } else if (response.status === 401) {
-        ReissueToken();
-        fetchAlbum();
-      } else {
-        console.error('Failed to fetch data:', response.status);
-      }
-    } catch (error) {
-      console.error('Error fetching the JSON file:', error);
-    } finally {
-      setIsLoading(false);
-      console.log('finished');
-    }
-  };
-  const ReissueToken = async () => {
-    console.log('reissuing Token');
-    try {
-      const response = await fetch(reissueTokenUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Refresh-Token': `${refreshToken}`,
-        },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('login-token', data.token);
-        localStorage.setItem('login-refreshToken', data.refreshToken);
-        setToken(data.token);
-        setRefreshToken(data.refreshToken);
-      } else {
-        console.error('failed to reissue token', response.status);
-      }
-    } catch (error) {
-      console.error('Refresh Token 재발급 실패', error);
-    }
+  // 검색 결과 가져오기
+  const fetchData = async (token: string, refreshToken: string) => {
+    await fetchGET(token, refreshToken, AlbumSearchUrl).then(data => {
+      setSearchResultTrack(data);
+      setIsSearchMode(true);
+    });
+    setIsLoading(false);
   };
 
   // Intersection Observer용 ref
@@ -354,9 +253,7 @@ function AlbumHomePage() {
     const observer = new IntersectionObserver(entries => {
       // observerRef가 화면에 보이면 fetch 호출
       if (!isLoading && entries[0].isIntersecting) {
-        // setPageNumber(prevPage => prevPage + 1); // 페이지 증가
-        // console.log('page++ => ', pageNumber);
-        fetchMostLikedData();
+        fetchMostLikedData(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '');
       }
     });
 

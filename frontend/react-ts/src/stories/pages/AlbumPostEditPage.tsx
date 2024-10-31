@@ -256,6 +256,7 @@ function AlbumPostEditPage() {
             content: postContent,
             title: albumPost.name,
             spotifyAlbumId: albumPost.albumId,
+            score: 0,
           }),
         });
 
@@ -319,6 +320,7 @@ function AlbumPostEditPage() {
           },
           body: JSON.stringify({
             content: postContent,
+            score: 0,
           }),
         });
 

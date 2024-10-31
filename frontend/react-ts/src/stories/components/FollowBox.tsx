@@ -39,6 +39,12 @@ const Circle = styled.div<{ bgcolor?: string }>`
   background-color: ${props => props.bgcolor};
   object-fit: cover;
 `;
+const ProfileImageCircle = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 비율 유지하며 꽉 채움 */
+  object-position: center; /* 이미지 가운데 정렬 */
+`;
 
 const Btn = styled.div<{ bgcolor: string }>`
   display: flex;
@@ -78,7 +84,7 @@ const FollowBox = ({ name, profile, userId, ChangeFollow, isFollowing }: FollowP
         }}
       >
         <Circle bgcolor="white">
-          <img src={profile} width="100%" height="100%" object-fit="cover"></img>
+          <ProfileImageCircle src={profile} alt="Profile" />
         </Circle>
         <NameContainer>{name}</NameContainer>
       </LeftItems>

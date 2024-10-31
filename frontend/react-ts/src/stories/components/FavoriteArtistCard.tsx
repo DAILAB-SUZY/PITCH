@@ -18,12 +18,16 @@ const FavoriteArtistArea = styled.div`
   align-items: center;
   padding: 20px;
   margin-bottom: 50px;
+  width: 90vw;
+  max-width: 600px;
 `;
 
 const BG = styled.div`
   position: relative;
   display: flex;
-  width: 360px;
+  width: 100%;
+  max-width: 600px;
+  min-width: 360px;
   height: 360px;
   border-radius: 12px;
   background: linear-gradient(90deg, #6a85b6, #bac8e0);
@@ -39,7 +43,8 @@ const ImageArea = styled.div`
   top: 0px;
   left: 0px;
 
-  width: 360px;
+  width: 100%;
+  max-width: 600px;
   height: 360px;
   /* object-fit: cover; */
   z-index: 1;
@@ -52,6 +57,7 @@ const GradientBG = styled.div`
   left: 0px;
   z-index: 2;
   width: 100%;
+  max-width: 600px;
   height: 100%;
   object-fit: cover;
   display: flex;
@@ -145,7 +151,7 @@ const FavoriteAlbumTextArea = styled.div`
 const Text = styled.div<{
   fontFamily: string;
   fontSize: string;
-  color: string;
+  color?: string;
   opacity?: string;
 }>`
   font-size: ${props => props.fontSize};
@@ -157,49 +163,53 @@ const Text = styled.div<{
 
 function FavoriteArtistCard({ FavoriteArtistData }: FavoriteArtistProps) {
   const data = FavoriteArtistData;
-  console.log(data);
-  console.log(data.artistName.length);
   return (
     <FavoriteArtistArea>
-      <BG>
-        <ImageArea>
-          <img src={data.artistCover} width="auto" height="100%" object-fit="cover"></img>
-        </ImageArea>
-        <GradientBG> </GradientBG>
-        <ContentArea>
-          <ArtistTitleTextArea>
-            <Text fontFamily="Bd" fontSize={data.artistName.length > 10 ? '40px' : '50px'} color="white">
-              {data.artistName}
-            </Text>
-          </ArtistTitleTextArea>
-          <FavoriteAlbumArea>
-            <FavoriteAlbumCover>
-              <img src={data.albumCover} width="100%" height="100%" object-fit="cover"></img>
-            </FavoriteAlbumCover>
-            <FavoriteAlbumTextArea>
-              <Text fontFamily="Rg" fontSize="15px" color="white" opacity="0.7">
-                Favorite Album
+      {FavoriteArtistData.artistName === null ? (
+        <Text fontFamily="Rg" fontSize="15px">
+          아직 설정하지 않았습니다.
+        </Text>
+      ) : (
+        <BG>
+          <ImageArea>
+            <img src={data.artistCover} width="100%" height="auto" object-fit="cover"></img>
+          </ImageArea>
+          <GradientBG> </GradientBG>
+          <ContentArea>
+            <ArtistTitleTextArea>
+              <Text fontFamily="Bd" fontSize={data.artistName.length > 10 ? '40px' : '50px'} color="white">
+                {data.artistName}
               </Text>
-              <Text fontFamily="Bd" fontSize="22px" color="white">
-                {data.albumName}
-              </Text>
-            </FavoriteAlbumTextArea>
-          </FavoriteAlbumArea>
-          <FavoriteAlbumArea>
-            <FavoriteAlbumCover>
-              <img src={data.trackCover} width="100%" height="100%" object-fit="cover"></img>
-            </FavoriteAlbumCover>
-            <FavoriteAlbumTextArea>
-              <Text fontFamily="Rg" fontSize="15px" color="white" opacity="0.7">
-                Favorite Song
-              </Text>
-              <Text fontFamily="Bd" fontSize="22px" color="white">
-                {data.trackName}
-              </Text>
-            </FavoriteAlbumTextArea>
-          </FavoriteAlbumArea>
-        </ContentArea>
-      </BG>
+            </ArtistTitleTextArea>
+            <FavoriteAlbumArea>
+              <FavoriteAlbumCover>
+                <img src={data.albumCover} width="100%" height="100%" object-fit="cover"></img>
+              </FavoriteAlbumCover>
+              <FavoriteAlbumTextArea>
+                <Text fontFamily="Rg" fontSize="15px" color="white" opacity="0.7">
+                  Favorite Album
+                </Text>
+                <Text fontFamily="Bd" fontSize="22px" color="white">
+                  {data.albumName}
+                </Text>
+              </FavoriteAlbumTextArea>
+            </FavoriteAlbumArea>
+            <FavoriteAlbumArea>
+              <FavoriteAlbumCover>
+                <img src={data.trackCover} width="100%" height="100%" object-fit="cover"></img>
+              </FavoriteAlbumCover>
+              <FavoriteAlbumTextArea>
+                <Text fontFamily="Rg" fontSize="15px" color="white" opacity="0.7">
+                  Favorite Song
+                </Text>
+                <Text fontFamily="Bd" fontSize="22px" color="white">
+                  {data.trackName}
+                </Text>
+              </FavoriteAlbumTextArea>
+            </FavoriteAlbumArea>
+          </ContentArea>
+        </BG>
+      )}
     </FavoriteArtistArea>
   );
 }

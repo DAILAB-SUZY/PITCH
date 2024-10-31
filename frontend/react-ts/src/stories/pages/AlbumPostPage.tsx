@@ -2,9 +2,9 @@ import styled from 'styled-components';
 import { colors } from '../../styles/color';
 import { useRef, useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import AlbumChatCard from '../components/AlbumPostCommentCard';
+import AlbumPostCommentCard from '../components/AlbumPostCommentCard';
 import useStore from '../store/store';
-
+import { updateTimeAgo } from '../utils/getTimeAgo';
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -19,7 +19,7 @@ const Container = styled.div`
 
 const AlbumPostArea = styled.div`
   width: 100vw;
-  height: 100%;
+  height: auto;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -159,6 +159,12 @@ const ProfileImgTextArea = styled.div`
   justify-content: flex-start;
   align-items: center;
 `;
+const ProfileImageCircle = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 비율 유지하며 꽉 채움 */
+  object-position: center; /* 이미지 가운데 정렬 */
+`;
 
 const EditBtn = styled.div`
   display: flex;
@@ -232,20 +238,32 @@ const ButtonArea = styled.div`
 
 const ChatArea = styled.div`
   width: 100vw;
-  height: 70vh;
-  overflow-y: scroll;
+  height: auto;
+  min-height: 70px;
+  /* overflow-y: scroll; */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
+
+  padding-bottom: 20px;
+`;
+
+const CommentCardArea = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  height: auto;
 `;
 
 interface albumPost {
   postDetail: {
     postId: number;
     content: string;
-    createAt: number;
-    updateAt: number;
+    createAt: string;
+    updateAt: string;
     author: {
       id: number;
       username: string;
@@ -301,7 +319,7 @@ interface albumPost {
 function AlbumPostPage() {
   const location = useLocation();
   const [albumPost, setAlbumPost] = useState<albumPost>();
-  const [albumPostId, setAlbumPostId] = useState();
+  // const [albumPostId, setAlbumPostId] = useState();
   const server = 'http://203.255.81.70:8030';
   const reissueTokenUrl = `${server}/api/auth/reissued`;
   const [token, setToken] = useState(localStorage.getItem('login-token'));
@@ -340,7 +358,7 @@ function AlbumPostPage() {
 
   const fetchAlbumPost = async () => {
     console.log('start fetching albumPost...');
-    let albumPostUrl = `${server}/api/album/post/${albumPostId}`;
+    let albumPostUrl = `${server}/api/album/post/${location.state}`;
     console.log(albumPostUrl);
     if (token) {
       try {
@@ -385,46 +403,21 @@ function AlbumPostPage() {
 
   useEffect(() => {
     fetchAlbumPost();
-    setAlbumPostId(location.state);
   }, []);
 
-  // Post 시간 계산에 필요한 상태 관리
+  // Post 시간 계산
+  const CreateTime = albumPost?.postDetail.createAt;
+  const UpdatedTime = albumPost?.postDetail.updateAt;
   const [timeAgo, setTimeAgo] = useState<string>('');
+
   useEffect(() => {
     if (albumPost) {
-      console.log('getting time from post');
-      const CreateTime = albumPost.postDetail.createAt;
-      const UpdatedTime = albumPost.postDetail.updateAt;
-
-      const updateTimeAgo = () => {
-        if (!UpdatedTime) {
-          setTimeAgo(formatTimeAgo(CreateTime));
-        } else {
-          setTimeAgo(formatTimeAgo(UpdatedTime));
-        }
-      };
-      updateTimeAgo();
+      if (CreateTime && UpdatedTime) {
+        const time = updateTimeAgo(CreateTime, UpdatedTime);
+        setTimeAgo(time);
+      }
     }
-  }, [albumPost]);
-
-  const formatTimeAgo = (unixTimestamp: number): string => {
-    console.log('time calculating');
-    const currentTime = Math.floor(Date.now() / 1000); // 현재 시간 (초)
-    const timeDifference = currentTime - Math.floor(unixTimestamp); // 경과 시간 (초)
-
-    const minutesAgo = Math.floor(timeDifference / 60); // 경과 시간 (분)
-    const hoursAgo = Math.floor(timeDifference / 3600); // 경과 시간 (시간)
-    const daysAgo = Math.floor(timeDifference / 86400); // 경과 시간 (일)
-
-    if (minutesAgo < 60) {
-      return `${minutesAgo}분 전`;
-    } else if (hoursAgo < 24) {
-      return `${hoursAgo}시간 전`;
-    } else {
-      return `${daysAgo}일 전`;
-    }
-  };
-  /////////////
+  }, [CreateTime, UpdatedTime]);
 
   const { name, id } = useStore();
 
@@ -600,7 +593,7 @@ function AlbumPostPage() {
               <ProfileArea>
                 <ProfileImgTextArea>
                   <ProfileImage>
-                    <img src={albumPost.postDetail.author.profilePicture}></img>
+                    <ProfileImageCircle src={albumPost.postDetail.author.profilePicture}></ProfileImageCircle>
                   </ProfileImage>
                   <ProfileTextArea>
                     <ProfileName>{albumPost.postDetail.author.username}</ProfileName>
@@ -679,9 +672,11 @@ function AlbumPostPage() {
                 />
               </svg>
             </RowAlignArea>
-            {albumPost.comments.map((comment: any, index: number) => (
-              <AlbumChatCard key={index} comment={comment}></AlbumChatCard>
-            ))}
+            <CommentCardArea>
+              {albumPost.comments.map((comment: any, index: number) => (
+                <AlbumPostCommentCard key={index} comment={comment}></AlbumPostCommentCard>
+              ))}
+            </CommentCardArea>
           </ChatArea>
         </>
       )}

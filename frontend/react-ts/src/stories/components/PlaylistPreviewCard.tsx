@@ -3,10 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import ColorThief from 'colorthief';
 
-// import Vibrant from "node-vibrant";
-// // import { Palette } from "node-vibrant/lib/color";
-
-// PlaylistData 타입 정의
 interface FriendsPlayList {
   playlistId: number;
   albumCover: string[];
@@ -17,7 +13,6 @@ interface FriendsPlayList {
   };
 }
 
-// Props 타입 정의
 interface PlaylistProps {
   playlists: FriendsPlayList[];
 }
@@ -31,8 +26,8 @@ const PlaylistContainer = styled.div`
 `;
 
 // 각 플레이리스트 박스
-const PlaylistBox = styled.div<{ bggradient: string }>`
-  background: ${({ bggradient }) => bggradient || '#ddd'};
+const PlaylistBox = styled.div<{ gradient: string }>`
+  background: ${({ gradient }) => gradient || '#ddd'};
   border-radius: 12px;
   width: 170px;
   height: 220px;
@@ -139,7 +134,7 @@ const PlaylistPreviewCard = ({ playlists }: PlaylistProps) => {
         const secondaryColor = `rgb(${colors[1].join(',')})`;
         return `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`;
       }
-      return '#ddd'; // 이미지가 없거나 완전히 로드되지 않은 경우
+      return '#000000'; // 이미지가 없거나 완전히 로드되지 않은 경우
     });
     setPlaylistGradients(gradients);
   };
@@ -157,7 +152,7 @@ const PlaylistPreviewCard = ({ playlists }: PlaylistProps) => {
   return (
     <PlaylistContainer>
       {playlists.map((playlist, index) => (
-        <PlaylistBox key={playlist.playlistId} bggradient={playlistGradients[index] || '#ddd'}>
+        <PlaylistBox key={playlist.playlistId} gradient={playlistGradients[index] || '#832727'}>
           <AlbumCoverStack onClick={() => GoToPlayListPage({ ...playlist.author, page: 1 })}>
             {playlist.albumCover
               .slice(0, 3)
@@ -166,7 +161,7 @@ const PlaylistPreviewCard = ({ playlists }: PlaylistProps) => {
                 <AlbumCover
                   key={coverIndex}
                   src={cover}
-                  // alt={`Album Cover ${index + 1}`}
+                  alt={`Album Cover ${index + 1}`}
                   ref={el => (albumCoverRefs.current[index] = el)}
                   // ref={index === 0 ? albumCoverRef : null}
                   crossOrigin="anonymous"
