@@ -1,22 +1,22 @@
 package org.cosmic.backend.domain.post.repositories;
 
+import java.util.List;
 import org.cosmic.backend.domain.post.entities.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
-import java.util.List;
-import java.util.Optional;
+public interface PostRepository extends JpaRepository<Post, Long> {
 
-public interface PostRepository extends JpaRepository<Post,Long> {
-    List<Post> findByUser_UserId(Long userId);//key로 찾기
-    Post findByPostId(Long postId);
+  List<Post> findByUser_UserId(Long userId);//key로 찾기
 
-    Optional<Post> findByContentLike(String content);
+  Page<Post> findAll(Pageable pageable);
 
-    Optional<Post> findByContent(String content);
+  @Query("SELECT p FROM Post p ORDER BY COALESCE(p.updateTime, p.createTime) DESC")
+  Page<Post> findAllWithCustomSorting(Pageable pageable);
 
-    Page<Post> findAll(Pageable pageable);
+  Page<Post> findByUser_UserId(Long userId, Pageable pageable);
 
-    Page<Post> findByUser_UserId(Long userId, Pageable pageable);
+  Page<Post> findAllByAlbum_SpotifyAlbumId(String spotifyAlbumId, Pageable pageable);
 }

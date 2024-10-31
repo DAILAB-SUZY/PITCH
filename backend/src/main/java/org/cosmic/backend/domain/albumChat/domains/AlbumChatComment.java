@@ -1,79 +1,82 @@
 package org.cosmic.backend.domain.albumChat.domains;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDetail;
-import org.cosmic.backend.domain.playList.domains.Album;
-import org.cosmic.backend.domain.user.domains.User;
-
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.cosmic.backend.domain.playList.domains.Album;
+import org.cosmic.backend.domain.user.domains.User;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "albumChatComment") // 테이블 이름 수정
+@Builder
 public class AlbumChatComment {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "albumChatComment_id") // 컬럼 이름 명시
-    private Long albumChatCommentId;
 
-    @ManyToOne
-    @JoinColumn(name = "album_id")
-    private Album album;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "albumChatComment_id") // 컬럼 이름 명시
+  private Long albumChatCommentId;
 
-    private String content;
+  @ManyToOne
+  @JoinColumn(name = "album_id")
+  private Album album;
 
-    @Column(name = "parent_albumChatCommentId")
-    private Long parentAlbumChatCommentId;
+  private String content;
 
-    @Column(name = "create_time")
-    private Instant createTime;
+  @ManyToOne
+  private AlbumChatComment parentAlbumChatComment;
 
-    @Column(name = "update_time")
-    private Instant updateTime;
+  @OneToMany(mappedBy = "parentAlbumChatComment", cascade = CascadeType.ALL, orphanRemoval = true)
+  @Builder.Default
+  private List<AlbumChatComment> childComments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "albumChatComment", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<AlbumChatCommentLike> albumChatCommentLikes=new ArrayList<>();
+  @Column(name = "create_time")
+  @Builder.Default
+  private Instant createTime = Instant.now();
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+  @Column(name = "update_time")
+  private Instant updateTime;
 
-    public AlbumChatComment(String content,Instant createTime, Instant updateTime, User user,Album album,Long parentAlbumChatCommentId) {
-        this.album = album;
-        this.content = content;
-        this.createTime=createTime;
-        this.updateTime = updateTime;
-        this.user=user;
-        this.parentAlbumChatCommentId=parentAlbumChatCommentId;
-    }
+  @Builder.Default
+  @OneToMany(mappedBy = "albumChatComment", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<AlbumChatCommentLike> albumChatCommentLikes = new ArrayList<>();
 
-    public static AlbumChatCommentDetail toAlbumChatCommentDetail(AlbumChatComment albumChatComment) {
-        return AlbumChatCommentDetail.builder()
-                .albumChatCommentId(albumChatComment.getAlbumChatCommentId())
-                .author(User.toUserDetail(albumChatComment.user))
-                .content(albumChatComment.getContent())
-                .likes(albumChatComment.albumChatCommentLikes.stream()
-                    .map(AlbumChatCommentLike::toAlbumChatCommentLikeDetail).toList())
-                .createAt(albumChatComment.createTime)
-                .updateAt(albumChatComment.updateTime)
-                .build();
-    }
+  @ManyToOne
+  @JoinColumn(name = "user_id")
+  private User user;
 
-    @Override
-    public String toString() {
-        return "AlbumChatComment{" +
-                "albumChatCommentId=" + albumChatCommentId +
-                ", content='" + content + '\'' +
-                ", createTime=" + createTime +
-                ", updateTime=" + updateTime +
-                ", user=" + (user != null ? user.getUserId() : "null") +
-                '}';
-    }
+  public static AlbumChatComment from(Album album, User user, String content) {
+    return AlbumChatComment.builder()
+        .album(album)
+        .content(content)
+        .user(user)
+        .build();
+  }
+
+  @Override
+  public String toString() {
+    return "AlbumChatComment{" +
+        "albumChatCommentId=" + albumChatCommentId +
+        ", content='" + content + '\'' +
+        ", createTime=" + createTime +
+        ", updateTime=" + updateTime +
+        ", user=" + (user != null ? user.getUserId() : "null") +
+        '}';
+  }
 }

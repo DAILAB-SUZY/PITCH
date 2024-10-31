@@ -1,6 +1,12 @@
 package org.cosmic.backend.domain.favoriteArtist.domains;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapsId;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,35 +23,42 @@ import org.cosmic.backend.domain.user.domains.User;
 @AllArgsConstructor
 @Entity
 @Builder
-@Table(name="`FavoriteArtist`")
-@IdClass(FavoriteArtistPK.class)
+@Table(name = "`FavoriteArtist`")
 public class FavoriteArtist {
 
-    @Id
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "artist_id")
-    private Artist artist;
+  @Id
+  private Long id;
 
-    @Id
-    @OneToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+  @ManyToOne
+  @JoinColumn(name = "artist_id")
+  private Artist artist;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Track track;
+  @OneToOne
+  @MapsId
+  @JoinColumn(name = "user_id")
+  private User user;
 
-    @Builder.Default
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Album album = new Album(); // @Builder.Default 추가
+  @ManyToOne
+  @Builder.Default
+  private Track track = new Track();
 
-    public static FavoriteArtistDetail toFavoriteArtistDto(FavoriteArtist favoriteArtist){
-        return FavoriteArtistDetail.builder()
-                .artistName(favoriteArtist.artist.getArtistName())
-                .albumCover(favoriteArtist.album.getAlbumCover())
-                .trackCover(favoriteArtist.track.getTrackCover())
-                .artistCover(favoriteArtist.artist.getArtistCover())
-                .albumName(favoriteArtist.track.getAlbum().getTitle())
-                .trackName(favoriteArtist.track.getTitle())
-                .build();
-    }
+  @Builder.Default
+  @ManyToOne
+  private Album album = new Album(); // @Builder.Default 추가
+
+  public static FavoriteArtistDetail toFavoriteArtistDto(FavoriteArtist favoriteArtist) {
+    return FavoriteArtistDetail.builder()
+        .artistName(favoriteArtist.artist.getArtistName())
+        .albumCover(favoriteArtist.album.getAlbumCover())
+        .trackCover(favoriteArtist.track.getTrackCover())
+        .artistCover(favoriteArtist.artist.getArtistCover())
+        .albumName(favoriteArtist.track.getAlbum().getTitle())
+        .trackName(favoriteArtist.track.getTitle())
+        .spotifyArtistId(favoriteArtist.artist.getSpotifyArtistId())
+        .build();
+  }
+
+  public String getSpotifyArtistId() {
+    return getArtist().getSpotifyArtistId();
+  }
 }

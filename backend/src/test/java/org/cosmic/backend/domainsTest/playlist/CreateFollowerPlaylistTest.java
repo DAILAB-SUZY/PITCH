@@ -64,7 +64,7 @@ public class CreateFollowerPlaylistTest extends BaseSetting {
         UserLoginDetail userLogin = loginUser("john@example.com");
 
         Map<String,Object> params= new HashMap<>();
-        params.put("userId",1L);
+        params.put("userId",10101L);
 
         String url=urlGenerator.buildUrl("/api/FollowerPlaylist/user/{userId}",params);
         mockMvcHelper(HttpMethod.GET,url,null,userLogin.getToken()).andExpect(status().isOk());

@@ -27,15 +27,16 @@ VALUES (
        );
 
 -- Artist 테이블에 데이터 삽입
-INSERT INTO Artist(artist_name) VALUES('bibi');
+INSERT INTO Artist(artist_name,artist_cover,spotify_artist_id) VALUES('bibi','base','base');
 
 -- Album 테이블에 데이터 삽입
-INSERT INTO Album(title,album_cover, artist_id, created_date)
+INSERT INTO Album(title,album_cover, artist_id, created_date,spotify_album_id)
 VALUES (
            'bam',
             'base',
            (SELECT Artist.artist_id FROM Artist WHERE artist_name='bibi'),
-           CURRENT_TIMESTAMP
+           CURRENT_TIMESTAMP,
+            'base'
        );
 
 -- AlbumChatComment 데이터 삽입

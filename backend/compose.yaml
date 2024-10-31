@@ -1,7 +1,35 @@
 services:
+  pitch:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: 'pitch'
+    environment:
+      - MAIL_ADDRESS=${MAIL_ADDRESS}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - CLIENT_ID=${CLIENT_ID}
+      - CLIENT_SECRET=${CLIENT_SECRET}
+      - YOUTUBE_KEY=${YOUTUBE_KEY}
+      - YOUTUBE_CLIENT_ID=${YOUTUBE_CLIENT_ID}
+      - YOUTUBE_CLIENT_SECRET=${YOUTUBE_CLIENT_SECRET}
+      - REDIRECTION_ORIGIN=${REDIRECTION_ORIGIN}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_ACCESS_EXPIRATION=${JWT_ACCESS_EXPIRATION}
+      - JWT_REFRESH_EXPIRATION=${JWT_REFRESH_EXPIRATION}
+      - BASE_FILE_PATH=${BASE_FILE_PATH}
+      - SERVER_ORIGIN=${SERVER_ORIGIN}
+    ports:
+      - '8082:8080'
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - images_data:${BASE_FILE_PATH}
+
   postgres:
     image: 'postgres:latest'
     container_name: 'postgresql'
+    restart: 'always'
     environment:
       - 'POSTGRES_DB=pitch'
       - 'POSTGRES_PASSWORD=secret'
@@ -9,6 +37,8 @@ services:
       - 'TZ=Asia/Seoul'
     ports:
       - '9000:5432'
+    volumes:
+      - 'postgres_data:/var/lib/postgresql/data'
 
   redis:
     image: 'redis:latest'
@@ -17,3 +47,13 @@ services:
     hostname: 'redis'
     ports:
       - '9001:6379'
+
+networks:
+  default:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  images_data:
+    driver: local

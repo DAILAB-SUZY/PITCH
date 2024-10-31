@@ -1,54 +1,72 @@
 package org.cosmic.backend.domain.playList.domains;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.cosmic.backend.domain.favoriteArtist.domains.FavoriteArtist;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.cosmic.backend.domain.search.dtos.SpotifyArtist;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Builder
-@Table(name="Artist")
+@Table(name = "Artist")
 public class Artist {//
-    @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name="artist_id")
-    private Long artistId ;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "artist_id")
+  private Long artistId;
 
-    @Column(name="artist_name")
-    private String artistName;
+  @Column(name = "spotify_artist_id", unique = true)
+  private String spotifyArtistId;
 
-    private String artistCover;
+  @Column(name = "artist_name")
+  private String artistName;
 
-    //아티스트 1 앨범 N
-    @OneToMany(mappedBy = "artist")
-    @Builder.Default
-    private List<Album>album=new ArrayList<>();
+  private String artistCover;
 
-    @OneToOne(mappedBy = "artist")
-    private FavoriteArtist favoriteArtist;
+  //아티스트 1 앨범 N
+  @OneToMany(mappedBy = "artist")
+  @Builder.Default
+  private List<Album> album = new ArrayList<>();
 
-    //아티스트 1 트랙 N
-    @OneToMany(mappedBy = "artist")
-    @Builder.Default
-    private List<Track>track=new ArrayList<>();
+  @OneToMany(mappedBy = "artist")
+  private List<FavoriteArtist> favoriteArtists;
 
-    public Artist(String name) {
-        this.artistName = name;
-    }
-    @Override
-    public String toString() {
-        return "Artist{" +
-                "artistId=" + artistId +
-                ", artistName='" + artistName + '\'' +
-                ", artistCover='" + artistCover + '\'' +
-                '}';
-    }
+  //아티스트 1 트랙 N
+  @OneToMany(mappedBy = "artist")
+  @Builder.Default
+  private List<Track> track = new ArrayList<>();
+
+  public Artist(String name) {
+    this.artistName = name;
+  }
+
+  public static Artist from(SpotifyArtist spotifyArtist) {
+    return Artist.builder()
+        .artistName(spotifyArtist.name())
+        .artistCover(spotifyArtist.images().get(0).url())
+        .spotifyArtistId(spotifyArtist.id())
+        .build();
+  }
+
+  @Override
+  public String toString() {
+    return "Artist{" +
+        "artistId=" + artistId +
+        ", artistName='" + artistName + '\'' +
+        ", artistCover='" + artistCover + '\'' +
+        '}';
+  }
 }

@@ -1,36 +1,37 @@
 package org.cosmic.backend.domain.albumChat.dtos.albumChat;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.cosmic.backend.domain.albumChat.domains.AlbumChatComment;
-import org.cosmic.backend.domain.albumChat.domains.AlbumLike;
-import org.cosmic.backend.domain.albumChat.dtos.albumlike.AlbumChatAlbumLikeDetail;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDetail;
 import org.cosmic.backend.domain.playList.domains.Album;
-
-import java.util.List;
+import org.cosmic.backend.domain.post.dtos.Post.AlbumDetail;
 
 @Builder
 @Data
 @AllArgsConstructor
 public class AlbumChatDetail {
-    private Long albumId;
-    private String cover;
-    private String genre;
-    private String title;
-    private String artistName;
-    private List<AlbumChatCommentDetail> comments;
-    private List<AlbumChatAlbumLikeDetail> albumLike;
 
-    public AlbumChatDetail(Album album) {
-        this.albumId = album.getAlbumId();
-        this.cover = album.getAlbumCover();
-        this.title = album.getTitle();
-        this.artistName = album.getArtist().getArtistName();
-        this.comments=album.getAlbumChatComments().stream().map(AlbumChatComment::toAlbumChatCommentDetail).toList();
-        this.albumLike=album.getAlbumLike().stream().map(AlbumLike::toAlbumChatAlbumLikeDetail).toList();
-    }
+  AlbumDetail albumDetail;
+  private List<AlbumChatCommentDetail> comments;
 
+  public static AlbumChatDetail from(Album album) {
+    return AlbumChatDetail.builder()
+        .albumDetail(AlbumDetail.from(album))
+        .comments(AlbumChatCommentDetail.from(album.getAlbumChatComments()))
+        .build();
+  }
+
+  public static List<AlbumChatDetail> from(List<Album> albums) {
+    return albums.stream().map(AlbumChatDetail::from).toList();
+  }
+
+  public static AlbumChatDetail from(Album album, List<AlbumChatComment> commentsSortedBy) {
+    return AlbumChatDetail.builder()
+        .albumDetail(AlbumDetail.from(album))
+        .comments(AlbumChatCommentDetail.from(commentsSortedBy))
+        .build();
+  }
 }

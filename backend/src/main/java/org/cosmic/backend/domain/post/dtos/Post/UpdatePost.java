@@ -10,11 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdatePost {
-    private String content;
-    public static UpdatePost createUpdatePost(Long postId, String content) {
-        return  UpdatePost.builder()
-                .content(content)
-                .build();
-    }
+  private String content;
+  private Integer score;
 }
 
