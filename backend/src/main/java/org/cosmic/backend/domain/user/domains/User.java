@@ -45,6 +45,7 @@ import org.springframework.security.core.GrantedAuthority;
 @EqualsAndHashCode(exclude = {"email", "playlist", "posts", "postComments", "postLikes",
     "favoriteArtist"})
 public class User implements MyUserDetails {
+
   private static final String NONE_ARTIST = "";
 
   @Id
@@ -143,8 +144,8 @@ public class User implements MyUserDetails {
   }
 
   private List<DnaDetail> toDnaDetails(User user) {
-    return Stream.of(user.getDna1(), user.getDna2(), user.getDna3(), user.getDna4())
-        .map(dna -> dna != null ? DnaDetail.from(dna) : null)
+    return user.getDNAs().stream()
+        .map(DnaDetail::from)
         .toList();
   }
 
@@ -186,7 +187,9 @@ public class User implements MyUserDetails {
   }
 
   public String getFavoriteArtistId() {
-    if(getFavoriteArtist() == null) {return NONE_ARTIST;}
+    if (getFavoriteArtist() == null) {
+      return NONE_ARTIST;
+    }
     return getFavoriteArtist().getSpotifyArtistId();
   }
 
