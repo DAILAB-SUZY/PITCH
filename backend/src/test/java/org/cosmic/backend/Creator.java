@@ -1,4 +1,4 @@
-package org.cosmic.backend.domainsTest;
+package org.cosmic.backend;
 
 import java.util.List;
 import java.util.stream.IntStream;
@@ -14,12 +14,18 @@ import org.cosmic.backend.domain.user.domains.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.TestComponent;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @TestComponent
+@Import({})
 public class Creator {
 
   @Autowired
   private TestEntityManager testEntityManager;
+
+  @Autowired
+  private PasswordEncoder passwordEncoder;
 
   public List<AlbumLike> createAndSaveAlbumLikes(Album album, List<User> users) {
     return users.stream().map(user -> createAndSaveAlbumLike(album, user)).toList();
@@ -81,7 +87,7 @@ public class Creator {
     return User.builder()
         .email(testEntityManager.persistAndFlush(
             Email.builder().email(username + "@example.com").verificationCode("1234").build()))
-        .password("1").username(username).build();
+        .password(passwordEncoder.encode(username)).username(username).build();
   }
 
   public List<UserBestAlbum> createAndSaveUserBestAlbums(User user, int size) {

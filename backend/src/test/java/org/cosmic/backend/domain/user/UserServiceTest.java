@@ -195,14 +195,14 @@ public class UserServiceTest {
         .password("encodedPassword")
         .email(email)
         .build();
-    when(tokenProvider.validateRefreshTokenAndGetLongId("refreshToken")).thenReturn(1L);
+    when(tokenProvider.validateRefreshTokenAndGetLongId("originalRefreshToken")).thenReturn(1L);
     when(usersRepository.findById(1L)).thenReturn(Optional.of(user));
-    when(tokenProvider.create(user)).thenReturn("accessToken2");
+    when(tokenProvider.create(user)).thenReturn("newAccessToken");
 
-    UserLoginDetail userLoginDetail = userService.getUserByRefreshToken("refreshToken");
+    UserLoginDetail userLoginDetail = userService.getUserByRefreshToken("originalRefreshToken");
 
     Assertions.assertEquals("testman", userLoginDetail.getUsername());
-    Assertions.assertEquals("refreshToken", userLoginDetail.getRefreshToken());
-    Assertions.assertEquals("accessToken2", userLoginDetail.getToken());
+    Assertions.assertEquals("originalRefreshToken", userLoginDetail.getRefreshToken());
+    Assertions.assertEquals("newAccessToken", userLoginDetail.getToken());
   }
 }
