@@ -155,8 +155,8 @@ public class User implements MyUserDetails {
   }
 
   private List<DnaDetail> toDnaDetails(User user) {
-    return Stream.of(user.getDna1(), user.getDna2(), user.getDna3(), user.getDna4())
-        .map(dna -> dna != null ? DnaDetail.from(dna) : null)
+    return user.getDNAs().stream()
+        .map(DnaDetail::from)
         .toList();
   }
 
