@@ -3,6 +3,8 @@ import { colors } from '../../styles/color';
 import { useEffect, useRef, useState } from 'react';
 import useStore from '../store/store';
 import { useNavigate } from 'react-router-dom';
+import { fetchPOST, fetchDELETE } from '../utils/fetchData';
+import { updateTimeAgo } from '../utils/getTimeAgo';
 const ChatCardContainer = styled.div`
   width: 350px;
   height: auto;
@@ -48,7 +50,7 @@ const Text = styled.div<{ fontSize?: string; margin?: string; color?: string }>`
 const ProfileArea = styled.div`
   display: flex;
   width: 100%;
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: center;
   flex-direction: row;
 `;
@@ -87,6 +89,13 @@ const ProfileImageCircle = styled.img`
   object-position: center; /* 이미지 가운데 정렬 */
 `;
 
+const ProfileInfoArea = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+`;
+
 const ButtonArea = styled.div`
   width: 100%;
   display: flex;
@@ -97,6 +106,8 @@ const ButtonArea = styled.div`
 
 const EditBtn = styled.div`
   display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
   position: relative;
 `;
 const DropdownMenu = styled.div`
@@ -141,8 +152,8 @@ interface User {
 interface AlbumChatComment {
   albumChatCommentId: number;
   content: string;
-  createAt: number; // ISO 날짜 형식
-  updateAt: number; // ISO 날짜 형식
+  createAt: string; // ISO 날짜 형식
+  updateAt: string; // ISO 날짜 형식
   likes: User[];
   comments: AlbumChatComment[]; // 재귀적 구조
   author: User;
@@ -154,80 +165,43 @@ interface AlbumData {
 }
 
 const AlbumChatCard = ({ comment, spotifyAlbumId }: AlbumData) => {
-  ////// Post 시간 계산 //////
+  // Post 시간 계산
   const CreateTime = comment.createAt;
-  const UpdatedTime = comment?.updateAt;
+  const UpdatedTime = comment.updateAt;
   const [timeAgo, setTimeAgo] = useState<string>('');
-  const server = 'http://203.255.81.70:8030';
-  const reissueTokenUrl = `${server}/api/auth/reissued`;
-  const [token, setToken] = useState(localStorage.getItem('login-token'));
-  const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
 
-  //console.log(`album id : ${albumId}`);
   useEffect(() => {
-    const updateTimeAgo = () => {
-      if (CreateTime) {
-        if (UpdatedTime === null) {
-          const time = formatTimeAgo(CreateTime);
-          console.log('수정안됨');
-          setTimeAgo(time);
-        } else {
-          const time = formatTimeAgo(UpdatedTime);
-          console.log('수정됨');
-          setTimeAgo(time);
-        }
-      }
-    };
-
-    // 처음 마운트될 때 시간 계산
-    updateTimeAgo();
-  }, [CreateTime, UpdatedTime]);
-
-  const formatTimeAgo = (unixTimestamp: number): string => {
-    const currentTime = Math.floor(Date.now() / 1000); // 현재 시간 (초)
-    const timeDifference = currentTime - Math.floor(unixTimestamp); // 경과 시간 (초)
-
-    const minutesAgo = Math.floor(timeDifference / 60); // 경과 시간 (분)
-    const hoursAgo = Math.floor(timeDifference / 3600); // 경과 시간 (시간)
-    const daysAgo = Math.floor(timeDifference / 86400); // 경과 시간 (일)
-
-    if (minutesAgo < 60) {
-      return `${minutesAgo}분 전`;
-    } else if (hoursAgo < 24) {
-      return `${hoursAgo}시간 전`;
-    } else {
-      return `${daysAgo}일 전`;
+    if (comment) {
+      const time = updateTimeAgo(CreateTime, UpdatedTime);
+      setTimeAgo(time);
     }
-  };
+  }, [CreateTime, UpdatedTime]);
 
   // chat 좋아요 상태 확인
 
   // 좋아요 설정
-  const [isPostLiked, setIsPostLiked] = useState(false);
+  const [isChatLiked, setIsChatLiked] = useState(false);
   const [likesCount, setLikesCount] = useState<number>(0);
   const { id, name } = useStore();
   useEffect(() => {
     if (comment) {
       setLikesCount(comment.likes.length);
       if (comment.likes.some((like: any) => like.id === id)) {
-        setIsPostLiked(true);
+        setIsChatLiked(true);
       }
     }
   }, [comment]);
 
-  const CommentLikeUrl = server + `/api/album/${spotifyAlbumId}/comment/${comment.albumChatCommentId}/commentLike`;
-
-  console.log(`albumid: ${spotifyAlbumId}`);
-  const changeCommentLike = async () => {
-    console.log('changing Like');
-    if (isPostLiked && comment) {
+  const ChatLikeUrl = `/api/album/${spotifyAlbumId}/comment/${comment.albumChatCommentId}/commentLike`;
+  const changeChatLike = async () => {
+    if (isChatLiked && comment) {
       // 이미 좋아요를 눌렀다면 좋아요 취소
-      setIsPostLiked(false);
+      setIsChatLiked(false);
       setLikesCount(likesCount - 1);
       comment.likes = comment.likes.filter((like: any) => like.id !== id);
     } else {
       // 좋아요 누르기
-      setIsPostLiked(true);
+      setIsChatLiked(true);
       setLikesCount(likesCount + 1);
       comment?.likes.push({
         id: id,
@@ -236,66 +210,17 @@ const AlbumChatCard = ({ comment, spotifyAlbumId }: AlbumData) => {
         dnas: [],
       });
     }
-    fetchLike();
-    // like 데이터 POST 요청
+    fetchLike(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '');
   };
 
-  const fetchLike = async () => {
-    if (token) {
-      console.log('fetching Like Data');
-      try {
-        const response = await fetch(CommentLikeUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (response.ok) {
-          const data = await response.json();
-          if (data.likes.some((like: any) => like.id === id)) {
-            console.log('like 추가');
-          } else {
-            console.log('like 삭제');
-          }
-        } else if (response.status === 401) {
-          await ReissueToken();
-          fetchLike();
-        } else {
-          console.error('Failed to fetch data:', response.status);
-        }
-      } catch (error) {
-        console.error('like 실패:', error);
-      }
-    }
-  };
-  const ReissueToken = async () => {
-    console.log('reissuing Token');
-    try {
-      const response = await fetch(reissueTokenUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Refresh-Token': `${refreshToken}`,
-        },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('login-token', data.token);
-        localStorage.setItem('login-refreshToken', data.refreshToken);
-        setToken(data.token);
-        setRefreshToken(data.refreshToken);
-      } else {
-        console.error('failed to reissue token', response.status);
-      }
-    } catch (error) {
-      console.error('Refresh Token 재발급 실패', error);
-    }
+  const fetchLike = async (token: string, refresuToken: string) => {
+    fetchPOST(token, refresuToken, ChatLikeUrl, {});
   };
 
   const navigate = useNavigate();
   const GoToAlbumChatPage = () => {
-    navigate('/AlbumChatPage', { state: { comment, spotifyAlbumId } });
+    const albumChatId = comment.albumChatCommentId;
+    navigate('/AlbumChatPage', { state: { albumChatId, spotifyAlbumId } });
   };
 
   const GoToMusicProfilePage = (userId: number) => {
@@ -312,50 +237,33 @@ const AlbumChatCard = ({ comment, spotifyAlbumId }: AlbumData) => {
   };
 
   // 삭제요청
-  const deleteChat = async () => {
-    const DeleteChatUrl = server + `/api/album/${spotifyAlbumId}/albumchat/${comment.albumChatCommentId}`;
-    if (token) {
-      if (comment) {
-        console.log(`delete id: ${comment.albumChatCommentId} Chat...`);
-      }
-      try {
-        const response = await fetch(DeleteChatUrl, {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (response.ok) {
-          //const data = await response.json();
-          //setAlbumPost(data);
-          console.log('deleted');
-        } else if (response.status === 401) {
-          ReissueToken();
-          deleteChat();
-        } else {
-          console.error('Failed to delete data:', response.status);
-        }
-      } catch (error) {
-        console.error('delete 실패:', error);
-      }
-    }
+  const DeleteChatUrl = `/api/album/${spotifyAlbumId}/albumchat/${comment.albumChatCommentId}?sorted=recent`;
+  const deleteChat = async (token: string, refreshToken: string) => {
+    fetchDELETE(token, refreshToken, DeleteChatUrl);
   };
 
   return (
     <ChatCardContainer>
-      <ProfileArea
-        onClick={() => {
-          GoToMusicProfilePage(comment.author.id);
-        }}
-      >
-        <ProfileImage>
-          <ProfileImageCircle src={comment.author.profilePicture} alt="Profile" />
-        </ProfileImage>
-        <ProfileTextArea>
-          <ProfileName>{comment.author.username}</ProfileName>
-          <PostUploadTime> {timeAgo} </PostUploadTime>
-        </ProfileTextArea>
+      <ProfileArea>
+        <ProfileInfoArea>
+          <ProfileImage
+            onClick={() => {
+              GoToMusicProfilePage(comment.author.id);
+            }}
+          >
+            <ProfileImageCircle src={comment.author.profilePicture} alt="Profile" />
+          </ProfileImage>
+          <ProfileTextArea>
+            <ProfileName
+              onClick={() => {
+                GoToMusicProfilePage(comment.author.id);
+              }}
+            >
+              {comment.author.username}
+            </ProfileName>
+            <PostUploadTime> {timeAgo} </PostUploadTime>
+          </ProfileTextArea>
+        </ProfileInfoArea>
         {comment.author.id === id && (
           <EditBtn ref={dropdownRef}>
             <svg
@@ -371,7 +279,7 @@ const AlbumChatCard = ({ comment, spotifyAlbumId }: AlbumData) => {
             </svg>
             {isDropdownOpen && (
               <DropdownMenu>
-                <DropdownItem onClick={() => deleteChat()}>삭제</DropdownItem>
+                <DropdownItem onClick={() => deleteChat(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '')}>삭제</DropdownItem>
               </DropdownMenu>
             )}
           </EditBtn>
@@ -392,7 +300,7 @@ const AlbumChatCard = ({ comment, spotifyAlbumId }: AlbumData) => {
           fill={comment.likes.some((like: any) => like.id === id) ? colors.Button_active : colors.Button_deactive}
           className="bi bi-heart-fill"
           viewBox="0 0 16 16"
-          onClick={() => changeCommentLike()}
+          onClick={() => changeChatLike()}
         >
           <path fillRule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314" />
         </svg>

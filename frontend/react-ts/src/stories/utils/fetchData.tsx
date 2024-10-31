@@ -138,3 +138,37 @@ export const fetchPOSTFile = async (token: string, refreshToken: string, URL: st
     console.log('Finished fetching');
   }
 };
+
+// 데이터 fetch 함수 - DELETE
+export const fetchDELETE = async (token: string, refreshToken: string, URL: string): Promise<any | undefined> => {
+  if (!token) return;
+
+  try {
+    console.log('Deleting POST...');
+    const response = await fetch(`${server}${URL}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log('Data fetched:', data);
+      return data;
+    } else if (response.status === 401 || response.status === 500) {
+      console.log('토큰 만료... 재발급 시도');
+      const newToken = await reissueToken(refreshToken);
+      if (newToken) {
+        return fetchDELETE(newToken, refreshToken, URL); // 재귀 호출로 새 토큰으로 재요청
+      }
+    } else {
+      console.error('Failed to fetch data:', response.status);
+    }
+  } catch (error) {
+    console.error('Error fetching the JSON file:', error);
+  } finally {
+    console.log('Finished fetching');
+  }
+};

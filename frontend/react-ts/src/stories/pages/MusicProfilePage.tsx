@@ -324,8 +324,8 @@ interface PostAuthor extends User {}
 interface PostDetail {
   postId: number;
   content: string;
-  createAt: number;
-  updateAt: number;
+  createAt: string;
+  updateAt: string;
   author: PostAuthor;
   album: Album;
 }

@@ -126,8 +126,8 @@ interface PostAuthor extends User {}
 interface PostDetail {
   postId: number;
   content: string;
-  createAt: number;
-  updateAt: number;
+  createAt: string;
+  updateAt: string;
   author: PostAuthor;
   album: Album;
 }
@@ -276,12 +276,7 @@ function HomePage() {
           </AlbumPostTitleArea>
           <RowAlignArea>
             {albumPosts && albumPosts.length > 0 ? (
-              albumPosts?.map(albumPost => (
-                <AlbumPostCard
-                  // key={albumPost.postDetail.postId}
-                  albumPost={albumPost}
-                />
-              ))
+              albumPosts?.map(albumPost => <AlbumPostCard key={albumPost.postDetail.postId} albumPost={albumPost} />)
             ) : (
               <Text fontSize="15px" margin="150px 0px 0px 0px" />
             )}

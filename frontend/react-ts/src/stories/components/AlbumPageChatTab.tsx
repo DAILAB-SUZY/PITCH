@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import AlbumChatCard from './AlbumChatCard';
 import { useEffect, useRef, useState } from 'react';
+import { fetchGET } from '../utils/fetchData';
 
 const Container = styled.div`
   display: flex;
@@ -38,7 +39,6 @@ interface AlbumChatComment {
   likes: User[];
 }
 
-///
 interface DNA {
   dnaKey: number;
   dnaName: string;
@@ -74,71 +74,20 @@ function AlbumPageChatTab({ spotifyAlbumId }: AlbumProps) {
   const [isEnd, setIsEnd] = useState(false);
   console.log('postlist');
   console.log(albumChatList);
-  const server = 'http://203.255.81.70:8030';
-  const reissueTokenUrl = `${server}/api/auth/reissued`;
-  const [token, setToken] = useState(localStorage.getItem('login-token'));
-  const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
 
-  let AlbumChatUrl = `${server}/api/album/${spotifyAlbumId}/albumchat?sorted=recent&page=${pageNumber}&limit=5`;
-  const fetchAlbumChat = async () => {
+  let AlbumChatUrl = `/api/album/${spotifyAlbumId}/albumchat?sorted=recent&page=${pageNumber}&limit=5`;
+  const fetchAlbumChat = async (token: string, refreshToken: string) => {
     if (token && !isLoading && !isEnd) {
       setIsLoading(true);
-      console.log(AlbumChatUrl);
-      try {
-        const response = await fetch(AlbumChatUrl, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          if (data.length === 0) {
-            console.log('list End');
-            setIsEnd(true);
-          }
-
-          setaAlbumChatList(prevList => [...prevList, ...data]);
-          setPageNumber(prevPage => prevPage + 1); // 페이지 증가
-          console.log(pageNumber);
-        } else if (response.status === 401) {
-          ReissueToken();
-          fetchAlbumChat();
-        } else {
-          console.error('Failed to fetch data:', response.status);
+      await fetchGET(token, refreshToken, AlbumChatUrl).then(data => {
+        if (data.length === 0) {
+          console.log('list End');
+          setIsEnd(true);
         }
-      } catch (error) {
-        console.error('Error fetching the JSON file:', error);
-      } finally {
-        setIsLoading(false);
-        console.log('finished');
-      }
-    }
-  };
-
-  const ReissueToken = async () => {
-    console.log('reissuing Token');
-    try {
-      const response = await fetch(reissueTokenUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Refresh-Token': `${refreshToken}`,
-        },
+        setaAlbumChatList(prevList => [...prevList, ...data]);
+        setPageNumber(prevPage => prevPage + 1); // 페이지 증가
       });
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('login-token', data.token);
-        localStorage.setItem('login-refreshToken', data.refreshToken);
-        setToken(data.token);
-        setRefreshToken(data.refreshToken);
-      } else {
-        console.error('failed to reissue token', response.status);
-      }
-    } catch (error) {
-      console.error('Refresh Token 재발급 실패', error);
+      setIsLoading(false);
     }
   };
 
@@ -147,14 +96,11 @@ function AlbumPageChatTab({ spotifyAlbumId }: AlbumProps) {
     const observer = new IntersectionObserver(entries => {
       // observerRef가 화면에 보이면 fetch 호출
       if (!isLoading && entries[0].isIntersecting) {
-        // setPageNumber(prevPage => prevPage + 1); // 페이지 증가
-        // console.log('page++ => ', pageNumber);
-        fetchAlbumChat();
+        fetchAlbumChat(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '');
       }
     });
 
     if (observerRef.current) {
-      //console.log('current: ', observerRef.current);
       observer.observe(observerRef.current); // ref가 있는 요소를 관찰 시작
     }
 

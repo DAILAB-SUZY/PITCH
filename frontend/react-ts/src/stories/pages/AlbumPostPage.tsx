@@ -4,7 +4,7 @@ import { useRef, useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import AlbumPostCommentCard from '../components/AlbumPostCommentCard';
 import useStore from '../store/store';
-
+import { updateTimeAgo } from '../utils/getTimeAgo';
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -262,8 +262,8 @@ interface albumPost {
   postDetail: {
     postId: number;
     content: string;
-    createAt: number;
-    updateAt: number;
+    createAt: string;
+    updateAt: string;
     author: {
       id: number;
       username: string;
@@ -405,43 +405,19 @@ function AlbumPostPage() {
     fetchAlbumPost();
   }, []);
 
-  // Post 시간 계산에 필요한 상태 관리
+  // Post 시간 계산
+  const CreateTime = albumPost?.postDetail.createAt;
+  const UpdatedTime = albumPost?.postDetail.updateAt;
   const [timeAgo, setTimeAgo] = useState<string>('');
+
   useEffect(() => {
     if (albumPost) {
-      console.log('getting time from post');
-      const CreateTime = albumPost.postDetail.createAt;
-      const UpdatedTime = albumPost.postDetail.updateAt;
-
-      const updateTimeAgo = () => {
-        if (!UpdatedTime) {
-          setTimeAgo(formatTimeAgo(CreateTime));
-        } else {
-          setTimeAgo(formatTimeAgo(UpdatedTime));
-        }
-      };
-      updateTimeAgo();
+      if (CreateTime && UpdatedTime) {
+        const time = updateTimeAgo(CreateTime, UpdatedTime);
+        setTimeAgo(time);
+      }
     }
-  }, [albumPost]);
-
-  const formatTimeAgo = (unixTimestamp: number): string => {
-    console.log('time calculating');
-    const currentTime = Math.floor(Date.now() / 1000); // 현재 시간 (초)
-    const timeDifference = currentTime - Math.floor(unixTimestamp); // 경과 시간 (초)
-
-    const minutesAgo = Math.floor(timeDifference / 60); // 경과 시간 (분)
-    const hoursAgo = Math.floor(timeDifference / 3600); // 경과 시간 (시간)
-    const daysAgo = Math.floor(timeDifference / 86400); // 경과 시간 (일)
-
-    if (minutesAgo < 60) {
-      return `${minutesAgo}분 전`;
-    } else if (hoursAgo < 24) {
-      return `${hoursAgo}시간 전`;
-    } else {
-      return `${daysAgo}일 전`;
-    }
-  };
-  /////////////
+  }, [CreateTime, UpdatedTime]);
 
   const { name, id } = useStore();
 

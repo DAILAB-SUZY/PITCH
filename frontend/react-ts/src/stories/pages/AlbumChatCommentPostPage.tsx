@@ -1,8 +1,9 @@
 import styled from 'styled-components';
 import { colors } from '../../styles/color';
 import { useLocation, useNavigate } from 'react-router-dom';
-import useStore from '../store/store';
 import { useEffect, useRef, useState } from 'react';
+import { fetchGET, fetchPOST } from '../utils/fetchData';
+import { updateTimeAgo } from '../utils/getTimeAgo';
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -84,14 +85,6 @@ const ChatCardBody = styled.div`
   flex-direction: row;
   justify-content: space-between;
   line-height: 120%;
-`;
-
-const CommentButtonArea = styled.div`
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  margin: 0 10 0 10px;
 `;
 
 const CommentArea = styled.div`
@@ -182,179 +175,51 @@ interface User {
 interface AlbumChatComment {
   albumChatCommentId: number;
   content: string;
-  createAt: number; // ISO 날짜 형식
-  updateAt: number; // ISO 날짜 형식
+  createAt: string; // ISO 날짜 형식
+  updateAt: string; // ISO 날짜 형식
   likes: User[];
   comments: AlbumChatComment[]; // 재귀적 구조
   author: User;
 }
 
-interface AlbumData {
-  comment: AlbumChatComment;
-  spotifyAlbumId: string;
-}
-
 function AlbumChatCommentPostPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [AlbumChatData, setAlbumChatData] = useState<AlbumData>();
+  const albumChatId = location.state.albumChatId;
+  const spotifyAlbumId = location.state.spotifyAlbumId;
+  const [AlbumChatData, setAlbumChatData] = useState<AlbumChatComment>();
 
   const GoToAlbumChatPage = () => {
-    navigate('/AlbumChatPage', { state: AlbumChatData });
+    navigate('/AlbumChatPage', { state: { albumChatId, spotifyAlbumId } });
   };
 
   useEffect(() => {
-    const data = location.state;
-    setAlbumChatData(data);
-    console.log(data);
+    fetchAlbumChat(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '');
   }, []);
+  const AlbumChatUrl = `/api/album/${spotifyAlbumId}/albumchat/${albumChatId}?sorted=recent`;
+  const fetchAlbumChat = async (token: string, refreshToken: string) => {
+    fetchGET(token, refreshToken, AlbumChatUrl).then(data => {
+      console.log(data);
+      setAlbumChatData(data);
+      setCreateTime(data.createAt);
+      setUpdatedTime(data.updateAt);
+    });
+  };
 
   const [postContent, setPostContent] = useState('');
 
-  ////// Post 시간 계산 //////
-  const CreateTime = AlbumChatData?.comment.createAt;
-  const UpdatedTime = AlbumChatData?.comment.updateAt;
+  // Post 시간 계산
+  const [CreateTime, setCreateTime] = useState<string>('');
+  const [UpdatedTime, setUpdatedTime] = useState<string>('');
   const [timeAgo, setTimeAgo] = useState<string>('');
-  const server = 'http://203.255.81.70:8030';
-  const reissueTokenUrl = `${server}/api/auth/reissued`;
-  const [token, setToken] = useState(localStorage.getItem('login-token'));
-  const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
 
-  console.log(timeAgo);
   useEffect(() => {
-    const updateTimeAgo = () => {
-      if (CreateTime && UpdatedTime) {
-        if (UpdatedTime === null) {
-          const time = formatTimeAgo(CreateTime);
-          console.log('수정안됨');
-          setTimeAgo(time);
-        } else {
-          const time = formatTimeAgo(UpdatedTime);
-          console.log('수정됨');
-          setTimeAgo(time);
-        }
-      }
-    };
-
-    // 처음 마운트될 때 시간 계산
-    updateTimeAgo();
-  }, [CreateTime, UpdatedTime, AlbumChatData]);
-
-  const formatTimeAgo = (unixTimestamp: number): string => {
-    const currentTime = Math.floor(Date.now() / 1000); // 현재 시간 (초)
-    const timeDifference = currentTime - Math.floor(unixTimestamp); // 경과 시간 (초)
-
-    const minutesAgo = Math.floor(timeDifference / 60); // 경과 시간 (분)
-    const hoursAgo = Math.floor(timeDifference / 3600); // 경과 시간 (시간)
-    const daysAgo = Math.floor(timeDifference / 86400); // 경과 시간 (일)
-
-    if (minutesAgo < 60) {
-      return `${minutesAgo}분 전`;
-    } else if (hoursAgo < 24) {
-      return `${hoursAgo}시간 전`;
-    } else {
-      return `${daysAgo}일 전`;
+    if (AlbumChatData) {
+      const time = updateTimeAgo(CreateTime, UpdatedTime);
+      setTimeAgo(time);
     }
-  };
-
+  }, [CreateTime, UpdatedTime]);
   // chat 좋아요 상태 확인
-
-  // 좋아요 설정
-  const [isPostLiked, setIsPostLiked] = useState(false);
-  const [likesCount, setLikesCount] = useState<number>(0);
-  const { id, name } = useStore();
-  useEffect(() => {
-    if (AlbumChatData?.comment) {
-      setLikesCount(AlbumChatData?.comment.likes.length);
-      if (AlbumChatData?.comment.likes.some((like: any) => like.id === id)) {
-        setIsPostLiked(true);
-      }
-    }
-  }, [AlbumChatData?.comment]);
-
-  const CommentLikeUrl = server + `/api/album/${AlbumChatData?.spotifyAlbumId}/comment/${AlbumChatData?.comment.albumChatCommentId}/commentLike`;
-
-  const changeCommentLike = async () => {
-    console.log('changing Like');
-    if (isPostLiked && AlbumChatData?.comment) {
-      // 이미 좋아요를 눌렀다면 좋아요 취소
-      setIsPostLiked(false);
-      setLikesCount(likesCount - 1);
-      AlbumChatData.comment.likes = AlbumChatData.comment.likes.filter((like: any) => like.id !== id);
-    } else {
-      // 좋아요 누르기
-      setIsPostLiked(true);
-      setLikesCount(likesCount + 1);
-      AlbumChatData?.comment.likes.push({
-        id: id,
-        username: name,
-        profilePicture: 'string',
-        dnas: [],
-      });
-    }
-    fetchLike();
-    // like 데이터 POST 요청
-  };
-
-  const fetchLike = async () => {
-    if (token) {
-      console.log('fetching Like Data');
-      try {
-        const response = await fetch(CommentLikeUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (response.ok) {
-          const data = await response.json();
-          if (data.likes.some((like: any) => like.id === id)) {
-            console.log('like 추가');
-          } else {
-            console.log('like 삭제');
-          }
-        } else if (response.status === 401) {
-          await ReissueToken();
-          fetchLike();
-        } else {
-          console.error('Failed to fetch data:', response.status);
-        }
-      } catch (error) {
-        console.error('like 실패:', error);
-      }
-    }
-  };
-
-  const ReissueToken = async () => {
-    console.log('reissuing Token');
-    try {
-      const response = await fetch(reissueTokenUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Refresh-Token': `${refreshToken}`,
-        },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('login-token', data.token);
-        localStorage.setItem('login-refreshToken', data.refreshToken);
-        setToken(data.token);
-        setRefreshToken(data.refreshToken);
-      } else {
-        console.error('failed to reissue token', response.status);
-      }
-    } catch (error) {
-      console.error('Refresh Token 재발급 실패', error);
-    }
-  };
-
-  useEffect(() => {
-    const data = location.state;
-    setAlbumChatData(data);
-    console.log(data);
-  }, []);
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const adjustTextareaHeight = () => {
@@ -365,42 +230,15 @@ function AlbumChatCommentPostPage() {
   };
 
   // Commet 작성
-  const fetchAlbumChatComment = async () => {
-    let AlbumChatPostUrl = `${server}/api/album/${AlbumChatData?.spotifyAlbumId}/albumchat`;
-    if (token) {
-      try {
-        const response = await fetch(AlbumChatPostUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            content: postContent,
-            sorted: 'recent',
-            parentAlbumChatCommentId: AlbumChatData?.comment.albumChatCommentId,
-          }),
-        });
-
-        console.log(postContent);
-
-        if (response.ok) {
-          const data = await response.json();
-          console.log('Post Comment Success');
-          console.log(data);
-        } else if (response.status === 401) {
-          ReissueToken();
-          fetchAlbumChatComment();
-        } else {
-          console.error('Failed to Post Comment:', response.status);
-        }
-      } catch (error) {
-        console.error('Error fetching the JSON file:', error);
-      } finally {
-        console.log('finished');
-        GoToAlbumChatPage();
-      }
-    }
+  const AlbumChatPostUrl = `/api/album/${spotifyAlbumId}/albumchat`;
+  const fetchAlbumChatComment = async (token: string, refreshToken: string) => {
+    const data = {
+      content: postContent,
+      sorted: 'recent',
+      parentAlbumChatCommentId: albumChatId,
+    };
+    await fetchPOST(token, refreshToken, AlbumChatPostUrl, data);
+    GoToAlbumChatPage();
   };
 
   return (
@@ -420,7 +258,7 @@ function AlbumChatCommentPostPage() {
               margin="0px 10px 0px 0px"
               color={colors.Font_black}
               // onClick={() => (isEditMode ? console.log("fetchEdit") : fetchComment())}
-              onClick={() => fetchAlbumChatComment()}
+              onClick={() => fetchAlbumChatComment(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '')}
             >
               저장
             </Text>
@@ -429,22 +267,22 @@ function AlbumChatCommentPostPage() {
           <CommentArea>
             <ProfileArea>
               <ProfileImage>
-                <ProfileImageCircle src={AlbumChatData?.comment.author.profilePicture} alt="Profile" />
+                <ProfileImageCircle src={AlbumChatData?.author.profilePicture} alt="Profile" />
               </ProfileImage>
               <ProfileTextArea>
-                <ProfileName>{AlbumChatData?.comment.author.username}</ProfileName>
+                <ProfileName>{AlbumChatData?.author.username}</ProfileName>
                 <PostUploadTime> {timeAgo}</PostUploadTime>
               </ProfileTextArea>
             </ProfileArea>
             <ChatCardBody>
-              <Text fontSize="15px">{AlbumChatData?.comment.content}</Text>
+              <Text fontSize="15px">{AlbumChatData?.content}</Text>
             </ChatCardBody>
-            <CommentButtonArea>
+            {/* <CommentButtonArea>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="14"
                 height="14"
-                fill={AlbumChatData?.comment.likes.some((like: any) => like.id === id) ? colors.Button_active : colors.Button_deactive}
+                fill={AlbumChatData?.likes.some((like: any) => like.id === id) ? colors.Button_active : colors.Button_deactive}
                 className="bi bi-heart-fill"
                 viewBox="0 0 16 16"
                 onClick={() => changeCommentLike()}
@@ -452,16 +290,16 @@ function AlbumChatCommentPostPage() {
                 <path fillRule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314" />
               </svg>
               <Text fontSize="14px" color="grey" margin="0px 20px 0px 5px">
-                좋아요 {AlbumChatData?.comment.likes.length}개
+                좋아요 {AlbumChatData?.likes.length}개
               </Text>
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="grey" className="bi bi-chat-right-text-fill" viewBox="0 0 16 16" style={{ strokeWidth: 6 }}>
                 <path d="M2 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h9.586a2 2 0 0 1 1.414.586l2 2V2a1 1 0 0 0-1-1zm12-1a2 2 0 0 1 2 2v12.793a.5.5 0 0 1-.854.353l-2.853-2.853a1 1 0 0 0-.707-.293H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z" />
                 <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6m0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5" />
               </svg>
               <Text fontSize="14px" color="grey" margin="0px 0px 0px 5px">
-                답글 {AlbumChatData?.comment.comments.length}개
+                답글 {AlbumChatData?.comments.length}개
               </Text>
-            </CommentButtonArea>
+            </CommentButtonArea> */}
           </CommentArea>
         </CommentArea>
         <Line></Line>

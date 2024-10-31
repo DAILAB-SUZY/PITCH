@@ -308,8 +308,6 @@ function MusicProfileEditPage() {
   const location = useLocation();
   const userId = location.state;
 
-  const server = 'http://203.255.81.70:8030';
-
   let musiProfileUrl = `/api/user/${userId}/musicProfile`;
 
   const navigate = useNavigate();

@@ -205,8 +205,6 @@ function AlbumHomePage() {
   }, []);
 
   let AlbumSearchUrl = `/api/searchSpotify/album/${searchKeyword}`;
-  const [token, setToken] = useState(localStorage.getItem('login-token'));
-  const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
 
   const MostCommentedDataUrl = `/api/album/albumchat/chat`;
   const fetchMostCommentedData = async (token: string, refreshToken: string) => {
@@ -217,15 +215,17 @@ function AlbumHomePage() {
 
   const MostLikedDataUrl = `/api/album/albumchat/like?page=${pageNumber}&limit=6`;
   const fetchMostLikedData = async (token: string, refreshToken: string) => {
-    fetchGET(token, refreshToken, MostLikedDataUrl).then(data => {
-      if (data.length === 0) {
-        console.log('list End');
-        setIsEnd(true);
-      }
+    if (!isEnd) {
+      fetchGET(token, refreshToken, MostLikedDataUrl).then(data => {
+        if (data.length === 0) {
+          console.log('list End');
+          setIsEnd(true);
+        }
 
-      setMostLikedAlbumList(prevList => [...prevList, ...data]);
-      setPageNumber(prevPage => prevPage + 1); // 페이지 증가
-    });
+        setMostLikedAlbumList(prevList => [...prevList, ...data]);
+        setPageNumber(prevPage => prevPage + 1); // 페이지 증가
+      });
+    }
   };
 
   // 검색 실행 함수

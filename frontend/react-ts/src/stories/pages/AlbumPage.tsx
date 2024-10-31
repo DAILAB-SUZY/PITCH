@@ -5,7 +5,6 @@ import AlbumPageChatTab from '../components/AlbumPageChatTab';
 import AlbumPagePostTab from '../components/AlbumPagePostTab';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import Loader from '../components/Loader';
 import useStore from '../store/store';
 import { fetchGET, fetchPOST } from '../utils/fetchData';
 
@@ -266,13 +265,6 @@ function AlbumPage() {
     fetchAlbumDetail(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '');
   }, []);
 
-  // const fetchSearch = async () => {
-  //   if (!isLoading) {
-  //     console.log('검색시작');
-  //     fetchAlbumDetail(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '');
-  //   }
-  // };
-
   let AlbumPageUrl = `/api/album/${spotifyAlbumId}`;
   const fetchAlbumDetail = async (token: string, refreshToken: string) => {
     fetchGET(token, refreshToken, AlbumPageUrl).then(data => {
@@ -280,39 +272,7 @@ function AlbumPage() {
     });
   };
 
-  // const Search = async (URL: string) => {
-  //   console.log('fetching album chat list...');
-  //   try {
-  //     const response = await fetch(URL, {
-  //       method: 'GET',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     });
-  //     if (response.ok) {
-  //       const data = await response.json();
-  //       setAlbumDetail(data);
-  //       console.log(data);
-  //     } else if (response.status === 401) {
-  //       //ReissueToken();
-  //       fetchSearch();
-  //     } else {
-  //       console.error('Failed to fetch data:', response.status);
-  //     }
-  //   } catch (error) {
-  //     console.error('Error fetching the JSON file:', error);
-  //   } finally {
-  //     setIsLoading(false);
-  //     console.log('finished');
-  //   }
-  // };
-
-  //
-
-  // Post 좋아요 상태 확인
-
-  // 좋아요 설정
+  // Post 좋아요 설정
   const [isAlbumLiked, setIsAlbumLiked] = useState(false);
   const [likesCount, setLikesCount] = useState<number>(0);
   const { id, name } = useStore();
@@ -348,67 +308,9 @@ function AlbumPage() {
   };
 
   const fetchLike = async (token: string, refresuToken: string) => {
-    fetchPOST(token, refresuToken, AlbumLikeUrl, {}).then(data => {
-      if (data.likes.some((like: any) => like.id === id)) {
-        console.log('like 추가');
-      } else {
-        console.log('like 삭제');
-      }
-    });
+    fetchPOST(token, refresuToken, AlbumLikeUrl, {});
   };
-  // const changeAlbumLike = async () => {
-  //   console.log('changing Like');
-  //   if (isAlbumLiked && albumDetail) {
-  //     // 이미 좋아요를 눌렀다면 좋아요 취소
-  //     setIsAlbumLiked(false);
-  //     setLikesCount(likesCount - 1);
-  //     albumDetail.likes = albumDetail.likes.filter((like: any) => like.id !== id);
-  //   } else {
-  //     // 좋아요 누르기
-  //     setIsAlbumLiked(true);
-  //     setLikesCount(likesCount + 1);
-  //     albumDetail?.likes.push({
-  //       id: id,
-  //       username: name,
-  //       profilePicture: 'string',
-  //       dnas: [],
-  //     });
-  //   }
-  //   fetchLike();
-  //   // like 데이터 POST 요청
-  // };
 
-  // const fetchLike = async () => {
-  //   if (token) {
-  //     console.log('fetching Like Data');
-  //     try {
-  //       const response = await fetch(AlbumLikeUrl, {
-  //         method: 'POST',
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       });
-  //       if (response.ok) {
-  //         const data = await response.json();
-  //         if (data.likes.some((like: any) => like.id === id)) {
-  //           console.log('like 추가');
-  //         } else {
-  //           console.log('like 삭제');
-  //         }
-  //       } else if (response.status === 401) {
-  //         //ReissueToken();
-  //         fetchLike();
-  //       } else {
-  //         console.error('Failed to fetch data:', response.status);
-  //       }
-  //     } catch (error) {
-  //       console.error('like 실패:', error);
-  //     }
-  //   }
-  // };
-
-  //
   const navigate = useNavigate();
   const GoToAlbumChatPostPage = () => {
     navigate('/AlbumChatPostPage', { state: spotifyAlbumId });
@@ -483,9 +385,6 @@ function AlbumPage() {
           </AlbumInfoArea>
           <Line></Line>
           <ContentArea>
-            {/* <Title fontSize="30px" margin="0px 0px 0px 0px" >
-                Chats
-              </Title> */}
             <TabArea>
               <TabBtn
                 opacity={tabState === 'chat' ? '1' : '0.3'}
