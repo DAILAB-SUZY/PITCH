@@ -1,5 +1,6 @@
 package org.cosmic.backend.globals.filters;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,6 +10,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.auth.applications.TokenProvider;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -37,11 +39,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
       FilterChain filterChain) throws ServletException, IOException {
-    doFilter(request, response, filterChain);
+    try {
+      doFilter(request, response, filterChain);
+    } catch (JwtException e) {
+      response.sendError(HttpStatus.UNAUTHORIZED.value(), e.getMessage());
+    }
   }
 
   private void doFilter(HttpServletRequest request, HttpServletResponse response,
-      FilterChain filterChain) throws ServletException, IOException {
+      FilterChain filterChain) throws ServletException, IOException, JwtException {
     JwtAuthenticationToken authentication = createAuthenticationToken(request);
     if (authentication.getPrincipal().equals(NONE_TOKEN)) {
       filterChain.doFilter(request, response);
