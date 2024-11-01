@@ -445,6 +445,8 @@ function AlbumPostPage() {
   const fetchAlbumPost = async (token: string, refreshToken: string) => {
     fetchGET(token, refreshToken, `/api/album/post/${location.state}`).then(data => {
       setAlbumPost(data);
+      console.log('fetched');
+      console.log(data);
       setStars(scoreToStar(data.postDetail.album.score));
     });
   };
@@ -658,7 +660,8 @@ function AlbumPostPage() {
             <CommentCardArea>
               {albumPost.comments.map(
                 (comment: any, index: number) => (
-                  console.log(albumPost.postDetail.postId), (<AlbumPostCommentCard key={index} comment={comment} postId={albumPost.postDetail.postId}></AlbumPostCommentCard>)
+                  console.log(albumPost.postDetail.postId),
+                  (<AlbumPostCommentCard key={index} comment={comment} postId={albumPost.postDetail.postId} fetchAlbumPost={fetchAlbumPost}></AlbumPostCommentCard>)
                 ),
               )}
             </CommentCardArea>

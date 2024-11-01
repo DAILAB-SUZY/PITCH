@@ -135,7 +135,8 @@ function AlbumPostCommentPostPage() {
     const data = {
       content: postContent,
     };
-    fetchPOST(token, refreshToken, CommentPostUrl, data);
+    await fetchPOST(token, refreshToken, CommentPostUrl, data);
+    GoToAlbumPostPage();
   };
   // const fetchComment = async () => {
   //   let CommentPostUrl = `${server}/api/album/post/${postId}/comment`;

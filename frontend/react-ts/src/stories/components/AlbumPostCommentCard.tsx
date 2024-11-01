@@ -153,9 +153,10 @@ interface commentProps {
     };
   };
   postId: number;
+  fetchAlbumPost: (token: string, refreshToken: string) => void;
 }
 
-const AlbumPostCommentCard = ({ comment, postId }: commentProps) => {
+const AlbumPostCommentCard = ({ comment, postId, fetchAlbumPost }: commentProps) => {
   // Post 시간 계산
   const CreateTime = comment.createdAt;
   const UpdatedTime = comment.updatedAt;
@@ -265,7 +266,8 @@ const AlbumPostCommentCard = ({ comment, postId }: commentProps) => {
   // 삭제요청
   const DeleteChatUrl = `/api/album/post/${postId}/comment/${comment.id}`;
   const deleteChat = async (token: string, refreshToken: string) => {
-    fetchDELETE(token, refreshToken, DeleteChatUrl);
+    await fetchDELETE(token, refreshToken, DeleteChatUrl);
+    fetchAlbumPost(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '');
   };
 
   return (
