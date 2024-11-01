@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { colors } from '../../styles/color';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useRef, useState } from 'react';
+import { fetchPOST } from '../utils/fetchData';
 
 const Container = styled.div`
   display: flex;
@@ -109,17 +110,10 @@ const ContentInput = styled.textarea`
 `;
 
 function CommentPostPage() {
-  //   const [postContent, setPostContent] = useState("내용을 입력해주세요");
-  //   const { email, setEmail, name, setName, id, setId } = useStore();
   const location = useLocation();
   const spotifyAlbumId = location.state;
 
   const [postContent, setPostContent] = useState('');
-  const [token, setToken] = useState(localStorage.getItem('login-token'));
-  const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
-
-  const server = 'http://203.255.81.70:8030';
-  const reissueTokenUrl = `${server}/api/auth/reissued`;
 
   const navigate = useNavigate();
   const GoToAlbumPage = () => {
@@ -128,63 +122,15 @@ function CommentPostPage() {
 
   // 게시물 작성
   const fetchAlbumChat = async () => {
-    let AlbumChatPostUrl = `${server}/api/album/${spotifyAlbumId}/albumchat`;
-    if (token) {
-      try {
-        const response = await fetch(AlbumChatPostUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            content: postContent,
-            sorted: 'recent',
-          }),
-        });
-
-        console.log(postContent);
-
-        if (response.ok) {
-          const data = await response.json();
-          console.log('Post Comment Success');
-          console.log(data);
-        } else if (response.status === 401) {
-          ReissueToken();
-          fetchAlbumChat();
-        } else {
-          console.error('Failed to Post Comment:', response.status);
-        }
-      } catch (error) {
-        console.error('Error fetching the JSON file:', error);
-      } finally {
-        console.log('finished');
-        GoToAlbumPage();
-      }
-    }
-  };
-  const ReissueToken = async () => {
-    console.log('reissuing Token');
-    try {
-      const response = await fetch(reissueTokenUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Refresh-Token': `${refreshToken}`,
-        },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('login-token', data.token);
-        localStorage.setItem('login-refreshToken', data.refreshToken);
-        setToken(data.token);
-        setRefreshToken(data.refreshToken);
-      } else {
-        console.error('failed to reissue token', response.status);
-      }
-    } catch (error) {
-      console.error('Refresh Token 재발급 실패', error);
-    }
+    const token = localStorage.getItem('login-token') as string;
+    const refreshToken = localStorage.getItem('login-refreshToken') as string;
+    const data = {
+      content: postContent,
+      sorted: 'recent',
+    };
+    fetchPOST(token, refreshToken, `/api/album/${spotifyAlbumId}/albumchat`, data).then(() => {
+      GoToAlbumPage();
+    });
   };
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);

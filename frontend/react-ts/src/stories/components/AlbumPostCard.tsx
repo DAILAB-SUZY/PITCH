@@ -221,15 +221,15 @@ interface ChildComment {
   id: number;
   content: string;
   author: CommentAuthor;
-  createTime: number;
-  updateTime: number;
+  createTime: string;
+  updateTime: string;
 }
 
 interface Comment {
   id: number;
   content: string;
-  createdAt: number;
-  updatedAt: number;
+  createAt: string;
+  updateAt: string;
   likes: User[];
   childComments: ChildComment[];
   author: CommentAuthor;

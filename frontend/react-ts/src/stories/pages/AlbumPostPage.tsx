@@ -373,8 +373,8 @@ interface DNA {
 interface Comment {
   id: number;
   content: string;
-  createdAt: string;
-  updatedAt: string;
+  createAt: string;
+  updateAt: string;
   likes: Like[];
   childComments: ChildComment[];
   author: Author;

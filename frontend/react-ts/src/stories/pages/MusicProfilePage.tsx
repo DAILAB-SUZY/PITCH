@@ -336,15 +336,15 @@ interface ChildComment {
   id: number;
   content: string;
   author: CommentAuthor;
-  createTime: number;
-  updateTime: number;
+  createTime: string;
+  updateTime: string;
 }
 
 interface Comment {
   id: number;
   content: string;
-  createdAt: number;
-  updatedAt: number;
+  createAt: string;
+  updateAt: string;
   likes: User[];
   childComments: ChildComment[];
   author: CommentAuthor;
@@ -370,8 +370,8 @@ interface User {
 interface AlbumChatComment {
   albumChatCommentId: number;
   content: string;
-  createAt: number; // ISO 날짜 형식
-  updateAt: number; // ISO 날짜 형식
+  createAt: string; // ISO 날짜 형식
+  updateAt: string; // ISO 날짜 형식
   likes: User[];
   comments: AlbumChatComment[]; // 재귀적 구조
   author: User;
@@ -465,21 +465,30 @@ function MusicProfilePage() {
         const mergedData = [...data.albumPostList.map((post: any) => ({ ...post, type: 'post' })), ...data.albumCommentList.map((chat: any) => ({ ...chat, type: 'chat' as const }))];
         // createAt 기준으로 내림차순 정렬
         mergedData.sort((a, b) => {
-          let stA;
-          let stB;
+          let stA: Date = new Date(0);
+          let stB: Date = new Date(0);
+
           if (a.type === 'post') {
-            stA = a.postDetail.updateAt === null ? a.postDetail.createAt : a.postDetail.updateAt;
+            const dateStr = a.postDetail.updateAt === null ? a.postDetail.createAt : a.postDetail.updateAt;
+            stA = dateStr ? new Date(dateStr) : new Date(0);
           } else if (a.type === 'chat') {
-            stA = a.albumChatCommentDetail.updateAt === null ? a.albumChatCommentDetail.createAt : a.albumChatCommentDetail.updateAt;
+            const dateStr = a.albumChatCommentDetail.updateAt === null ? a.albumChatCommentDetail.createAt : a.albumChatCommentDetail.updateAt;
+            stA = dateStr ? new Date(dateStr) : new Date(0);
           }
+
           if (b.type === 'post') {
-            stB = b.postDetail.updateAt === null ? b.postDetail.createAt : b.postDetail.updateAt;
+            const dateStr = b.postDetail.updateAt === null ? b.postDetail.createAt : b.postDetail.updateAt;
+            stB = dateStr ? new Date(dateStr) : new Date(0);
           } else if (b.type === 'chat') {
-            stB = b.albumChatCommentDetail.updateAt === null ? b.albumChatCommentDetail.createAt : b.albumChatCommentDetail.updateAt;
+            const dateStr = b.albumChatCommentDetail.updateAt === null ? b.albumChatCommentDetail.createAt : b.albumChatCommentDetail.updateAt;
+            stB = dateStr ? new Date(dateStr) : new Date(0);
           }
-          return stB - stA;
+
+          return stB.getTime() - stA.getTime();
         });
         setActivityData(mergedData);
+        console.log('merged');
+        console.log(mergedData);
       }
     });
   };

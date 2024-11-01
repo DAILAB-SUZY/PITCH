@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { colors } from '../../styles/color';
 import { useEffect, useState } from 'react';
 import Loader from './Loader';
+import { fetchGET } from '../utils/fetchData';
 
 const Container = styled.div`
   /* position: absolute;
@@ -233,17 +234,7 @@ function SearchTrackModal(props: SearchTrackModalProps) {
         if (!prevData) {
           // prevData가 undefined일 경우 초기값으로 설정
           return {
-            tracks: [
-              // {
-              //   albumId: 0, // 기본값 설정
-              //   artistName: newTrack.trackArtist.name || 'Unknown Artist', // artistName이 없을 경우 기본값 설정
-              //   spotifyId: newTrack.trackId, // 예시로 trackId 사용
-              //   title: newTrack.trackName || 'Unknown Title', // title이 없을 경우 기본값 설정
-              //   trackCover: newTrack.album.imageUrl || '', // trackCover가 없을 경우 기본값 설정
-              //   trackId: newTrack.trackId, // trackId
-              //   trackOrder: 1, // 새 트랙의 순서 설정
-              // },
-            ],
+            tracks: [],
             recommends: [], // 추천도 빈 배열로 초기화
           };
         }
@@ -271,40 +262,10 @@ function SearchTrackModal(props: SearchTrackModalProps) {
     }
   };
 
-  const server = 'http://203.255.81.70:8030';
-
-  const reissueTokenUrl = `${server}/api/auth/reissued`;
-  const [token, setToken] = useState(localStorage.getItem('login-token'));
-  const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
-  const ReissueToken = async () => {
-    console.log('reissuing Token');
-    try {
-      const response = await fetch(reissueTokenUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Refresh-Token': `${refreshToken}`,
-        },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('login-token', data.token);
-        localStorage.setItem('login-refreshToken', data.refreshToken);
-        setToken(data.token);
-        setRefreshToken(data.refreshToken);
-      } else {
-        console.error('failed to reissue token', response.status);
-      }
-    } catch (error) {
-      console.error('Refresh Token 재발급 실패', error);
-    }
-  };
-
-  let searchTrackUrl = `${server}/api/searchSpotify/track/${searchKeyword}`;
-  let searchArtistTrackUrl = `${server}/api/searchSpotify/artist/${favoriteArtistSpotifyIds?.spotifyArtistId}/track`;
-
   const fetchSearch = async () => {
-    if (token && !isLoading) {
+    const searchTrackUrl = `/api/searchSpotify/track/${searchKeyword}`;
+    const searchArtistTrackUrl = `/api/searchSpotify/artist/${favoriteArtistSpotifyIds?.spotifyArtistId}/track`;
+    if (!isLoading) {
       setIsLoading(true);
       console.log('검색시작');
       if (searchingTopic === 'track') {
@@ -319,37 +280,18 @@ function SearchTrackModal(props: SearchTrackModalProps) {
   };
 
   const Search = async (URL: string) => {
-    console.log('searching...');
-    try {
-      console.log(`searching Album : ${searchKeyword}...`);
-      const response = await fetch(URL, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setSearchResultTrack(data);
-        console.log(data);
-      } else if (response.status === 401) {
-        ReissueToken();
-        fetchSearch();
-      } else {
-        console.error('Failed to fetch data:', response.status);
-      }
-    } catch (error) {
-      console.error('Error fetching the JSON file:', error);
-    } finally {
+    const token = localStorage.getItem('login-token') as string;
+    const refreshToken = localStorage.getItem('login-refreshToken') as string;
+    fetchGET(token, refreshToken, URL).then(data => {
+      setSearchResultTrack(data);
       setIsLoading(false);
-      console.log('finished');
-    }
+    });
   };
 
   useEffect(() => {
     console.log(searchingTopic);
     console.log(favoriteArtist);
+    const searchArtistTrackUrl = `/api/searchSpotify/artist/${favoriteArtistSpotifyIds?.spotifyArtistId}/track`;
     if (searchingTopic === 'Artist-track') {
       setIsLoading(true);
       Search(searchArtistTrackUrl);
