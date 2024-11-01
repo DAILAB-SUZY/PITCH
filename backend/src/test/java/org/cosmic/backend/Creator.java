@@ -109,7 +109,7 @@ public class Creator {
         .toList();
   }
 
-  private Track createAndSaveTracks(String name) {
+  public Track createAndSaveTracks(String name) {
     Album album = createAndSaveAlbums(name);
     return testEntityManager.persistAndFlush(Track.builder()
         .trackCover(name)

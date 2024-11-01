@@ -5,7 +5,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.albumScore.applications.AlbumScoreService;
-import org.cosmic.backend.domain.albumScore.domains.AlbumScore;
 import org.cosmic.backend.domain.albumScore.repositorys.AlbumScoreRepository;
 import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
@@ -38,6 +37,7 @@ public class PostService {
   private final AlbumScoreRepository albumScoreRepository;
 
   private final AlbumScoreService albumScoreService;
+
   private List<PostAndCommentsDetail> getUsersPosts(Long userId, Pageable pageable) {
     return postRepository.findByUser_UserId(userId, pageable).map(PostAndCommentsDetail::from)
         .getContent();
@@ -76,15 +76,18 @@ public class PostService {
    * @throws NotMatchAlbumException 게시물에 해당하는 앨범을 찾을 수 없을 때 발생합니다.
    */
   @Transactional
-  public PostAndCommentsDetail createPost(String content, String spotifyAlbumId,Integer score, Long userId) {
-    User user= userRepository.findById(userId).orElseThrow(NotFoundUserException::new);
-    Album album=albumRepository.findBySpotifyAlbumId(spotifyAlbumId).orElseThrow(NotFoundAlbumException::new);
-    PostAndCommentsDetail postAndCommentsDetail= PostAndCommentsDetail.from(postRepository.save(Post.builder()
-        .content(content)
-        .user(user)
-        .album(album)
-        .build()));
-    albumScoreService.createAlbumScore(album,userId,score);
+  public PostAndCommentsDetail createPost(String content, String spotifyAlbumId, Integer score,
+      Long userId) {
+    User user = userRepository.findById(userId).orElseThrow(NotFoundUserException::new);
+    Album album = albumRepository.findBySpotifyAlbumId(spotifyAlbumId)
+        .orElseThrow(NotFoundAlbumException::new);
+    PostAndCommentsDetail postAndCommentsDetail = PostAndCommentsDetail.from(
+        postRepository.save(Post.builder()
+            .content(content)
+            .user(user)
+            .album(album)
+            .build()));
+    albumScoreService.createAlbumScore(album, userId, score);
     postAndCommentsDetail.getPostDetail().getAlbum().setScore(score);
     return postAndCommentsDetail;
   }
@@ -101,15 +104,17 @@ public class PostService {
    * @throws NotFoundPostException 게시물을 찾을 수 없을 때 발생합니다.
    */
   @Transactional
-  public PostAndCommentsDetail updatePost(String content,Integer score, Long postId, Long userId) {
+  public PostAndCommentsDetail updatePost(String content, Integer score, Long postId, Long userId) {
     Post updatedPost = postRepository.findById(postId).orElseThrow(NotFoundPostException::new);
     User user = userRepository.findById(userId).orElseThrow(NotFoundUserException::new);
-    Album album=albumRepository.findBySpotifyAlbumId(updatedPost.getAlbum().getSpotifyAlbumId()).orElseThrow(NotFoundAlbumException::new);
+    Album album = albumRepository.findBySpotifyAlbumId(updatedPost.getAlbum().getSpotifyAlbumId())
+        .orElseThrow(NotFoundAlbumException::new);
     validPostAuthor(updatedPost, userId);
     updatedPost.setContent(content);
     updatedPost.setUpdateTime(Instant.now());
-    PostAndCommentsDetail postAndCommentsDetail=getPostById(postRepository.save(updatedPost).getPostId());
-    albumScoreService.createAlbumScore(album,userId,score);
+    PostAndCommentsDetail postAndCommentsDetail = getPostById(
+        postRepository.save(updatedPost).getPostId());
+    albumScoreService.createAlbumScore(album, userId, score);
     postAndCommentsDetail.getPostDetail().getAlbum().setScore(score);
 
     return postAndCommentsDetail;

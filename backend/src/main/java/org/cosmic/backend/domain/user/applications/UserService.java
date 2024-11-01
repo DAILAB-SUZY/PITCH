@@ -70,7 +70,9 @@ public class UserService implements UserDetailsService {
    */
   public UserLoginDetail getByCredentials(String email, String password) {
     User user = usersRepository.findByEmail_Email(email).orElseThrow(NotFoundUserException::new);
-    user.checkPassword(passwordEncoder.encode(password));
+    if (!passwordEncoder.matches(password, user.getPassword())) {
+      throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+    }
     return UserLoginDetail.from(user,
         tokenProvider.create(user),
         tokenProvider.createRefreshToken(user));

@@ -149,7 +149,7 @@ public class UserServiceTest {
         .password("encodedPassword")
         .email(email)
         .build();
-    when(passwordEncoder.encode("password")).thenReturn("encodedPassword");
+    when(passwordEncoder.matches("password", "encodedPassword")).thenReturn(true);
     when(usersRepository.findByEmail_Email(email.getEmail())).thenReturn(Optional.of(user));
     when(tokenProvider.create(user)).thenReturn("accessToken");
     when(tokenProvider.createRefreshToken(user)).thenReturn("refreshToken");
@@ -180,7 +180,7 @@ public class UserServiceTest {
         .email(email)
         .build();
     when(usersRepository.findByEmail_Email(email.getEmail())).thenReturn(Optional.of(user));
-    when(passwordEncoder.encode("password")).thenReturn("encodedPassword");
+    when(passwordEncoder.matches("password", "encodedPassword!")).thenReturn(false);
 
     Assertions.assertThrows(IllegalArgumentException.class,
         () -> userService.getByCredentials(email.getEmail(), "password"));
