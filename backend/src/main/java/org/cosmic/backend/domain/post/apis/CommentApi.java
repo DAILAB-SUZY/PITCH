@@ -121,6 +121,7 @@ public class CommentApi {
   @Operation(summary = "앨범 포스트 댓글 좋아요 API", description = "이미 있으면 좋아요 취소, 아니면 좋아요 합니다.")
   public ResponseEntity<List<CommentDetail>> likeComment(@PathVariable Long commentId,
       @PathVariable Long postId, @AuthenticationPrincipal Long userId) {
-    return ResponseEntity.ok(commentService.likeComment(commentId, postId, userId));
+    commentService.likeComment(commentId, postId, userId);
+    return ResponseEntity.ok(commentService.getCommentsByPostId(postId));
   }
 }
