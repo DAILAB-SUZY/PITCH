@@ -3,6 +3,7 @@ package org.cosmic.backend.domain.post.applications;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.cosmic.backend.domain.albumChat.exceptions.NotFoundCommentLikeException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.post.dtos.Comment.CommentDetail;
 import org.cosmic.backend.domain.post.entities.Post;
@@ -97,29 +98,38 @@ public class CommentService {
    * @throws NotFoundCommentException 댓글이 존재하지 않을 경우 발생합니다.
    */
   @Transactional
-  public List<CommentDetail> deleteComment(Long commentId, Long postId, Long userId) {
+  public void deleteComment(Long commentId, Long postId, Long userId) {
     PostComment postComment = postCommentRepository.findById(commentId)
         .orElseThrow(NotFoundCommentException::new);
     if (!postComment.getUser().getUserId().equals(userId)) {
       throw new NotMatchUserException();
     }
-    postCommentRepository.deleteById(commentId);
-    return CommentDetail.from(postCommentRepository.findByPost_PostId(postId));
+    postCommentRepository.delete(postComment);
   }
 
   @Transactional
-  public List<CommentDetail> likeComment(Long commentId, Long postId, Long userId) {
-    PostComment postComment = postCommentRepository.findById(commentId)
-        .orElseThrow(NotFoundPostException::new);
-    User user = userRepository.findById(userId).orElseThrow(NotFoundUserException::new);
+  protected void like(Long commentId, Long userId) {
+    postCommentLikeRepository.save(PostCommentLike.builder()
+        .user(userRepository.findById(userId).orElseThrow(NotFoundUserException::new))
+        .postComment(
+            postCommentRepository.findById(commentId).orElseThrow(NotFoundCommentException::new))
+        .build());
+  }
 
-    if (!postComment.getUser().getUserId().equals(userId)) {
-      throw new NotMatchUserException();
+  @Transactional
+  protected void unlike(Long commentId, Long userId) {
+    PostCommentLike postCommentLike = postCommentLikeRepository.findByPostComment_CommentIdAndUser_UserId(
+        commentId, userId).orElseThrow(
+        NotFoundCommentLikeException::new);
+    postCommentLikeRepository.delete(postCommentLike);
+  }
+
+  @Transactional
+  public void likeComment(Long commentId, Long postId, Long userId) {
+    try {
+      unlike(commentId, userId);
+    } catch (Exception e) {
+      like(commentId, userId);
     }
-
-    postCommentLikeRepository.save(
-        PostCommentLike.builder().postComment(postComment).user(user).build());
-    return postCommentRepository.findByPost_PostId(postId).stream()
-        .map(CommentDetail::from).toList();
   }
 }
