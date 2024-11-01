@@ -3,7 +3,7 @@ import { colors } from '../../styles/color';
 import { useEffect, useState } from 'react';
 import FollowBox from '../components/FollowBox';
 import { useNavigate, useLocation } from 'react-router-dom';
-
+import { fetchGET, fetchPOST } from '../utils/fetchData';
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -106,112 +106,25 @@ function FollowPage() {
     fetchFollow();
   }, []);
 
-  const server = 'http://203.255.81.70:8030';
-  const reissueTokenUrl = `${server}/api/auth/reissued`;
-  const [token, setToken] = useState(localStorage.getItem('login-token'));
-  const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
-  const GetFollowerURL = `${server}/api/user/${userId}/follower`;
-  const GetFollowingURL = `${server}/api/user/${userId}/following`;
-  const SetFollowUrl = `${server}/api/user/follow/`;
+  const GetFollowerURL = `/api/user/${userId}/follower`;
+  const GetFollowingURL = `/api/user/${userId}/following`;
+  const SetFollowUrl = `/api/user/follow/`;
   const fetchFollow = async () => {
-    if (token) {
-      console.log('fetching Like Data');
-      try {
-        const response = await fetch(GetFollowerURL, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setFollowers(data);
-        } else if (response.status === 401) {
-          await ReissueToken();
-          fetchFollow();
-        } else {
-          console.error('Failed to fetch data:', response.status);
-        }
-      } catch (error) {
-        console.error('Fetched Follower', error);
-      }
-      try {
-        const response = await fetch(GetFollowingURL, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setFollowings(data);
-        } else if (response.status === 401) {
-          await ReissueToken();
-          fetchFollow();
-        } else {
-          console.error('Failed to fetch data:', response.status);
-        }
-      } catch (error) {
-        console.error('Fetched Follower', error);
-      }
-    }
+    const token = localStorage.getItem('login-token') as string;
+    const refreshToken = localStorage.getItem('login-refreshToken') as string;
+    await fetchGET(token, refreshToken, GetFollowerURL).then(data => {
+      setFollowers(data);
+    });
+    await fetchGET(token, refreshToken, GetFollowingURL).then(data => {
+      setFollowings(data);
+    });
   };
-
-  const ReissueToken = async () => {
-    console.log('reissuing Token');
-    try {
-      const response = await fetch(reissueTokenUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Refresh-Token': `${refreshToken}`,
-        },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('login-token', data.token);
-        localStorage.setItem('login-refreshToken', data.refreshToken);
-        setToken(data.token);
-        setRefreshToken(data.refreshToken);
-      } else {
-        console.error('failed to reissue token', response.status);
-      }
-    } catch (error) {
-      console.error('Refresh Token 재발급 실패', error);
-    }
-  };
-
   const ChangeFollow = async (user: number) => {
-    if (token) {
-      try {
-        console.log('fetching...');
-        const response = await fetch(SetFollowUrl + `${user}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (response.ok) {
-          console.log('following complete');
-          const data = await response.json();
-          console.log(data);
-        } else if (response.status === 401) {
-          ReissueToken();
-          ChangeFollow(user);
-        } else {
-          console.error('Failed to fetch data:', response.status);
-        }
-      } catch (error) {
-        console.error('Error fetching the JSON file:', error);
-      } finally {
-        console.log('finished');
-        fetchFollow();
-      }
-    }
+    const token = localStorage.getItem('login-token') as string;
+    const refreshToken = localStorage.getItem('login-refreshToken') as string;
+    fetchPOST(token, refreshToken, `${SetFollowUrl}${user}`, {}).then(() => {
+      fetchFollow();
+    });
   };
 
   return (

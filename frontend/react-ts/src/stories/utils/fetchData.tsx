@@ -83,7 +83,7 @@ export const fetchPOST = async (token: string, refreshToken: string, URL: string
       const data = await response.json();
       console.log('Data fetched:', data);
       return data;
-    } else if (response.status === 401 || response.status === 500) {
+    } else if (response.status === 401 || response.status === 500 || response.status === 405) {
       console.log('토큰 만료... 재발급 시도');
       const newToken = await reissueToken(refreshToken);
       if (newToken) {
