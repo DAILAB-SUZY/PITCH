@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { colors } from '../../styles/color';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useRef, useEffect, useState } from 'react';
+import { fetchPOST } from '../utils/fetchData';
 
 const Container = styled.div`
   display: flex;
@@ -108,31 +109,18 @@ const ContentInput = styled.textarea`
   overflow-y: scroll; /* Prevent extra scroll bar */
 `;
 
-function CommentPostPage() {
-  //   const [postContent, setPostContent] = useState("내용을 입력해주세요");
-  //   const { email, setEmail, name, setName, id, setId } = useStore();
+function AlbumPostCommentPostPage() {
   const location = useLocation();
   const [postId, setPostId] = useState();
   const [postContent, setPostContent] = useState('');
-  const server = 'http://203.255.81.70:8030';
-  const reissueTokenUrl = `${server}/api/auth/reissued`;
-  const [token, setToken] = useState(localStorage.getItem('login-token'));
-  const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
+  // const server = 'http://203.255.81.70:8030';
+  // const reissueTokenUrl = `${server}/api/auth/reissued`;
+  // const [token, setToken] = useState(localStorage.getItem('login-token'));
+  // const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
 
-  console.log('postID::: ');
-  console.log(postId);
   useEffect(() => {
-    // post 작성을 위해 처음 들어왔으면
     if (location.state) {
       setPostId(location.state);
-      //console.log(location.state);
-
-      // } else {
-      //   setIsEditMode(true);
-      //   setPostContent(location.state.postContent);
-      //   delete location.state.postContent;
-      //   setAlbumPost(location.state);
-      // }
     }
   }, []);
 
@@ -141,67 +129,75 @@ function CommentPostPage() {
     navigate('/AlbumPostPage', { state: postId });
   };
 
-  // 게시물 작성
-  const fetchComment = async () => {
-    let CommentPostUrl = `${server}/api/album/post/${postId}/comment`;
-    if (token) {
-      try {
-        console.log(`Posting Comment...`);
-        console.log(postId);
-        console.log(postContent);
-        const response = await fetch(CommentPostUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            parent_id: null,
-            content: postContent,
-          }),
-        });
+  //게시물 작성
+  let CommentPostUrl = `/api/album/post/${postId}/comment`;
+  const fetchComment = async (token: string, refreshToken: string) => {
+    const data = {
+      content: postContent,
+    };
+    fetchPOST(token, refreshToken, CommentPostUrl, data);
+  };
+  // const fetchComment = async () => {
+  //   let CommentPostUrl = `${server}/api/album/post/${postId}/comment`;
+  //   if (token) {
+  //     try {
+  //       console.log(`Posting Comment...`);
+  //       console.log(postId);
+  //       console.log(postContent);
+  //       const response = await fetch(CommentPostUrl, {
+  //         method: 'POST',
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //         body: JSON.stringify({
+  //           parent_id: null,
+  //           content: postContent,
+  //         }),
+  //       });
 
-        if (response.ok) {
-          const data = await response.json();
-          console.log('Post Comment Success');
-          console.log(data);
-        } else if (response.status === 401) {
-          ReissueToken();
-          fetchComment();
-        } else {
-          console.error('Failed to Post Comment:', response.status);
-        }
-      } catch (error) {
-        console.error('Error fetching the JSON file:', error);
-      } finally {
-        console.log('finished');
-        GoToAlbumPostPage();
-      }
-    }
-  };
-  const ReissueToken = async () => {
-    console.log('reissuing Token');
-    try {
-      const response = await fetch(reissueTokenUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Refresh-Token': `${refreshToken}`,
-        },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('login-token', data.token);
-        localStorage.setItem('login-refreshToken', data.refreshToken);
-        setToken(data.token);
-        setRefreshToken(data.refreshToken);
-      } else {
-        console.error('failed to reissue token', response.status);
-      }
-    } catch (error) {
-      console.error('Refresh Token 재발급 실패', error);
-    }
-  };
+  //       if (response.ok) {
+  //         const data = await response.json();
+  //         console.log('Post Comment Success');
+  //         console.log(data);
+  //       } else if (response.status === 401) {
+  //         ReissueToken();
+  //         fetchComment();
+  //       } else {
+  //         console.error('Failed to Post Comment:', response.status);
+  //       }
+  //     } catch (error) {
+  //       console.error('Error fetching the JSON file:', error);
+  //     } finally {
+  //       console.log('finished');
+  //       GoToAlbumPostPage();
+  //     }
+  //   }
+  // };
+
+  // const ReissueToken = async () => {
+  //   console.log('reissuing Token');
+  //   try {
+  //     const response = await fetch(reissueTokenUrl, {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         'Refresh-Token': `${refreshToken}`,
+  //       },
+  //     });
+  //     if (response.ok) {
+  //       const data = await response.json();
+  //       localStorage.setItem('login-token', data.token);
+  //       localStorage.setItem('login-refreshToken', data.refreshToken);
+  //       setToken(data.token);
+  //       setRefreshToken(data.refreshToken);
+  //     } else {
+  //       console.error('failed to reissue token', response.status);
+  //     }
+  //   } catch (error) {
+  //     console.error('Refresh Token 재발급 실패', error);
+  //   }
+  // };
 
   // 게시물 수정
   // const fetchEdit = async () => {
@@ -277,7 +273,8 @@ function CommentPostPage() {
             margin="0px 10px 0px 0px"
             color={colors.Font_black}
             // onClick={() => (isEditMode ? console.log("fetchEdit") : fetchComment())}
-            onClick={() => fetchComment()}
+            onClick={() => fetchComment(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '')}
+            //onClick={() => fetchComment()}
           >
             저장
           </Text>
@@ -302,4 +299,4 @@ function CommentPostPage() {
   );
 }
 
-export default CommentPostPage;
+export default AlbumPostCommentPostPage;

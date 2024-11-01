@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import AlbumPostCommentCard from '../components/AlbumPostCommentCard';
 import useStore from '../store/store';
 import { updateTimeAgo } from '../utils/getTimeAgo';
+import { fetchGET, fetchPOST, fetchDELETE } from '../utils/fetchData';
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -82,6 +83,17 @@ const TitleTextArea = styled.div`
   padding: 0px 0px 20px 20px;
   box-sizing: border-box;
   z-index: 3;
+`;
+
+const StarsArea = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  width: auto;
+  height: 100%;
+  margin: 0px 0px 2px 10px;
+  gap: 1px;
 `;
 
 const Text = styled.div<{
@@ -201,6 +213,7 @@ const DropdownItem = styled.div`
 const RowAlignArea = styled.div`
   display: flex;
   width: 90vw;
+  height: auto;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
@@ -239,14 +252,14 @@ const ButtonArea = styled.div`
 const ChatArea = styled.div`
   width: 100vw;
   height: auto;
-  min-height: 70px;
+  /* min-height: 70px; */
   /* overflow-y: scroll; */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
 
-  padding-bottom: 20px;
+  margin-bottom: 80px;
 `;
 
 const CommentCardArea = styled.div`
@@ -258,77 +271,149 @@ const CommentCardArea = styled.div`
   height: auto;
 `;
 
+// interface albumPost {
+//   postDetail: {
+//     postId: number;
+//     content: string;
+//     createAt: string;
+//     updateAt: string;
+//     author: {
+//       id: number;
+//       username: string;
+//       profilePicture: string;
+//       dnas: {
+//         dnaKey: number;
+//         dnaName: string;
+//       }[];
+//     };
+//     album: {
+//       id: number;
+//       title: string;
+//       albumCover: string;
+//       artistName: string;
+//       genre: string;
+//       spotifyId: string;
+//     };
+//   };
+
+//   comments: {
+//     id: number;
+//     content: string;
+//     createdAt: number;
+//     updatedAt: number;
+//     likes: {
+//       id: number;
+//       username: string;
+//       profilePicture: string;
+//     }[];
+//     childComments: {
+//       id: number;
+//       content: string;
+//       author: {
+//         id: number;
+//         username: string;
+//         profilePicture: string;
+//       };
+//     }[];
+//     author: {
+//       id: number;
+//       username: string;
+//       profilePicture: string;
+//     };
+//   }[];
+//   likes: {
+//     id: number;
+//     username: string;
+//     profilePicture: string;
+//   }[];
+// }
 interface albumPost {
   postDetail: {
     postId: number;
     content: string;
     createAt: string;
     updateAt: string;
-    author: {
-      id: number;
-      username: string;
-      profilePicture: string;
-      dnas: [
-        {
-          dnaKey: number;
-          dnaName: string;
-        }[],
-      ];
-    };
-    album: {
-      id: number;
-      title: string;
-      albumCover: string;
-      artistName: string;
-      genre: string;
-    };
+    author: Author;
+    album: Album;
   };
+  comments: Comment[];
+  likes: Like[];
+}
 
-  comments: {
-    id: number;
-    content: string;
-    createdAt: number;
-    updatedAt: number;
-    likes: {
-      id: number;
-      username: string;
-      profilePicture: string;
-    }[];
-    childComments: {
-      id: number;
-      content: string;
-      author: {
-        id: number;
-        username: string;
-        profilePicture: string;
-      };
-    }[];
-    author: {
-      id: number;
-      username: string;
-      profilePicture: string;
-    };
-  }[];
-  likes: {
-    id: number;
-    username: string;
-    profilePicture: string;
-  }[];
+interface Author {
+  id: number;
+  username: string;
+  profilePicture: string;
+  dnas: DNA[];
+}
+
+interface Album {
+  albumId: number;
+  title: string;
+  albumCover: string;
+  artistName: string;
+  genre: string;
+  spotifyId: string;
+  likes: Like[];
+  score: number;
+}
+
+interface Like {
+  id: number;
+  username: string;
+  profilePicture: string;
+  dnas: DNA[];
+}
+
+interface DNA {
+  dnaKey: number;
+  dnaName: string;
+}
+
+interface Comment {
+  id: number;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+  likes: Like[];
+  childComments: ChildComment[];
+  author: Author;
+}
+
+interface ChildComment {
+  id: number;
+  content: string;
+  author: Author;
+  createTime: string;
+  updateTime: string;
 }
 
 function AlbumPostPage() {
   const location = useLocation();
   const [albumPost, setAlbumPost] = useState<albumPost>();
-  // const [albumPostId, setAlbumPostId] = useState();
-  const server = 'http://203.255.81.70:8030';
-  const reissueTokenUrl = `${server}/api/auth/reissued`;
-  const [token, setToken] = useState(localStorage.getItem('login-token'));
-  const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
+
   const navigate = useNavigate();
   const GoToHomePage = () => {
     navigate('/Home');
+  };
+
+  // 별점
+  const [stars, setStars] = useState<string[]>();
+  const scoreToStar = (score: number) => {
+    let stars: string[] = [];
+
+    // 별 5개를 기준으로 0부터 10까지의 score를 5단위로 변환
+    for (let i = 0; i < 5; i++) {
+      if (score >= (i + 1) * 2) {
+        stars.push('full'); // 완전히 채워진 별
+      } else if (score >= i * 2 + 1) {
+        stars.push('half'); // 반 채워진 별
+      } else {
+        stars.push('empty'); // 빈 별
+      }
+    }
+
+    return stars;
   };
 
   const GoToAlbumPostEditPage = () => {
@@ -340,69 +425,32 @@ function AlbumPostPage() {
           imageUrl: null,
           name: albumPost.postDetail.album.artistName,
         },
-        albumId: albumPost.postDetail.album.id,
+        albumId: albumPost.postDetail.album.albumId,
         imageUrl: albumPost.postDetail.album.albumCover,
         name: albumPost.postDetail.album.title,
         total_tracks: null,
         release_date: null,
         postContent: albumPost.postDetail.content,
         postId: albumPost.postDetail.postId,
+        score: albumPost.postDetail.album.score,
       };
     }
     navigate('/AlbumPostEditPage', { state: album });
   };
 
-  const GoToCommentPostPage = () => {
-    navigate('/CommentPostPage', { state: albumPost?.postDetail.postId });
+  const GoToAlbumPostCommentPostPage = () => {
+    navigate('/AlbumPostCommentPostPage', { state: albumPost?.postDetail.postId });
   };
 
-  const fetchAlbumPost = async () => {
-    console.log('start fetching albumPost...');
-    let albumPostUrl = `${server}/api/album/post/${location.state}`;
-    console.log(albumPostUrl);
-    if (token) {
-      try {
-        console.log('fetching...');
-        const response = await fetch(albumPostUrl, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        console.log('fetching...complete');
-
-        if (response.ok) {
-          console.log('set Post');
-          const data = await response.json();
-          console.log(data);
-          setAlbumPost(data); // 기존 데이터에 새로운 데이터를 추가
-        } else if (response.status === 401) {
-          console.log('reissuing Token');
-          const reissueToken = await fetch(reissueTokenUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Refresh-Token': `${refreshToken}`,
-            },
-          });
-          const data = await reissueToken.json();
-          localStorage.setItem('login-token', data.token);
-          localStorage.setItem('login-refreshToken', data.refreshToken);
-          fetchAlbumPost();
-        } else {
-          console.error('Failed to fetch AlbumPost data:', response.status);
-        }
-      } catch (error) {
-        console.error('Error fetching the JSON file:', error);
-      } finally {
-        console.log('fetching Complete: ', albumPost);
-      }
-    }
+  const fetchAlbumPost = async (token: string, refreshToken: string) => {
+    fetchGET(token, refreshToken, `/api/album/post/${location.state}`).then(data => {
+      setAlbumPost(data);
+      setStars(scoreToStar(data.postDetail.album.score));
+    });
   };
 
   useEffect(() => {
-    fetchAlbumPost();
+    fetchAlbumPost(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '');
   }, []);
 
   // Post 시간 계산
@@ -431,135 +479,49 @@ function AlbumPostPage() {
       if (albumPost.likes.some((like: any) => like.id === id)) {
         setIsPostLiked(true);
       }
-      console.log(`좋아요 상태 : ${isPostLiked} / 좋아요 개수 : ${likesCount}`);
     }
   }, [albumPost]);
 
-  useEffect(() => {
-    if (albumPost) {
-      console.log(`--좋아요 상태 : ${isPostLiked} / 좋아요 개수 : ${likesCount}`);
-    }
-  }, [isPostLiked, likesCount]);
-
-  // 좋아요 상태 변경 함수
   const changePostLike = async () => {
-    console.log('changing Like');
-    if (albumPost) {
-      if (isPostLiked) {
-        // 이미 좋아요를 눌렀다면 좋아요 취소
-        setIsPostLiked(false);
-        setLikesCount(likesCount - 1);
-        albumPost.likes = albumPost.likes.filter((like: any) => like.id !== id);
-      } else {
-        // 좋아요 누르기
-        setIsPostLiked(true);
-        setLikesCount(likesCount + 1);
-        albumPost.likes.push({
-          id: id,
-          username: name,
-          // TODO: profile 이미지 링크 추가
-          profilePicture: 'string',
-        });
-      }
-      fetchLike();
-      // like 데이터 POST 요청
+    if (isPostLiked && albumPost) {
+      // 이미 좋아요를 눌렀다면 좋아요 취소
+      setIsPostLiked(false);
+      setLikesCount(likesCount - 1);
+      albumPost.likes = albumPost.likes.filter((like: any) => like.id !== id);
+    } else {
+      // 좋아요 누르기
+      setIsPostLiked(true);
+      setLikesCount(likesCount + 1);
+      albumPost?.likes.push({
+        id: id,
+        username: name,
+        profilePicture: 'string',
+        dnas: [],
+      });
     }
+    fetchLike(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '');
   };
 
-  const fetchLike = async () => {
-    const PostLikeUrl = server + '/api/album/post/' + (albumPost ? albumPost.postDetail.postId : '') + '/like';
-    if (token) {
-      console.log('fetching Like Data');
-      try {
-        const response = await fetch(PostLikeUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setAlbumPost(data);
-          // replaceAlbumPostById(albumPostId, data);
-          if (data.likes.some((like: any) => like.id === id)) {
-            console.log('like 추가');
-          } else {
-            console.log('like 삭제');
-          }
-        } else if (response.status === 401) {
-          ReissueToken();
-          fetchLike();
-        } else {
-          console.error('Failed to fetch data:', response.status);
-        }
-      } catch (error) {
-        console.error('like 실패:', error);
-      }
-    }
+  const PostLikeUrl = `/api/album/post/${albumPost ? albumPost.postDetail.postId : ''}/like`;
+  const fetchLike = async (token: string, refresuToken: string) => {
+    fetchPOST(token, refresuToken, PostLikeUrl, {});
   };
 
   // 수정/삭제 버튼
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
   const editMenu = () => {
     console.log('edit');
     setIsDropdownOpen(!isDropdownOpen);
   };
 
   // 삭제요청
-  const deletePost = async () => {
-    const PostDeleteUrl = server + '/api/album/post/' + (albumPost ? albumPost.postDetail.postId : '');
-    if (token) {
-      if (albumPost) {
-        console.log(`delete id: ${albumPost.postDetail.postId} Post...`);
-      }
-      try {
-        const response = await fetch(PostDeleteUrl, {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (response.ok) {
-          //const data = await response.json();
-          //setAlbumPost(data);
-          console.log('deleted');
-          GoToHomePage();
-        } else if (response.status === 401) {
-          ReissueToken();
-          deletePost();
-        } else {
-          console.error('Failed to delete data:', response.status);
-        }
-      } catch (error) {
-        console.error('delete 실패:', error);
-      }
-    }
+  const DeletePostUrl = '/api/album/post/' + (albumPost ? albumPost.postDetail.postId : '');
+  const deletePost = async (token: string, refreshToken: string) => {
+    setIsDropdownOpen(false);
+    await fetchDELETE(token, refreshToken, DeletePostUrl);
+    GoToHomePage();
   };
-  const ReissueToken = async () => {
-    console.log('reissuing Token');
-    try {
-      const response = await fetch(reissueTokenUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Refresh-Token': `${refreshToken}`,
-        },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('login-token', data.token);
-        localStorage.setItem('login-refreshToken', data.refreshToken);
-        setToken(data.token);
-        setRefreshToken(data.refreshToken);
-      } else {
-        console.error('failed to reissue token', response.status);
-      }
-    } catch (error) {
-      console.error('Refresh Token 재발급 실패', error);
-    }
-  };
-
   if (!albumPost) {
     return <div>Loading...</div>;
   }
@@ -587,6 +549,28 @@ function AlbumPostPage() {
                 <Text fontFamily="Rg" fontSize="20px" margin="0px 0px 2px 10px" color={colors.BG_white}>
                   {albumPost.postDetail.album.artistName}
                 </Text>
+              </TitleTextArea>
+              <TitleTextArea>
+                <Text fontFamily="Rg" fontSize="20px" margin="0px 0px 2px 0px" color={colors.BG_white}>
+                  {albumPost.postDetail.author.username}님의 별점 :
+                </Text>
+                <StarsArea>
+                  {stars?.map(star =>
+                    star === 'full' ? (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-star-fill" viewBox="0 0 16 16">
+                        <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
+                      </svg>
+                    ) : star === 'half' ? (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-star-half" viewBox="0 0 16 16">
+                        <path d="M5.354 5.119 7.538.792A.52.52 0 0 1 8 .5c.183 0 .366.097.465.292l2.184 4.327 4.898.696A.54.54 0 0 1 16 6.32a.55.55 0 0 1-.17.445l-3.523 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256a.5.5 0 0 1-.146.05c-.342.06-.668-.254-.6-.642l.83-4.73L.173 6.765a.55.55 0 0 1-.172-.403.6.6 0 0 1 .085-.302.51.51 0 0 1 .37-.245zM8 12.027a.5.5 0 0 1 .232.056l3.686 1.894-.694-3.957a.56.56 0 0 1 .162-.505l2.907-2.77-4.052-.576a.53.53 0 0 1-.393-.288L8.001 2.223 8 2.226z" />
+                      </svg>
+                    ) : star === 'empty' ? (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-star" viewBox="0 0 16 16">
+                        <path d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.56.56 0 0 0-.163-.505L1.71 6.745l4.052-.576a.53.53 0 0 0 .393-.288L8 2.223l1.847 3.658a.53.53 0 0 0 .393.288l4.052.575-2.906 2.77a.56.56 0 0 0-.163.506l.694 3.957-3.686-1.894a.5.5 0 0 0-.461 0z" />
+                      </svg>
+                    ) : null,
+                  )}
+                </StarsArea>
               </TitleTextArea>
             </AlbumTitleArea>
             <PostArea>
@@ -616,7 +600,7 @@ function AlbumPostPage() {
                     {isDropdownOpen && (
                       <DropdownMenu>
                         <DropdownItem onClick={() => GoToAlbumPostEditPage()}>수정</DropdownItem>
-                        <DropdownItem onClick={() => deletePost()}>삭제</DropdownItem>
+                        <DropdownItem onClick={() => deletePost(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '')}>삭제</DropdownItem>
                       </DropdownMenu>
                     )}
                   </EditBtn>
@@ -660,9 +644,8 @@ function AlbumPostPage() {
                 fill="currentColor"
                 className="bi bi-pencil-square"
                 viewBox="0 0 16 16"
-                //  TODO: 댓글 작성 기능 구현
                 onClick={() => {
-                  GoToCommentPostPage();
+                  GoToAlbumPostCommentPostPage();
                 }}
               >
                 <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
@@ -673,9 +656,11 @@ function AlbumPostPage() {
               </svg>
             </RowAlignArea>
             <CommentCardArea>
-              {albumPost.comments.map((comment: any, index: number) => (
-                <AlbumPostCommentCard key={index} comment={comment}></AlbumPostCommentCard>
-              ))}
+              {albumPost.comments.map(
+                (comment: any, index: number) => (
+                  console.log(albumPost.postDetail.postId), (<AlbumPostCommentCard key={index} comment={comment} postId={albumPost.postDetail.postId}></AlbumPostCommentCard>)
+                ),
+              )}
             </CommentCardArea>
           </ChatArea>
         </>
