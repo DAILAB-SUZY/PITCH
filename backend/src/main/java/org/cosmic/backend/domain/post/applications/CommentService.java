@@ -97,14 +97,13 @@ public class CommentService {
    * @throws NotFoundCommentException 댓글이 존재하지 않을 경우 발생합니다.
    */
   @Transactional
-  public List<CommentDetail> deleteComment(Long commentId, Long postId, Long userId) {
+  public void deleteComment(Long commentId, Long postId, Long userId) {
     PostComment postComment = postCommentRepository.findById(commentId)
         .orElseThrow(NotFoundCommentException::new);
     if (!postComment.getUser().getUserId().equals(userId)) {
       throw new NotMatchUserException();
     }
-    postCommentRepository.deleteById(commentId);
-    return CommentDetail.from(postCommentRepository.findByPost_PostId(postId));
+    postCommentRepository.delete(postComment);
   }
 
   @Transactional
