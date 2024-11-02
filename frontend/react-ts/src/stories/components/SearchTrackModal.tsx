@@ -226,7 +226,7 @@ function SearchTrackModal(props: SearchTrackModalProps) {
   const [searchKeyword, setSearchKeyword] = useState('');
   const [searchResultTrack, setSearchResultTrack] = useState<TrackSearchResult[]>();
   const [isLoading, setIsLoading] = useState(false);
-  const [searchingMode, setSearchingMode] = useState('');
+
   const handleTrackUpdate = (newTrack: TrackSearchResult) => {
     console.log(newTrack);
     if (setPlayListData) {

@@ -449,9 +449,9 @@ function MusicProfilePage() {
       },
     });
   };
-  const GoToAlbumPage = (spotifyAlbumId: string) => {
-    navigate('/AlbumPage', { state: spotifyAlbumId });
-  };
+  // const GoToAlbumPage = (spotifyAlbumId: string) => {
+  //   navigate('/AlbumPage', { state: spotifyAlbumId });
+  // };
 
   const [isFollowed, setIsFollowed] = useState<boolean>();
 

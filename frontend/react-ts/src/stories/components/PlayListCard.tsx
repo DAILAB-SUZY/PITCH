@@ -3,7 +3,7 @@ import { colors } from '../../styles/color';
 import ColorThief from 'colorthief';
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchGET, MAX_REISSUE_COUNT } from '../utils/fetchData';
+// import { fetchGET, MAX_REISSUE_COUNT } from '../utils/fetchData';
 
 const PlayListCardContainer = styled.div<{ gradient?: string }>`
   width: 360px;
@@ -156,18 +156,18 @@ const PlayListBox = ({ playlist, isEditable, playlistInfo }: PlaylistProps) => {
     navigate('/PlayListEditPage', { state: playlistInfo });
   };
 
-  const GoToAlbumPage = (spotifyAlbumId: string) => {
-    navigate('/AlbumPage', { state: spotifyAlbumId });
-  };
+  // const GoToAlbumPage = (spotifyAlbumId: string) => {
+  //   navigate('/AlbumPage', { state: spotifyAlbumId });
+  // };
 
-  const youtubeOathUrl = `/oauth2/callback/google`;
-  const CreateYoutubePlaylist = async (playlistId: number) => {
-    const token = localStorage.getItem('login-token') as string;
-    const refreshToken = localStorage.getItem('login-refreshToken') as string;
-    fetchGET(token, refreshToken, youtubeOathUrl, MAX_REISSUE_COUNT).then(data => {
-      console.log(data);
-    });
-  };
+  // const youtubeOathUrl = `/oauth2/callback/google`;
+  // const CreateYoutubePlaylist = async (playlistId: number) => {
+  //   const token = localStorage.getItem('login-token') as string;
+  //   const refreshToken = localStorage.getItem('login-refreshToken') as string;
+  //   fetchGET(token, refreshToken, youtubeOathUrl, MAX_REISSUE_COUNT).then(data => {
+  //     console.log(data);
+  //   });
+  // };
 
   return (
     <PlayListCardContainer gradient={playlistGradient}>
