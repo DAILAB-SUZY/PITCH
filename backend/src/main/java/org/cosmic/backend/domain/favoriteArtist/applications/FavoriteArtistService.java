@@ -79,9 +79,9 @@ public class FavoriteArtistService {
     if (favoriteArtistRepository.findByUser_UserId(user.getUserId()).isPresent()) {
       favoriteArtist2 = favoriteArtistRepository.findByUser_UserId(user.getUserId()).get();
     }
-    if (StringUtils.hasText(favoriteArtist.getSpotifyArtistId()) || StringUtils.hasText(
-        favoriteArtist.getSpotifyTrackId())
-        || StringUtils.hasText(favoriteArtist.getSpotifyAlbumId())) {
+    if (!StringUtils.hasText(favoriteArtist.getSpotifyArtistId())
+        || !StringUtils.hasText(favoriteArtist.getSpotifyTrackId())
+        || !StringUtils.hasText(favoriteArtist.getSpotifyAlbumId())) {
       throw new IdNullException();
     }
 
