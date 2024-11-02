@@ -61,4 +61,12 @@ public class FavoriteArtist {
   public String getSpotifyArtistId() {
     return getArtist().getSpotifyArtistId();
   }
+
+  public String getSpotifyAlbumId() {
+    return getAlbum().getSpotifyAlbumId();
+  }
+
+  public String getSpotifyTrackId() {
+    return getTrack().getSpotifyTrackId();
+  }
 }
