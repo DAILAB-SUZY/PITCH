@@ -106,7 +106,8 @@ public class PlaylistApi {
   @Operation(summary = "앨범 디테일 제공 API", description = "스포티파이 앨범 ID를 통해 앨범 디테일 정보를 제공")
   public ResponseEntity<AlbumDetail> getAlbumDetail(
       @Parameter(description = "Spotify에서 사용하는 Album ID")
-      @PathVariable String spotifyAlbumId) {
-    return ResponseEntity.ok(playlistService.getAlbumDetail(spotifyAlbumId));
+      @PathVariable String spotifyAlbumId,
+      @AuthenticationPrincipal Long userId) {
+    return ResponseEntity.ok(playlistService.getAlbumDetail(spotifyAlbumId, userId));
   }
 }

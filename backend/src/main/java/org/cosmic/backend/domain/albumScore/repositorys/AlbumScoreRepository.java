@@ -15,6 +15,9 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface AlbumScoreRepository extends JpaRepository<AlbumScore, AlbumScorePK> {
 
+  Optional<AlbumScore> findByAlbum_SpotifyAlbumIdAndUser_UserId(String spotifyAlbumId, Long userId);
+
+
   Optional<AlbumScore> findByAlbum_AlbumIdAndUser_UserId(Long albumId, Long userId);
 
   List<AlbumScore> findByUser_UserId(Long userId);
