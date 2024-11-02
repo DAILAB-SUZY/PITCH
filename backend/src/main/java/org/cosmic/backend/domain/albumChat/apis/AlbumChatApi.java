@@ -14,6 +14,7 @@ import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumChatDetail;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -46,8 +47,9 @@ public class AlbumChatApi {
   @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
       array = @ArraySchema(schema = @Schema(implementation = AlbumChatDetail.class))))
   @Operation(summary = "앨범챗홈 페이지", description = "앨범 챗 많은 순으로 album정보 띄우기")
-  public ResponseEntity<List<AlbumChatDetail>> albumChatHomeChat() {
-    return ResponseEntity.ok(albumChatService.albumChatHomeChat());
+  public ResponseEntity<List<AlbumChatDetail>> albumChatHomeChat(
+      @AuthenticationPrincipal Long userId) {
+    return ResponseEntity.ok(albumChatService.albumChatHomeChat(userId));
   }
 
   /**
@@ -65,7 +67,8 @@ public class AlbumChatApi {
   @Operation(summary = "앨범챗홈 좋아요 페이지", description = "앨범 챗 좋아요 많은 순으로 정보 띄우기")
   public ResponseEntity<List<AlbumChatDetail>> albumChatHomeLike(
       @Parameter(description = "페이지 수") @RequestParam Integer page,
-      @Parameter(description = "제공량") @RequestParam Integer limit) {
-    return ResponseEntity.ok(albumChatService.albumChatHomeLike(page, limit));
+      @Parameter(description = "제공량") @RequestParam Integer limit,
+      @AuthenticationPrincipal Long userId) {
+    return ResponseEntity.ok(albumChatService.albumChatHomeLike(page, limit, userId));
   }
 }

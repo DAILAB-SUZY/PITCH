@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import org.cosmic.backend.domain.albumChat.domains.AlbumChatComment;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDetail;
+import org.cosmic.backend.domain.albumScore.domains.AlbumScore;
 import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.post.dtos.Post.AlbumDetail;
 
@@ -33,5 +34,15 @@ public class AlbumChatDetail {
         .albumDetail(AlbumDetail.from(album))
         .comments(AlbumChatCommentDetail.from(commentsSortedBy))
         .build();
+  }
+
+  public static AlbumChatDetail from(AlbumScore albumScore) {
+    AlbumChatDetail albumChatDetail = AlbumChatDetail.from(albumScore.getAlbum());
+    albumChatDetail.getAlbumDetail().setScore(albumScore.getScore());
+    return albumChatDetail;
+  }
+
+  public static List<AlbumChatDetail> fromAlbumScore(List<AlbumScore> content) {
+    return content.stream().map(AlbumChatDetail::from).toList();
   }
 }

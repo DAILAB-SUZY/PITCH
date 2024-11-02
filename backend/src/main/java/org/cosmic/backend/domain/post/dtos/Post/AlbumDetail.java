@@ -26,7 +26,7 @@ public class AlbumDetail {
   private Integer score;
 
 
-  private static AlbumDetail from(Album album) {
+  public static AlbumDetail from(Album album) {
     return AlbumDetail.builder()
         .albumId(album.getAlbumId())
         .title(album.getTitle())
@@ -45,7 +45,7 @@ public class AlbumDetail {
   }
 
   public static AlbumDetail from(AlbumScore albumScore) {
-    return from(albumScore.getAlbum(), albumScore.getScore());
+    return AlbumDetail.from(albumScore.getAlbum(), albumScore.getScore());
   }
 
   public static List<AlbumDetail> from(List<Album> albums) {
