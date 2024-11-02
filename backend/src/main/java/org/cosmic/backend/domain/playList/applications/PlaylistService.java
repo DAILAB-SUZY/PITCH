@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import java.time.Instant;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.cosmic.backend.domain.albumScore.repositorys.AlbumScoreRepository;
 import org.cosmic.backend.domain.playList.domains.Playlist;
 import org.cosmic.backend.domain.playList.domains.Playlist_Track;
 import org.cosmic.backend.domain.playList.domains.Track;
@@ -33,6 +34,7 @@ public class PlaylistService {
   private final UsersRepository usersRepository;
   private final TrackRepository trackRepository;
   private final SearchService searchService;
+  private final AlbumScoreRepository albumScoreRepository;
 
   private Track getOrFindTrackBySpotifyId(String spotifyId) {
     return trackRepository.findBySpotifyTrackId(spotifyId)
@@ -97,5 +99,13 @@ public class PlaylistService {
    */
   public AlbumDetail getAlbumDetail(String spotifyAlbumId) {
     return AlbumDetail.from(searchService.findAndSaveAlbumBySpotifyId(spotifyAlbumId));
+  }
+
+  public AlbumDetail getAlbumDetail(String spotifyAlbumId, Long userId) {
+    AlbumDetail albumDetail = AlbumDetail.from(
+        searchService.findAndSaveAlbumBySpotifyId(spotifyAlbumId));
+    albumScoreRepository.findByAlbum_SpotifyAlbumIdAndUser_UserId(spotifyAlbumId, userId)
+        .ifPresent(albumScore -> albumDetail.setScore(albumScore.getScore()));
+    return albumDetail;
   }
 }

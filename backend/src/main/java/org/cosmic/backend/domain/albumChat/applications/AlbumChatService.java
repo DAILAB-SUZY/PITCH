@@ -4,6 +4,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.cosmic.backend.domain.albumChat.dtos.albumChat.AlbumChatDetail;
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatException;
+import org.cosmic.backend.domain.albumScore.repositorys.AlbumScoreRepository;
 import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
 import org.cosmic.backend.domain.post.exceptions.NotFoundAlbumException;
@@ -23,6 +24,8 @@ public class AlbumChatService {
 
   @Autowired
   private AlbumRepository albumRepository;
+  @Autowired
+  private AlbumScoreRepository albumScoreRepository;
 
   /**
    * <p>특정 앨범의 앨범챗 데이터를 조회합니다.</p>
@@ -53,5 +56,17 @@ public class AlbumChatService {
 
   public List<AlbumChatDetail> albumChatHomeLike(Integer page, Integer limit) {
     return AlbumChatDetail.from(getAlbumsSortedByLikeCount(page, limit));
+  }
+
+  public List<AlbumChatDetail> albumChatHomeChat(Long userId) {
+    Pageable pageable = PageRequest.of(0, 5);
+    return AlbumChatDetail.fromAlbumScore(
+        albumScoreRepository.findAlbumScoreOrderByCommentCount(pageable, userId).getContent());
+  }
+
+  public List<AlbumChatDetail> albumChatHomeLike(Integer page, Integer limit, Long userId) {
+    Pageable pageable = PageRequest.of(page, limit);
+    return AlbumChatDetail.fromAlbumScore(
+        albumScoreRepository.findAlbumScoreOrderByAlbumLikeCount(pageable, userId).getContent());
   }
 }

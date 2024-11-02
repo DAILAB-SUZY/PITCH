@@ -39,12 +39,10 @@ public class FavoriteArtist {
   private User user;
 
   @ManyToOne
-  @Builder.Default
-  private Track track = new Track();
-
-  @Builder.Default
+  private Track track;
+  
   @ManyToOne
-  private Album album = new Album(); // @Builder.Default 추가
+  private Album album;
 
   public static FavoriteArtistDetail toFavoriteArtistDto(FavoriteArtist favoriteArtist) {
     return FavoriteArtistDetail.builder()
@@ -58,7 +56,21 @@ public class FavoriteArtist {
         .build();
   }
 
+  public static FavoriteArtist from(User user) {
+    return FavoriteArtist.builder()
+        .user(user)
+        .build();
+  }
+
   public String getSpotifyArtistId() {
     return getArtist().getSpotifyArtistId();
+  }
+
+  public String getSpotifyAlbumId() {
+    return getAlbum().getSpotifyAlbumId();
+  }
+
+  public String getSpotifyTrackId() {
+    return getTrack().getSpotifyTrackId();
   }
 }

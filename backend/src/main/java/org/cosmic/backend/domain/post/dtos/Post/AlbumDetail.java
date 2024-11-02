@@ -28,34 +28,31 @@ public class AlbumDetail {
 
   public static AlbumDetail from(Album album) {
     return AlbumDetail.builder()
-            .albumId(album.getAlbumId())
-            .title(album.getTitle())
-            .albumCover(album.getAlbumCover())
-            .artistName(album.getArtist().getArtistName())
-            .genre(album.getGenre())
-            .spotifyId(album.getSpotifyAlbumId())
-            .likes(UserDetail.from(album.getAlbumLike().stream().map(AlbumLike::getUser).toList()))
-            .score(0)
-            .build();
+        .albumId(album.getAlbumId())
+        .title(album.getTitle())
+        .albumCover(album.getAlbumCover())
+        .artistName(album.getArtist().getArtistName())
+        .genre(album.getGenre())
+        .spotifyId(album.getSpotifyAlbumId())
+        .likes(UserDetail.from(album.getAlbumLike().stream().map(AlbumLike::getUser).toList()))
+        .build();
+  }
+
+  public static AlbumDetail from(Album album, Integer score) {
+    AlbumDetail albumDetail = AlbumDetail.from(album);
+    albumDetail.setScore(score);
+    return albumDetail;
   }
 
   public static AlbumDetail from(AlbumScore albumScore) {
-    return AlbumDetail.builder()
-            .albumId(albumScore.getAlbum().getAlbumId())
-            .title(albumScore.getAlbum().getTitle())
-            .albumCover(albumScore.getAlbum().getAlbumCover())
-            .artistName(albumScore.getAlbum().getArtist().getArtistName())
-            .genre(albumScore.getAlbum().getGenre())
-            .spotifyId(albumScore.getAlbum().getSpotifyAlbumId())
-            .likes(UserDetail.from(albumScore.getAlbum().getAlbumLike().stream().map(AlbumLike::getUser).toList()))
-            .score(albumScore.getScore())
-            .build();
+    return AlbumDetail.from(albumScore.getAlbum(), albumScore.getScore());
   }
 
   public static List<AlbumDetail> from(List<Album> albums) {
     return albums.stream().map(AlbumDetail::from).toList();
   }
-  public static List<AlbumDetail> fromByAlbumScore(List<AlbumScore>albumScores) {
+
+  public static List<AlbumDetail> fromByAlbumScore(List<AlbumScore> albumScores) {
     return albumScores.stream().map(AlbumDetail::from).toList();
   }
 }
