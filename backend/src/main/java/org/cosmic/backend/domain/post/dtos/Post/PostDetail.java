@@ -29,7 +29,7 @@ public class PostDetail {
         .createAt(post.getCreateTime())
         .updateAt(post.getUpdateTime())
         .author(UserDetail.from(post.getUser()))
-        .album(AlbumDetail.from(post.getAlbum()))
+        .album(AlbumDetail.from(post.getAuthorAlbumScore()))
         .build();
   }
 
