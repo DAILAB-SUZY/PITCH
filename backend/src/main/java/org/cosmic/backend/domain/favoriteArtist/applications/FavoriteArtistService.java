@@ -4,11 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.cosmic.backend.domain.favoriteArtist.domains.FavoriteArtist;
 import org.cosmic.backend.domain.favoriteArtist.dtos.FavoriteArtistDetail;
 import org.cosmic.backend.domain.favoriteArtist.dtos.FavoriteRequest;
-import org.cosmic.backend.domain.favoriteArtist.exceptions.IdNullException;
 import org.cosmic.backend.domain.favoriteArtist.repositorys.FavoriteArtistRepository;
-import org.cosmic.backend.domain.playList.exceptions.NotFoundTrackException;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
-import org.cosmic.backend.domain.post.exceptions.NotFoundAlbumException;
 import org.cosmic.backend.domain.search.applications.SearchService;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
@@ -65,34 +62,31 @@ public class FavoriteArtistService {
   /**
    * <p>사용자의 즐겨찾기 아티스트 정보를 저장합니다.</p>
    *
-   * @param favoriteArtist 사용자의 즐겨찾기 아티스트 정보
-   * @param userId         사용자의 ID
+   * @param favoriteArtistRequest 사용자의 즐겨찾기 아티스트 정보
+   * @param userId                사용자의 ID
    * @return 저장된 즐겨찾기 아티스트 정보
-   * @throws NotFoundUserException  사용자를 찾을 수 없는 경우 발생합니다.
-   * @throws NotFoundTrackException 트랙을 찾을 수 없는 경우 발생합니다.
-   * @throws NotFoundAlbumException 앨범을 찾을 수 없는 경우 발생합니다.
+   * @throws NotFoundUserException 사용자를 찾을 수 없는 경우 발생합니다.
    */
   @Transactional
-  public FavoriteArtistDetail favoriteArtistSaveData(FavoriteRequest favoriteArtist, Long userId) {
-    User user = usersRepository.findByUserId(userId).orElseThrow();
-    FavoriteArtist favoriteArtist2 = new FavoriteArtist();
-    if (favoriteArtistRepository.findByUser_UserId(user.getUserId()).isPresent()) {
-      favoriteArtist2 = favoriteArtistRepository.findByUser_UserId(user.getUserId()).get();
-    }
-    if (!StringUtils.hasText(favoriteArtist.getSpotifyArtistId())
-        || !StringUtils.hasText(favoriteArtist.getSpotifyTrackId())
-        || !StringUtils.hasText(favoriteArtist.getSpotifyAlbumId())) {
-      throw new IdNullException();
-    }
+  public FavoriteArtistDetail favoriteArtistSaveData(FavoriteRequest favoriteArtistRequest,
+      Long userId) {
+    User user = usersRepository.findByUserId(userId).orElseThrow(NotFoundUserException::new);
+    FavoriteArtist favoriteArtist = favoriteArtistRepository.findByUser_UserId(userId)
+        .orElseGet(() -> FavoriteArtist.from(user));
 
-    favoriteArtist2.setArtist(
-        searchService.findAndSaveArtistBySpotifyId(favoriteArtist.getSpotifyArtistId()));
-    favoriteArtist2.setAlbum(
-        searchService.findAndSaveAlbumBySpotifyId(favoriteArtist.getSpotifyAlbumId()));
-    favoriteArtist2.setTrack(
-        searchService.findAndSaveTrackBySpotifyId(favoriteArtist.getSpotifyTrackId()));
-    favoriteArtist2.setUser(usersRepository.findById(userId).get());
-    favoriteArtistRepository.save(favoriteArtist2);
-    return FavoriteArtist.toFavoriteArtistDto(favoriteArtist2);
+    if (StringUtils.hasText(favoriteArtistRequest.getSpotifyArtistId())) {
+      favoriteArtist.setArtist(
+          searchService.findAndSaveArtistBySpotifyId(favoriteArtistRequest.getSpotifyArtistId()));
+    }
+    if (StringUtils.hasText(favoriteArtistRequest.getSpotifyAlbumId())) {
+      favoriteArtist.setAlbum(
+          searchService.findAndSaveAlbumBySpotifyId(favoriteArtistRequest.getSpotifyAlbumId()));
+    }
+    if (StringUtils.hasText(favoriteArtistRequest.getSpotifyTrackId())) {
+      favoriteArtist.setTrack(
+          searchService.findAndSaveTrackBySpotifyId(favoriteArtistRequest.getSpotifyTrackId()));
+    }
+    favoriteArtistRepository.save(favoriteArtist);
+    return FavoriteArtistDetail.from(favoriteArtist);
   }
 }
