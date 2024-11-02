@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { colors } from '../../styles/color';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useRef, useEffect, useState } from 'react';
-import { fetchPOST } from '../utils/fetchData';
+import { fetchPOST, MAX_REISSUE_COUNT } from '../utils/fetchData';
 
 const Container = styled.div`
   display: flex;
@@ -113,11 +113,6 @@ function AlbumPostCommentPostPage() {
   const location = useLocation();
   const [postId, setPostId] = useState();
   const [postContent, setPostContent] = useState('');
-  // const server = 'http://203.255.81.70:8030';
-  // const reissueTokenUrl = `${server}/api/auth/reissued`;
-  // const [token, setToken] = useState(localStorage.getItem('login-token'));
-  // const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
-
   useEffect(() => {
     if (location.state) {
       setPostId(location.state);
@@ -135,120 +130,9 @@ function AlbumPostCommentPostPage() {
     const data = {
       content: postContent,
     };
-    await fetchPOST(token, refreshToken, CommentPostUrl, data);
+    await fetchPOST(token, refreshToken, CommentPostUrl, data, MAX_REISSUE_COUNT);
     GoToAlbumPostPage();
   };
-  // const fetchComment = async () => {
-  //   let CommentPostUrl = `${server}/api/album/post/${postId}/comment`;
-  //   if (token) {
-  //     try {
-  //       console.log(`Posting Comment...`);
-  //       console.log(postId);
-  //       console.log(postContent);
-  //       const response = await fetch(CommentPostUrl, {
-  //         method: 'POST',
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //         body: JSON.stringify({
-  //           parent_id: null,
-  //           content: postContent,
-  //         }),
-  //       });
-
-  //       if (response.ok) {
-  //         const data = await response.json();
-  //         console.log('Post Comment Success');
-  //         console.log(data);
-  //       } else if (response.status === 401) {
-  //         ReissueToken();
-  //         fetchComment();
-  //       } else {
-  //         console.error('Failed to Post Comment:', response.status);
-  //       }
-  //     } catch (error) {
-  //       console.error('Error fetching the JSON file:', error);
-  //     } finally {
-  //       console.log('finished');
-  //       GoToAlbumPostPage();
-  //     }
-  //   }
-  // };
-
-  // const ReissueToken = async () => {
-  //   console.log('reissuing Token');
-  //   try {
-  //     const response = await fetch(reissueTokenUrl, {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         'Refresh-Token': `${refreshToken}`,
-  //       },
-  //     });
-  //     if (response.ok) {
-  //       const data = await response.json();
-  //       localStorage.setItem('login-token', data.token);
-  //       localStorage.setItem('login-refreshToken', data.refreshToken);
-  //       setToken(data.token);
-  //       setRefreshToken(data.refreshToken);
-  //     } else {
-  //       console.error('failed to reissue token', response.status);
-  //     }
-  //   } catch (error) {
-  //     console.error('Refresh Token 재발급 실패', error);
-  //   }
-  // };
-
-  // 게시물 수정
-  // const fetchEdit = async () => {
-  //   const token = localStorage.getItem("login-token");
-  //   const refreshToken = localStorage.getItem("login-refreshToken");
-  //   let EditUrl = `${server}/api/album/post/${albumPost?.postId}`;
-  //   if (token && albumPost) {
-  //     try {
-  //       console.log(`Edit Posting...`);
-  //       console.log(albumPost);
-  //       console.log(postContent);
-  //       const response = await fetch(EditUrl, {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //         body: JSON.stringify({
-  //           content: postContent,
-  //         }),
-  //       });
-
-  //       if (response.ok) {
-  //         const data = await response.json();
-  //         console.log("Post Success");
-  //         console.log(data);
-  //         GoToHomePage();
-  //       } else if (response.status === 401) {
-  //         console.log("reissuing Token");
-  //         const reissueToken = await fetch(reissueTokenUrl, {
-  //           method: "POST",
-  //           headers: {
-  //             "Content-Type": "application/json",
-  //             "Refresh-Token": `${refreshToken}`,
-  //           },
-  //         });
-  //         const data = await reissueToken.json();
-  //         localStorage.setItem("login-token", data.token);
-  //         localStorage.setItem("login-refreshToken", data.refreshToken);
-  //         fetchPost();
-  //       } else {
-  //         console.error("Failed to Post data:", response.status);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching the JSON file:", error);
-  //     } finally {
-  //       console.log("finished");
-  //     }
-  //   }
-  // };
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const adjustTextareaHeight = () => {

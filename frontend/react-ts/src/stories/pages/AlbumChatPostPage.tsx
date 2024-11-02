@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { colors } from '../../styles/color';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useRef, useState } from 'react';
-import { fetchPOST } from '../utils/fetchData';
+import { fetchPOST, MAX_REISSUE_COUNT } from '../utils/fetchData';
 
 const Container = styled.div`
   display: flex;
@@ -128,7 +128,7 @@ function CommentPostPage() {
       content: postContent,
       sorted: 'recent',
     };
-    fetchPOST(token, refreshToken, `/api/album/${spotifyAlbumId}/albumchat`, data).then(() => {
+    fetchPOST(token, refreshToken, `/api/album/${spotifyAlbumId}/albumchat`, data, MAX_REISSUE_COUNT).then(() => {
       GoToAlbumPage();
     });
   };

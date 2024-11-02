@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { colors } from '../../styles/color';
 import { useEffect, useState } from 'react';
 import Loader from './Loader';
-import { fetchGET } from '../utils/fetchData';
+import { fetchGET, MAX_REISSUE_COUNT } from '../utils/fetchData';
 
 const Container = styled.div`
   /* position: absolute;
@@ -215,15 +215,15 @@ function SearchModal({
   let ArtistAlbumUrl = `/api/searchSpotify/artist/${favoriteArtistSpotifyIds?.spotifyArtistId}/album`;
   let searchArtistAlbumUrl = `/api/searchSpotify/artist/${favoriteArtistSpotifyIds?.spotifyArtistId}/album`;
 
-  const fetchSearch = async () => {
+  const fetchSearch = async (searchingMode: string) => {
     if (!isLoading) {
       setIsLoading(true);
       console.log('검색시작');
-      if (searchingTopic === 'Album') {
+      if (searchingMode === 'Album') {
         console.log('검색중');
         Search(searchAlbumUrl);
       }
-      if (searchingTopic === 'Artist-album') {
+      if (searchingMode === 'Artist-album') {
         console.log('검색중');
         Search(searchArtistAlbumUrl);
       }
@@ -237,8 +237,9 @@ function SearchModal({
   const Search = async (URL: string) => {
     const token = localStorage.getItem('login-token') as string;
     const refreshToken = localStorage.getItem('login-refreshToken') as string;
-    fetchGET(token, refreshToken, URL).then(data => {
-      setSearchResultAlbum(data);
+    fetchGET(token, refreshToken, URL, MAX_REISSUE_COUNT).then(data => {
+      if (searchingTopic === 'Album') setSearchResultAlbum(data);
+      else setSearchResultAlbum(data.filter((album: AlbumSearchResult) => album.albumArtist.artistId === favoriteArtist?.spotifyArtistId));
       setIsLoading(false);
     });
   };
@@ -255,7 +256,7 @@ function SearchModal({
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault(); // 폼 제출 동작 방지
     // 검색 결과 초기화
-    fetchSearch(); // 검색 실행
+    fetchSearch('Album'); // 검색 실행
   };
 
   const addBestAlbum = (album: AlbumSearchResult) => {

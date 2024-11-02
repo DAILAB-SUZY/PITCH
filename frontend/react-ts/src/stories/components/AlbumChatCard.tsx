@@ -3,7 +3,7 @@ import { colors } from '../../styles/color';
 import { useEffect, useRef, useState } from 'react';
 import useStore from '../store/store';
 import { useNavigate } from 'react-router-dom';
-import { fetchPOST, fetchDELETE } from '../utils/fetchData';
+import { fetchPOST, fetchDELETE, MAX_REISSUE_COUNT } from '../utils/fetchData';
 import { updateTimeAgo } from '../utils/getTimeAgo';
 const ChatCardContainer = styled.div`
   width: 350px;
@@ -162,9 +162,12 @@ interface AlbumChatComment {
 interface AlbumData {
   comment: AlbumChatComment;
   spotifyAlbumId: string;
+  setAlbumChatList: React.Dispatch<React.SetStateAction<AlbumChatComment[]>>;
+  setPageNumber: React.Dispatch<React.SetStateAction<number>>;
+  setIsEnd: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const AlbumChatCard = ({ comment, spotifyAlbumId }: AlbumData) => {
+const AlbumChatCard = ({ comment, spotifyAlbumId, setAlbumChatList, setPageNumber, setIsEnd }: AlbumData) => {
   // Post 시간 계산
   const CreateTime = comment.createAt;
   const UpdatedTime = comment.updateAt;
@@ -214,7 +217,7 @@ const AlbumChatCard = ({ comment, spotifyAlbumId }: AlbumData) => {
   };
 
   const fetchLike = async (token: string, refresuToken: string) => {
-    fetchPOST(token, refresuToken, ChatLikeUrl, {});
+    fetchPOST(token, refresuToken, ChatLikeUrl, {}, MAX_REISSUE_COUNT);
   };
 
   const navigate = useNavigate();
@@ -239,7 +242,10 @@ const AlbumChatCard = ({ comment, spotifyAlbumId }: AlbumData) => {
   // 삭제요청
   const DeleteChatUrl = `/api/album/${spotifyAlbumId}/albumchat/${comment.albumChatCommentId}?sorted=recent`;
   const deleteChat = async (token: string, refreshToken: string) => {
-    fetchDELETE(token, refreshToken, DeleteChatUrl);
+    await fetchDELETE(token, refreshToken, DeleteChatUrl, MAX_REISSUE_COUNT);
+    setAlbumChatList([]);
+    setPageNumber(0);
+    setIsEnd(false);
   };
 
   return (

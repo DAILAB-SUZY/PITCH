@@ -4,7 +4,7 @@ import Nav from '../components/Nav';
 import PlayListCard from '../components/PlayListCard';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { fetchGET } from '../utils/fetchData';
+import { fetchGET, MAX_REISSUE_COUNT } from '../utils/fetchData';
 import useStore from '../store/store';
 
 const Container = styled.div`
@@ -136,7 +136,7 @@ function PlayListPage() {
   const PlayListURL = `/api/user/${author.id}/playlist`;
 
   const fetchPlayList = async (token: string, refreshToken: string) => {
-    fetchGET(token, refreshToken, PlayListURL).then(data => {
+    fetchGET(token, refreshToken, PlayListURL, MAX_REISSUE_COUNT).then(data => {
       setPlayListData(data);
     });
   };
@@ -168,7 +168,7 @@ function PlayListPage() {
           ) : (
             <Circle bgcolor={colors.BG_grey}></Circle>
           )}
-          <Text fontFamily="Bd" fontSize="25px">
+          <Text fontFamily="Bd" fontSize="25px" margin="0px 10px 0px 0px">
             {author.username}'s PlayList
           </Text>
         </TitleArea>

@@ -1,10 +1,16 @@
+// import { useNavigate } from 'react-router-dom';
 const server = 'http://203.255.81.70:8030';
 // const server = 'http://pitches.social';
 const reissueTokenUrl = `${server}/api/auth/reissued`;
 
+export const MAX_REISSUE_COUNT = 3;
 // 토큰 재발급 함수
 export const reissueToken = async (refreshToken: string): Promise<string | null> => {
   console.log('Reissuing Token...');
+  //   const navigate = useNavigate();
+  //   const GoToErrorPage = () => {
+  //     navigate('/ErrorPage');
+  // };
   try {
     const response = await fetch(reissueTokenUrl, {
       method: 'POST',
@@ -30,7 +36,7 @@ export const reissueToken = async (refreshToken: string): Promise<string | null>
 };
 
 // 데이터 fetch 함수 - GET
-export const fetchGET = async (token: string, refreshToken: string, URL: string): Promise<any | undefined> => {
+export const fetchGET = async (token: string, refreshToken: string, URL: string, retryCount: number): Promise<any | undefined> => {
   if (!token) return;
 
   try {
@@ -47,11 +53,11 @@ export const fetchGET = async (token: string, refreshToken: string, URL: string)
       const data = await response.json();
       console.log('Data fetched:', data);
       return data;
-    } else if (response.status === 401 || response.status === 500 || response.status === 405) {
+    } else if ((response.status === 401 && retryCount > 0) || (response.status === 500 && retryCount > 0) || (response.status === 405 && retryCount > 0)) {
       console.log('토큰 만료... 재발급 시도');
       const newToken = await reissueToken(refreshToken);
       if (newToken) {
-        return fetchGET(newToken, refreshToken, URL); // 재귀 호출로 새 토큰으로 재요청
+        return fetchGET(newToken, refreshToken, URL, retryCount - 1); // 재귀 호출로 새 토큰으로 재요청
       }
     } else {
       console.error('Failed to fetch data:', response.status);
@@ -64,8 +70,11 @@ export const fetchGET = async (token: string, refreshToken: string, URL: string)
 };
 
 // 데이터 fetch 함수 - POST
-export const fetchPOST = async (token: string, refreshToken: string, URL: string, Data: any): Promise<any | undefined> => {
-  if (!token) return;
+export const fetchPOST = async (token: string, refreshToken: string, URL: string, Data: any, retryCount: number): Promise<any | undefined> => {
+  if (!token) {
+    console.log('Token is null');
+    return;
+  }
 
   try {
     console.log('Fetching POST...');
@@ -83,11 +92,11 @@ export const fetchPOST = async (token: string, refreshToken: string, URL: string
       const data = await response.json();
       console.log('Data fetched:', data);
       return data;
-    } else if (response.status === 401 || response.status === 500 || response.status === 405) {
+    } else if ((response.status === 401 && retryCount > 0) || (response.status === 500 && retryCount > 0) || (response.status === 405 && retryCount > 0)) {
       console.log('토큰 만료... 재발급 시도');
       const newToken = await reissueToken(refreshToken);
       if (newToken) {
-        return fetchPOST(newToken, refreshToken, URL, Data); // 재귀 호출로 새 토큰으로 재요청
+        return fetchPOST(newToken, refreshToken, URL, Data, retryCount - 1); // 재귀 호출로 새 토큰으로 재요청
       }
     } else {
       console.error('Failed to fetch data:', response.status);
@@ -100,7 +109,7 @@ export const fetchPOST = async (token: string, refreshToken: string, URL: string
 };
 
 // 데이터 fetch 함수 - POST_file
-export const fetchPOSTFile = async (token: string, refreshToken: string, URL: string, Data: any): Promise<any | undefined> => {
+export const fetchPOSTFile = async (token: string, refreshToken: string, URL: string, Data: any, retryCount: number): Promise<any | undefined> => {
   if (!token) return;
 
   try {
@@ -123,11 +132,11 @@ export const fetchPOSTFile = async (token: string, refreshToken: string, URL: st
       const data = await response;
       console.log('Data fetched:', data);
       return data;
-    } else if (response.status === 401 || response.status === 500 || response.status === 405) {
+    } else if ((response.status === 401 && retryCount > 0) || (response.status === 500 && retryCount > 0) || (response.status === 405 && retryCount > 0)) {
       console.log('토큰 만료... 재발급 시도');
       const newToken = await reissueToken(refreshToken);
       if (newToken) {
-        return fetchPOST(newToken, refreshToken, URL, Data); // 재귀 호출로 새 토큰으로 재요청
+        return fetchPOST(newToken, refreshToken, URL, Data, retryCount - 1); // 재귀 호출로 새 토큰으로 재요청
       }
     } else {
       console.error('Failed to fetch data:', response.status);
@@ -140,7 +149,7 @@ export const fetchPOSTFile = async (token: string, refreshToken: string, URL: st
 };
 
 // 데이터 fetch 함수 - DELETE
-export const fetchDELETE = async (token: string, refreshToken: string, URL: string): Promise<any | undefined> => {
+export const fetchDELETE = async (token: string, refreshToken: string, URL: string, retryCount: number): Promise<any | undefined> => {
   if (!token) return;
 
   try {
@@ -157,11 +166,11 @@ export const fetchDELETE = async (token: string, refreshToken: string, URL: stri
       const data = await response.json();
       console.log('Data fetched:', data);
       return data;
-    } else if (response.status === 401 || response.status === 500 || response.status === 405) {
+    } else if ((response.status === 401 && retryCount > 0) || (response.status === 500 && retryCount > 0) || (response.status === 405 && retryCount > 0)) {
       console.log('토큰 만료... 재발급 시도');
       const newToken = await reissueToken(refreshToken);
       if (newToken) {
-        return fetchDELETE(newToken, refreshToken, URL); // 재귀 호출로 새 토큰으로 재요청
+        return fetchDELETE(newToken, refreshToken, URL, retryCount - 1); // 재귀 호출로 새 토큰으로 재요청
       }
     } else {
       console.error('Failed to fetch data:', response.status);

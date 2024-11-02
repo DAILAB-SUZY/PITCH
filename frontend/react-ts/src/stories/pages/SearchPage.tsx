@@ -3,7 +3,7 @@ import { colors } from '../../styles/color';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import Loader from '../components/Loader';
-import { fetchGET } from '../utils/fetchData';
+import { MAX_REISSUE_COUNT, fetchGET } from '../utils/fetchData';
 
 const Container = styled.div`
   display: flex;
@@ -187,68 +187,13 @@ function SearchPage() {
 
     if (token && !isLoading) {
       setIsLoading(true);
-      fetchGET(token, refreshToken, searchUrl).then(data => {
+      fetchGET(token, refreshToken, searchUrl, MAX_REISSUE_COUNT).then(data => {
         setSearchResult(data);
         setIsLoading(false);
       });
     }
   };
-  // const fetchSearch = async () => {
-  //   let searchUrl = `${server}/api/searchSpotify/album/${searchKeyword}`;
 
-  //   if (token && !isLoading) {
-  //     setIsLoading(true);
-  //     try {
-  //       console.log(`searching ${searchKeyword}...`);
-  //       const response = await fetch(searchUrl, {
-  //         method: 'GET',
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       });
-
-  //       if (response.ok) {
-  //         const data = await response.json();
-  //         console.log(data);
-  //         setSearchResult(data);
-  //       } else if (response.status === 401) {
-  //         ReissueToken();
-  //       } else {
-  //         console.error('Failed to fetch data:', response.status);
-  //       }
-  //     } catch (error) {
-  //       console.error('Error fetching the JSON file:', error);
-  //     } finally {
-  //       setIsLoading(false);
-  //       console.log('finished');
-  //     }
-  //   }
-  // };
-  // const ReissueToken = async () => {
-  //   console.log('reissuing Token');
-  //   try {
-  //     const response = await fetch(reissueTokenUrl, {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         'Refresh-Token': `${refreshToken}`,
-  //       },
-  //     });
-  //     if (response.ok) {
-  //       const data = await response.json();
-  //       localStorage.setItem('login-token', data.token);
-  //       localStorage.setItem('login-refreshToken', data.refreshToken);
-  //       setToken(data.token);
-  //       setRefreshToken(data.refreshToken);
-  //       fetchSearch();
-  //     } else {
-  //       throw new Error(`failed to reissue token : ${response.status}`);
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault(); // 폼 제출 동작 방지
     setSearchResult([]); // 검색 결과 초기화

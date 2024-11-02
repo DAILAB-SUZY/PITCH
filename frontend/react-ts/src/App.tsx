@@ -18,6 +18,7 @@ import AlbumPostCommentPostPage from './stories/pages/AlbumPostCommentPostPage';
 import FollowPage from './stories/pages/FollowPage';
 import FriendSearchPage from './stories/pages/FriendSearchPage';
 import SearchPage from './stories/pages/SearchPage';
+import ErrorPage from './stories/pages/ErrorPage';
 import './styles/reset.css';
 
 function App() {
@@ -43,6 +44,7 @@ function App() {
         <Route path="/SearchPage" element={<SearchPage />} />
         <Route path="/FollowPage" element={<FollowPage />} />
         <Route path="/FriendSearchPage" element={<FriendSearchPage />} />
+        <Route path="/ErrorPage" element={<ErrorPage />} />
       </Routes>
     </BrowserRouter>
   );

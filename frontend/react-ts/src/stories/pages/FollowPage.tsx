@@ -3,7 +3,7 @@ import { colors } from '../../styles/color';
 import { useEffect, useState } from 'react';
 import FollowBox from '../components/FollowBox';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { fetchGET, fetchPOST } from '../utils/fetchData';
+import { fetchGET, fetchPOST, MAX_REISSUE_COUNT } from '../utils/fetchData';
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -112,17 +112,17 @@ function FollowPage() {
   const fetchFollow = async () => {
     const token = localStorage.getItem('login-token') as string;
     const refreshToken = localStorage.getItem('login-refreshToken') as string;
-    await fetchGET(token, refreshToken, GetFollowerURL).then(data => {
+    await fetchGET(token, refreshToken, GetFollowerURL, MAX_REISSUE_COUNT).then(data => {
       setFollowers(data);
     });
-    await fetchGET(token, refreshToken, GetFollowingURL).then(data => {
+    await fetchGET(token, refreshToken, GetFollowingURL, MAX_REISSUE_COUNT).then(data => {
       setFollowings(data);
     });
   };
   const ChangeFollow = async (user: number) => {
     const token = localStorage.getItem('login-token') as string;
     const refreshToken = localStorage.getItem('login-refreshToken') as string;
-    fetchPOST(token, refreshToken, `${SetFollowUrl}${user}`, {}).then(() => {
+    fetchPOST(token, refreshToken, `${SetFollowUrl}${user}`, {}, MAX_REISSUE_COUNT).then(() => {
       fetchFollow();
     });
   };

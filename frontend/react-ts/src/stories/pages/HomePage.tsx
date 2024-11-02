@@ -6,7 +6,7 @@ import Nav from '../components/Nav';
 import AlbumPostCard from '../components/AlbumPostCard';
 import PlaylistPreviewCard from '../components/PlaylistPreviewCard';
 import useStore from '../store/store';
-import { fetchGET } from '../utils/fetchData';
+import { fetchGET, MAX_REISSUE_COUNT } from '../utils/fetchData';
 
 const Container = styled.div`
   display: flex;
@@ -176,17 +176,13 @@ function HomePage() {
   const [isEnd, setIsEnd] = useState(false);
   const [friendsPlayList, setfriendsPlayList] = useState<FriendsPlayList[]>([]);
 
-  console.log('render-----------------------------');
-  console.log('albumpost: ', albumPosts);
-  console.log('postPage: ', postPage);
-
   // Intersection Observer용 ref
   const observerRef = useRef<HTMLDivElement | null>(null);
 
   const PlaylistUrl = `/api/playlist/following`;
   const AlbumPostUrl = `/api/album/post?page=${postPage}&limit=5`;
   const fetchPlaylist = async (token: string, refreshToken: string) => {
-    fetchGET(token, refreshToken, PlaylistUrl).then(data => {
+    fetchGET(token, refreshToken, PlaylistUrl, MAX_REISSUE_COUNT).then(data => {
       if (data) {
         setfriendsPlayList(prevList => [...prevList, ...data]);
       }
@@ -196,7 +192,7 @@ function HomePage() {
   const fetchAlbumPosts = async (token: string, refreshToken: string) => {
     if (token && !isLoading && !isEnd) {
       setIsLoading(loading => !loading);
-      fetchGET(token, refreshToken, AlbumPostUrl).then(data => {
+      fetchGET(token, refreshToken, AlbumPostUrl, MAX_REISSUE_COUNT).then(data => {
         if (data) {
           console.log('set PostList');
           if (data.length === 0) {

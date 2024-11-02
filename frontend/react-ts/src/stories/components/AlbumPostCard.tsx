@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useStore from '../store/store';
 import { updateTimeAgo } from '../utils/getTimeAgo';
-import { fetchPOST } from '../utils/fetchData';
+import { fetchPOST, MAX_REISSUE_COUNT } from '../utils/fetchData';
 
 const AlbumPostContainer = styled.div`
   width: 350px;
@@ -304,7 +304,7 @@ const AlbumPost = ({ albumPost }: AlbumPostProps) => {
   };
 
   const fetchLike = async (token: string, refresuToken: string) => {
-    fetchPOST(token, refresuToken, PostLikeUrl, {});
+    fetchPOST(token, refresuToken, PostLikeUrl, {}, MAX_REISSUE_COUNT);
   };
 
   const GoToAlbumPage = (spotifyAlbumId: string) => {

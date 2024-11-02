@@ -3,8 +3,8 @@ import { colors } from '../../styles/color';
 import { useEffect, useRef, useState } from 'react';
 import { updateTimeAgo } from '../utils/getTimeAgo';
 import useStore from '../store/store';
-import { fetchDELETE, fetchPOST } from '../utils/fetchData';
-import { useNavigate } from 'react-router-dom';
+import { fetchDELETE, MAX_REISSUE_COUNT } from '../utils/fetchData';
+//import { useNavigate } from 'react-router-dom';
 // import { useNavigate } from 'react-router-dom';
 
 const ProfileArea = styled.div`
@@ -98,13 +98,13 @@ const ChatCardBody = styled.div`
   line-height: 120%;
 `;
 
-const CommentButtonArea = styled.div`
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  margin: 0 10 0 10px;
-`;
+// const CommentButtonArea = styled.div`
+//   width: 100%;
+//   display: flex;
+//   align-items: center;
+//   justify-content: flex-end;
+//   margin: 0 10 0 10px;
+// `;
 
 const CommentCommentCard = styled.div`
   display: flex;
@@ -234,7 +234,7 @@ function AlbumChatCommentCard({ comment, spotifyAlbumId, setChange }: AlbumData)
   // 삭제요청
   const DeleteChatUrl = `/api/album/${spotifyAlbumId}/albumchat/${comment.albumChatCommentId}?sorted=recent`;
   const deleteChat = async (token: string, refreshToken: string) => {
-    fetchDELETE(token, refreshToken, DeleteChatUrl).then(() => {
+    fetchDELETE(token, refreshToken, DeleteChatUrl, MAX_REISSUE_COUNT).then(() => {
       //   GoToAlbumChatPage();
       setChange(true);
       setIsDropdownOpen(false);

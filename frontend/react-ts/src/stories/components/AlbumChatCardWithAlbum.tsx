@@ -3,7 +3,7 @@ import { colors } from '../../styles/color';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useStore from '../store/store';
-import { fetchPOST, fetchDELETE } from '../utils/fetchData';
+import { fetchPOST, MAX_REISSUE_COUNT } from '../utils/fetchData';
 import { updateTimeAgo } from '../utils/getTimeAgo';
 
 const ChatCardContainer = styled.div`
@@ -221,7 +221,7 @@ const AlbumChatCardWithAlbum = ({ comment }: commentProps) => {
   const fetchLike = async () => {
     const token = localStorage.getItem('login-token') as string;
     const refreshToken = localStorage.getItem('login-refreshToken') as string;
-    await fetchPOST(token, refreshToken, CommentLikeUrl, {});
+    await fetchPOST(token, refreshToken, CommentLikeUrl, {}, MAX_REISSUE_COUNT);
   };
 
   const GoToAlbumChatPage = (albumChatId: number, spotifyAlbumId: string) => {

@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import AlbumChatCard from './AlbumChatCard';
 import { useEffect, useRef, useState } from 'react';
-import { fetchGET } from '../utils/fetchData';
+import { fetchGET, MAX_REISSUE_COUNT } from '../utils/fetchData';
 
 const Container = styled.div`
   display: flex;
@@ -67,27 +67,28 @@ interface AlbumProps {
 
 function AlbumPageChatTab({ spotifyAlbumId }: AlbumProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const [albumChatList, setaAlbumChatList] = useState<AlbumChatComment[]>([]);
+  const [albumChatList, setAlbumChatList] = useState<AlbumChatComment[]>([]);
   // Intersection Observer용 ref
   const observerRef = useRef<HTMLDivElement | null>(null);
   const [pageNumber, setPageNumber] = useState(0);
   const [isEnd, setIsEnd] = useState(false);
-  console.log('postlist');
-  console.log(albumChatList);
-
+  console.log('isloding', isLoading);
+  console.log('isEnd', isEnd);
   let AlbumChatUrl = `/api/album/${spotifyAlbumId}/albumchat?sorted=recent&page=${pageNumber}&limit=5`;
   const fetchAlbumChat = async (token: string, refreshToken: string) => {
     if (token && !isLoading && !isEnd) {
       setIsLoading(true);
-      await fetchGET(token, refreshToken, AlbumChatUrl).then(data => {
+      console.log('fetching...');
+      await fetchGET(token, refreshToken, AlbumChatUrl, MAX_REISSUE_COUNT).then(data => {
+        console.log('data', data);
         if (data.length === 0) {
           console.log('list End');
           setIsEnd(true);
         }
-        setaAlbumChatList(prevList => [...prevList, ...data]);
+        setAlbumChatList(prevList => [...prevList, ...data]);
         setPageNumber(prevPage => prevPage + 1); // 페이지 증가
+        setIsLoading(false);
       });
-      setIsLoading(false);
     }
   };
 
@@ -95,7 +96,9 @@ function AlbumPageChatTab({ spotifyAlbumId }: AlbumProps) {
   useEffect(() => {
     const observer = new IntersectionObserver(entries => {
       // observerRef가 화면에 보이면 fetch 호출
-      if (!isLoading && entries[0].isIntersecting) {
+      console.log('observed!');
+      if (entries[0].isIntersecting) {
+        console.log('fetch');
         fetchAlbumChat(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '');
       }
     });
@@ -112,10 +115,13 @@ function AlbumPageChatTab({ spotifyAlbumId }: AlbumProps) {
       }
     };
   }, [pageNumber]);
+
   return (
     <Container>
       {albumChatList && albumChatList?.length > 0 ? (
-        albumChatList?.map((chat: any, index: number) => <AlbumChatCard key={index} comment={chat} spotifyAlbumId={spotifyAlbumId}></AlbumChatCard>)
+        albumChatList?.map((chat: any, index: number) => (
+          <AlbumChatCard key={index} comment={chat} spotifyAlbumId={spotifyAlbumId} setAlbumChatList={setAlbumChatList} setPageNumber={setPageNumber} setIsEnd={setIsEnd}></AlbumChatCard>
+        ))
       ) : (
         <Text margin="40px 0px 0px 0px"> Chat이 없습니다.</Text>
       )}

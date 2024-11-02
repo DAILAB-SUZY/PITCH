@@ -8,7 +8,7 @@ import FavoriteArtistEditCard from '../components/FavoriteArtistEditCard';
 import SearchAlbumModal from '../components/SearchAlbumModal';
 import SearchArtistModal from '../components/SearchArtistModal';
 import SearchTrackModal from '../components/SearchTrackModal';
-import { fetchGET, fetchPOST, fetchPOSTFile } from '../utils/fetchData';
+import { fetchGET, fetchPOST, fetchPOSTFile, MAX_REISSUE_COUNT } from '../utils/fetchData';
 
 const Container = styled.div`
   display: flex;
@@ -327,17 +327,17 @@ function MusicProfileEditPage() {
 
   useEffect(() => {
     fetchData(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '');
-    if (musicProfileData) {
-      setMusicProfileData(musicProfileData);
-      setMyMusicDna(musicProfileData.userDetail.dnas);
-      setBestAlbum(musicProfileData.bestAlbum);
-      fetchMusicDNA(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '');
-      setProfile(musicProfileData.userDetail.profilePicture);
-    }
+    // if (musicProfileData) {
+    //   setMusicProfileData(musicProfileData);
+    //   setMyMusicDna(musicProfileData.userDetail.dnas);
+    //   setBestAlbum(musicProfileData.bestAlbum);
+    //   fetchMusicDNA(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '');
+    //   setProfile(musicProfileData.userDetail.profilePicture);
+    // }
   }, []);
 
   const fetchData = async (token: string, refreshToken: string) => {
-    fetchGET(token, refreshToken, musiProfileUrl).then(data => {
+    fetchGET(token, refreshToken, musiProfileUrl, MAX_REISSUE_COUNT).then(data => {
       setMusicProfileData(data);
       setMyMusicDna(data.userDetail.dnas);
       setBestAlbum(data.bestAlbum);
@@ -356,7 +356,7 @@ function MusicProfileEditPage() {
   // musicDNA 가져오기
   const MusicDNAUrl = `/api/dna`;
   const fetchMusicDNA = async (token: string, refreshToken: string) => {
-    fetchGET(token, refreshToken, MusicDNAUrl).then(data => {
+    fetchGET(token, refreshToken, MusicDNAUrl, MAX_REISSUE_COUNT).then(data => {
       setAllMusicDna(data);
     });
   };
@@ -368,7 +368,7 @@ function MusicProfileEditPage() {
       console.log('start adding DNA...');
       let addDna = allMusicDna?.find(dna => dna.dnaKey === dnaKey);
       if (addDna) {
-        setAllMusicDna(allMusicDna.filter(dna => dna.dnaKey !== dnaKey));
+        // setAllMusicDna(allMusicDna.filter(dna => dna.dnaKey !== dnaKey));
         setMyMusicDna([...myMusicDna, addDna]);
         console.log('DNA added');
         console.log(addDna);
@@ -383,7 +383,7 @@ function MusicProfileEditPage() {
       let deleteDna = myMusicDna?.find(dna => dna.dnaKey === dnaKey);
       if (deleteDna) {
         setMyMusicDna(myMusicDna.filter(dna => dna.dnaKey !== dnaKey));
-        setAllMusicDna([...allMusicDna, deleteDna]);
+        // setAllMusicDna([...allMusicDna, deleteDna]);
         console.log('DNA deleted');
         console.log(deleteDna);
       }
@@ -414,7 +414,7 @@ function MusicProfileEditPage() {
     const data = {
       dna: myMusicDna.map(dna => dna.dnaKey),
     };
-    await fetchPOST(token, refreshToken, MusicDNAPostUrl, data).then(data => {
+    await fetchPOST(token, refreshToken, MusicDNAPostUrl, data, MAX_REISSUE_COUNT).then(data => {
       console.log(data);
     });
   };
@@ -426,7 +426,7 @@ function MusicProfileEditPage() {
         score: album.score,
       })),
     };
-    await fetchPOST(token, refreshToken, BestAlbumPostUrl, data).then(data => {
+    await fetchPOST(token, refreshToken, BestAlbumPostUrl, data, MAX_REISSUE_COUNT).then(data => {
       console.log(data);
     });
   };
@@ -437,14 +437,14 @@ function MusicProfileEditPage() {
       spotifyAlbumId: favoriteArtistSpotifyIds?.spotifyAlbumId,
       spotifyTrackId: favoriteArtistSpotifyIds?.spotifyTrackId,
     };
-    await fetchPOST(token, refreshToken, FavoriteArtistPostUrl, data).then(data => {
+    await fetchPOST(token, refreshToken, FavoriteArtistPostUrl, data, MAX_REISSUE_COUNT).then(data => {
       console.log(data);
     });
   };
 
   const postProfileImg = async (token: string, refreshToken: string) => {
     const data = formData;
-    await fetchPOSTFile(token, refreshToken, ProfilePostUrl, data).then(data => {
+    await fetchPOSTFile(token, refreshToken, ProfilePostUrl, data, MAX_REISSUE_COUNT).then(data => {
       console.log(data);
     });
   };

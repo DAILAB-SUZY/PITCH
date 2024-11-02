@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import AlbumPostCard from './AlbumPostCard';
 import { useEffect, useState } from 'react';
-import { fetchGET } from '../utils/fetchData';
+import { fetchGET, MAX_REISSUE_COUNT } from '../utils/fetchData';
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -97,7 +97,7 @@ function AlbumPagePostTab({ spotifyAlbumId }: AlbumProps) {
       setIsLoading(true);
       const token = localStorage.getItem('login-token') as string;
       const refreshToken = localStorage.getItem('login-refreshToken') as string;
-      await fetchGET(token, refreshToken, AlbumPostUrl).then(data => {
+      await fetchGET(token, refreshToken, AlbumPostUrl, MAX_REISSUE_COUNT).then(data => {
         setaAlbumPostList(data);
         setIsLoading(false);
       });

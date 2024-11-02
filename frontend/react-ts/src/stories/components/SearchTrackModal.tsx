@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { colors } from '../../styles/color';
 import { useEffect, useState } from 'react';
 import Loader from './Loader';
-import { fetchGET } from '../utils/fetchData';
+import { fetchGET, MAX_REISSUE_COUNT } from '../utils/fetchData';
 
 const Container = styled.div`
   /* position: absolute;
@@ -31,10 +31,10 @@ const SearchInputArea = styled.div`
   height: auto;
 `;
 const Text = styled.div<{
-  fontFamily: string;
-  fontSize: string;
-  color: string;
-  margin: string;
+  fontFamily?: string;
+  fontSize?: string;
+  color?: string;
+  margin?: string;
 }>`
   font-size: ${props => props.fontSize};
   font-family: ${props => props.fontFamily};
@@ -226,7 +226,7 @@ function SearchTrackModal(props: SearchTrackModalProps) {
   const [searchKeyword, setSearchKeyword] = useState('');
   const [searchResultTrack, setSearchResultTrack] = useState<TrackSearchResult[]>();
   const [isLoading, setIsLoading] = useState(false);
-
+  const [searchingMode, setSearchingMode] = useState('');
   const handleTrackUpdate = (newTrack: TrackSearchResult) => {
     console.log(newTrack);
     if (setPlayListData) {
@@ -262,17 +262,17 @@ function SearchTrackModal(props: SearchTrackModalProps) {
     }
   };
 
-  const fetchSearch = async () => {
+  const fetchSearch = async (searchingMode: string) => {
     const searchTrackUrl = `/api/searchSpotify/track/${searchKeyword}`;
     const searchArtistTrackUrl = `/api/searchSpotify/artist/${favoriteArtistSpotifyIds?.spotifyArtistId}/track`;
     if (!isLoading) {
       setIsLoading(true);
       console.log('검색시작');
-      if (searchingTopic === 'track') {
+      if (searchingMode === 'track') {
         console.log('검색중');
         Search(searchTrackUrl);
       }
-      if (searchingTopic === 'Artist-track') {
+      if (searchingMode === 'Artist-track') {
         console.log('검색중');
         Search(searchArtistTrackUrl);
       }
@@ -282,8 +282,9 @@ function SearchTrackModal(props: SearchTrackModalProps) {
   const Search = async (URL: string) => {
     const token = localStorage.getItem('login-token') as string;
     const refreshToken = localStorage.getItem('login-refreshToken') as string;
-    fetchGET(token, refreshToken, URL).then(data => {
-      setSearchResultTrack(data);
+    fetchGET(token, refreshToken, URL, MAX_REISSUE_COUNT).then(data => {
+      if (searchingTopic === 'track') setSearchResultTrack(data);
+      else setSearchResultTrack(data.filter((track: TrackSearchResult) => track.trackArtist.artistId === favoriteArtistSpotifyIds?.spotifyArtistId));
       setIsLoading(false);
     });
   };
@@ -300,8 +301,8 @@ function SearchTrackModal(props: SearchTrackModalProps) {
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault(); // 폼 제출 동작 방지
-    // 검색 결과 초기화
-    fetchSearch(); // 검색 실행
+    // 검색 결과 초기화)
+    fetchSearch('track'); // 검색 실행
   };
 
   const addFavoriteArtistTrack = (track: TrackSearchResult) => {
@@ -368,8 +369,11 @@ function SearchTrackModal(props: SearchTrackModalProps) {
               </SongArea>
             ))
           : null}
-        {!isLoading && searchResultTrack && searchingTopic === 'Artist-track'
-          ? searchResultTrack.map((track: TrackSearchResult) => (
+        {!isLoading && searchResultTrack && searchingTopic === 'Artist-track' ? (
+          searchResultTrack.length === 0 ? (
+            <Text fontSize="20px">검색결과가 없습니다.</Text>
+          ) : (
+            searchResultTrack.map((track: TrackSearchResult) => (
               <SongArea
                 key={track.trackName}
                 onClick={() => {
@@ -386,7 +390,8 @@ function SearchTrackModal(props: SearchTrackModalProps) {
                 </SongTextArea>
               </SongArea>
             ))
-          : null}
+          )
+        ) : null}
         {isLoading && <Loader></Loader>}
       </SearchResultArea>
     </Container>

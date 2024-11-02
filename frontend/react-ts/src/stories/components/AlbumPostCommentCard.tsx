@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { colors } from '../../styles/color';
 import { useEffect, useRef, useState } from 'react';
-import { fetchPOST, fetchDELETE } from '../utils/fetchData';
+import { fetchPOST, fetchDELETE, MAX_REISSUE_COUNT } from '../utils/fetchData';
 import { updateTimeAgo } from '../utils/getTimeAgo';
 import useStore from '../store/store';
 const ChatCardContainer = styled.div`
@@ -251,7 +251,7 @@ const AlbumPostCommentCard = ({ comment, postId, fetchAlbumPost }: commentProps)
 
   const CommentLikeUrl = `/api/album/post/${postId}/comment/${comment.id}/like`;
   const fetchLike = async (token: string, refresuToken: string) => {
-    fetchPOST(token, refresuToken, CommentLikeUrl, {});
+    fetchPOST(token, refresuToken, CommentLikeUrl, {}, MAX_REISSUE_COUNT);
   };
 
   // 수정/삭제 버튼
@@ -266,8 +266,9 @@ const AlbumPostCommentCard = ({ comment, postId, fetchAlbumPost }: commentProps)
   // 삭제요청
   const DeleteChatUrl = `/api/album/post/${postId}/comment/${comment.id}`;
   const deleteChat = async (token: string, refreshToken: string) => {
-    await fetchDELETE(token, refreshToken, DeleteChatUrl);
+    await fetchDELETE(token, refreshToken, DeleteChatUrl, MAX_REISSUE_COUNT);
     fetchAlbumPost(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '');
+    setIsDropdownOpen(false);
   };
 
   return (

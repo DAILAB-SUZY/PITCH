@@ -5,7 +5,7 @@ import PlayListEditCard from '../components/PlayListEditCard';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import SearchTrackModal from '../components/SearchTrackModal';
-import { fetchPOST, fetchGET } from '../utils/fetchData';
+import { fetchPOST, fetchGET, MAX_REISSUE_COUNT } from '../utils/fetchData';
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -160,7 +160,7 @@ function PlayListPage() {
   const PostPlayListURL = `/api/playlist`;
 
   const fetchPlayList = async (token: string, refreshToken: string) => {
-    fetchGET(token, refreshToken, PlayListURL).then(data => {
+    fetchGET(token, refreshToken, PlayListURL, MAX_REISSUE_COUNT).then(data => {
       setPlayListData(data);
     });
   };
@@ -169,7 +169,7 @@ function PlayListPage() {
     const data = {
       spotifyTrackIds: playListData?.tracks.map(track => track.spotifyId),
     };
-    fetchPOST(token, refreshToken, PostPlayListURL, data).then(data => {
+    fetchPOST(token, refreshToken, PostPlayListURL, data, MAX_REISSUE_COUNT).then(data => {
       setPlayListData(data);
       GoToPlayListPage(author);
     });

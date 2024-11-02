@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { colors } from '../../styles/color';
 import { useState } from 'react';
 import Loader from './Loader';
-import { fetchGET } from '../utils/fetchData';
+import { fetchGET, MAX_REISSUE_COUNT } from '../utils/fetchData';
 
 const Container = styled.div`
   /* position: absolute;
@@ -196,7 +196,7 @@ function SearchArtistModal({ searchingTopic, setIsSearchModalOpen, favoriteArtis
   const Search = async (URL: string) => {
     const token = localStorage.getItem('login-token') as string;
     const refreshToken = localStorage.getItem('login-refreshToken') as string;
-    fetchGET(token, refreshToken, URL).then(data => {
+    fetchGET(token, refreshToken, URL, MAX_REISSUE_COUNT).then(data => {
       setSearchResultArtist(data);
       setIsLoading(false);
     });

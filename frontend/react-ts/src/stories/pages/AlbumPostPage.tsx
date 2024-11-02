@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import AlbumPostCommentCard from '../components/AlbumPostCommentCard';
 import useStore from '../store/store';
 import { updateTimeAgo } from '../utils/getTimeAgo';
-import { fetchGET, fetchPOST, fetchDELETE } from '../utils/fetchData';
+import { fetchGET, fetchPOST, fetchDELETE, MAX_REISSUE_COUNT } from '../utils/fetchData';
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -270,63 +270,6 @@ const CommentCardArea = styled.div`
   width: 100%;
   height: auto;
 `;
-
-// interface albumPost {
-//   postDetail: {
-//     postId: number;
-//     content: string;
-//     createAt: string;
-//     updateAt: string;
-//     author: {
-//       id: number;
-//       username: string;
-//       profilePicture: string;
-//       dnas: {
-//         dnaKey: number;
-//         dnaName: string;
-//       }[];
-//     };
-//     album: {
-//       id: number;
-//       title: string;
-//       albumCover: string;
-//       artistName: string;
-//       genre: string;
-//       spotifyId: string;
-//     };
-//   };
-
-//   comments: {
-//     id: number;
-//     content: string;
-//     createdAt: number;
-//     updatedAt: number;
-//     likes: {
-//       id: number;
-//       username: string;
-//       profilePicture: string;
-//     }[];
-//     childComments: {
-//       id: number;
-//       content: string;
-//       author: {
-//         id: number;
-//         username: string;
-//         profilePicture: string;
-//       };
-//     }[];
-//     author: {
-//       id: number;
-//       username: string;
-//       profilePicture: string;
-//     };
-//   }[];
-//   likes: {
-//     id: number;
-//     username: string;
-//     profilePicture: string;
-//   }[];
-// }
 interface albumPost {
   postDetail: {
     postId: number;
@@ -442,8 +385,12 @@ function AlbumPostPage() {
     navigate('/AlbumPostCommentPostPage', { state: albumPost?.postDetail.postId });
   };
 
+  const GoToAlbumPage = (spotifyAlbumId: string) => {
+    navigate('/AlbumPage', { state: spotifyAlbumId });
+  };
+
   const fetchAlbumPost = async (token: string, refreshToken: string) => {
-    fetchGET(token, refreshToken, `/api/album/post/${location.state}`).then(data => {
+    fetchGET(token, refreshToken, `/api/album/post/${location.state}`, MAX_REISSUE_COUNT).then(data => {
       setAlbumPost(data);
       console.log('fetched');
       console.log(data);
@@ -506,7 +453,7 @@ function AlbumPostPage() {
 
   const PostLikeUrl = `/api/album/post/${albumPost ? albumPost.postDetail.postId : ''}/like`;
   const fetchLike = async (token: string, refresuToken: string) => {
-    fetchPOST(token, refresuToken, PostLikeUrl, {});
+    fetchPOST(token, refresuToken, PostLikeUrl, {}, MAX_REISSUE_COUNT);
   };
 
   // 수정/삭제 버튼
@@ -521,7 +468,7 @@ function AlbumPostPage() {
   const DeletePostUrl = '/api/album/post/' + (albumPost ? albumPost.postDetail.postId : '');
   const deletePost = async (token: string, refreshToken: string) => {
     setIsDropdownOpen(false);
-    await fetchDELETE(token, refreshToken, DeletePostUrl);
+    await fetchDELETE(token, refreshToken, DeletePostUrl, MAX_REISSUE_COUNT);
     GoToHomePage();
   };
   if (!albumPost) {
@@ -534,7 +481,11 @@ function AlbumPostPage() {
         <>
           <AlbumPostArea>
             {/*  TODO: 스크롤 되다가 일부 남기고 멈추기 */}
-            <AlbumTitleArea>
+            <AlbumTitleArea
+              onClick={() => {
+                GoToAlbumPage(albumPost.postDetail.album.spotifyId);
+              }}
+            >
               <ImageArea>
                 <img
                   src={albumPost.postDetail.album.albumCover}
