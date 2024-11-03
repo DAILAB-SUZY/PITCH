@@ -529,7 +529,7 @@ function MusicProfilePage() {
   const fetchStaredAlbum = async () => {
     const token = localStorage.getItem('login-token') || '';
     const refreshToken = localStorage.getItem('login-refreshToken') || '';
-    const StaredAlbumUrl = `/api/user/${id}/score`;
+    const StaredAlbumUrl = `/api/user/${profileId}/score`;
     fetchGET(token, refreshToken, StaredAlbumUrl, MAX_REISSUE_COUNT).then(data => {
       if (data) {
         const sortedData = data.sort((a: Album, b: Album) => b.score - a.score);

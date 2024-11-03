@@ -101,7 +101,7 @@ const ContentInput = styled.textarea`
   min-height: 200px;
   height: auto;
   background-color: ${colors.BG_grey};
-  font-size: 15px;
+  font-size: 16px;
   border: 0;
   outline: none;
   color: ${colors.Font_black};
