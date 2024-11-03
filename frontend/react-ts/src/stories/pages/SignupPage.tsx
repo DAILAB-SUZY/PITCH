@@ -130,7 +130,7 @@ function SignupPage() {
     navigate('/Login');
   };
 
-  const server = 'http://203.255.81.70:8030';
+  const server = 'https://pitches.social';
   let url = server + '/api/mail/request';
   let checkCodeUrl = server + '/api/mail/verify';
   let signUpUrl = server + '/api/user';
