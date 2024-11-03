@@ -75,7 +75,7 @@ function LoginPage() {
   const [typedEmail, setTypedEmail] = useState('');
   const [typedPassword, setTypedPassword] = useState('');
 
-  const server = 'http://203.255.81.70:8030';
+  const server = 'https://pitches.social';
   let loginUrl = server + '/api/auth/signin';
   const { setEmail, setName, setId } = useStore();
   const Login = () => {
