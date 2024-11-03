@@ -79,7 +79,7 @@ const ContentInput = styled.input`
   padding: 10px;
   box-sizing: border-box;
   background-color: ${colors.InputBox};
-  font-size: 15px;
+  font-size: 16px;
   border: 0;
   //border-radius: 15px;
   outline: none;
