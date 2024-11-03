@@ -61,7 +61,7 @@ public class Post {
   }
 
   public AlbumScore getAuthorAlbumScore() {
-    return user.getAlbumScore(album);
+    return getUser().getAlbumScore(getAlbum());
   }
 
 }

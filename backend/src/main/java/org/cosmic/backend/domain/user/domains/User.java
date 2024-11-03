@@ -229,7 +229,7 @@ public class User implements MyUserDetails {
   }
 
   public AlbumScore getAlbumScore(Album album) {
-    return albumScore.stream()
+    return getAlbumScore().stream()
         .filter(albumScore -> albumScore.getAlbum().equals(album))
         .findFirst()
         .orElse(AlbumScore.NONE_SCORE);
