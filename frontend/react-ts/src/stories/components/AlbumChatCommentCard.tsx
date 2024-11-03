@@ -3,7 +3,8 @@ import { colors } from '../../styles/color';
 import { useEffect, useRef, useState } from 'react';
 import { updateTimeAgo } from '../utils/getTimeAgo';
 import useStore from '../store/store';
-import { fetchDELETE } from '../utils/fetchData';
+import { fetchDELETE, MAX_REISSUE_COUNT } from '../utils/fetchData';
+//import { useNavigate } from 'react-router-dom';
 // import { useNavigate } from 'react-router-dom';
 
 const ProfileArea = styled.div`
@@ -97,6 +98,14 @@ const ChatCardBody = styled.div`
   line-height: 120%;
 `;
 
+// const CommentButtonArea = styled.div`
+//   width: 100%;
+//   display: flex;
+//   align-items: center;
+//   justify-content: flex-end;
+//   margin: 0 10 0 10px;
+// `;
+
 const CommentCommentCard = styled.div`
   display: flex;
   flex-direction: row;
@@ -170,9 +179,8 @@ function AlbumChatCommentCard({ comment, spotifyAlbumId, setChange }: AlbumData)
       setTimeAgo(time);
     }
   }, [CreateTime, UpdatedTime]);
-
   const { id } = useStore();
-  //   // 좋아요 설정
+  // 좋아요 설정
   //   const [isChatLiked, setIsChatLiked] = useState(false);
   //   const [likesCount, setLikesCount] = useState<number>(0);
   //   const { id, name } = useStore();
@@ -191,7 +199,7 @@ function AlbumChatCommentCard({ comment, spotifyAlbumId, setChange }: AlbumData)
   //       // 이미 좋아요를 눌렀다면 좋아요 취소
   //       setIsChatLiked(false);
   //       setLikesCount(likesCount - 1);
-  //       //comment.likes = comment.likes.filter((like: any) => like.id !== id);
+  //       comment.likes = comment.likes.filter((like: any) => like.id !== id);
   //     } else {
   //       // 좋아요 누르기
   //       setIsChatLiked(true);
@@ -226,12 +234,16 @@ function AlbumChatCommentCard({ comment, spotifyAlbumId, setChange }: AlbumData)
   // 삭제요청
   const DeleteChatUrl = `/api/album/${spotifyAlbumId}/albumchat/${comment.albumChatCommentId}?sorted=recent`;
   const deleteChat = async (token: string, refreshToken: string) => {
-    fetchDELETE(token, refreshToken, DeleteChatUrl).then(() => {
+    fetchDELETE(token, refreshToken, DeleteChatUrl, MAX_REISSUE_COUNT).then(() => {
       //   GoToAlbumChatPage();
       setChange(true);
       setIsDropdownOpen(false);
     });
   };
+
+  console.log('comment LIKE');
+  console.log(comment.likes);
+  console.log(comment);
 
   return (
     <CommentCommentCard>
@@ -283,7 +295,7 @@ function AlbumChatCommentCard({ comment, spotifyAlbumId, setChange }: AlbumData)
             xmlns="http://www.w3.org/2000/svg"
             width="14"
             height="14"
-            //fill={comment.likes.some(user => user.id === id) ? colors.Button_active : colors.Button_deactive}
+            fill={comment.likes.some(user => user.id === id) ? colors.Button_active : colors.Button_deactive}
             className="bi bi-heart-fill"
             viewBox="0 0 16 16"
             onClick={() => changeChatLike()}

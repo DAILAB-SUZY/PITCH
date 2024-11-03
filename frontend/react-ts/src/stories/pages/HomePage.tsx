@@ -6,7 +6,8 @@ import Nav from '../components/Nav';
 import AlbumPostCard from '../components/AlbumPostCard';
 import PlaylistPreviewCard from '../components/PlaylistPreviewCard';
 import useStore from '../store/store';
-import { fetchGET } from '../utils/fetchData';
+import { fetchGET, MAX_REISSUE_COUNT } from '../utils/fetchData';
+import Loader from '../components/Loader';
 
 const Container = styled.div`
   display: flex;
@@ -138,15 +139,15 @@ interface ChildComment {
   id: number;
   content: string;
   author: CommentAuthor;
-  createTime: number;
-  updateTime: number;
+  createTime: string;
+  updateTime: string;
 }
 
 interface Comment {
   id: number;
   content: string;
-  createdAt: number;
-  updatedAt: number;
+  createAt: string;
+  updateAt: string;
   likes: User[];
   childComments: ChildComment[];
   author: CommentAuthor;
@@ -176,17 +177,13 @@ function HomePage() {
   const [isEnd, setIsEnd] = useState(false);
   const [friendsPlayList, setfriendsPlayList] = useState<FriendsPlayList[]>([]);
 
-  console.log('render-----------------------------');
-  console.log('albumpost: ', albumPosts);
-  console.log('postPage: ', postPage);
-
   // Intersection Observer용 ref
   const observerRef = useRef<HTMLDivElement | null>(null);
 
   const PlaylistUrl = `/api/playlist/following`;
   const AlbumPostUrl = `/api/album/post?page=${postPage}&limit=5`;
   const fetchPlaylist = async (token: string, refreshToken: string) => {
-    fetchGET(token, refreshToken, PlaylistUrl).then(data => {
+    fetchGET(token, refreshToken, PlaylistUrl, MAX_REISSUE_COUNT).then(data => {
       if (data) {
         setfriendsPlayList(prevList => [...prevList, ...data]);
       }
@@ -196,7 +193,7 @@ function HomePage() {
   const fetchAlbumPosts = async (token: string, refreshToken: string) => {
     if (token && !isLoading && !isEnd) {
       setIsLoading(loading => !loading);
-      fetchGET(token, refreshToken, AlbumPostUrl).then(data => {
+      fetchGET(token, refreshToken, AlbumPostUrl, MAX_REISSUE_COUNT).then(data => {
         if (data) {
           console.log('set PostList');
           if (data.length === 0) {
@@ -249,7 +246,7 @@ function HomePage() {
           <Title fontSize="22px" margin="20px 0px 0px 20px">
             Friend's Playlist
           </Title>
-          <PlaylistPreviewCard playlists={friendsPlayList} />
+          {isLoading ? <Loader /> : <PlaylistPreviewCard playlists={friendsPlayList} />}
         </PlaylistArea>
         <AlbumPostArea>
           <AlbumPostTitleArea>
@@ -275,23 +272,16 @@ function HomePage() {
             </svg>
           </AlbumPostTitleArea>
           <RowAlignArea>
-            {albumPosts && albumPosts.length > 0 ? (
-              albumPosts?.map(albumPost => <AlbumPostCard key={albumPost.postDetail.postId} albumPost={albumPost} />)
-            ) : (
-              <Text fontSize="15px" margin="150px 0px 0px 0px" />
-            )}
+            {albumPosts && albumPosts.length > 0 ? albumPosts?.map((albumPost, index) => <AlbumPostCard key={index} albumPost={albumPost} />) : <Text fontSize="15px" margin="150px 0px 0px 0px" />}
           </RowAlignArea>
         </AlbumPostArea>
         {isEnd ? (
           <Text fontSize="16px" margin="20px 0px">
             더이상 게시물이 없습니다
           </Text>
-        ) : (
-          <div />
-        )}
-        {isLoading ? (
+        ) : isLoading ? (
           <Text fontSize="16px" margin="20px 0px">
-            로딩 중...
+            <Loader></Loader>로딩 중...
           </Text>
         ) : (
           <div ref={observerRef} style={{ height: '100px', backgroundColor: 'transparent' }} />

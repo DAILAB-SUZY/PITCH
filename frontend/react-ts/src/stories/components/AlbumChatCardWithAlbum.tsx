@@ -3,6 +3,9 @@ import { colors } from '../../styles/color';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useStore from '../store/store';
+import { fetchPOST, MAX_REISSUE_COUNT } from '../utils/fetchData';
+import { updateTimeAgo } from '../utils/getTimeAgo';
+
 const ChatCardContainer = styled.div`
   width: 350px;
   height: 120px;
@@ -138,8 +141,8 @@ interface User {
 interface AlbumChatComment {
   albumChatCommentId: number;
   content: string;
-  createAt: number; // ISO 날짜 형식
-  updateAt: number; // ISO 날짜 형식
+  createAt: string; // ISO 날짜 형식
+  updateAt: string; // ISO 날짜 형식
   likes: User[];
   comments: AlbumChatComment[]; // 재귀적 구조
   author: User;
@@ -160,57 +163,24 @@ interface commentProps {
 }
 
 const AlbumChatCardWithAlbum = ({ comment }: commentProps) => {
-  ////// Post 시간 계산 //////
-  const CreateTime = comment?.albumChatCommentDetail.createAt;
-  const UpdatedTime = comment?.albumChatCommentDetail.updateAt;
+  // Post 시간 계산
+  const CreateTime = comment.albumChatCommentDetail.createAt;
+  const UpdatedTime = comment.albumChatCommentDetail.updateAt;
   const [timeAgo, setTimeAgo] = useState<string>('');
 
   useEffect(() => {
-    const updateTimeAgo = () => {
-      if (CreateTime) {
-        if (UpdatedTime === null) {
-          const time = formatTimeAgo(CreateTime);
-          console.log('수정안됨');
-          setTimeAgo(time);
-        } else {
-          const time = formatTimeAgo(UpdatedTime);
-          console.log('수정됨');
-          setTimeAgo(time);
-        }
-      }
-    };
-
-    // 처음 마운트될 때 시간 계산
-    updateTimeAgo();
+    if (comment) {
+      const time = updateTimeAgo(CreateTime, UpdatedTime);
+      setTimeAgo(time);
+    }
   }, [CreateTime, UpdatedTime]);
 
-  const formatTimeAgo = (unixTimestamp: number): string => {
-    const currentTime = Math.floor(Date.now() / 1000); // 현재 시간 (초)
-    const timeDifference = currentTime - Math.floor(unixTimestamp); // 경과 시간 (초)
-
-    const minutesAgo = Math.floor(timeDifference / 60); // 경과 시간 (분)
-    const hoursAgo = Math.floor(timeDifference / 3600); // 경과 시간 (시간)
-    const daysAgo = Math.floor(timeDifference / 86400); // 경과 시간 (일)
-
-    if (minutesAgo < 60) {
-      return `${minutesAgo}분 전`;
-    } else if (hoursAgo < 24) {
-      return `${hoursAgo}시간 전`;
-    } else {
-      return `${daysAgo}일 전`;
-    }
-  };
-  /////////////
   const navigate = useNavigate();
   const GoToAlbumPage = (spotifyAlbumId: string) => {
     navigate('/AlbumPage', { state: spotifyAlbumId });
   };
-  // 좋아요 설정
-  const server = 'http://203.255.81.70:8030';
-  const reissueTokenUrl = `${server}/api/auth/reissued`;
-  const [token, setToken] = useState(localStorage.getItem('login-token'));
-  const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
 
+  // 좋아요 설정
   const [isPostLiked, setIsPostLiked] = useState(false);
   const [likesCount, setLikesCount] = useState<number>(0);
   const { id, name } = useStore();
@@ -223,7 +193,7 @@ const AlbumChatCardWithAlbum = ({ comment }: commentProps) => {
     }
   }, [comment]);
 
-  const CommentLikeUrl = server + `/api/album/${comment.albumDetail.spotifyId}/comment/${comment.albumChatCommentDetail.albumChatCommentId}/commentLike`;
+  const CommentLikeUrl = `/api/album/${comment.albumDetail.spotifyId}/comment/${comment.albumChatCommentDetail.albumChatCommentId}/commentLike`;
 
   console.log(`albumid: ${comment.albumDetail.spotifyId}`);
   const changeCommentLike = async () => {
@@ -249,60 +219,13 @@ const AlbumChatCardWithAlbum = ({ comment }: commentProps) => {
   };
 
   const fetchLike = async () => {
-    if (token) {
-      console.log('fetching Like Data');
-      try {
-        const response = await fetch(CommentLikeUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (response.ok) {
-          const data = await response.json();
-          if (data.likes.some((like: any) => like.id === id)) {
-            console.log('like 추가');
-          } else {
-            console.log('like 삭제');
-          }
-        } else if (response.status === 401) {
-          await ReissueToken();
-          fetchLike();
-        } else {
-          console.error('Failed to fetch data:', response.status);
-        }
-      } catch (error) {
-        console.error('like 실패:', error);
-      }
-    }
-  };
-  const ReissueToken = async () => {
-    console.log('reissuing Token');
-    try {
-      const response = await fetch(reissueTokenUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Refresh-Token': `${refreshToken}`,
-        },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('login-token', data.token);
-        localStorage.setItem('login-refreshToken', data.refreshToken);
-        setToken(data.token);
-        setRefreshToken(data.refreshToken);
-      } else {
-        console.error('failed to reissue token', response.status);
-      }
-    } catch (error) {
-      console.error('Refresh Token 재발급 실패', error);
-    }
+    const token = localStorage.getItem('login-token') as string;
+    const refreshToken = localStorage.getItem('login-refreshToken') as string;
+    await fetchPOST(token, refreshToken, CommentLikeUrl, {}, MAX_REISSUE_COUNT);
   };
 
-  const GoToAlbumChatPage = (comment: AlbumChatComment, spotifyAlbumId: string) => {
-    navigate('/AlbumChatPage', { state: { comment, spotifyAlbumId } });
+  const GoToAlbumChatPage = (albumChatId: number, spotifyAlbumId: string) => {
+    navigate('/AlbumChatPage', { state: { albumChatId, spotifyAlbumId } });
   };
 
   return (
@@ -322,7 +245,7 @@ const AlbumChatCardWithAlbum = ({ comment }: commentProps) => {
         </ProfileArea>
         <ChatCardBody
           onClick={() => {
-            GoToAlbumChatPage(comment.albumChatCommentDetail, comment.albumDetail.spotifyId);
+            GoToAlbumChatPage(comment.albumChatCommentDetail.albumChatCommentId, comment.albumDetail.spotifyId);
           }}
         >
           <Text fontSize="15px">{comment.albumChatCommentDetail.content}</Text>

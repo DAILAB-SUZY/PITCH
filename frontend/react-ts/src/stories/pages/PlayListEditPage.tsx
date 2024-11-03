@@ -5,6 +5,7 @@ import PlayListEditCard from '../components/PlayListEditCard';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import SearchTrackModal from '../components/SearchTrackModal';
+import { fetchPOST, fetchGET, MAX_REISSUE_COUNT } from '../utils/fetchData';
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -154,115 +155,28 @@ function PlayListPage() {
 
   const location = useLocation();
   const author: playlistInfo = location.state;
-  const [token, setToken] = useState(localStorage.getItem('login-token'));
-  const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
-  const server = 'http://203.255.81.70:8030';
-  const reissueTokenUrl = `${server}/api/auth/reissued`;
 
-  const PlayListURL = `${server}/api/user/${author.id}/playlist`;
-  const PostPlayListURL = `${server}/api/playlist`;
+  const PlayListURL = `/api/user/${author.id}/playlist`;
+  const PostPlayListURL = `/api/playlist`;
 
-  const fetchPlayList = async () => {
-    if (token) {
-      try {
-        console.log(`fetching Playlist...`);
-        const response = await fetch(PlayListURL, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setPlayListData(data);
-          console.log('fetched PlayList:');
-          console.log(data);
-        } else if (response.status === 401) {
-          ReissueToken();
-          fetchPlayList();
-        } else {
-          console.error('Failed to fetch data:', response.status);
-        }
-      } catch (error) {
-        console.error('Error fetching the JSON file:', error);
-      } finally {
-        console.log('finished');
-      }
-    }
-  };
-  const ReissueToken = async () => {
-    console.log('reissuing Token');
-    try {
-      const response = await fetch(reissueTokenUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Refresh-Token': `${refreshToken}`,
-        },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('login-token', data.token);
-        localStorage.setItem('login-refreshToken', data.refreshToken);
-        setToken(data.token);
-        setRefreshToken(data.refreshToken);
-      } else {
-        console.error('failed to reissue token', response.status);
-      }
-    } catch (error) {
-      console.error('Refresh Token 재발급 실패', error);
-    }
+  const fetchPlayList = async (token: string, refreshToken: string) => {
+    fetchGET(token, refreshToken, PlayListURL, MAX_REISSUE_COUNT).then(data => {
+      setPlayListData(data);
+    });
   };
 
-  const postPlayList = async () => {
-    if (token) {
-      try {
-        console.log(`post Playlist...`);
-        const response = await fetch(PostPlayListURL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            spotifyTrackIds: playListData?.tracks.map(track => track.spotifyId),
-          }),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setPlayListData(data);
-          console.log('posted PlayList:');
-          console.log(data);
-          GoToPlayListPage(author);
-        } else if (response.status === 401) {
-          console.log('reissuing Token');
-          const reissueToken = await fetch(reissueTokenUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Refresh-Token': `${refreshToken}`,
-            },
-          });
-          const data = await reissueToken.json();
-          localStorage.setItem('login-token', data.token);
-          localStorage.setItem('login-refreshToken', data.refreshToken);
-          fetchPlayList();
-        } else {
-          console.error('Failed to fetch data:', response.status);
-        }
-      } catch (error) {
-        console.error('Error fetching the JSON file:', error);
-      } finally {
-        console.log('finished');
-      }
-    }
+  const postPlayList = async (token: string, refreshToken: string) => {
+    const data = {
+      spotifyTrackIds: playListData?.tracks.map(track => track.spotifyId),
+    };
+    fetchPOST(token, refreshToken, PostPlayListURL, data, MAX_REISSUE_COUNT).then(data => {
+      setPlayListData(data);
+      GoToPlayListPage(author);
+    });
   };
 
   useEffect(() => {
-    fetchPlayList();
+    fetchPlayList(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '');
   }, []);
 
   const navigate = useNavigate();
@@ -303,7 +217,7 @@ function PlayListPage() {
           <Btn
             bgcolor={colors.Button_green}
             onClick={() => {
-              postPlayList();
+              postPlayList(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '');
             }}
           >
             <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 4px">

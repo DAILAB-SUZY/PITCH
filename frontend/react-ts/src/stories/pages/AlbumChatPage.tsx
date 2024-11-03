@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import useStore from '../store/store';
 import AlbumChatCommentCard from '../components/AlbumChatCommentCard';
 import { useEffect, useRef, useState } from 'react';
-import { fetchGET, fetchPOST, fetchDELETE } from '../utils/fetchData';
+import { fetchGET, fetchPOST, fetchDELETE, MAX_REISSUE_COUNT } from '../utils/fetchData';
 import { updateTimeAgo } from '../utils/getTimeAgo';
 const Container = styled.div`
   display: flex;
@@ -212,7 +212,7 @@ function AlbumChatPage() {
   }, [change]);
   const AlbumChatUrl = `/api/album/${spotifyAlbumId}/albumchat/${albumChatId}?sorted=recent`;
   const fetchAlbumChat = async (token: string, refreshToken: string) => {
-    fetchGET(token, refreshToken, AlbumChatUrl).then(data => {
+    fetchGET(token, refreshToken, AlbumChatUrl, MAX_REISSUE_COUNT).then(data => {
       console.log(data);
       setAlbumChatData(data);
       setCreateTime(data.createAt);
@@ -270,7 +270,7 @@ function AlbumChatPage() {
   };
 
   const fetchLike = async (token: string, refresuToken: string) => {
-    fetchPOST(token, refresuToken, ChatLikeUrl, {});
+    fetchPOST(token, refresuToken, ChatLikeUrl, {}, MAX_REISSUE_COUNT);
   };
 
   // 수정/삭제 버튼
@@ -282,10 +282,14 @@ function AlbumChatPage() {
   };
 
   // 삭제요청
+  const GoToAlbumPage = (spotifyAlbumId: string) => {
+    navigate('/AlbumPage', { state: spotifyAlbumId });
+  };
   const DeleteChatUrl = `/api/album/${spotifyAlbumId}/albumchat/${albumChatId}?sorted=recent`;
   const deleteChat = async (token: string, refreshToken: string) => {
-    await fetchDELETE(token, refreshToken, DeleteChatUrl);
+    await fetchDELETE(token, refreshToken, DeleteChatUrl, MAX_REISSUE_COUNT);
     setIsDropdownOpen(false);
+    GoToAlbumPage(spotifyAlbumId);
     // goto album page
   };
 

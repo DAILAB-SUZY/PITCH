@@ -6,7 +6,8 @@ import AlbumPagePostTab from '../components/AlbumPagePostTab';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import useStore from '../store/store';
-import { fetchGET, fetchPOST } from '../utils/fetchData';
+import { fetchGET, fetchPOST, MAX_REISSUE_COUNT } from '../utils/fetchData';
+import ScoreEditAlbumPage from '../components/ScoreEditAlbumPage';
 
 const Container = styled.div`
   display: flex;
@@ -251,6 +252,7 @@ interface AlbumDetail {
   genre: string;
   spotifyId: string;
   likes: User[]; // 앨범을 좋아요한 사용자 리스트
+  score: number;
 }
 
 function AlbumPage() {
@@ -258,7 +260,6 @@ function AlbumPage() {
   const spotifyAlbumId = location.state;
 
   const [albumDetail, setAlbumDetail] = useState<AlbumDetail>();
-
   const [tabState, setTabState] = useState('chat');
 
   useEffect(() => {
@@ -267,8 +268,9 @@ function AlbumPage() {
 
   let AlbumPageUrl = `/api/album/${spotifyAlbumId}`;
   const fetchAlbumDetail = async (token: string, refreshToken: string) => {
-    fetchGET(token, refreshToken, AlbumPageUrl).then(data => {
+    fetchGET(token, refreshToken, AlbumPageUrl, MAX_REISSUE_COUNT).then(data => {
       setAlbumDetail(data);
+      setScore(data.score);
     });
   };
 
@@ -308,7 +310,7 @@ function AlbumPage() {
   };
 
   const fetchLike = async (token: string, refresuToken: string) => {
-    fetchPOST(token, refresuToken, AlbumLikeUrl, {});
+    fetchPOST(token, refresuToken, AlbumLikeUrl, {}, MAX_REISSUE_COUNT);
   };
 
   const navigate = useNavigate();
@@ -331,6 +333,10 @@ function AlbumPage() {
   const GoToAlbumPostEditPage = () => {
     navigate('/AlbumPostEditPage', { state: albumPostPreset });
   };
+
+  // 별점
+  const [stars, setStars] = useState<string[]>();
+  const [score, setScore] = useState<number>(albumDetail?.score || 0);
 
   return (
     <Container>
@@ -359,9 +365,10 @@ function AlbumPage() {
               <Text fontSize="20px" margin="0px 0px 5px 0px" fontFamily="Bd" opacity={0.6} color={colors.Font_black}>
                 {albumDetail?.artistName}
               </Text>
-              <Text fontSize="12px" margin="0px" fontFamily="Bd" opacity={0.5} color={colors.Font_black}>
+              {/* <Text fontSize="12px" margin="0px" fontFamily="Bd" opacity={0.5} color={colors.Font_black}>
                 {albumDetail?.genre}
-              </Text>
+              </Text> */}
+              <ScoreEditAlbumPage stars={stars || []} score={score} setScore={setScore} setStars={setStars} albumId={albumDetail?.albumId || 0}></ScoreEditAlbumPage>
             </AlbumTitleArea>
             <LikeNumberArea>
               <svg

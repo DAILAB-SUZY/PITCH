@@ -6,7 +6,7 @@ import MostLikedCard from '../components/MostLikedCard';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import Loader from '../components/Loader';
-import { fetchGET } from '../utils/fetchData';
+import { fetchGET, MAX_REISSUE_COUNT } from '../utils/fetchData';
 
 const Container = styled.div`
   display: flex;
@@ -142,7 +142,7 @@ interface AlbumDetail {
   title: string;
   albumCover: string;
   artistName: string;
-  genre: string;
+  genre: string | null;
   spotifyId: string;
   likes: AlbumLike[];
 }
@@ -208,22 +208,23 @@ function AlbumHomePage() {
 
   const MostCommentedDataUrl = `/api/album/albumchat/chat`;
   const fetchMostCommentedData = async (token: string, refreshToken: string) => {
-    fetchGET(token, refreshToken, MostCommentedDataUrl).then(data => {
+    fetchGET(token, refreshToken, MostCommentedDataUrl, MAX_REISSUE_COUNT).then(data => {
       setMostCommentedAlbumList(data);
     });
   };
 
   const MostLikedDataUrl = `/api/album/albumchat/like?page=${pageNumber}&limit=6`;
   const fetchMostLikedData = async (token: string, refreshToken: string) => {
-    if (!isEnd) {
-      fetchGET(token, refreshToken, MostLikedDataUrl).then(data => {
+    if (!isEnd && !isLoading) {
+      setIsLoading(true);
+      await fetchGET(token, refreshToken, MostLikedDataUrl, MAX_REISSUE_COUNT).then(data => {
         if (data.length === 0) {
           console.log('list End');
           setIsEnd(true);
         }
-
         setMostLikedAlbumList(prevList => [...prevList, ...data]);
         setPageNumber(prevPage => prevPage + 1); // 페이지 증가
+        setIsLoading(false);
       });
     }
   };
@@ -238,7 +239,7 @@ function AlbumHomePage() {
   };
   // 검색 결과 가져오기
   const fetchData = async (token: string, refreshToken: string) => {
-    await fetchGET(token, refreshToken, AlbumSearchUrl).then(data => {
+    await fetchGET(token, refreshToken, AlbumSearchUrl, MAX_REISSUE_COUNT).then(data => {
       setSearchResultTrack(data);
       setIsSearchMode(true);
     });
@@ -253,7 +254,7 @@ function AlbumHomePage() {
     const observer = new IntersectionObserver(entries => {
       // observerRef가 화면에 보이면 fetch 호출
       if (!isLoading && entries[0].isIntersecting) {
-        fetchMostLikedData(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '');
+        fetchMostLikedData(localStorage.getItem('login-token') as string, localStorage.getItem('login-refreshToken') as string);
       }
     });
 

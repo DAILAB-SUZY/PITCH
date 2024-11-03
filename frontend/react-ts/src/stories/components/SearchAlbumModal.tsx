@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { colors } from '../../styles/color';
 import { useEffect, useState } from 'react';
 import Loader from './Loader';
+import { fetchGET, MAX_REISSUE_COUNT } from '../utils/fetchData';
 
 const Container = styled.div`
   /* position: absolute;
@@ -210,51 +211,21 @@ function SearchModal({
   const [searchResultAlbum, setSearchResultAlbum] = useState<AlbumSearchResult[]>();
   const [isLoading, setIsLoading] = useState(false);
 
-  const server = 'http://203.255.81.70:8030';
+  let searchAlbumUrl = `/api/searchSpotify/album/${searchKeyword}`;
+  let ArtistAlbumUrl = `/api/searchSpotify/artist/${favoriteArtistSpotifyIds?.spotifyArtistId}/album`;
+  let searchArtistAlbumUrl = `/api/searchSpotify/artist/${favoriteArtistSpotifyIds?.spotifyArtistId}/album`;
 
-  const reissueTokenUrl = `${server}/api/auth/reissued`;
-  const [token, setToken] = useState(localStorage.getItem('login-token'));
-  const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
-  const ReissueToken = async () => {
-    console.log('reissuing Token');
-    try {
-      const response = await fetch(reissueTokenUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Refresh-Token': `${refreshToken}`,
-        },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('login-token', data.token);
-        localStorage.setItem('login-refreshToken', data.refreshToken);
-        setToken(data.token);
-        setRefreshToken(data.refreshToken);
-      } else {
-        console.error('failed to reissue token', response.status);
-      }
-    } catch (error) {
-      console.error('Refresh Token 재발급 실패', error);
-    }
-  };
-
-  let searchAlbumUrl = `${server}/api/searchSpotify/album/${searchKeyword}`;
-  let ArtistAlbumUrl = `${server}/api/searchSpotify/artist/${favoriteArtistSpotifyIds?.spotifyArtistId}/album`;
-  let searchArtistAlbumUrl = `${server}/api/searchSpotify/artist/${favoriteArtistSpotifyIds?.spotifyArtistId}/album`;
-
-  const fetchSearch = async () => {
-    if (token && !isLoading) {
+  const fetchSearch = async (searchingMode: string) => {
+    if (!isLoading) {
       setIsLoading(true);
       console.log('검색시작');
-      if (searchingTopic === 'Album') {
+      if (searchingMode === 'Album') {
         console.log('검색중');
         Search(searchAlbumUrl);
       }
-      if (searchingTopic === 'Artist-album') {
+      if (searchingMode === 'Artist-album') {
         console.log('검색중');
         Search(searchArtistAlbumUrl);
-        //SearchArtistAlbum(searchKeyword);
       }
     }
   };
@@ -264,32 +235,13 @@ function SearchModal({
   // }
 
   const Search = async (URL: string) => {
-    console.log('searching...');
-    try {
-      console.log(`searching Album : ${searchKeyword}...`);
-      const response = await fetch(URL, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setSearchResultAlbum(data);
-        console.log(data);
-      } else if (response.status === 401) {
-        ReissueToken();
-        fetchSearch();
-      } else {
-        console.error('Failed to fetch data:', response.status);
-      }
-    } catch (error) {
-      console.error('Error fetching the JSON file:', error);
-    } finally {
+    const token = localStorage.getItem('login-token') as string;
+    const refreshToken = localStorage.getItem('login-refreshToken') as string;
+    fetchGET(token, refreshToken, URL, MAX_REISSUE_COUNT).then(data => {
+      if (searchingTopic === 'Album') setSearchResultAlbum(data);
+      else setSearchResultAlbum(data.filter((album: AlbumSearchResult) => album.albumArtist.artistId === favoriteArtist?.spotifyArtistId));
       setIsLoading(false);
-      console.log('finished');
-    }
+    });
   };
 
   useEffect(() => {
@@ -304,7 +256,7 @@ function SearchModal({
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault(); // 폼 제출 동작 방지
     // 검색 결과 초기화
-    fetchSearch(); // 검색 실행
+    fetchSearch('Album'); // 검색 실행
   };
 
   const addBestAlbum = (album: AlbumSearchResult) => {

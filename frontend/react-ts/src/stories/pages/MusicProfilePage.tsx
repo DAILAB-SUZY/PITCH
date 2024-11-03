@@ -9,7 +9,8 @@ import FavoriteArtistCard from '../components/FavoriteArtistCard';
 import AlbumPostCard from '../components/AlbumPostCard';
 import AlbumChatCardWithAlbum from '../components/AlbumChatCardWithAlbum';
 import useStore from '../store/store';
-import { fetchGET } from '../utils/fetchData';
+import { fetchGET, fetchPOST, MAX_REISSUE_COUNT } from '../utils/fetchData';
+import RatedAlbumCard from '../components/RatedAlbumCard';
 
 const Container = styled.div`
   display: flex;
@@ -223,6 +224,22 @@ const FavoriteArtistArea = styled.div`
   overflow: hidden;
 `;
 
+const TwoColumnArea = styled.div`
+  width: 360px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  align-items: center;
+`;
+const RatedAlbumArea = styled.div`
+  display: flex;
+  width: 100vw;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+`;
+
 const PlaylistCardArea = styled.div`
   display: flex;
   flex-direction: column;
@@ -317,6 +334,7 @@ interface Album {
   genre: string;
   spotifyId: string;
   likes: User[];
+  score: number;
 }
 
 interface PostAuthor extends User {}
@@ -336,15 +354,15 @@ interface ChildComment {
   id: number;
   content: string;
   author: CommentAuthor;
-  createTime: number;
-  updateTime: number;
+  createTime: string;
+  updateTime: string;
 }
 
 interface Comment {
   id: number;
   content: string;
-  createdAt: number;
-  updatedAt: number;
+  createAt: string;
+  updateAt: string;
   likes: User[];
   childComments: ChildComment[];
   author: CommentAuthor;
@@ -370,8 +388,8 @@ interface User {
 interface AlbumChatComment {
   albumChatCommentId: number;
   content: string;
-  createAt: number; // ISO 날짜 형식
-  updateAt: number; // ISO 날짜 형식
+  createAt: string; // ISO 날짜 형식
+  updateAt: string; // ISO 날짜 형식
   likes: User[];
   comments: AlbumChatComment[]; // 재귀적 구조
   author: User;
@@ -414,9 +432,12 @@ function MusicProfilePage() {
   const [tabBtn, setTabBtn] = useState(1);
   const [musicProfileData, setMusicProfileData] = useState<MusicProfileData>();
   const [activityData, setActivityData] = useState<ActivityData>([]);
+  const [RatedAlbumList, setRatedAlbumList] = useState<Album[]>([]);
   const navigate = useNavigate();
   const location = useLocation();
   const profileId = location.state;
+
+  // 페이지 이동 함수
   const GoToEditPage = (musicProfileData: MusicProfileData) => {
     navigate('/MusicProfileEditPage', { state: musicProfileData.userDetail.id });
   };
@@ -428,6 +449,9 @@ function MusicProfilePage() {
       },
     });
   };
+  // const GoToAlbumPage = (spotifyAlbumId: string) => {
+  //   navigate('/AlbumPage', { state: spotifyAlbumId });
+  // };
 
   const [isFollowed, setIsFollowed] = useState<boolean>();
 
@@ -439,7 +463,7 @@ function MusicProfilePage() {
   let followUrl = `/api/user/follow/${profileId}`;
 
   const fetchData = async (token: string, refreshToken: string, URL: string) => {
-    fetchGET(token, refreshToken, URL).then(data => {
+    fetchGET(token, refreshToken, URL, MAX_REISSUE_COUNT).then(data => {
       if (data) {
         setMusicProfileData(data);
         // 내가 현재 musicprofile 사용자 follow 되어 있는지 판단
@@ -453,6 +477,7 @@ function MusicProfilePage() {
         }
       }
     });
+    fetchStaredAlbum();
   };
 
   useEffect(() => {
@@ -460,34 +485,55 @@ function MusicProfilePage() {
   }, []);
 
   const fetchActivityData = async (token: string, refreshToken: string) => {
-    fetchGET(token, refreshToken, activityUrl).then(data => {
+    fetchGET(token, refreshToken, activityUrl, MAX_REISSUE_COUNT).then(data => {
       if (data) {
         const mergedData = [...data.albumPostList.map((post: any) => ({ ...post, type: 'post' })), ...data.albumCommentList.map((chat: any) => ({ ...chat, type: 'chat' as const }))];
         // createAt 기준으로 내림차순 정렬
         mergedData.sort((a, b) => {
-          let stA;
-          let stB;
+          let stA: Date = new Date(0);
+          let stB: Date = new Date(0);
+
           if (a.type === 'post') {
-            stA = a.postDetail.updateAt === null ? a.postDetail.createAt : a.postDetail.updateAt;
+            const dateStr = a.postDetail.updateAt === null ? a.postDetail.createAt : a.postDetail.updateAt;
+            stA = dateStr ? new Date(dateStr) : new Date(0);
           } else if (a.type === 'chat') {
-            stA = a.albumChatCommentDetail.updateAt === null ? a.albumChatCommentDetail.createAt : a.albumChatCommentDetail.updateAt;
+            const dateStr = a.albumChatCommentDetail.updateAt === null ? a.albumChatCommentDetail.createAt : a.albumChatCommentDetail.updateAt;
+            stA = dateStr ? new Date(dateStr) : new Date(0);
           }
+
           if (b.type === 'post') {
-            stB = b.postDetail.updateAt === null ? b.postDetail.createAt : b.postDetail.updateAt;
+            const dateStr = b.postDetail.updateAt === null ? b.postDetail.createAt : b.postDetail.updateAt;
+            stB = dateStr ? new Date(dateStr) : new Date(0);
           } else if (b.type === 'chat') {
-            stB = b.albumChatCommentDetail.updateAt === null ? b.albumChatCommentDetail.createAt : b.albumChatCommentDetail.updateAt;
+            const dateStr = b.albumChatCommentDetail.updateAt === null ? b.albumChatCommentDetail.createAt : b.albumChatCommentDetail.updateAt;
+            stB = dateStr ? new Date(dateStr) : new Date(0);
           }
-          return stB - stA;
+
+          return stB.getTime() - stA.getTime();
         });
         setActivityData(mergedData);
+        console.log('merged');
+        console.log(mergedData);
       }
     });
   };
 
   const fetchFollow = async (token: string, refreshToken: string) => {
-    fetchGET(token, refreshToken, followUrl).then(data => {
+    fetchPOST(token, refreshToken, followUrl, {}, MAX_REISSUE_COUNT).then(data => {
       if (data) {
         setIsFollowed(!isFollowed);
+      }
+    });
+  };
+
+  const fetchStaredAlbum = async () => {
+    const token = localStorage.getItem('login-token') || '';
+    const refreshToken = localStorage.getItem('login-refreshToken') || '';
+    const StaredAlbumUrl = `/api/user/${id}/score`;
+    fetchGET(token, refreshToken, StaredAlbumUrl, MAX_REISSUE_COUNT).then(data => {
+      if (data) {
+        const sortedData = data.sort((a: Album, b: Album) => b.score - a.score);
+        setRatedAlbumList(sortedData);
       }
     });
   };
@@ -616,6 +662,20 @@ function MusicProfilePage() {
               <Title>Favorite Artist</Title>
               {musicProfileData?.favoriteArtist && <FavoriteArtistCard FavoriteArtistData={musicProfileData.favoriteArtist}></FavoriteArtistCard>}
             </FavoriteArtistArea>
+            <RatedAlbumArea>
+              <Title>Rated Album</Title>
+              {RatedAlbumList.length !== 0 ? (
+                <TwoColumnArea>
+                  {RatedAlbumList.map(Album => (
+                    <RatedAlbumCard album={Album}></RatedAlbumCard>
+                  ))}
+                </TwoColumnArea>
+              ) : (
+                <Text fontFamily="Rg" fontSize="15px" margin="5px">
+                  별점을 매긴 앨범이 없습니다.
+                </Text>
+              )}
+            </RatedAlbumArea>
           </>
         ) : (
           <>
