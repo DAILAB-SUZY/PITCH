@@ -9,7 +9,7 @@ import FavoriteArtistCard from '../components/FavoriteArtistCard';
 import AlbumPostCard from '../components/AlbumPostCard';
 import AlbumChatCardWithAlbum from '../components/AlbumChatCardWithAlbum';
 import useStore from '../store/store';
-import { fetchGET, MAX_REISSUE_COUNT } from '../utils/fetchData';
+import { fetchGET, fetchPOST, MAX_REISSUE_COUNT } from '../utils/fetchData';
 import RatedAlbumCard from '../components/RatedAlbumCard';
 
 const Container = styled.div`
@@ -519,7 +519,7 @@ function MusicProfilePage() {
   };
 
   const fetchFollow = async (token: string, refreshToken: string) => {
-    fetchGET(token, refreshToken, followUrl, MAX_REISSUE_COUNT).then(data => {
+    fetchPOST(token, refreshToken, followUrl, {}, MAX_REISSUE_COUNT).then(data => {
       if (data) {
         setIsFollowed(!isFollowed);
       }
