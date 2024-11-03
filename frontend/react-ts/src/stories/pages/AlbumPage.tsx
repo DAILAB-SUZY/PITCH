@@ -59,7 +59,7 @@ const ImageArea = styled.div`
   left: 0px;
   overflow: hidden;
   width: 100%;
-  height: 100%;
+  height: 99%;
   object-fit: cover;
   z-index: 1;
   box-sizing: border-box;

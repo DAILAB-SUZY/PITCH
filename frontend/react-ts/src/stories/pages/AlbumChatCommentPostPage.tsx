@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { colors } from '../../styles/color';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
-import { fetchGET, fetchPOST } from '../utils/fetchData';
+import { fetchGET, fetchPOST, MAX_REISSUE_COUNT } from '../utils/fetchData';
 import { updateTimeAgo } from '../utils/getTimeAgo';
 const Container = styled.div`
   display: flex;
@@ -198,7 +198,7 @@ function AlbumChatCommentPostPage() {
   }, []);
   const AlbumChatUrl = `/api/album/${spotifyAlbumId}/albumchat/${albumChatId}?sorted=recent`;
   const fetchAlbumChat = async (token: string, refreshToken: string) => {
-    fetchGET(token, refreshToken, AlbumChatUrl).then(data => {
+    fetchGET(token, refreshToken, AlbumChatUrl, MAX_REISSUE_COUNT).then(data => {
       console.log(data);
       setAlbumChatData(data);
       setCreateTime(data.createAt);
@@ -237,7 +237,7 @@ function AlbumChatCommentPostPage() {
       sorted: 'recent',
       parentAlbumChatCommentId: albumChatId,
     };
-    await fetchPOST(token, refreshToken, AlbumChatPostUrl, data);
+    await fetchPOST(token, refreshToken, AlbumChatPostUrl, data, MAX_REISSUE_COUNT);
     GoToAlbumChatPage();
   };
 
