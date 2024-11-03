@@ -1,6 +1,6 @@
 // import { useNavigate } from 'react-router-dom';
-const server = 'http://203.255.81.70:8030';
-// const server = 'http://pitches.social';
+// const server = 'http://203.255.81.70:8030';
+const server = 'https://pitches.social';
 const reissueTokenUrl = `${server}/api/auth/reissued`;
 
 export const MAX_REISSUE_COUNT = 3;
