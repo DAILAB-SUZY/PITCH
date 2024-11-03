@@ -232,6 +232,10 @@ public class User implements MyUserDetails {
     return getAlbumScore().stream()
         .filter(albumScore -> albumScore.getAlbum().equals(album))
         .findFirst()
-        .orElse(AlbumScore.NONE_SCORE);
+        .orElseGet(() -> {
+          AlbumScore albumscore = AlbumScore.NONE_SCORE;
+          albumscore.setAlbum(album);
+          return albumscore;
+        });
   }
 }
