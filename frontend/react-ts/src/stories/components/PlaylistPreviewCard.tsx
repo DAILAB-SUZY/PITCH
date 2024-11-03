@@ -165,7 +165,7 @@ const PlaylistPreviewCard = ({ playlists }: PlaylistProps) => {
                       src={cover}
                       alt={`Album Cover ${index + 1}`}
                       // ref={el => (albumCoverRefs.current[index] = el)}
-                      ref={el => (coverIndex === 0 ? (albumCoverRefs.current[index] = el) : null)}
+                      ref={el => (coverIndex === playlist.albumCover.slice(0, 3).length - 1 ? (albumCoverRefs.current[index] = el) : null)}
                       crossOrigin="anonymous"
                       onLoad={() => handleImageLoad(index)} // 이미지 로드 상태 추적
                     />

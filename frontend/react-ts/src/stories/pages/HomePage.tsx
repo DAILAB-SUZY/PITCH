@@ -7,6 +7,7 @@ import AlbumPostCard from '../components/AlbumPostCard';
 import PlaylistPreviewCard from '../components/PlaylistPreviewCard';
 import useStore from '../store/store';
 import { fetchGET, MAX_REISSUE_COUNT } from '../utils/fetchData';
+import Loader from '../components/Loader';
 
 const Container = styled.div`
   display: flex;
@@ -245,7 +246,7 @@ function HomePage() {
           <Title fontSize="22px" margin="20px 0px 0px 20px">
             Friend's Playlist
           </Title>
-          <PlaylistPreviewCard playlists={friendsPlayList} />
+          {isLoading ? <Loader /> : <PlaylistPreviewCard playlists={friendsPlayList} />}
         </PlaylistArea>
         <AlbumPostArea>
           <AlbumPostTitleArea>
@@ -271,23 +272,16 @@ function HomePage() {
             </svg>
           </AlbumPostTitleArea>
           <RowAlignArea>
-            {albumPosts && albumPosts.length > 0 ? (
-              albumPosts?.map(albumPost => <AlbumPostCard key={albumPost.postDetail.postId} albumPost={albumPost} />)
-            ) : (
-              <Text fontSize="15px" margin="150px 0px 0px 0px" />
-            )}
+            {albumPosts && albumPosts.length > 0 ? albumPosts?.map((albumPost, index) => <AlbumPostCard key={index} albumPost={albumPost} />) : <Text fontSize="15px" margin="150px 0px 0px 0px" />}
           </RowAlignArea>
         </AlbumPostArea>
         {isEnd ? (
           <Text fontSize="16px" margin="20px 0px">
             더이상 게시물이 없습니다
           </Text>
-        ) : (
-          <div />
-        )}
-        {isLoading ? (
+        ) : isLoading ? (
           <Text fontSize="16px" margin="20px 0px">
-            로딩 중...
+            <Loader></Loader>로딩 중...
           </Text>
         ) : (
           <div ref={observerRef} style={{ height: '100px', backgroundColor: 'transparent' }} />
