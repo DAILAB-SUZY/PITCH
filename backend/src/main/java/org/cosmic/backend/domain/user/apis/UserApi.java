@@ -16,6 +16,7 @@ import org.cosmic.backend.globals.annotations.ApiCommonResponses;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -70,5 +71,11 @@ public class UserApi {
   @Operation(summary = "로그인 유저 정보 API", description = "엑세스 토큰에 담겨 있는 유저의 정보를 조회합니다.")
   public ResponseEntity<UserDetail> userInfo(@AuthenticationPrincipal Long userId) {
     return ResponseEntity.ok(userService.getUserDetail(userId));
+  }
+
+  @PostMapping("/user/passwordchange/{authCode}")
+  @Operation(summary = "비밀번호 변경 제출 API", description = "유저의 비밀번호를 변경합니다.")
+  public ResponseEntity<String> changePassword(@PathVariable String authCode) {
+    return ResponseEntity.ok("");
   }
 }
