@@ -34,7 +34,8 @@ public class YoutubeApi {
       @Parameter(description = "플레이리스트 내용 및 accesstoken발급")
       @RequestBody PlaylistInforDetail playlistInforDetail,
       @AuthenticationPrincipal Long userId) {
-    String playlistId = youtubeService.createPlaylists(userId, playlistInforDetail.getCode());
+    String playlistId = youtubeService.createPlaylists(userId,
+        playlistInforDetail.getYoutubeaccesstoken());
     HttpHeaders headers = new HttpHeaders();
     headers.setLocation(
         URI.create("https://www.youtube.com/playlist?list=" + playlistId)); // 리디렉트할 URL 설정
