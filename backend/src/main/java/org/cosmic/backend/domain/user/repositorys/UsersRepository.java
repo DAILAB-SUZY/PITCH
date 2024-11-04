@@ -13,6 +13,8 @@ public interface UsersRepository extends JpaRepository<User, Long> {
 
   Optional<User> findByUserId(Long userId);//key로 찾기
 
-  @Query("SELECT u FROM User u WHERE u.username LIKE CONCAT('%', :name, '%') ORDER BY u.userId" )
+  @Query("SELECT u FROM User u WHERE u.username LIKE CONCAT('%', :name, '%') ORDER BY u.userId")
   Optional<List<User>> findByUsername(@Param("name") String name);
+
+  boolean existsByEmail_Email(String email);
 }
