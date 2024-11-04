@@ -116,6 +116,13 @@ const Text = styled.div<{
   text-overflow: ellipsis;
 `;
 
+const Line = styled.div`
+  width: 360px;
+  height: 1px;
+  opacity: 0.5;
+  background-color: ${colors.Button_deactive};
+`;
+
 const PostArea = styled.div`
   display: flex;
   width: 100vw;
@@ -609,12 +616,12 @@ function AlbumPostPage() {
               </svg>
             </RowAlignArea>
             <CommentCardArea>
-              {albumPost.comments.map(
-                (comment: any, index: number) => (
-                  console.log(albumPost.postDetail.postId),
-                  (<AlbumPostCommentCard key={index} comment={comment} postId={albumPost.postDetail.postId} fetchAlbumPost={fetchAlbumPost}></AlbumPostCommentCard>)
-                ),
-              )}
+              {albumPost.comments.map((comment: any, index: number) => (
+                <>
+                  <Line></Line>
+                  <AlbumPostCommentCard key={index} comment={comment} postId={albumPost.postDetail.postId} fetchAlbumPost={fetchAlbumPost}></AlbumPostCommentCard>
+                </>
+              ))}
             </CommentCardArea>
           </ChatArea>
         </>

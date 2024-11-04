@@ -9,12 +9,12 @@ const ChatCardContainer = styled.div`
   height: auto;
   padding: 10px;
   margin-bottom: 20px;
-  background-color: ${colors.BG_grey};
+  // background-color: ${colors.BG_grey};
   border-radius: 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+  //box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
 `;
 
 const ChatCardBody = styled.div`
@@ -170,51 +170,7 @@ const AlbumPostCommentCard = ({ comment, postId, fetchAlbumPost }: commentProps)
   console.log('comment info');
   console.log(comment);
   console.log(postId);
-  /////////////
 
-  // 삭제요청
-  // const deleteComment = async () => {
-  //   const CommenrDeleteUrl = `/api/album/post/${}/comment/${comment.id}`;
-  //   if (token) {
-  //     if (albumPost) {
-  //       console.log(`delete id: ${albumPost.postDetail.postId}Post...`);
-  //     }
-  //     try {
-  //       const response = await fetch(PostDeleteUrl, {
-  //         method: "DELETE",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       });
-  //       if (response.ok) {
-  //         const data = await response.json();
-  //         setAlbumPost(data);
-  //         console.log("deleted");
-  //         GoToHomePage();
-  //       } else if (response.status === 401) {
-  //         console.log("reissuing Token");
-  //         const reissueToken = await fetch(reissueTokenUrl, {
-  //           method: "POST",
-  //           headers: {
-  //             "Content-Type": "application/json",
-  //             "Refresh-Token": `${refreshToken}`,
-  //           },
-  //         });
-  //         const data = await reissueToken.json();
-  //         localStorage.setItem("login-token", data.token);
-  //         setToken(data.token);
-  //         localStorage.setItem("login-refreshToken", data.refreshToken);
-  //         setRefreshToken(data.refreshToken);
-  //         deletePost();
-  //       } else {
-  //         console.error("Failed to delete data:", response.status);
-  //       }
-  //     } catch (error) {
-  //       console.error("delete 실패:", error);
-  //     }
-  //   }
-  // };
   const { name, id } = useStore();
 
   //Post Comment 좋아요 상태 확인

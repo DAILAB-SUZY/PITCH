@@ -585,7 +585,7 @@ function MusicProfilePage() {
               </Text>
             </ProfileNameArea>
             <MusicDnaArea>
-              {musicProfileData ? (
+              {musicProfileData && musicProfileData?.userDetail.dnas.length !== 0 ? (
                 musicProfileData?.userDetail.dnas.map(dna => (
                   <Tag key={dna.dnaKey} color={colors.Font_black}>
                     #{dna.dnaName}
@@ -593,10 +593,13 @@ function MusicProfilePage() {
                 ))
               ) : (
                 <>
-                  <Tag color={colors.BG_grey}>dnadna</Tag>
-                  <Tag color={colors.BG_grey}>dnadnadna</Tag>
-                  <Tag color={colors.BG_grey}>dnadnadna</Tag>
-                  <Tag color={colors.BG_grey}>dnadna</Tag>
+                  <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 7px 4px">
+                    아직
+                  </Text>
+                  <Tag color={colors.Font_black}>#MusicDNA</Tag>
+                  <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 4px">
+                    를 설정하지 않았습니다.
+                  </Text>
                 </>
               )}
             </MusicDnaArea>
