@@ -124,12 +124,6 @@ const ButtonArea = styled.div`
   margin: 0 10 0 10px;
 `;
 
-const Line = styled.div`
-  width: 95vw;
-  height: 1px;
-  background-color: ${colors.Button_deactive};
-`;
-
 interface commentProps {
   comment: {
     id: number;
