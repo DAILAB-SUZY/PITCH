@@ -1,13 +1,17 @@
 import styled from 'styled-components';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, ChangeEvent } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { colors } from '../../styles/color';
-import Nav from '../components/Nav';
+
 import AlbumGridEdit from '../components/AlbumGridEdit';
 import FavoriteArtistEditCard from '../components/FavoriteArtistEditCard';
 import SearchAlbumModal from '../components/SearchAlbumModal';
 import SearchArtistModal from '../components/SearchArtistModal';
 import SearchTrackModal from '../components/SearchTrackModal';
+import { fetchGET, fetchPOST, fetchPOSTFile, MAX_REISSUE_COUNT } from '../utils/fetchData';
+
+import Header from '../components/Header';
+// import heic2any from 'heic2any';
 
 const Container = styled.div`
   display: flex;
@@ -22,15 +26,8 @@ const Container = styled.div`
   color: black;
 `;
 
-const Header = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-`;
-
 const Body = styled.div`
-  margin-top: 110px;
+  margin-top: 50px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -69,6 +66,19 @@ const PageTitle = styled.div`
   gap: 2px;
 `;
 
+const Label = styled.label`
+  font-weight: bold;
+  font-size: 15px;
+  border-radius: 15px;
+  color: ${colors.Font_black};
+  background-color: ${colors.BG_grey};
+  padding: 5px 10px 5px 10px;
+`;
+
+const Profile = styled.input`
+  display: none;
+`;
+
 const Text = styled.div<{
   fontFamily: string;
   fontSize: string;
@@ -84,6 +94,39 @@ const MusicDnaArea = styled.div`
   width: 100vw;
   flex-direction: column;
   padding: 20px;
+`;
+
+const ProfilePhotoArea = styled.div`
+  display: flex;
+  width: 100vw;
+  height: 150px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0px 20px 10px 20px;
+`;
+
+const PhotoEditArea = styled.div`
+  display: flex;
+  width: 100vw;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+`;
+
+const Circle = styled.div<{ bgcolor?: string }>`
+  width: 80px;
+  height: 80px;
+  border-radius: 100%;
+  overflow: hidden;
+  margin-bottom: 10px;
+  background-color: ${props => props.bgcolor};
+`;
+const ProfileImageCircle = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 비율 유지하며 꽉 채움 */
+  object-position: center; /* 이미지 가운데 정렬 */
 `;
 
 const ProfileTagArea = styled.div`
@@ -261,12 +304,7 @@ function MusicProfileEditPage() {
   const location = useLocation();
   const userId = location.state;
 
-  const server = 'http://203.255.81.70:8030';
-  const [token, setToken] = useState(localStorage.getItem('login-token'));
-  const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
-
-  const reissueTokenUrl = `${server}/api/auth/reissued`;
-  let musiProfileUrl = `${server}/api/user/${userId}/musicProfile`;
+  let musiProfileUrl = `/api/user/${userId}/musicProfile`;
 
   const navigate = useNavigate();
   const GoToMusicProfilePage = () => {
@@ -281,88 +319,42 @@ function MusicProfileEditPage() {
   const [favoriteArtistSpotifyIds, setFavoriteArtistSpotifyIds] = useState<FavoriteArtistSpotifyIds>();
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [searchingTopic, setSearchingTopic] = useState('');
+  const [profile, setProfile] = useState('');
 
   useEffect(() => {
-    fetchData();
-    if (musicProfileData) {
-      setMusicProfileData(musicProfileData);
-      setMyMusicDna(musicProfileData.userDetail.dnas);
-      setBestAlbum(musicProfileData.bestAlbum);
-      fetchMusicDNA();
-    }
+    fetchData(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '');
+    // if (musicProfileData) {
+    //   setMusicProfileData(musicProfileData);
+    //   setMyMusicDna(musicProfileData.userDetail.dnas);
+    //   setBestAlbum(musicProfileData.bestAlbum);
+    //   fetchMusicDNA(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '');
+    //   setProfile(musicProfileData.userDetail.profilePicture);
+    // }
   }, []);
 
-  const fetchData = async () => {
-    if (token) {
-      try {
-        console.log('fetching...');
-        const response = await fetch(musiProfileUrl, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (response.ok) {
-          console.log('set PostList');
-          const data: MusicProfileData = await response.json();
-          console.log(data);
-          setMusicProfileData(data);
-          setMyMusicDna(data.userDetail.dnas);
-          setBestAlbum(data.bestAlbum);
-          setFavoriteArtist(data.favoriteArtist);
-          const spotifyId = {
-            spotifyArtistId: data.favoriteArtist.spotifyArtistId,
-            spotifyAlbumId: '',
-            spotifyTrackId: '',
-          };
-          setFavoriteArtistSpotifyIds(spotifyId);
-          fetchMusicDNA();
-        } else if (response.status === 401) {
-          ReissueToken();
-          fetchData();
-        } else {
-          console.error('Failed to fetch data:', response.status);
-        }
-      } catch (error) {
-        console.error('Error fetching the JSON file:', error);
-      } finally {
-        console.log('finished');
-      }
-    }
+  const fetchData = async (token: string, refreshToken: string) => {
+    fetchGET(token, refreshToken, musiProfileUrl, MAX_REISSUE_COUNT).then(data => {
+      setMusicProfileData(data);
+      setMyMusicDna(data.userDetail.dnas);
+      setBestAlbum(data.bestAlbum);
+      setFavoriteArtist(data.favoriteArtist);
+      setProfile(data.userDetail.profilePicture);
+      const spotifyId = {
+        spotifyArtistId: data.favoriteArtist.spotifyArtistId,
+        spotifyAlbumId: '',
+        spotifyTrackId: '',
+      };
+      setFavoriteArtistSpotifyIds(spotifyId);
+      fetchMusicDNA(token, refreshToken);
+    });
   };
 
   // musicDNA 가져오기
-  const MusicDNAUrl = `${server}/api/dna`;
-  const fetchMusicDNA = async () => {
-    if (token) {
-      try {
-        console.log(`fetching Playlist...`);
-        const response = await fetch(MusicDNAUrl, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          console.log(data);
-          setAllMusicDna(data);
-        } else if (response.status === 401) {
-          ReissueToken();
-          fetchMusicDNA();
-        } else {
-          console.error('Failed to fetch data:', response.status);
-        }
-      } catch (error) {
-        console.error('Error fetching the JSON file:', error);
-      } finally {
-        console.log('finished');
-      }
-    }
+  const MusicDNAUrl = `/api/dna`;
+  const fetchMusicDNA = async (token: string, refreshToken: string) => {
+    fetchGET(token, refreshToken, MusicDNAUrl, MAX_REISSUE_COUNT).then(data => {
+      setAllMusicDna(data);
+    });
   };
 
   // DNA 추가 제거
@@ -372,7 +364,7 @@ function MusicProfileEditPage() {
       console.log('start adding DNA...');
       let addDna = allMusicDna?.find(dna => dna.dnaKey === dnaKey);
       if (addDna) {
-        setAllMusicDna(allMusicDna.filter(dna => dna.dnaKey !== dnaKey));
+        // setAllMusicDna(allMusicDna.filter(dna => dna.dnaKey !== dnaKey));
         setMyMusicDna([...myMusicDna, addDna]);
         console.log('DNA added');
         console.log(addDna);
@@ -387,7 +379,7 @@ function MusicProfileEditPage() {
       let deleteDna = myMusicDna?.find(dna => dna.dnaKey === dnaKey);
       if (deleteDna) {
         setMyMusicDna(myMusicDna.filter(dna => dna.dnaKey !== dnaKey));
-        setAllMusicDna([...allMusicDna, deleteDna]);
+        // setAllMusicDna([...allMusicDna, deleteDna]);
         console.log('DNA deleted');
         console.log(deleteDna);
       }
@@ -395,144 +387,62 @@ function MusicProfileEditPage() {
   };
 
   // 수정사항 fetch
-  const MusicDNAPostUrl = `${server}/api/dna`;
-  const BestAlbumPostUrl = `${server}/api/bestAlbum`;
-  const FavoriteArtistPostUrl = `${server}/api/favoriteArtist`;
+  const MusicDNAPostUrl = `/api/dna`;
+  const ProfilePostUrl = `/api/file/`;
+  const BestAlbumPostUrl = `/api/bestAlbum`;
+  const FavoriteArtistPostUrl = `/api/favoriteArtist`;
   const postAllEdit = async () => {
+    const token = localStorage.getItem('login-token');
+    const refreshToken = localStorage.getItem('login-refreshToken');
     try {
-      await postMusicDNA();
-      await postBestAlbum();
-      await postFavoriteArtist();
+      await postMusicDNA(token || '', refreshToken || '');
+      await postBestAlbum(token || '', refreshToken || '');
+      await postFavoriteArtist(token || '', refreshToken || '');
+      await postProfileImg(token || '', refreshToken || '');
     } catch (error) {
       console.error('Post fail :', error);
     } finally {
       GoToMusicProfilePage();
     }
   };
-  const postMusicDNA = async () => {
-    if (token) {
-      try {
-        console.log(`updating DNA...`);
-        console.log(myMusicDna);
-        const response = await fetch(MusicDNAPostUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            dna: myMusicDna.map(dna => dna.dnaKey),
-          }),
-        });
 
-        if (response.ok) {
-          const data = await response.json();
-          console.log(data);
-        } else if (response.status === 401) {
-          ReissueToken();
-          postMusicDNA();
-        } else {
-          console.error('Failed to fetch data:', response.status);
-        }
-      } catch (error) {
-        console.error('Error fetching the JSON file:', error);
-      } finally {
-        console.log('DNA updated');
-      }
-    }
-  };
-  const postBestAlbum = async () => {
-    console.log('Best ALbum Updating...');
-    if (token) {
-      try {
-        const response = await fetch(BestAlbumPostUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            bestalbum: bestAlbum?.map(album => ({
-              spotifyAlbumId: album.spotifyId,
-              score: album.score,
-            })),
-          }),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          console.log(data);
-          console.log('Best Album 200');
-        } else if (response.status === 401) {
-          ReissueToken();
-          postBestAlbum();
-        } else {
-          console.error('Failed to fetch data:', response.status);
-        }
-      } catch (error) {
-        console.error('Error fetching the JSON file:', error);
-      } finally {
-        console.log('Best ALbum Updated');
-      }
-    }
-  };
-  const postFavoriteArtist = async () => {
-    console.log('Favorite Artist Updating...');
-    if (token) {
-      try {
-        const response = await fetch(FavoriteArtistPostUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            spotifyArtistId: favoriteArtistSpotifyIds?.spotifyArtistId,
-            spotifyAlbumId: favoriteArtistSpotifyIds?.spotifyAlbumId,
-            spotifyTrackId: favoriteArtistSpotifyIds?.spotifyTrackId,
-          }),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          console.log('favorite artist 200');
-          console.log(data);
-        } else if (response.status === 401) {
-          ReissueToken();
-          postFavoriteArtist();
-        } else {
-          console.error('Failed to fetch data:', response.status);
-        }
-      } catch (error) {
-        console.error('Error fetching the JSON file:', error);
-      } finally {
-        console.log('Favorite Artist Updated');
-      }
-    }
+  const postMusicDNA = async (token: string, refreshToken: string) => {
+    const data = {
+      dna: myMusicDna.map(dna => dna.dnaKey),
+    };
+    await fetchPOST(token, refreshToken, MusicDNAPostUrl, data, MAX_REISSUE_COUNT).then(data => {
+      console.log(data);
+    });
   };
 
-  const ReissueToken = async () => {
-    console.log('reissuing Token');
-    try {
-      const response = await fetch(reissueTokenUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Refresh-Token': `${refreshToken}`,
-        },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('login-token', data.token);
-        localStorage.setItem('login-refreshToken', data.refreshToken);
-        setToken(data.token);
-        setRefreshToken(data.refreshToken);
-      } else {
-        console.error('failed to reissue token', response.status);
-      }
-    } catch (error) {
-      console.error('Refresh Token 재발급 실패', error);
-    }
+  const postBestAlbum = async (token: string, refreshToken: string) => {
+    const data = {
+      bestalbum: bestAlbum?.map(album => ({
+        spotifyAlbumId: album.spotifyId,
+        score: album.score,
+      })),
+    };
+    await fetchPOST(token, refreshToken, BestAlbumPostUrl, data, MAX_REISSUE_COUNT).then(data => {
+      console.log(data);
+    });
+  };
+
+  const postFavoriteArtist = async (token: string, refreshToken: string) => {
+    const data = {
+      spotifyArtistId: favoriteArtistSpotifyIds?.spotifyArtistId,
+      spotifyAlbumId: favoriteArtistSpotifyIds?.spotifyAlbumId,
+      spotifyTrackId: favoriteArtistSpotifyIds?.spotifyTrackId,
+    };
+    await fetchPOST(token, refreshToken, FavoriteArtistPostUrl, data, MAX_REISSUE_COUNT).then(data => {
+      console.log(data);
+    });
+  };
+
+  const postProfileImg = async (token: string, refreshToken: string) => {
+    const data = formData;
+    await fetchPOSTFile(token, refreshToken, ProfilePostUrl, data, MAX_REISSUE_COUNT).then(data => {
+      console.log(data);
+    });
   };
 
   // searchPage 열기
@@ -541,11 +451,38 @@ function MusicProfileEditPage() {
     setIsSearchModalOpen(true);
   };
 
+  const [formData, setFormData] = useState<FormData>();
+  // 파일 선택 시 실행되는 핸들러
+  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    let file = event.target.files?.[0]; // 첫 번째 파일 선택
+    console.log('put img here');
+    console.log(file);
+
+    if (file) {
+      // if (/\.(heic)$/i.test(file.name)) {
+      //   console.log('changing');
+      //   const convertedBlob = await heic2any({ blob: file, toType: 'image/jpeg' });
+      //   file = new File([convertedBlob as Blob], file.name.split('.')[0] + '.jpeg', { type: 'image/jpeg', lastModified: new Date().getTime() });
+      // }
+      setProfile(URL.createObjectURL(file)); // 미리보기 URL 생성
+      const formData = new FormData(); //formData 새성
+      console.log(URL.createObjectURL(file));
+
+      formData.append('profileImage', file); // 이미지 값 할당
+
+      const obj2: { [key: string]: any } = {};
+      formData.forEach((value, key) => {
+        obj2[key] = value;
+      });
+
+      console.log(obj2);
+      setFormData(formData);
+    }
+  };
+
   return (
     <Container>
-      <Header>
-        <Nav page={2}></Nav>
-      </Header>
+      <Header page={3}></Header>
       {isSearchModalOpen && (
         <Blur>
           <ModalArea>
@@ -591,9 +528,22 @@ function MusicProfileEditPage() {
               d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
             />
           </svg>
-          <Title></Title>
           MusicProfile 수정
         </PageTitle>
+        <ProfilePhotoArea>
+          <TitleArea>
+            <Title>Profile Photo</Title>
+          </TitleArea>
+          <PhotoEditArea>
+            <Circle>
+              <ProfileImageCircle src={profile} alt="Profile" />
+            </Circle>
+            <div>
+              <Label htmlFor="profileimg"> 프로필 이미지 업로드</Label>
+              <Profile type="file" accept="image/*, .heic" id="profileimg" onChange={handleFileChange} />
+            </div>
+          </PhotoEditArea>
+        </ProfilePhotoArea>
         <MusicDnaArea>
           <TitleArea>
             <Title>Music DNA</Title>
@@ -628,12 +578,6 @@ function MusicProfileEditPage() {
               ))}
           </ProfileTagArea>
         </MusicDnaArea>
-        {/* <PlaylistCardArea>
-          <TitleArea margin="0px 0px 20px 20px">
-            <Title> Playlist</Title>
-          </TitleArea>
-          {musicProfileData?.playlist && <PlaylistCardMini playlist={musicProfileData?.playlist} userDetail={musicProfileData?.userDetail} />}
-        </PlaylistCardArea> */}
 
         <BestAlbumArea>
           <TitleArea>

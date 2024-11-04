@@ -1,11 +1,12 @@
 import styled from 'styled-components';
 import { colors } from '../../styles/color';
-import Nav from '../components/Nav';
+
 import PlayListCard from '../components/PlayListCard';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-
+import { fetchGET, MAX_REISSUE_COUNT } from '../utils/fetchData';
 import useStore from '../store/store';
+import Header from '../components/Header';
 
 const Container = styled.div`
   display: flex;
@@ -28,12 +29,6 @@ const BlankDiv = styled.div`
   height: 100px;
 `;
 
-const Header = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-`;
 const Body = styled.div`
   margin-top: 130px;
   display: flex;
@@ -44,7 +39,7 @@ const Body = styled.div`
 `;
 
 const TitleArea = styled.div`
-  width: 100%;
+  width: 360px;
   height: 40px;
   display: flex;
   flex-direction: row;
@@ -61,6 +56,13 @@ const Circle = styled.div<{ bgcolor?: string }>`
   margin-right: 10px;
   background-color: ${props => props.bgcolor};
   object-fit: cover;
+`;
+
+const ProfileImageCircle = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 비율 유지하며 꽉 채움 */
+  object-position: center; /* 이미지 가운데 정렬 */
 `;
 
 const PlayListArea = styled.div`
@@ -125,95 +127,18 @@ function PlayListPage() {
   const location = useLocation();
   const author: playlistInfo = location.state;
   const { id } = useStore();
-  const [token, setToken] = useState(localStorage.getItem('login-token'));
-  const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
 
-  const server = 'http://203.255.81.70:8030';
-  const reissueTokenUrl = `${server}/api/auth/reissued`;
+  const PlayListURL = `/api/user/${author.id}/playlist`;
 
-  const PlayListURL = `${server}/api/user/${author.id}/playlist`;
-
-  const fetchPlayList = async () => {
-    if (token) {
-      try {
-        console.log(`fetching Playlist...`);
-        const response = await fetch(PlayListURL, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setPlayListData(data);
-          console.log('fetched PlayList:');
-          console.log(data);
-        } else if (response.status === 401) {
-          ReissueToken();
-          fetchPlayList();
-        } else {
-          console.error('Failed to fetch data:', response.status);
-        }
-      } catch (error) {
-        console.error('Error fetching the JSON file:', error);
-      } finally {
-        console.log('finished');
-      }
-    }
-  };
-
-  const ReissueToken = async () => {
-    console.log('reissuing Token');
-    try {
-      const response = await fetch(reissueTokenUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Refresh-Token': `${refreshToken}`,
-        },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('login-token', data.token);
-        localStorage.setItem('login-refreshToken', data.refreshToken);
-        setToken(data.token);
-        setRefreshToken(data.refreshToken);
-      } else {
-        throw new Error(`failed to reissue token : ${response.status}`);
-      }
-    } catch (error) {
-      console.error(error);
-    }
+  const fetchPlayList = async (token: string, refreshToken: string) => {
+    fetchGET(token, refreshToken, PlayListURL, MAX_REISSUE_COUNT).then(data => {
+      setPlayListData(data);
+    });
   };
 
   useEffect(() => {
-    fetchPlayList();
+    fetchPlayList(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '');
   }, []);
-
-  /////////////////////
-  // const [playlistGradient, setPlaylistGradient] = useState<string>();
-  //const albumCoverRef = useRef<HTMLImageElement | null>(null);
-
-  // ColorThief로 앨범 커버에서 색상 추출
-  // const extractColors = () => {
-  //   const colorThief = new ColorThief();
-  //   const img = albumCoverRef.current;
-
-  //   if (img) {
-  //     const colors = colorThief.getPalette(img, 2); // 가장 대비되는 두 가지 색상 추출
-  //     const primaryColor = `rgb(${colors[0].join(',')})`;
-  //     const secondaryColor = `rgb(${colors[1].join(',')})`;
-  //     //const gradient = `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`;
-  //   }
-
-  //   // setPlaylistGradient(gradient);
-  // };
-
-  // const handleImageLoad = () => {
-  //   extractColors(); // 이미지 로드 후 색상 추출
-  // };
 
   const navigate = useNavigate();
   const GoToMusicProfilePage = (userId: number) => {
@@ -222,19 +147,7 @@ function PlayListPage() {
 
   return (
     <Container>
-      {/* {playListData?.tracks.length !== 0 && (
-        // 배경색 이미지 추출
-        <img
-          src={playListData?.tracks[0].trackCover}
-          ref={albumCoverRef}
-          style={{ display: 'none' }}
-          crossOrigin="anonymous" // CORS 문제 방지
-          onLoad={handleImageLoad} // 이미지 로드 시 색상 추출
-        />
-      )} */}
-      <Header>
-        <Nav page={author.page}></Nav>
-      </Header>
+      <Header page={3}></Header>
       <Body>
         <TitleArea
           onClick={() => {
@@ -243,12 +156,12 @@ function PlayListPage() {
         >
           {playListData ? (
             <Circle>
-              <img src={author.profilePicture} width="100%" height="100%" object-fit="cover"></img>
+              <ProfileImageCircle src={author.profilePicture} alt="Profile" />
             </Circle>
           ) : (
             <Circle bgcolor={colors.BG_grey}></Circle>
           )}
-          <Text fontFamily="Bd" fontSize="25px">
+          <Text fontFamily="Bd" fontSize="25px" margin="0px 10px 0px 0px">
             {author.username}'s PlayList
           </Text>
         </TitleArea>

@@ -1,15 +1,7 @@
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-interface AlbumDataProps {
-  AlbumData: [
-    {
-      albumCover: string;
-      albumId: number;
-      albumName: string;
-      score: number;
-    },
-  ];
-}
 const BestAlbumArea = styled.div`
   width: 100vw;
   display: flex;
@@ -50,24 +42,48 @@ const AlbumImage = styled.img`
   object-fit: cover;
 `;
 
+interface AlbumDataProps {
+  AlbumData: {
+    albumCover: string;
+    albumId: number;
+    albumName: string;
+    score: number;
+    spotifyId: string;
+  }[];
+}
+
 function AlbumGrid({ AlbumData }: AlbumDataProps) {
-  const midIndex = Math.ceil(AlbumData.length / 2);
-  const firstRow = AlbumData.slice(0, midIndex);
-  const secondRow = AlbumData.slice(midIndex);
+  const [firstRow, setFirstRow] = useState<AlbumDataProps['AlbumData']>([]);
+  const [secondRow, setSecondRow] = useState<AlbumDataProps['AlbumData']>([]);
+  useEffect(() => {
+    if (AlbumData.length <= 2) {
+      setFirstRow(AlbumData);
+    } else {
+      const midIndex = Math.ceil(AlbumData.length / 2);
+      setFirstRow(AlbumData.slice(0, midIndex));
+      setSecondRow(AlbumData.slice(midIndex));
+    }
+  }, [AlbumData]);
+
+  const navigate = useNavigate();
+  const GoToAlbumPage = (spotifyAlbumId: string) => {
+    navigate('/AlbumPage', { state: spotifyAlbumId });
+  };
+
   console.log(firstRow);
   return (
     <BestAlbumArea>
       <AlbumCol>
         <AlbumRow>
           {firstRow.map(Album => (
-            <AlbumCover key={Album.albumId}>
+            <AlbumCover key={Album.albumId} onClick={() => GoToAlbumPage(Album.spotifyId)}>
               <AlbumImage src={Album.albumCover} alt={Album.albumName} />
             </AlbumCover>
           ))}
         </AlbumRow>
         <AlbumRow>
           {secondRow.map(Album => (
-            <AlbumCover key={Album.albumId}>
+            <AlbumCover key={Album.albumId} onClick={() => GoToAlbumPage(Album.spotifyId)}>
               <AlbumImage src={Album.albumCover} alt={Album.albumName} />
             </AlbumCover>
           ))}

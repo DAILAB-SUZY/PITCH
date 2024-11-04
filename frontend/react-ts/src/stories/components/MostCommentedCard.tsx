@@ -115,6 +115,13 @@ const ProfileImage = styled.div`
   border-radius: 50%;
   /* background-color: ${colors.Main_Pink}; */
 `;
+const ProfileImageCircle = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 비율 유지하며 꽉 채움 */
+  object-position: center; /* 이미지 가운데 정렬 */
+`;
+
 const ChatCardBody = styled.div`
   margin: 10px 0px 10px 0px;
   width: 90%;
@@ -154,7 +161,7 @@ interface AlbumDetail {
   title: string;
   albumCover: string;
   artistName: string;
-  genre: string;
+  genre: null | string;
   spotifyId: string;
   likes: AlbumLike[];
 }
@@ -181,6 +188,7 @@ interface AlbumProps {
 }
 
 function MostCommentedCard({ album }: AlbumProps) {
+  console.log(album.comments.length);
   return (
     <CommentCardArea>
       <CommentCard>
@@ -210,20 +218,28 @@ function MostCommentedCard({ album }: AlbumProps) {
             </Text>
           </CommentNumberArea>
           <CommentContentArea>
-            <ProfileArea>
-              <ProfileImage>
-                <img src={album.comments[0].author.profilePicture}></img>
-              </ProfileImage>
-              <ProfileTextArea>
-                <ProfileName>{album.comments[0].author.username}</ProfileName>
-                {/* <PostUploadTime> 1시간전 </PostUploadTime> */}
-              </ProfileTextArea>
-            </ProfileArea>
-            <ChatCardBody>
-              <Text fontSize="15px" color={colors.BG_white}>
-                {album.comments[0].content}
+            {album.comments.length === 0 ? (
+              <Text fontSize="15px" color={colors.BG_white} margin="40px 0px 0px 20px">
+                아직 댓글이 없습니다.
               </Text>
-            </ChatCardBody>
+            ) : (
+              <>
+                <ProfileArea>
+                  <ProfileImage>
+                    <ProfileImageCircle src={album.comments[0].author.profilePicture} />
+                  </ProfileImage>
+                  <ProfileTextArea>
+                    <ProfileName>{album.comments[0].author.username}</ProfileName>
+                    {/* <PostUploadTime> 1시간전 </PostUploadTime> */}
+                  </ProfileTextArea>
+                </ProfileArea>
+                <ChatCardBody>
+                  <Text fontSize="15px" color={colors.BG_white}>
+                    {album.comments[0].content}
+                  </Text>
+                </ChatCardBody>
+              </>
+            )}
           </CommentContentArea>
         </ContentArea>
       </CommentCard>

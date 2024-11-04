@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import AlbumPostCard from './AlbumPostCard';
 import { useEffect, useState } from 'react';
-
+import { fetchGET, MAX_REISSUE_COUNT } from '../utils/fetchData';
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -83,77 +83,24 @@ interface AlbumProps {
   spotifyAlbumId: string;
 }
 
-function AlbumPageChatTab({ spotifyAlbumId }: AlbumProps) {
+function AlbumPagePostTab({ spotifyAlbumId }: AlbumProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [albumPostList, setaAlbumPostList] = useState<PostData[]>([]);
 
-  console.log('postlist');
-  console.log(albumPostList);
-  const server = 'http://203.255.81.70:8030';
-  const reissueTokenUrl = `${server}/api/auth/reissued`;
-  const [token, setToken] = useState(localStorage.getItem('login-token'));
-  const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
-
   useEffect(() => {
-    fetchSearch();
+    fetchPosts();
   }, []);
-  let AlbumPostUrl = `${server}/api/album/${spotifyAlbumId}/post?sorted=recent&page=0&limit=5`;
-  const fetchSearch = async () => {
-    if (token && !isLoading) {
-      setIsLoading(true);
-      console.log('검색시작');
-      Search(AlbumPostUrl);
-    }
-  };
-  const Search = async (URL: string) => {
-    console.log('fetching album chat list...');
-    try {
-      const response = await fetch(URL, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setaAlbumPostList(data);
-        console.log(data);
-      } else if (response.status === 401) {
-        ReissueToken();
-        fetchSearch();
-      } else {
-        console.error('Failed to fetch data:', response.status);
-      }
-    } catch (error) {
-      console.error('Error fetching the JSON file:', error);
-    } finally {
-      setIsLoading(false);
-      console.log('finished');
-    }
-  };
 
-  const ReissueToken = async () => {
-    console.log('reissuing Token');
-    try {
-      const response = await fetch(reissueTokenUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Refresh-Token': `${refreshToken}`,
-        },
+  const fetchPosts = async () => {
+    const AlbumPostUrl = `/api/album/${spotifyAlbumId}/post?sorted=recent&page=0&limit=5`;
+    if (!isLoading) {
+      setIsLoading(true);
+      const token = localStorage.getItem('login-token') as string;
+      const refreshToken = localStorage.getItem('login-refreshToken') as string;
+      await fetchGET(token, refreshToken, AlbumPostUrl, MAX_REISSUE_COUNT).then(data => {
+        setaAlbumPostList(data);
+        setIsLoading(false);
       });
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('login-token', data.token);
-        localStorage.setItem('login-refreshToken', data.refreshToken);
-        setToken(data.token);
-        setRefreshToken(data.refreshToken);
-      } else {
-        console.error('failed to reissue token', response.status);
-      }
-    } catch (error) {
-      console.error('Refresh Token 재발급 실패', error);
     }
   };
 
@@ -168,4 +115,4 @@ function AlbumPageChatTab({ spotifyAlbumId }: AlbumProps) {
   );
 }
 
-export default AlbumPageChatTab;
+export default AlbumPagePostTab;

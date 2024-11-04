@@ -14,10 +14,12 @@ import MusicProfilePage from './stories/pages/MusicProfilePage';
 import MusicProfileEditPage from './stories/pages/MusicProfileEditPage';
 import AlbumPostPage from './stories/pages/AlbumPostPage';
 import AlbumPostEditPage from './stories/pages/AlbumPostEditPage';
-import CommentPostPage from './stories/pages/CommentPostPage';
+import AlbumPostCommentPostPage from './stories/pages/AlbumPostCommentPostPage';
 import FollowPage from './stories/pages/FollowPage';
 import FriendSearchPage from './stories/pages/FriendSearchPage';
 import SearchPage from './stories/pages/SearchPage';
+import ErrorPage from './stories/pages/ErrorPage';
+import PlaylistRedirectPage from './stories/pages/PlaylistRedirectPage';
 import './styles/reset.css';
 
 function App() {
@@ -39,10 +41,12 @@ function App() {
         <Route path="/MusicProfileEditPage" element={<MusicProfileEditPage />} />
         <Route path="/AlbumPostPage" element={<AlbumPostPage />} />
         <Route path="/AlbumPostEditPage" element={<AlbumPostEditPage />} />
-        <Route path="/CommentPostPage" element={<CommentPostPage />} />
+        <Route path="/AlbumPostCommentPostPage" element={<AlbumPostCommentPostPage />} />
         <Route path="/SearchPage" element={<SearchPage />} />
         <Route path="/FollowPage" element={<FollowPage />} />
         <Route path="/FriendSearchPage" element={<FriendSearchPage />} />
+        <Route path="/ErrorPage" element={<ErrorPage />} />
+        <Route path="/oauth2/callback/google" element={<PlaylistRedirectPage />} />
       </Routes>
     </BrowserRouter>
   );

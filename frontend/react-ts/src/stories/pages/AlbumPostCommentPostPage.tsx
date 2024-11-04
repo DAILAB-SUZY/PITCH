@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { colors } from '../../styles/color';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useRef, useState } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { fetchPOST, MAX_REISSUE_COUNT } from '../utils/fetchData';
 
 const Container = styled.div`
@@ -10,10 +10,9 @@ const Container = styled.div`
   justify-content: flex-start;
   align-items: center;
   overflow-y: scroll;
-  overflow-x: hidden;
   height: 100vh; //auto;
   width: 100vw;
-  background-color: white;
+  background-color: ${colors.BG_grey};
   color: ${colors.Font_black};
 `;
 
@@ -24,7 +23,7 @@ const CommentArea = styled.div`
   align-items: center;
   justify-content: flex-start;
   flex-direction: column;
-  background-color: white;
+  background-color: ${colors.BG_grey};
 `;
 
 const Text = styled.div<{
@@ -110,28 +109,29 @@ const ContentInput = styled.textarea`
   overflow-y: scroll; /* Prevent extra scroll bar */
 `;
 
-function CommentPostPage() {
+function AlbumPostCommentPostPage() {
   const location = useLocation();
-  const spotifyAlbumId = location.state;
-
+  const [postId, setPostId] = useState();
   const [postContent, setPostContent] = useState('');
+  useEffect(() => {
+    if (location.state) {
+      setPostId(location.state);
+    }
+  }, []);
 
   const navigate = useNavigate();
-  const GoToAlbumPage = () => {
-    navigate('/AlbumPage', { state: spotifyAlbumId });
+  const GoToAlbumPostPage = () => {
+    navigate('/AlbumPostPage', { state: postId });
   };
 
-  // 게시물 작성
-  const fetchAlbumChat = async () => {
-    const token = localStorage.getItem('login-token') as string;
-    const refreshToken = localStorage.getItem('login-refreshToken') as string;
+  //게시물 작성
+  let CommentPostUrl = `/api/album/post/${postId}/comment`;
+  const fetchComment = async (token: string, refreshToken: string) => {
     const data = {
       content: postContent,
-      sorted: 'recent',
     };
-    fetchPOST(token, refreshToken, `/api/album/${spotifyAlbumId}/albumchat`, data, MAX_REISSUE_COUNT).then(() => {
-      GoToAlbumPage();
-    });
+    await fetchPOST(token, refreshToken, CommentPostUrl, data, MAX_REISSUE_COUNT);
+    GoToAlbumPostPage();
   };
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -146,11 +146,11 @@ function CommentPostPage() {
     <Container>
       <CommentArea>
         <ButtonArea>
-          <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 10px" color={colors.Font_black} onClick={() => GoToAlbumPage()}>
+          <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 10px" color={colors.Font_black} onClick={() => GoToAlbumPostPage()}>
             취소
           </Text>
           <Text fontFamily="Bd" fontSize="20px" margin="0px" color={colors.Font_black}>
-            Chat 작성
+            Comment 작성
           </Text>
           <Text
             fontFamily="Rg"
@@ -158,7 +158,8 @@ function CommentPostPage() {
             margin="0px 10px 0px 0px"
             color={colors.Font_black}
             // onClick={() => (isEditMode ? console.log("fetchEdit") : fetchComment())}
-            onClick={() => fetchAlbumChat()}
+            onClick={() => fetchComment(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '')}
+            //onClick={() => fetchComment()}
           >
             저장
           </Text>
@@ -183,4 +184,4 @@ function CommentPostPage() {
   );
 }
 
-export default CommentPostPage;
+export default AlbumPostCommentPostPage;

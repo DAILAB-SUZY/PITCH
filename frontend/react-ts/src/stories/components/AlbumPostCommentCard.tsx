@@ -1,17 +1,20 @@
 import styled from 'styled-components';
 import { colors } from '../../styles/color';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { fetchPOST, fetchDELETE, MAX_REISSUE_COUNT } from '../utils/fetchData';
+import { updateTimeAgo } from '../utils/getTimeAgo';
+import useStore from '../store/store';
 const ChatCardContainer = styled.div`
   width: 350px;
   height: auto;
   padding: 10px;
   margin-bottom: 20px;
-  background-color: ${colors.BG_grey};
+  // background-color: ${colors.BG_grey};
   border-radius: 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+  //box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
 `;
 
 const ChatCardBody = styled.div`
@@ -34,7 +37,7 @@ const ProfileArea = styled.div`
   display: flex;
   width: 100%;
   height: 30px;
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: center;
   flex-direction: row;
 `;
@@ -63,7 +66,53 @@ const ProfileImage = styled.div`
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background-color: ${colors.Main_Pink};
+`;
+const ProfileImageCircle = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 비율 유지하며 꽉 채움 */
+  object-position: center; /* 이미지 가운데 정렬 */
+`;
+
+const ProfileInfoArea = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+`;
+
+const EditBtn = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  position: relative;
+`;
+const DropdownMenu = styled.div`
+  position: absolute;
+  top: 25px;
+  right: 0;
+  width: 70px;
+  height: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background-color: white;
+  border-radius: 7px;
+  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
+  z-index: 10;
+  overflow: hidden;
+`;
+
+const DropdownItem = styled.div`
+  padding: 10px;
+  width: 70px;
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+  &:hover {
+    background-color: ${colors.BG_grey};
+  }
 `;
 
 const ButtonArea = styled.div`
@@ -79,15 +128,13 @@ interface commentProps {
   comment: {
     id: number;
     content: string;
-    createAt: number;
-    updateAt: number;
-    likes: [
-      {
-        id: number;
-        username: string;
-        profilePicture: string;
-      },
-    ];
+    createdAt: string;
+    updatedAt: string;
+    likes: {
+      id: number;
+      username: string;
+      profilePicture: string;
+    }[];
     childComments: [
       {
         id: number;
@@ -105,105 +152,113 @@ interface commentProps {
       profilePicture: string;
     };
   };
+  postId: number;
+  fetchAlbumPost: (token: string, refreshToken: string) => void;
 }
 
-const AlbumPostCommentCard = ({ comment }: commentProps) => {
-  ////// Post 시간 계산 //////
-  const CreateTime = comment?.createAt;
-  const UpdatedTime = comment?.updateAt;
+const AlbumPostCommentCard = ({ comment, postId, fetchAlbumPost }: commentProps) => {
+  // Post 시간 계산
+  const CreateTime = comment.createdAt;
+  const UpdatedTime = comment.updatedAt;
   const [timeAgo, setTimeAgo] = useState<string>('');
+  useEffect(() => {
+    if (comment) {
+      const time = updateTimeAgo(CreateTime, UpdatedTime);
+      setTimeAgo(time);
+    }
+  }, [CreateTime, UpdatedTime]);
+  console.log('comment info');
+  console.log(comment);
+  console.log(postId);
+
+  const { name, id } = useStore();
+
+  //Post Comment 좋아요 상태 확인
+  const [isPostLiked, setIsPostLiked] = useState(false);
+  const [likesCount, setLikesCount] = useState<number>(0);
 
   useEffect(() => {
-    const updateTimeAgo = () => {
-      if (CreateTime) {
-        if (UpdatedTime === null) {
-          const time = formatTimeAgo(CreateTime);
-          console.log('수정안됨');
-          setTimeAgo(time);
-        } else {
-          const time = formatTimeAgo(UpdatedTime);
-          console.log('수정됨');
-          setTimeAgo(time);
-        }
+    if (comment) {
+      setLikesCount(comment.likes.length);
+      if (comment.likes.some((like: any) => like.id === id)) {
+        setIsPostLiked(true);
       }
-    };
-
-    // 처음 마운트될 때 시간 계산
-    updateTimeAgo();
-  }, [CreateTime, UpdatedTime]);
-
-  const formatTimeAgo = (unixTimestamp: number): string => {
-    const currentTime = Math.floor(Date.now() / 1000); // 현재 시간 (초)
-    const timeDifference = currentTime - Math.floor(unixTimestamp); // 경과 시간 (초)
-
-    const minutesAgo = Math.floor(timeDifference / 60); // 경과 시간 (분)
-    const hoursAgo = Math.floor(timeDifference / 3600); // 경과 시간 (시간)
-    const daysAgo = Math.floor(timeDifference / 86400); // 경과 시간 (일)
-
-    if (minutesAgo < 60) {
-      return `${minutesAgo}분 전`;
-    } else if (hoursAgo < 24) {
-      return `${hoursAgo}시간 전`;
-    } else {
-      return `${daysAgo}일 전`;
     }
+  }, [comment]);
+
+  const changeCommentLike = async () => {
+    if (isPostLiked && comment) {
+      // 이미 좋아요를 눌렀다면 좋아요 취소
+      setIsPostLiked(false);
+      setLikesCount(likesCount - 1);
+      comment.likes = comment.likes.filter((like: any) => like.id !== id);
+    } else {
+      // 좋아요 누르기
+      setIsPostLiked(true);
+      setLikesCount(likesCount + 1);
+      comment.likes.push({
+        id: id,
+        username: name,
+        profilePicture: 'string',
+      });
+    }
+    fetchLike(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '');
   };
-  /////////////
+
+  const CommentLikeUrl = `/api/album/post/${postId}/comment/${comment.id}/like`;
+  const fetchLike = async (token: string, refresuToken: string) => {
+    fetchPOST(token, refresuToken, CommentLikeUrl, {}, MAX_REISSUE_COUNT);
+  };
+
+  // 수정/삭제 버튼
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
+
+  const editMenu = () => {
+    console.log('edit');
+    setIsDropdownOpen(!isDropdownOpen);
+  };
 
   // 삭제요청
-  // const deleteComment = async () => {
-  //   const CommenrDeleteUrl = `/api/album/post/${}/comment/${comment.id}`;
-  //   if (token) {
-  //     if (albumPost) {
-  //       console.log(`delete id: ${albumPost.postDetail.postId}Post...`);
-  //     }
-  //     try {
-  //       const response = await fetch(PostDeleteUrl, {
-  //         method: "DELETE",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       });
-  //       if (response.ok) {
-  //         const data = await response.json();
-  //         setAlbumPost(data);
-  //         console.log("deleted");
-  //         GoToHomePage();
-  //       } else if (response.status === 401) {
-  //         console.log("reissuing Token");
-  //         const reissueToken = await fetch(reissueTokenUrl, {
-  //           method: "POST",
-  //           headers: {
-  //             "Content-Type": "application/json",
-  //             "Refresh-Token": `${refreshToken}`,
-  //           },
-  //         });
-  //         const data = await reissueToken.json();
-  //         localStorage.setItem("login-token", data.token);
-  //         setToken(data.token);
-  //         localStorage.setItem("login-refreshToken", data.refreshToken);
-  //         setRefreshToken(data.refreshToken);
-  //         deletePost();
-  //       } else {
-  //         console.error("Failed to delete data:", response.status);
-  //       }
-  //     } catch (error) {
-  //       console.error("delete 실패:", error);
-  //     }
-  //   }
-  // };
+  const DeleteChatUrl = `/api/album/post/${postId}/comment/${comment.id}`;
+  const deleteChat = async (token: string, refreshToken: string) => {
+    await fetchDELETE(token, refreshToken, DeleteChatUrl, MAX_REISSUE_COUNT);
+    fetchAlbumPost(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '');
+    setIsDropdownOpen(false);
+  };
 
   return (
     <ChatCardContainer>
       <ProfileArea>
-        <ProfileImage>
-          <img src={comment.author.profilePicture}></img>
-        </ProfileImage>
-        <ProfileTextArea>
-          <ProfileName>{comment.author.username}</ProfileName>
-          <PostUploadTime> {timeAgo} </PostUploadTime>
-        </ProfileTextArea>
+        <ProfileInfoArea>
+          <ProfileImage>
+            <ProfileImageCircle src={comment.author.profilePicture} alt="Profile" />
+          </ProfileImage>
+          <ProfileTextArea>
+            <ProfileName>{comment.author.username}</ProfileName>
+            <PostUploadTime> {timeAgo} </PostUploadTime>
+          </ProfileTextArea>
+        </ProfileInfoArea>
+        {comment.author.id === id && (
+          <EditBtn ref={dropdownRef}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              fill={colors.Font_grey}
+              className="bi bi-three-dots"
+              viewBox="0 0 16 16"
+              onClick={() => editMenu()} // 클릭 시 토글
+            >
+              <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3" />
+            </svg>
+            {isDropdownOpen && (
+              <DropdownMenu>
+                <DropdownItem onClick={() => deleteChat(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '')}>삭제</DropdownItem>
+              </DropdownMenu>
+            )}
+          </EditBtn>
+        )}
       </ProfileArea>
       <ChatCardBody>
         <Text fontSize="15px">{comment.content}</Text>
@@ -213,22 +268,23 @@ const AlbumPostCommentCard = ({ comment }: commentProps) => {
           xmlns="http://www.w3.org/2000/svg"
           width="14"
           height="14"
-          fill={comment.likes.some((like: any) => like.id === comment.author.id) ? colors.Button_active : colors.Button_deactive}
+          fill={comment.likes.some((like: any) => like.id === id) ? colors.Button_active : colors.Button_deactive}
           className="bi bi-heart-fill"
           viewBox="0 0 16 16"
+          onClick={() => changeCommentLike()}
         >
-          <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314" />
+          <path fillRule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314" />
         </svg>
         <Text fontSize="14px" color="grey" margin="0px 20px 0px 5px">
           좋아요 {comment.likes.length}개
         </Text>
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="grey" className="bi bi-chat-right-text-fill" viewBox="0 0 16 16" style={{ strokeWidth: 6 }}>
+        {/* <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="grey" className="bi bi-chat-right-text-fill" viewBox="0 0 16 16" style={{ strokeWidth: 6 }}>
           <path d="M2 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h9.586a2 2 0 0 1 1.414.586l2 2V2a1 1 0 0 0-1-1zm12-1a2 2 0 0 1 2 2v12.793a.5.5 0 0 1-.854.353l-2.853-2.853a1 1 0 0 0-.707-.293H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z" />
           <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6m0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5" />
         </svg>
         <Text fontSize="14px" color="grey" margin="0px 0px 0px 5px">
           답글 {comment.childComments.length}개
-        </Text>
+        </Text> */}
       </ButtonArea>
     </ChatCardContainer>
   );

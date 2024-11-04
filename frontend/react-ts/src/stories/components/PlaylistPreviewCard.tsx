@@ -3,10 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import ColorThief from 'colorthief';
 
-// import Vibrant from "node-vibrant";
-// // import { Palette } from "node-vibrant/lib/color";
-
-// PlaylistData 타입 정의
 interface FriendsPlayList {
   playlistId: number;
   albumCover: string[];
@@ -17,7 +13,6 @@ interface FriendsPlayList {
   };
 }
 
-// Props 타입 정의
 interface PlaylistProps {
   playlists: FriendsPlayList[];
 }
@@ -31,8 +26,8 @@ const PlaylistContainer = styled.div`
 `;
 
 // 각 플레이리스트 박스
-const PlaylistBox = styled.div<{ bggradient: string }>`
-  background: ${({ bggradient }) => bggradient || '#ddd'};
+const PlaylistBox = styled.div<{ gradient: string }>`
+  background: ${({ gradient }) => gradient || '#ddd'};
   border-radius: 12px;
   width: 170px;
   height: 220px;
@@ -120,11 +115,11 @@ const PlaylistPreviewCard = ({ playlists }: PlaylistProps) => {
 
   const [playlistGradients, setPlaylistGradients] = useState<string[]>([]);
   const albumCoverRefs = useRef<(HTMLImageElement | null)[]>([]);
-  const [imagesLoaded, setImagesLoaded] = useState<boolean[]>([]);
+  const [imagesLoaded, setImagesLoaded] = useState<boolean[]>(new Array(playlists.length).fill(false));
 
   // 이미지 로드 상태 추적
   useEffect(() => {
-    if (imagesLoaded.length === playlists.length && imagesLoaded.every(Boolean)) {
+    if (imagesLoaded.every(Boolean)) {
       extractColors();
     }
   }, [imagesLoaded]);
@@ -139,7 +134,7 @@ const PlaylistPreviewCard = ({ playlists }: PlaylistProps) => {
         const secondaryColor = `rgb(${colors[1].join(',')})`;
         return `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`;
       }
-      return '#ddd'; // 이미지가 없거나 완전히 로드되지 않은 경우
+      return '#000000'; // 이미지가 없거나 완전히 로드되지 않은 경우
     });
     setPlaylistGradients(gradients);
   };
@@ -156,33 +151,36 @@ const PlaylistPreviewCard = ({ playlists }: PlaylistProps) => {
   };
   return (
     <PlaylistContainer>
-      {playlists.map((playlist, index) => (
-        <PlaylistBox key={playlist.playlistId} bggradient={playlistGradients[index] || '#ddd'}>
-          <AlbumCoverStack onClick={() => GoToPlayListPage({ ...playlist.author, page: 1 })}>
-            {playlist.albumCover
-              .slice(0, 3)
-              .reverse()
-              .map((cover: any, coverIndex: any) => (
-                <AlbumCover
-                  key={coverIndex}
-                  src={cover}
-                  // alt={`Album Cover ${index + 1}`}
-                  ref={el => (albumCoverRefs.current[index] = el)}
-                  // ref={index === 0 ? albumCoverRef : null}
-                  crossOrigin="anonymous"
-                  onLoad={() => handleImageLoad(index)} // 이미지 로드 상태 추적
-                />
-              ))}
-          </AlbumCoverStack>
-          <ProfileArea onClick={() => GoToMusicProfilePage(playlist.author.id)}>
-            <ProfileImage src={playlist.author.profilePicture} alt="Profile" />
-            <UserNameArea>
-              <UserName fontFamily="Bd">{playlist.author.username}'s</UserName>
-              <UserName fontFamily="Rg">Playlist</UserName>
-            </UserNameArea>
-          </ProfileArea>
-        </PlaylistBox>
-      ))}
+      {playlists.map(
+        (playlist, index) =>
+          playlist.albumCover.length !== 0 && (
+            <PlaylistBox key={playlist.playlistId} gradient={playlistGradients[index] || `linear-gradient(135deg, #c5c5c5, #3f2932)`}>
+              <AlbumCoverStack onClick={() => GoToPlayListPage({ ...playlist.author, page: 1 })}>
+                {playlist.albumCover
+                  .slice(0, 3)
+                  .reverse()
+                  .map((cover: any, coverIndex: any) => (
+                    <AlbumCover
+                      key={coverIndex}
+                      src={cover}
+                      alt={`Album Cover ${index + 1}`}
+                      // ref={el => (albumCoverRefs.current[index] = el)}
+                      ref={el => (coverIndex === playlist.albumCover.slice(0, 3).length - 1 ? (albumCoverRefs.current[index] = el) : null)}
+                      crossOrigin="anonymous"
+                      onLoad={() => handleImageLoad(index)} // 이미지 로드 상태 추적
+                    />
+                  ))}
+              </AlbumCoverStack>
+              <ProfileArea onClick={() => GoToMusicProfilePage(playlist.author.id)}>
+                <ProfileImage src={playlist.author.profilePicture} alt="Profile" />
+                <UserNameArea>
+                  <UserName fontFamily="Bd">{playlist.author.username}'s</UserName>
+                  <UserName fontFamily="Rg">Playlist</UserName>
+                </UserNameArea>
+              </ProfileArea>
+            </PlaylistBox>
+          ),
+      )}
     </PlaylistContainer>
   );
 };
