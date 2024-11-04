@@ -16,7 +16,7 @@ public class PlaylistDetail {
   Long trackId;
   String title;
   String artistName;
-  Long albumId;
+  String albumId;
   String trackCover;
   String spotifyId;
   Integer trackOrder;
@@ -26,7 +26,7 @@ public class PlaylistDetail {
         .trackId(playlistTrack.getTrack().getTrackId())
         .title(playlistTrack.getTrack().getTitle())
         .artistName(playlistTrack.getTrack().getArtist().getArtistName())
-        .albumId(playlistTrack.getTrack().getAlbum().getAlbumId())
+        .albumId(playlistTrack.getTrack().getAlbum().getSpotifyAlbumId())
         .trackCover(playlistTrack.getTrack().getTrackCover())
         .spotifyId(playlistTrack.getTrack().getSpotifyTrackId())
         .trackOrder(playlistTrack.getTrackOrder())
