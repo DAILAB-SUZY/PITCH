@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { colors } from '../../styles/color';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useRef, useState } from 'react';
+import { useRef, useEffect, useState } from 'react';
 
 const Container = styled.div`
   display: flex;
@@ -112,38 +112,54 @@ function CommentPostPage() {
   //   const [postContent, setPostContent] = useState("내용을 입력해주세요");
   //   const { email, setEmail, name, setName, id, setId } = useStore();
   const location = useLocation();
-  const spotifyAlbumId = location.state;
-
+  const [postId, setPostId] = useState();
   const [postContent, setPostContent] = useState('');
+  const server = 'http://203.255.81.70:8030';
+  const reissueTokenUrl = `${server}/api/auth/reissued`;
   const [token, setToken] = useState(localStorage.getItem('login-token'));
   const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
 
-  const server = 'http://203.255.81.70:8030';
-  const reissueTokenUrl = `${server}/api/auth/reissued`;
+  console.log('postID::: ');
+  console.log(postId);
+  useEffect(() => {
+    // post 작성을 위해 처음 들어왔으면
+    if (location.state) {
+      setPostId(location.state);
+      //console.log(location.state);
+
+      // } else {
+      //   setIsEditMode(true);
+      //   setPostContent(location.state.postContent);
+      //   delete location.state.postContent;
+      //   setAlbumPost(location.state);
+      // }
+    }
+  }, []);
 
   const navigate = useNavigate();
-  const GoToAlbumPage = () => {
-    navigate('/AlbumPage', { state: spotifyAlbumId });
+  const GoToAlbumPostPage = () => {
+    navigate('/AlbumPostPage', { state: postId });
   };
 
   // 게시물 작성
-  const fetchAlbumChat = async () => {
-    let AlbumChatPostUrl = `${server}/api/album/${spotifyAlbumId}/albumchat`;
+  const fetchComment = async () => {
+    let CommentPostUrl = `${server}/api/album/post/${postId}/comment`;
     if (token) {
       try {
-        const response = await fetch(AlbumChatPostUrl, {
+        console.log(`Posting Comment...`);
+        console.log(postId);
+        console.log(postContent);
+        const response = await fetch(CommentPostUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
+            parent_id: null,
             content: postContent,
-            sorted: 'recent',
           }),
         });
-
-        console.log(postContent);
 
         if (response.ok) {
           const data = await response.json();
@@ -151,7 +167,7 @@ function CommentPostPage() {
           console.log(data);
         } else if (response.status === 401) {
           ReissueToken();
-          fetchAlbumChat();
+          fetchComment();
         } else {
           console.error('Failed to Post Comment:', response.status);
         }
@@ -159,7 +175,7 @@ function CommentPostPage() {
         console.error('Error fetching the JSON file:', error);
       } finally {
         console.log('finished');
-        GoToAlbumPage();
+        GoToAlbumPostPage();
       }
     }
   };
@@ -187,6 +203,56 @@ function CommentPostPage() {
     }
   };
 
+  // 게시물 수정
+  // const fetchEdit = async () => {
+  //   const token = localStorage.getItem("login-token");
+  //   const refreshToken = localStorage.getItem("login-refreshToken");
+  //   let EditUrl = `${server}/api/album/post/${albumPost?.postId}`;
+  //   if (token && albumPost) {
+  //     try {
+  //       console.log(`Edit Posting...`);
+  //       console.log(albumPost);
+  //       console.log(postContent);
+  //       const response = await fetch(EditUrl, {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //         body: JSON.stringify({
+  //           content: postContent,
+  //         }),
+  //       });
+
+  //       if (response.ok) {
+  //         const data = await response.json();
+  //         console.log("Post Success");
+  //         console.log(data);
+  //         GoToHomePage();
+  //       } else if (response.status === 401) {
+  //         console.log("reissuing Token");
+  //         const reissueToken = await fetch(reissueTokenUrl, {
+  //           method: "POST",
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //             "Refresh-Token": `${refreshToken}`,
+  //           },
+  //         });
+  //         const data = await reissueToken.json();
+  //         localStorage.setItem("login-token", data.token);
+  //         localStorage.setItem("login-refreshToken", data.refreshToken);
+  //         fetchPost();
+  //       } else {
+  //         console.error("Failed to Post data:", response.status);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching the JSON file:", error);
+  //     } finally {
+  //       console.log("finished");
+  //     }
+  //   }
+  // };
+
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const adjustTextareaHeight = () => {
     if (textareaRef.current) {
@@ -199,11 +265,11 @@ function CommentPostPage() {
     <Container>
       <CommentArea>
         <ButtonArea>
-          <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 10px" color={colors.Font_black} onClick={() => GoToAlbumPage()}>
+          <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 10px" color={colors.Font_black} onClick={() => GoToAlbumPostPage()}>
             취소
           </Text>
           <Text fontFamily="Bd" fontSize="20px" margin="0px" color={colors.Font_black}>
-            Chat 작성
+            Comment 작성
           </Text>
           <Text
             fontFamily="Rg"
@@ -211,7 +277,7 @@ function CommentPostPage() {
             margin="0px 10px 0px 0px"
             color={colors.Font_black}
             // onClick={() => (isEditMode ? console.log("fetchEdit") : fetchComment())}
-            onClick={() => fetchAlbumChat()}
+            onClick={() => fetchComment()}
           >
             저장
           </Text>

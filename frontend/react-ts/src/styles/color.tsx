@@ -6,7 +6,6 @@ const BG_lightpink = '#ffe9f0';
 const InputBox = '#d6d6d6';
 const Font_black = '#000000';
 const Font_grey = '#3f3f3f';
-const Font_white = '#ffffff';
 const Button_active = '#FF668D';
 const Button_deactive = '#c6c6c6';
 const Gradient_start = '#ffdae0';
@@ -23,7 +22,6 @@ export const colors = {
   InputBox,
   Font_black,
   Font_grey,
-  Font_white,
   Button_active,
   Button_deactive,
   Gradient_start,

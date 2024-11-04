@@ -36,24 +36,6 @@ const ImageArea = styled.div`
   border-radius: 12px;
 `;
 
-const NoImageArea = styled.div`
-  position: absolute;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  overflow: hidden;
-  top: 0px;
-  left: 0px;
-
-  width: 360px;
-  height: 360px;
-  /* object-fit: cover; */
-  z-index: 1;
-  border-radius: 12px;
-
-  background-color: linear-gradient(to top right, #989898, #f3f3f3);
-`;
-
 const GradientBG = styled.div`
   position: absolute;
   top: 0px;
@@ -146,9 +128,9 @@ const FavoriteAlbumTextArea = styled.div`
 `;
 
 const Text = styled.div<{
-  fontFamily?: string;
-  fontSize?: string;
-  color?: string;
+  fontFamily: string;
+  fontSize: string;
+  color: string;
   opacity?: string;
 }>`
   font-size: ${props => props.fontSize};
@@ -171,19 +153,14 @@ interface FavoriteArtistProps {
 }
 
 function FavoriteArtistEditCard({ FavoriteArtistData, openSearch }: FavoriteArtistProps) {
-  //const data = FavoriteArtistData;
-  //console.log(data);
+  const data = FavoriteArtistData;
+  console.log(data);
   return (
     <FavoriteArtistArea>
       <BG>
-        {FavoriteArtistData.artistCover === null ? (
-          <NoImageArea></NoImageArea>
-        ) : (
-          <ImageArea>
-            <img src={FavoriteArtistData.artistCover} width="auto" height="100%" object-fit="cover"></img>
-          </ImageArea>
-        )}
-
+        <ImageArea>
+          <img src={data.artistCover} width="auto" height="100%" object-fit="cover"></img>
+        </ImageArea>
         <GradientBG> </GradientBG>
         <ContentArea>
           <ArtistTitleTextArea
@@ -191,35 +168,23 @@ function FavoriteArtistEditCard({ FavoriteArtistData, openSearch }: FavoriteArti
               openSearch('Artist');
             }}
           >
-            {FavoriteArtistData.artistName === null ? (
-              <Text fontFamily="Rg" fontSize="15px" color="white">
-                여기를 눌러 아티스트를 설정해주세요.
-              </Text>
-            ) : (
-              <Text fontFamily="Bd" fontSize={FavoriteArtistData.artistName.length > 10 ? '35px' : '50px'} color="white">
-                {FavoriteArtistData.artistName}
-              </Text>
-            )}
+            <Text fontFamily="Bd" fontSize={data.artistName.length > 10 ? '40px' : '50px'} color="white">
+              {data.artistName}
+            </Text>
           </ArtistTitleTextArea>
           <FavoriteAlbumArea
             onClick={() => {
               openSearch('Artist-album');
             }}
           >
-            <FavoriteAlbumCover>{FavoriteArtistData.albumCover !== null ? <img src={FavoriteArtistData.albumCover} width="100%" height="100%" object-fit="cover"></img> : null}</FavoriteAlbumCover>
+            <FavoriteAlbumCover>{data.albumCover !== '' ? <img src={data.albumCover} width="100%" height="100%" object-fit="cover"></img> : null}</FavoriteAlbumCover>
             <FavoriteAlbumTextArea>
               <Text fontFamily="Rg" fontSize="15px" color="white" opacity="0.7">
                 Favorite Album
               </Text>
-              {FavoriteArtistData.albumName !== null ? (
-                <Text fontFamily="Bd" fontSize="22px" color="white">
-                  {FavoriteArtistData.albumName}
-                </Text>
-              ) : (
-                <Text fontFamily="Rg" fontSize="18px" color="white">
-                  설정하지 않았습니다.
-                </Text>
-              )}
+              <Text fontFamily="Bd" fontSize="22px" color="white">
+                {data.albumName}
+              </Text>
             </FavoriteAlbumTextArea>
           </FavoriteAlbumArea>
           <FavoriteAlbumArea
@@ -227,20 +192,14 @@ function FavoriteArtistEditCard({ FavoriteArtistData, openSearch }: FavoriteArti
               openSearch('Artist-track');
             }}
           >
-            <FavoriteAlbumCover>{FavoriteArtistData.trackCover !== null ? <img src={FavoriteArtistData.trackCover} width="100%" height="100%" object-fit="cover"></img> : null}</FavoriteAlbumCover>
+            <FavoriteAlbumCover>{data.trackCover !== '' ? <img src={data.trackCover} width="100%" height="100%" object-fit="cover"></img> : null}</FavoriteAlbumCover>
             <FavoriteAlbumTextArea>
               <Text fontFamily="Rg" fontSize="15px" color="white" opacity="0.7">
                 Favorite Song
               </Text>
-              {FavoriteArtistData.trackName !== null ? (
-                <Text fontFamily="Bd" fontSize="18px" color="white">
-                  {FavoriteArtistData.trackName}
-                </Text>
-              ) : (
-                <Text fontFamily="Rg" fontSize="18px" color="white">
-                  설정하지 않았습니다.
-                </Text>
-              )}
+              <Text fontFamily="Bd" fontSize="22px" color="white">
+                {data.trackName}
+              </Text>
             </FavoriteAlbumTextArea>
           </FavoriteAlbumArea>
         </ContentArea>
