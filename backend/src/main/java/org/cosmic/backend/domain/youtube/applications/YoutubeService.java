@@ -8,6 +8,7 @@ import org.cosmic.backend.domain.playList.repositorys.PlaylistRepository;
 import org.cosmic.backend.domain.playList.repositorys.PlaylistTrackRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -27,7 +28,8 @@ public class YoutubeService {
   private static final String YOUTUBE_PLAYLIST_ITEMS_URL = "https://www.googleapis.com/youtube/v3/playlistItems";
   private final String clientId = System.getenv("YOUTUBE_CLIENT_ID");
   private final String clientSecret = System.getenv("YOUTUBE_CLIENT_SECRET");
-  private final String redirectUri = "http://localhost:8080/oauth2/callback/google";
+  @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
+  private String redirectUri;
   @Autowired
   private PlaylistTrackRepository playlistTrackRepository;
   @Autowired
