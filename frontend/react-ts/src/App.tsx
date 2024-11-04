@@ -45,6 +45,7 @@ function App() {
         <Route path="/FollowPage" element={<FollowPage />} />
         <Route path="/FriendSearchPage" element={<FriendSearchPage />} />
         <Route path="/ErrorPage" element={<ErrorPage />} />
+        <Route path="/oauth2/callback/google" element={<ErrorPage />} />
       </Routes>
     </BrowserRouter>
   );
