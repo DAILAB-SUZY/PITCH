@@ -3,7 +3,6 @@ package org.cosmic.backend.domain.post.entities;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -35,7 +34,7 @@ public class PostComment {
   @Column(name = "comment_id") // 컬럼 이름 명시
   private Long commentId;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne
   private PostComment parentComment;
 
   @ManyToOne

@@ -9,6 +9,8 @@ import FavoriteArtistCard from '../components/FavoriteArtistCard';
 import AlbumPostCard from '../components/AlbumPostCard';
 import AlbumChatCardWithAlbum from '../components/AlbumChatCardWithAlbum';
 import useStore from '../store/store';
+import { fetchGET, fetchPOST, MAX_REISSUE_COUNT } from '../utils/fetchData';
+import RatedAlbumCard from '../components/RatedAlbumCard';
 
 const Container = styled.div`
   display: flex;
@@ -37,31 +39,26 @@ const Body = styled.div`
   align-items: center;
 `;
 
-const Text = styled.div<{
-  fontFamily?: string;
-  fontSize?: string;
-  margin?: string;
-}>`
+const Text = styled.div<{ fontSize: string; fontFamily: string; margin: string }>`
   font-size: ${props => props.fontSize};
-  font-family: ${props => props.fontFamily};
   margin: ${props => props.margin};
+  font-family: ${props => props.fontFamily};
 `;
-
 const ProfileHeaderArea = styled.div`
-  width: 100vw;
+  width: 360px;
   height: 150px;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  padding-top: 20px;
+  padding: 20px 0px 0px 20px;
   margin-bottom: 20px;
 `;
 
 const ProfileLeftArea = styled.div`
   margin-top: 5vh;
-  width: 35vw;
-  height: 50vw;
+  width: 100px;
+  height: 150px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -75,11 +72,19 @@ const Circle = styled.div<{ bgcolor?: string }>`
   overflow: hidden;
   margin-bottom: 10px;
   background-color: ${props => props.bgcolor};
+  object-fit: cover;
+`;
+
+const ProfileImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 비율 유지하며 꽉 채움 */
+  object-position: center; /* 이미지 가운데 정렬 */
 `;
 
 const FollowBtn = styled.div<{ bgcolor: string; color: string }>`
   width: 90px;
-  height: 20px;
+  height: 25px;
   font-size: 13px;
   font-family: 'Rg';
   color: ${props => props.color};
@@ -105,7 +110,7 @@ const ProfileRightArea = styled.div`
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
-  padding-top: 10px;
+  padding: 10px 0px 0px 10px;
 `;
 
 const ProfileNameArea = styled.div`
@@ -134,11 +139,6 @@ const Tag = styled.div<{ color: string }>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
-  &:hover {
-    background-color: ${colors.Main_Pink};
-    color: white;
-  }
 `;
 
 const MenuArea = styled.div`
@@ -224,6 +224,22 @@ const FavoriteArtistArea = styled.div`
   overflow: hidden;
 `;
 
+const TwoColumnArea = styled.div`
+  width: 360px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  align-items: center;
+`;
+const RatedAlbumArea = styled.div`
+  display: flex;
+  width: 100vw;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+`;
+
 const PlaylistCardArea = styled.div`
   display: flex;
   flex-direction: column;
@@ -255,10 +271,7 @@ interface MusicProfileData {
     id: number;
     username: string;
     profilePicture: string;
-    dnas: {
-      dnaKey: number;
-      dnaName: string;
-    }[];
+    dnas: DNA[];
   };
   favoriteArtist: {
     artistName: string;
@@ -268,15 +281,13 @@ interface MusicProfileData {
     albumCover: string;
     trackCover: string;
   };
-  bestAlbum: [
-    {
-      albumId: number;
-      albumName: string;
-      albumCover: string;
-      score: number;
-      spotifyId: string;
-    },
-  ];
+  bestAlbum: {
+    albumId: number;
+    albumName: string;
+    albumCover: string;
+    score: number;
+    spotifyId: string;
+  }[];
   userDna: [
     {
       dnaName: string;
@@ -303,131 +314,6 @@ interface MusicProfileData {
   ];
 }
 
-// interface PostData {
-//   type: string;
-//   postDetail: {
-//     postId: number;
-//     content: string;
-//     createAt: number;
-//     updateAt: number;
-//     author: {
-//       id: number;
-//       username: string;
-//       profilePicture: string;
-//       dnas: {
-//         dnaKey: number;
-//         dnaName: string;
-//       }[];
-//     };
-//     album: {
-//       id: number;
-//       title: string;
-//       albumCover: string;
-//       artistName: string;
-//       genre: string;
-//     };
-//   };
-//   comments: {
-//     id: number;
-//     content: string;
-//     createdAt: number;
-//     updatedAt: number;
-//     likes: {
-//       id: number;
-//       username: string;
-//       profilePicture: string;
-//       dnas: {
-//         dnaKey: number;
-//         dnaName: string;
-//       }[];
-//     }[];
-//     childComments: {
-//       id: number;
-//       content: string;
-//       author: {
-//         id: number;
-//         username: string;
-//         profilePicture: string;
-//         dnas: {
-//           dnaKey: number;
-//           dnaName: string;
-//         }[];
-//       };
-//     }[];
-//     author: {
-//       id: number;
-//       username: string;
-//       profilePicture: string;
-//       dnas: {
-//         dnaKey: number;
-//         dnaName: string;
-//       }[];
-//     };
-//   }[];
-//   likes: {
-//     id: number;
-//     username: string;
-//     profilePicture: string;
-//     dnas: {
-//       dnaKey: number;
-//       dnaName: string;
-//     }[];
-//   }[];
-// }
-// [];
-
-// interface ChatData {
-//   type: string;
-//   albumDetail: {
-//     albumId: number;
-//     title: string;
-//     albumCover: string;
-//     artistName: string;
-//     genre: string;
-//   };
-//   albumChatCommentDetail: {
-//     albumChatCommentId: number;
-//     content: string;
-//     createAt: number;
-//     updateAt: number;
-//     likes: {
-//       author: {
-//         id: number;
-//         username: string;
-//         profilePicture: string;
-//         dnas: {
-//           dnaKey: number;
-//           dnaName: string;
-//         }[];
-//       };
-//       updateAt: string;
-//     }[];
-//     comments: {
-//       albumChatCommentId: number;
-//       content: string;
-//       createAt: string;
-//       updateAt: string;
-//       author: {
-//         id: number;
-//         username: string;
-//         profilePicture: string;
-//         dnas: {
-//           dnaKey: number;
-//           dnaName: string;
-//         }[];
-//       };
-//     }[];
-//     author: {
-//       id: number;
-//       username: string;
-//       profilePicture: string;
-//       dnas: {
-//         dnaKey: number;
-//         dnaName: string;
-//       }[];
-//     };
-//   };
-// }
 interface DNA {
   dnaKey: number;
   dnaName: string;
@@ -448,6 +334,7 @@ interface Album {
   genre: string;
   spotifyId: string;
   likes: User[];
+  score: number;
 }
 
 interface PostAuthor extends User {}
@@ -455,8 +342,8 @@ interface PostAuthor extends User {}
 interface PostDetail {
   postId: number;
   content: string;
-  createAt: number;
-  updateAt: number;
+  createAt: string;
+  updateAt: string;
   author: PostAuthor;
   album: Album;
 }
@@ -467,15 +354,15 @@ interface ChildComment {
   id: number;
   content: string;
   author: CommentAuthor;
-  createTime: number;
-  updateTime: number;
+  createTime: string;
+  updateTime: string;
 }
 
 interface Comment {
   id: number;
   content: string;
-  createdAt: number;
-  updatedAt: number;
+  createAt: string;
+  updateAt: string;
   likes: User[];
   childComments: ChildComment[];
   author: CommentAuthor;
@@ -486,59 +373,39 @@ interface PostData {
   comments: Comment[];
   likes: User[];
 }
-[];
 
+interface DNA {
+  dnaKey: number;
+  dnaName: string;
+}
+interface User {
+  id: number;
+  username: string;
+  profilePicture: string;
+  dnas: DNA[];
+}
+
+interface AlbumChatComment {
+  albumChatCommentId: number;
+  content: string;
+  createAt: string; // ISO 날짜 형식
+  updateAt: string; // ISO 날짜 형식
+  likes: User[];
+  comments: AlbumChatComment[]; // 재귀적 구조
+  author: User;
+}
+interface AlbumDetail {
+  albumId: number;
+  title: string;
+  albumCover: string;
+  artistName: string;
+  genre: string;
+  spotifyId: string;
+}
 interface ChatData {
   type: string;
-  albumDetail: {
-    albumId: number;
-    title: string;
-    albumCover: string;
-    artistName: string;
-    genre: string;
-  };
-  albumChatCommentDetail: {
-    albumChatCommentId: number;
-    content: string;
-    createAt: number;
-    updateAt: number;
-    likes: {
-      author: {
-        id: number;
-        username: string;
-        profilePicture: string;
-        dnas: {
-          dnaKey: number;
-          dnaName: string;
-        }[];
-      };
-      updateAt: string;
-    }[];
-    comments: {
-      albumChatCommentId: number;
-      content: string;
-      createAt: string;
-      updateAt: string;
-      author: {
-        id: number;
-        username: string;
-        profilePicture: string;
-        dnas: {
-          dnaKey: number;
-          dnaName: string;
-        }[];
-      };
-    }[];
-    author: {
-      id: number;
-      username: string;
-      profilePicture: string;
-      dnas: {
-        dnaKey: number;
-        dnaName: string;
-      }[];
-    };
-  };
+  albumDetail: AlbumDetail;
+  albumChatCommentDetail: AlbumChatComment;
 }
 
 type mergeActivityData = PostData | ChatData;
@@ -549,14 +416,15 @@ const EditBtn = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-evenly;
+  justify-content: center;
+  gap: 3px;
   background-color: ${colors.BG_grey};
-  width: 70px;
-  height: 30px;
+  width: 90px;
+  height: 25px;
   border-radius: 15px;
-  padding: 10px;
+  /* padding: 10px; */
   box-sizing: border-box;
-  margin-bottom: 80px;
+  /* margin-bottom: 80px; */
   box-shadow: 0 0px 5px rgba(0, 0, 0, 0.1);
 `;
 
@@ -564,9 +432,12 @@ function MusicProfilePage() {
   const [tabBtn, setTabBtn] = useState(1);
   const [musicProfileData, setMusicProfileData] = useState<MusicProfileData>();
   const [activityData, setActivityData] = useState<ActivityData>([]);
+  const [RatedAlbumList, setRatedAlbumList] = useState<Album[]>([]);
   const navigate = useNavigate();
   const location = useLocation();
   const profileId = location.state;
+
+  // 페이지 이동 함수
   const GoToEditPage = (musicProfileData: MusicProfileData) => {
     navigate('/MusicProfileEditPage', { state: musicProfileData.userDetail.id });
   };
@@ -578,172 +449,93 @@ function MusicProfilePage() {
       },
     });
   };
+  // const GoToAlbumPage = (spotifyAlbumId: string) => {
+  //   navigate('/AlbumPage', { state: spotifyAlbumId });
+  // };
 
   const [isFollowed, setIsFollowed] = useState<boolean>();
 
   const { name, id } = useStore();
   console.log(`id: ${id} / name: ${name}`);
-  const server = 'http://203.255.81.70:8030';
-  let musiProfileUrl = `${server}/api/user/${profileId}/musicProfile`;
-  let activityUrl = `${server}/api/user/${profileId}/musicProfile/activity`;
-  let followUrl = `${server}/api/user/follow/${profileId}`;
-  const reissueTokenUrl = `${server}/api/auth/reissued`;
-  const [token, setToken] = useState(localStorage.getItem('login-token'));
-  const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
 
-  const fetchData = async () => {
-    if (token) {
-      try {
-        console.log('fetching...');
-        const response = await fetch(musiProfileUrl, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        });
+  let musiProfileUrl = `/api/user/${profileId}/musicProfile`;
+  let activityUrl = `/api/user/${profileId}/musicProfile/activity`;
+  let followUrl = `/api/user/follow/${profileId}`;
 
-        if (response.ok) {
-          console.log('set PostList');
-          const data = await response.json();
-          console.log(data);
-          setMusicProfileData(data);
-
-          // 내가 현재 musicprofile 사용자 follow 되어 있는지 판단
-          if (data.followers.some((user: any) => user.userId === id)) {
-            setIsFollowed(true);
-            console.log('following this user');
-          } else {
-            console.log('NOT following this user');
-            console.log(id);
-            console.log(musicProfileData?.followers);
-          }
-        } else if (response.status === 401) {
-          ReissueToken();
-          fetchData();
+  const fetchData = async (token: string, refreshToken: string, URL: string) => {
+    fetchGET(token, refreshToken, URL, MAX_REISSUE_COUNT).then(data => {
+      if (data) {
+        setMusicProfileData(data);
+        // 내가 현재 musicprofile 사용자 follow 되어 있는지 판단
+        if (data.followers.some((user: any) => user.userId === id)) {
+          setIsFollowed(true);
+          console.log('following this user');
         } else {
-          console.error('Failed to fetch data:', response.status);
+          console.log('NOT following this user');
+          console.log(id);
+          console.log(musicProfileData?.followers);
         }
-      } catch (error) {
-        console.error('Error fetching the JSON file:', error);
-      } finally {
-        console.log('finished');
       }
-    }
+    });
+    fetchStaredAlbum();
   };
-  const ReissueToken = async () => {
-    console.log('reissuing Token');
-    try {
-      const response = await fetch(reissueTokenUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Refresh-Token': `${refreshToken}`,
-        },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('login-token', data.token);
-        localStorage.setItem('login-refreshToken', data.refreshToken);
-        setToken(data.token);
-        setRefreshToken(data.refreshToken);
-      } else {
-        console.error('failed to reissue token', response.status);
-      }
-    } catch (error) {
-      console.error('Refresh Token 재발급 실패', error);
-    }
-  };
+
   useEffect(() => {
-    fetchData();
+    fetchData(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '', musiProfileUrl);
   }, []);
 
-  const fetchActivityData = async () => {
-    if (token) {
-      try {
-        console.log('fetching Activity...');
-        const response = await fetch(activityUrl, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
+  const fetchActivityData = async (token: string, refreshToken: string) => {
+    fetchGET(token, refreshToken, activityUrl, MAX_REISSUE_COUNT).then(data => {
+      if (data) {
+        const mergedData = [...data.albumPostList.map((post: any) => ({ ...post, type: 'post' })), ...data.albumCommentList.map((chat: any) => ({ ...chat, type: 'chat' as const }))];
+        // createAt 기준으로 내림차순 정렬
+        mergedData.sort((a, b) => {
+          let stA: Date = new Date(0);
+          let stB: Date = new Date(0);
+
+          if (a.type === 'post') {
+            const dateStr = a.postDetail.updateAt === null ? a.postDetail.createAt : a.postDetail.updateAt;
+            stA = dateStr ? new Date(dateStr) : new Date(0);
+          } else if (a.type === 'chat') {
+            const dateStr = a.albumChatCommentDetail.updateAt === null ? a.albumChatCommentDetail.createAt : a.albumChatCommentDetail.updateAt;
+            stA = dateStr ? new Date(dateStr) : new Date(0);
+          }
+
+          if (b.type === 'post') {
+            const dateStr = b.postDetail.updateAt === null ? b.postDetail.createAt : b.postDetail.updateAt;
+            stB = dateStr ? new Date(dateStr) : new Date(0);
+          } else if (b.type === 'chat') {
+            const dateStr = b.albumChatCommentDetail.updateAt === null ? b.albumChatCommentDetail.createAt : b.albumChatCommentDetail.updateAt;
+            stB = dateStr ? new Date(dateStr) : new Date(0);
+          }
+
+          return stB.getTime() - stA.getTime();
         });
-
-        if (response.ok) {
-          console.log('set Activity List');
-          const data = await response.json();
-          console.log(data);
-          // setActivityData(data);
-          // postDetail과 albumChatDetail 배열을 합치기
-          //const mergedData = [...data.postDetail, ...data.albumChatDetail];
-          const mergedData = [...data.albumPostList.map((post: any) => ({ ...post, type: 'post' as const })), ...data.albumCommentList.map((chat: any) => ({ ...chat, type: 'chat' as const }))];
-          console.log('--before Sort--');
-          console.log(mergedData);
-
-          // createAt 기준으로 내림차순 정렬
-          mergedData.sort((a, b) => {
-            let stA;
-            let stB;
-            if (a.type === 'post') {
-              stA = a.postDetail.updateAt === null ? a.postDetail.createAt : a.postDetail.updateAt;
-            } else if (a.type === 'chat') {
-              stA = a.albumChatCommentDetail.updateAt === null ? a.albumChatCommentDetail.createAt : a.albumChatCommentDetail.updateAt;
-            }
-            if (b.type === 'post') {
-              stB = b.postDetail.updateAt === null ? b.postDetail.createAt : b.postDetail.updateAt;
-            } else if (b.type === 'chat') {
-              stB = b.albumChatCommentDetail.updateAt === null ? b.albumChatCommentDetail.createAt : b.albumChatCommentDetail.updateAt;
-            }
-            return stB - stA;
-          });
-          console.log('--after Sort--');
-          console.log(mergedData); // 정렬된 데이터 확인
-          setActivityData(mergedData);
-        } else if (response.status === 401) {
-          ReissueToken();
-          fetchActivityData();
-        } else {
-          console.error('Failed to fetch data:', response.status);
-        }
-      } catch (error) {
-        console.error('Error fetching the JSON file:', error);
-      } finally {
-        console.log('finished');
+        setActivityData(mergedData);
+        console.log('merged');
+        console.log(mergedData);
       }
-    }
+    });
   };
 
-  const fetchFollow = async () => {
-    if (token) {
-      try {
-        console.log('fetching...');
-        const response = await fetch(followUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (response.ok) {
-          console.log('following complete');
-          setIsFollowed(!isFollowed);
-          const data = await response.json();
-          console.log(data);
-        } else if (response.status === 401) {
-          ReissueToken();
-          fetchFollow();
-        } else {
-          console.error('Failed to fetch data:', response.status);
-        }
-      } catch (error) {
-        console.error('Error fetching the JSON file:', error);
-      } finally {
-        console.log('finished');
-        fetchData();
+  const fetchFollow = async (token: string, refreshToken: string) => {
+    fetchPOST(token, refreshToken, followUrl, {}, MAX_REISSUE_COUNT).then(data => {
+      if (data) {
+        setIsFollowed(!isFollowed);
       }
-    }
+    });
+  };
+
+  const fetchStaredAlbum = async () => {
+    const token = localStorage.getItem('login-token') || '';
+    const refreshToken = localStorage.getItem('login-refreshToken') || '';
+    const StaredAlbumUrl = `/api/user/${profileId}/score`;
+    fetchGET(token, refreshToken, StaredAlbumUrl, MAX_REISSUE_COUNT).then(data => {
+      if (data) {
+        const sortedData = data.sort((a: Album, b: Album) => b.score - a.score);
+        setRatedAlbumList(sortedData);
+      }
+    });
   };
 
   return (
@@ -756,18 +548,18 @@ function MusicProfilePage() {
           <ProfileLeftArea>
             {musicProfileData ? (
               <Circle>
-                <img src={musicProfileData?.userDetail.profilePicture} width="100%" height="100%"></img>
+                <ProfileImage src={musicProfileData?.userDetail.profilePicture} alt="Profile" />
               </Circle>
             ) : (
               <Circle bgcolor={colors.BG_grey}></Circle>
             )}
             {id !== musicProfileData?.userDetail.id ? (
               isFollowed ? (
-                <FollowBtn color={colors.BG_white} bgcolor={colors.Main_Pink} onClick={() => fetchFollow()}>
+                <FollowBtn color={colors.BG_white} bgcolor={colors.Main_Pink} onClick={() => fetchFollow(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '')}>
                   Following
                 </FollowBtn>
               ) : (
-                <FollowBtn color={colors.Main_Pink} bgcolor={colors.BG_white} onClick={() => fetchFollow()}>
+                <FollowBtn color={colors.Main_Pink} bgcolor={colors.BG_white} onClick={() => fetchFollow(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '')}>
                   Follow
                 </FollowBtn>
               )
@@ -793,7 +585,7 @@ function MusicProfilePage() {
               </Text>
             </ProfileNameArea>
             <MusicDnaArea>
-              {musicProfileData ? (
+              {musicProfileData && musicProfileData?.userDetail.dnas.length !== 0 ? (
                 musicProfileData?.userDetail.dnas.map(dna => (
                   <Tag key={dna.dnaKey} color={colors.Font_black}>
                     #{dna.dnaName}
@@ -801,10 +593,13 @@ function MusicProfilePage() {
                 ))
               ) : (
                 <>
-                  <Tag color={colors.BG_grey}>dnadna</Tag>
-                  <Tag color={colors.BG_grey}>dnadnadna</Tag>
-                  <Tag color={colors.BG_grey}>dnadnadna</Tag>
-                  <Tag color={colors.BG_grey}>dnadna</Tag>
+                  <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 7px 4px">
+                    아직
+                  </Text>
+                  <Tag color={colors.Font_black}>#MusicDNA</Tag>
+                  <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 4px">
+                    를 설정하지 않았습니다.
+                  </Text>
                 </>
               )}
             </MusicDnaArea>
@@ -829,7 +624,7 @@ function MusicProfilePage() {
               color={tabBtn === 2 ? colors.BG_white : colors.Font_black}
               onClick={() => {
                 setTabBtn(2);
-                fetchActivityData();
+                fetchActivityData(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '');
               }}
             >
               Activity
@@ -858,12 +653,32 @@ function MusicProfilePage() {
             </FollowArea>
             <BestAlbumArea>
               <Title>BestAlbum</Title>
-              {musicProfileData?.bestAlbum ? <AlbumGrid AlbumData={musicProfileData?.bestAlbum}></AlbumGrid> : <Text>아직 설정하지 않았습니다.</Text>}
+              {musicProfileData?.bestAlbum.length !== 0 ? (
+                <AlbumGrid AlbumData={musicProfileData?.bestAlbum}></AlbumGrid>
+              ) : (
+                <Text fontFamily="Rg" fontSize="15px" margin="5px">
+                  아직 설정하지 않았습니다.
+                </Text>
+              )}
             </BestAlbumArea>
             <FavoriteArtistArea>
               <Title>Favorite Artist</Title>
               {musicProfileData?.favoriteArtist && <FavoriteArtistCard FavoriteArtistData={musicProfileData.favoriteArtist}></FavoriteArtistCard>}
             </FavoriteArtistArea>
+            <RatedAlbumArea>
+              <Title>Rated Album</Title>
+              {RatedAlbumList.length !== 0 ? (
+                <TwoColumnArea>
+                  {RatedAlbumList.map(Album => (
+                    <RatedAlbumCard album={Album}></RatedAlbumCard>
+                  ))}
+                </TwoColumnArea>
+              ) : (
+                <Text fontFamily="Rg" fontSize="15px" margin="5px">
+                  별점을 매긴 앨범이 없습니다.
+                </Text>
+              )}
+            </RatedAlbumArea>
           </>
         ) : (
           <>
@@ -881,7 +696,7 @@ function MusicProfilePage() {
                 }
               })
             ) : (
-              <Text fontSize="15px" margin="150px 0px 0px 0px">
+              <Text fontSize="15px" fontFamily="Rg" margin="150px 0px 0px 0px">
                 {' '}
                 작성한 글이 없습니다.
               </Text>

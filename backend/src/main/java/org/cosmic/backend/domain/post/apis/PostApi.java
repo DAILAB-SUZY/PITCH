@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.post.applications.PostService;
 import org.cosmic.backend.domain.post.dtos.Post.CreatePost;
@@ -18,7 +19,6 @@ import org.cosmic.backend.domain.post.exceptions.NotFoundAlbumException;
 import org.cosmic.backend.domain.post.exceptions.NotFoundPostException;
 import org.cosmic.backend.domain.search.applications.SearchAlbumService;
 import org.cosmic.backend.globals.annotations.ApiCommonResponses;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -37,22 +37,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/album")
 @ApiCommonResponses
+@RequiredArgsConstructor
 @Tag(name = "앨범 포스트 관련 API", description = "앨범 포스트 및 댓글/대댓글/좋아요")
 public class PostApi {
 
   private final PostService postService;
   private final SearchAlbumService searchAlbumService;
-
-  /**
-   * PostApi의 생성자입니다.
-   *
-   * @param postService 게시물 관련 비즈니스 로직을 처리하는 서비스 클래스
-   */
-  public PostApi(PostService postService,
-      @Qualifier("searchAlbumService") SearchAlbumService searchAlbumService) {
-    this.postService = postService;
-    this.searchAlbumService = searchAlbumService;
-  }
 
   /**
    * 앨범 포스트 조회 API

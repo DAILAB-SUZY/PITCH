@@ -6,6 +6,7 @@ import java.util.List;
 import org.cosmic.backend.domain.playList.domains.Playlist_Track;
 import org.cosmic.backend.domain.playList.repositorys.PlaylistRepository;
 import org.cosmic.backend.domain.playList.repositorys.PlaylistTrackRepository;
+import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -31,6 +32,8 @@ public class YoutubeService {
   private PlaylistTrackRepository playlistTrackRepository;
   @Autowired
   private PlaylistRepository playlistRepository;
+  @Autowired
+  private UsersRepository usersRepository;
 
   // 액세스 토큰을 요청하는 메서드
   public String getAccessToken(String authorizationCode) {
@@ -174,8 +177,10 @@ public class YoutubeService {
     }
   }
 
-  public String createPlaylists(Long userId, String title, String description, String accessToken) {
+  public String createPlaylists(Long userId, String accessToken) {
     // 1. 플레이리스트 생성
+    String title = usersRepository.findByUserId(userId).get().getUsername() + "님의 플레이리스트입니다.";
+    String description = "Created By Pitch";
     String playlistId = createPlaylist(title, description, accessToken);
     List<Playlist_Track> playlistTracks = playlistTrackRepository.findByPlaylist_PlaylistId(
         playlistRepository.findByUser_UserId(userId).get().getPlaylistId()).get();

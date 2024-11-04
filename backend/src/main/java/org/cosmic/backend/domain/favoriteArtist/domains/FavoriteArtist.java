@@ -40,7 +40,7 @@ public class FavoriteArtist {
 
   @ManyToOne
   private Track track;
-
+  
   @ManyToOne
   private Album album;
 
@@ -64,5 +64,13 @@ public class FavoriteArtist {
 
   public String getSpotifyArtistId() {
     return getArtist().getSpotifyArtistId();
+  }
+
+  public String getSpotifyAlbumId() {
+    return getAlbum().getSpotifyAlbumId();
+  }
+
+  public String getSpotifyTrackId() {
+    return getTrack().getSpotifyTrackId();
   }
 }

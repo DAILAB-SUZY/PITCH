@@ -30,6 +30,7 @@ import org.cosmic.backend.domain.bestAlbum.domains.UserBestAlbum;
 import org.cosmic.backend.domain.favoriteArtist.domains.FavoriteArtist;
 import org.cosmic.backend.domain.musicDna.domains.MusicDna;
 import org.cosmic.backend.domain.musicDna.dtos.DnaDetail;
+import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.playList.domains.Playlist;
 import org.cosmic.backend.domain.post.entities.Post;
 import org.cosmic.backend.domain.post.entities.PostComment;
@@ -245,5 +246,16 @@ public class User implements MyUserDetails {
   @Override
   public String getId() {
     return String.valueOf(userId);
+  }
+
+  public AlbumScore getAlbumScore(Album album) {
+    return getAlbumScore().stream()
+        .filter(albumScore -> albumScore.getAlbum().equals(album))
+        .findFirst()
+        .orElseGet(() -> {
+          AlbumScore albumscore = AlbumScore.NONE_SCORE;
+          albumscore.setAlbum(album);
+          return albumscore;
+        });
   }
 }

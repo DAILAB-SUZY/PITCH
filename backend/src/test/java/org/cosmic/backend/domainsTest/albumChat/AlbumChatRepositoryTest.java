@@ -8,6 +8,8 @@ import org.cosmic.backend.domain.albumChat.domains.AlbumChatComment;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDetail;
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatCommentException;
 import org.cosmic.backend.domain.albumChat.repositorys.AlbumChatCommentRepository;
+import org.cosmic.backend.domain.albumScore.domains.AlbumScore;
+import org.cosmic.backend.domain.albumScore.repositorys.AlbumScoreRepository;
 import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
 import org.cosmic.backend.domain.user.domains.User;
@@ -33,6 +35,8 @@ public class AlbumChatRepositoryTest {
 
   @Autowired
   private Creator creator;
+  @Autowired
+  private AlbumScoreRepository albumScoreRepository;
 
   @Test
   @DisplayName("앨범챗 생성 테스트")
@@ -167,6 +171,53 @@ public class AlbumChatRepositoryTest {
       Assertions.assertTrue(
           likeOrderedAlbums.get(i - 1).getAlbumLike().size() >= likeOrderedAlbums.get(i)
               .getAlbumLike().size());
+    });
+  }
+
+  @Test
+  @DisplayName("앨범 스코어 레포지토리에서 좋아요 많은 순으로 조회")
+  @Transactional
+  public void getAlbumChatOrderLikesInAlbumScoreRepositoryTest() {
+    List<Album> albums = creator.createAndSaveAlbums(0, 5);
+    albums.forEach(album -> {
+      int commentCount = (int) (Math.random() * 100) % 100;
+      album.getAlbumLike()
+          .addAll(creator.createAndSaveAlbumLikes(album,
+              creator.createAndSaveUsers(commentCount, album.getTitle())));
+    });
+
+    List<AlbumScore> likeOrderedAlbums = albumScoreRepository.findAlbumScoreOrderByAlbumLikeCount(
+        PageRequest.of(0, 5), 1L).getContent();
+
+    IntStream.range(1, likeOrderedAlbums.size()).forEach(i -> {
+      log.info(likeOrderedAlbums.get(i).getAlbum().getAlbumLike().size());
+      Assertions.assertTrue(
+          likeOrderedAlbums.get(i - 1).getAlbum().getAlbumLike().size() >= likeOrderedAlbums.get(i)
+              .getAlbum().getAlbumLike().size());
+    });
+  }
+
+  @Test
+  @DisplayName("앨범 스코어 레포지토리에서 코멘트 많은 순으로 조회")
+  @Transactional
+  public void getAlbumChatOrderChatCommentInAlbumScoreRepositoryTest() {
+    List<Album> albums = creator.createAndSaveAlbums(0, 5);
+    User user = creator.createAndSaveUser("testman");
+    albums.forEach(album -> {
+      int commentCount = (int) (Math.random() * 100) % 100;
+      album.getAlbumChatComments()
+          .addAll(creator.createAndSaveAlbumChats(album, user, "test", 0, commentCount));
+    });
+
+    List<AlbumScore> likeOrderedAlbums = albumScoreRepository.findAlbumScoreOrderByCommentCount(
+        PageRequest.of(0, 5), 1L).getContent();
+
+    IntStream.range(1, likeOrderedAlbums.size()).forEach(i -> {
+      log.info(likeOrderedAlbums.get(i).getAlbum().getAlbumChatComments().size());
+      Assertions.assertTrue(
+          likeOrderedAlbums.get(i - 1).getAlbum().getAlbumChatComments().size()
+              >= likeOrderedAlbums.get(i)
+              .getAlbum().getAlbumChatComments().size());
     });
   }
 }

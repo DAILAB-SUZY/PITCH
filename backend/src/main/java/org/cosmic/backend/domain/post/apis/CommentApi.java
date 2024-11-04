@@ -112,14 +112,16 @@ public class CommentApi {
   @Operation(summary = "앨범 포스트 댓글 삭제 API", description = "앨범 포스트에 대한 댓글을 삭제합니다.")
   public ResponseEntity<List<CommentDetail>> deleteComment(@PathVariable Long commentId,
       @PathVariable Long postId, @AuthenticationPrincipal Long userId) {
-    return ResponseEntity.ok(commentService.deleteComment(commentId, postId, userId));
+    commentService.deleteComment(commentId, postId, userId);
+    return ResponseEntity.ok(commentService.getCommentsByPostId(postId));
   }
 
   @PostMapping("/{commentId}/like")
   @ApiResponse(responseCode = "404", description = "Not Found Comment")
-  @Operation(hidden = true)
+  @Operation(summary = "앨범 포스트 댓글 좋아요 API", description = "이미 있으면 좋아요 취소, 아니면 좋아요 합니다.")
   public ResponseEntity<List<CommentDetail>> likeComment(@PathVariable Long commentId,
       @PathVariable Long postId, @AuthenticationPrincipal Long userId) {
-    return ResponseEntity.ok(commentService.likeComment(commentId, postId, userId));
+    commentService.likeComment(commentId, postId, userId);
+    return ResponseEntity.ok(commentService.getCommentsByPostId(postId));
   }
 }

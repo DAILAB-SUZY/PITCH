@@ -17,6 +17,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.cosmic.backend.domain.albumScore.domains.AlbumScore;
 import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.user.domains.User;
 
@@ -57,6 +58,10 @@ public class Post {
 
   public boolean isAuthorId(Long userId) {
     return getUser().isMe(userId);
+  }
+
+  public AlbumScore getAuthorAlbumScore() {
+    return getUser().getAlbumScore(getAlbum());
   }
 
 }

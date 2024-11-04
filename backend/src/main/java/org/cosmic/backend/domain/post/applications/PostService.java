@@ -5,7 +5,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.albumScore.applications.AlbumScoreService;
-import org.cosmic.backend.domain.albumScore.repositorys.AlbumScoreRepository;
 import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.playList.exceptions.NotFoundUserException;
 import org.cosmic.backend.domain.playList.exceptions.NotMatchAlbumException;
@@ -34,7 +33,6 @@ public class PostService {
   private final PostRepository postRepository;
   private final UsersRepository userRepository;
   private final AlbumRepository albumRepository;
-  private final AlbumScoreRepository albumScoreRepository;
 
   private final AlbumScoreService albumScoreService;
 
@@ -81,15 +79,14 @@ public class PostService {
     User user = userRepository.findById(userId).orElseThrow(NotFoundUserException::new);
     Album album = albumRepository.findBySpotifyAlbumId(spotifyAlbumId)
         .orElseThrow(NotFoundAlbumException::new);
-    PostAndCommentsDetail postAndCommentsDetail = PostAndCommentsDetail.from(
+    albumScoreService.createAlbumScore(spotifyAlbumId, userId, score);
+
+    return PostAndCommentsDetail.from(
         postRepository.save(Post.builder()
             .content(content)
             .user(user)
             .album(album)
             .build()));
-    albumScoreService.createAlbumScore(album, userId, score);
-    postAndCommentsDetail.getPostDetail().getAlbum().setScore(score);
-    return postAndCommentsDetail;
   }
 
   private void validPostAuthor(Post post, Long userId) {
@@ -106,18 +103,12 @@ public class PostService {
   @Transactional
   public PostAndCommentsDetail updatePost(String content, Integer score, Long postId, Long userId) {
     Post updatedPost = postRepository.findById(postId).orElseThrow(NotFoundPostException::new);
-    User user = userRepository.findById(userId).orElseThrow(NotFoundUserException::new);
-    Album album = albumRepository.findBySpotifyAlbumId(updatedPost.getAlbum().getSpotifyAlbumId())
-        .orElseThrow(NotFoundAlbumException::new);
     validPostAuthor(updatedPost, userId);
     updatedPost.setContent(content);
     updatedPost.setUpdateTime(Instant.now());
-    PostAndCommentsDetail postAndCommentsDetail = getPostById(
-        postRepository.save(updatedPost).getPostId());
-    albumScoreService.createAlbumScore(album, userId, score);
-    postAndCommentsDetail.getPostDetail().getAlbum().setScore(score);
+    albumScoreService.createAlbumScore(updatedPost.getAlbum().getAlbumId(), userId, score);
 
-    return postAndCommentsDetail;
+    return getPostById(postRepository.save(updatedPost).getPostId());
   }
 
   /**
