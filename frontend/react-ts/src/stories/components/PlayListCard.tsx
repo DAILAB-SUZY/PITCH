@@ -3,7 +3,7 @@ import { colors } from '../../styles/color';
 import ColorThief from 'colorthief';
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MAX_REISSUE_COUNT } from '../utils/fetchData';
+//import { MAX_REISSUE_COUNT } from '../utils/fetchData';
 // import { fetchGET, MAX_REISSUE_COUNT } from '../utils/fetchData';
 
 const PlayListCardContainer = styled.div<{ gradient?: string }>`
@@ -163,8 +163,9 @@ const PlayListBox = ({ playlist, isEditable, playlistInfo }: PlaylistProps) => {
 
   //const youtubeOathUrl = `/oauth2/callback/google`;
   const CreateYoutubePlaylist = async (playlistId: number) => {
-    const token = localStorage.getItem('login-token') as string;
-    const refreshToken = localStorage.getItem('login-refreshToken') as string;
+    console.log(playlistId);
+    // const token = localStorage.getItem('login-token') as string;
+    // const refreshToken = localStorage.getItem('login-refreshToken') as string;
     window.location.href = 'https://pitches.social/oauth2/authorization/google';
   };
 

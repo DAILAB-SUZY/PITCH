@@ -9,6 +9,7 @@ import SearchAlbumModal from '../components/SearchAlbumModal';
 import SearchArtistModal from '../components/SearchArtistModal';
 import SearchTrackModal from '../components/SearchTrackModal';
 import { fetchGET, fetchPOST, fetchPOSTFile, MAX_REISSUE_COUNT } from '../utils/fetchData';
+// import heic2any from 'heic2any';
 
 const Container = styled.div`
   display: flex;
@@ -457,11 +458,17 @@ function MusicProfileEditPage() {
 
   const [formData, setFormData] = useState<FormData>();
   // 파일 선택 시 실행되는 핸들러
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]; // 첫 번째 파일 선택
+  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    let file = event.target.files?.[0]; // 첫 번째 파일 선택
     console.log('put img here');
     console.log(file);
+
     if (file) {
+      // if (/\.(heic)$/i.test(file.name)) {
+      //   console.log('changing');
+      //   const convertedBlob = await heic2any({ blob: file, toType: 'image/jpeg' });
+      //   file = new File([convertedBlob as Blob], file.name.split('.')[0] + '.jpeg', { type: 'image/jpeg', lastModified: new Date().getTime() });
+      // }
       setProfile(URL.createObjectURL(file)); // 미리보기 URL 생성
       const formData = new FormData(); //formData 새성
       console.log(URL.createObjectURL(file));
@@ -540,7 +547,7 @@ function MusicProfileEditPage() {
             </Circle>
             <div>
               <Label htmlFor="profileimg"> 프로필 이미지 업로드</Label>
-              <Profile type="file" accept="image/*" id="profileimg" onChange={handleFileChange} />
+              <Profile type="file" accept="image/*, .heic" id="profileimg" onChange={handleFileChange} />
             </div>
           </PhotoEditArea>
         </ProfilePhotoArea>
