@@ -2,12 +2,13 @@ import styled from 'styled-components';
 
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Nav from '../components/Nav';
 import AlbumPostCard from '../components/AlbumPostCard';
 import PlaylistPreviewCard from '../components/PlaylistPreviewCard';
 import useStore from '../store/store';
 import { fetchGET, MAX_REISSUE_COUNT } from '../utils/fetchData';
 import Loader from '../components/Loader';
+
+import Header from '../components/Header';
 
 const Container = styled.div`
   display: flex;
@@ -22,16 +23,9 @@ const Container = styled.div`
   color: black;
 `;
 
-const Header = styled.div`
-  overflow-x: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-`;
-
 const Body = styled.div`
-  margin-top: 110px;
+  /* margin-top: 110px; */
+  margin-top: 50px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -238,9 +232,8 @@ function HomePage() {
 
   return (
     <Container>
-      <Header>
-        <Nav page={1} />
-      </Header>
+      <Header page={1}></Header>
+
       <Body>
         <PlaylistArea>
           <Title fontSize="22px" margin="20px 0px 0px 20px">

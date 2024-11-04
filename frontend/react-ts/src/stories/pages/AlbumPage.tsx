@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import { colors } from '../../styles/color';
-import Nav from '../components/Nav';
 import AlbumPageChatTab from '../components/AlbumPageChatTab';
 import AlbumPagePostTab from '../components/AlbumPagePostTab';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -8,6 +7,8 @@ import { useEffect, useState } from 'react';
 import useStore from '../store/store';
 import { fetchGET, fetchPOST, MAX_REISSUE_COUNT } from '../utils/fetchData';
 import ScoreEditAlbumPage from '../components/ScoreEditAlbumPage';
+import Menu from '../components/Menu';
+import Header from '../components/Header';
 
 const Container = styled.div`
   display: flex;
@@ -22,16 +23,8 @@ const Container = styled.div`
   color: black;
 `;
 
-const Header = styled.div`
-  overflow-x: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-`;
-
 const Body = styled.div`
-  margin-top: 120px;
+  margin-top: 50px;
   width: 100%;
   height: auto;
   display: flex;
@@ -338,11 +331,13 @@ function AlbumPage() {
   const [stars, setStars] = useState<string[]>();
   const [score, setScore] = useState<number>(albumDetail?.score || 0);
 
+  // 메뉴바
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   return (
     <Container>
-      <Header>
-        <Nav page={3}></Nav>
-      </Header>
+      {isMenuOpen && <Menu page={3} isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />}
+      <Header page={3}></Header>
       <Body>
         {/* {!isLoading && ( */}
         <>

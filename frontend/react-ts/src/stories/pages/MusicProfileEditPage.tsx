@@ -2,13 +2,15 @@ import styled from 'styled-components';
 import { useEffect, useState, ChangeEvent } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { colors } from '../../styles/color';
-import Nav from '../components/Nav';
+
 import AlbumGridEdit from '../components/AlbumGridEdit';
 import FavoriteArtistEditCard from '../components/FavoriteArtistEditCard';
 import SearchAlbumModal from '../components/SearchAlbumModal';
 import SearchArtistModal from '../components/SearchArtistModal';
 import SearchTrackModal from '../components/SearchTrackModal';
 import { fetchGET, fetchPOST, fetchPOSTFile, MAX_REISSUE_COUNT } from '../utils/fetchData';
+
+import Header from '../components/Header';
 // import heic2any from 'heic2any';
 
 const Container = styled.div`
@@ -24,15 +26,8 @@ const Container = styled.div`
   color: black;
 `;
 
-const Header = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-`;
-
 const Body = styled.div`
-  margin-top: 110px;
+  margin-top: 50px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -487,9 +482,7 @@ function MusicProfileEditPage() {
 
   return (
     <Container>
-      <Header>
-        <Nav page={2}></Nav>
-      </Header>
+      <Header page={3}></Header>
       {isSearchModalOpen && (
         <Blur>
           <ModalArea>
