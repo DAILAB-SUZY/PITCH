@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class YoutubeApi {
 
+  private static final String serverOrigin = System.getenv("REDIRECTION_ORIGIN");
   @Autowired
   YoutubeService youtubeService;
 
@@ -35,7 +36,7 @@ public class YoutubeApi {
       @RequestParam("state") Long userId) {
     HttpHeaders headers = new HttpHeaders();
     headers.setLocation(
-        URI.create("http://localhost:8080/api/createPlaylist?googleToken="
+        URI.create("https://%s/api/createPlaylist?googleToken=".formatted(serverOrigin)
             + youtubeService.getAccessToken(code) + "&userId=" + userId));
     return new ResponseEntity<>(headers, HttpStatus.FOUND);
   }
