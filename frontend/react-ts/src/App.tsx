@@ -19,6 +19,7 @@ import FollowPage from './stories/pages/FollowPage';
 import FriendSearchPage from './stories/pages/FriendSearchPage';
 import SearchPage from './stories/pages/SearchPage';
 import ErrorPage from './stories/pages/ErrorPage';
+import PlaylistRedirectPage from './stories/pages/PlaylistRedirectPage';
 import './styles/reset.css';
 
 function App() {
@@ -45,6 +46,7 @@ function App() {
         <Route path="/FollowPage" element={<FollowPage />} />
         <Route path="/FriendSearchPage" element={<FriendSearchPage />} />
         <Route path="/ErrorPage" element={<ErrorPage />} />
+        <Route path="/oauth2/callback/google" element={<PlaylistRedirectPage />} />
       </Routes>
     </BrowserRouter>
   );

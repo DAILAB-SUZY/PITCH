@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -52,9 +53,17 @@ interface AlbumDataProps {
 }
 
 function AlbumGrid({ AlbumData }: AlbumDataProps) {
-  const midIndex = Math.ceil(AlbumData.length / 2);
-  const firstRow = AlbumData.slice(0, midIndex);
-  const secondRow = AlbumData.slice(midIndex);
+  const [firstRow, setFirstRow] = useState<AlbumDataProps['AlbumData']>([]);
+  const [secondRow, setSecondRow] = useState<AlbumDataProps['AlbumData']>([]);
+  useEffect(() => {
+    if (AlbumData.length <= 2) {
+      setFirstRow(AlbumData);
+    } else {
+      const midIndex = Math.ceil(AlbumData.length / 2);
+      setFirstRow(AlbumData.slice(0, midIndex));
+      setSecondRow(AlbumData.slice(midIndex));
+    }
+  }, [AlbumData]);
 
   const navigate = useNavigate();
   const GoToAlbumPage = (spotifyAlbumId: string) => {

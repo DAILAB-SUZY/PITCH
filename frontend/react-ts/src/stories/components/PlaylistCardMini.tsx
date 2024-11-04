@@ -45,7 +45,7 @@ const PlaylistCardSmall = styled.div<{ gradient?: string }>`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  justify-content: center;
+  justify-content: flex-start;
 `;
 
 const UserNameArea = styled.h2`
@@ -94,6 +94,23 @@ const SongTitle = styled.div`
 const Artist = styled.div`
   font-size: 14px;
   color: white;
+`;
+
+const Text = styled.div<{
+  fontFamily?: string;
+  fontSize?: string;
+  margin?: string;
+  opacity?: string;
+}>`
+  font-size: ${props => props.fontSize};
+  font-family: ${props => props.fontFamily};
+  margin: ${props => props.margin};
+  opacity: ${props => props.opacity};
+
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const MoreButton = styled.div`
@@ -147,7 +164,7 @@ const PlaylistCard = ({ playlist, userDetail }: PlaylistProps) => {
 
   return (
     <Container>
-      <PlaylistCardSmall gradient={playlistGradient}>
+      <PlaylistCardSmall gradient={playlistGradient} onClick={() => GoToPlayListPage(playlistInfo)}>
         <UserNameArea>{userDetail.username}'s Playlist</UserNameArea>
         <SongList>
           {playlist.slice(0, 2).map((song, index) => (
@@ -160,7 +177,15 @@ const PlaylistCard = ({ playlist, userDetail }: PlaylistProps) => {
             </SongItem>
           ))}
         </SongList>
-        <MoreButton onClick={() => GoToPlayListPage(playlistInfo)}>더보기</MoreButton>
+        {playlist.length > 2 ? (
+          <MoreButton>더보기</MoreButton>
+        ) : playlist.length === 1 ? (
+          <Text fontSize="14px" margin="20px 0px 0px 0px" opacity="0.5">
+            곡을 더 추가해보세요!
+          </Text>
+        ) : (
+          <></>
+        )}
       </PlaylistCardSmall>
     </Container>
   );

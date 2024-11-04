@@ -12,7 +12,7 @@ const Container = styled.div`
   overflow-y: scroll;
   height: 100vh; //auto;
   width: 100vw;
-  background-color: white;
+  background-color: ${colors.BG_grey};
   color: ${colors.Font_black};
 `;
 
@@ -23,7 +23,7 @@ const CommentArea = styled.div`
   align-items: center;
   justify-content: flex-start;
   flex-direction: column;
-  background-color: white;
+  background-color: ${colors.BG_grey};
 `;
 
 const Text = styled.div<{

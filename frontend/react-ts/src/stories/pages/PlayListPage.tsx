@@ -44,7 +44,7 @@ const Body = styled.div`
 `;
 
 const TitleArea = styled.div`
-  width: 100%;
+  width: 360px;
   height: 40px;
   display: flex;
   flex-direction: row;
