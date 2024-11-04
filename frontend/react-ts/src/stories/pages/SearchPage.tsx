@@ -3,7 +3,6 @@ import { colors } from '../../styles/color';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import Loader from '../components/Loader';
-import { MAX_REISSUE_COUNT, fetchGET } from '../utils/fetchData';
 
 const Container = styled.div`
   display: flex;
@@ -74,7 +73,7 @@ const ContentInput = styled.input`
   padding: 10px;
   box-sizing: border-box;
   background-color: ${colors.InputBox};
-  font-size: 16px;
+  font-size: 15px;
   border: 0;
   border-radius: 7px;
   outline: none;
@@ -175,6 +174,13 @@ function SearchPage() {
   const [searchKeyword, setSearchKeyword] = useState('');
   const [searchResult, setSearchResult] = useState<SearchResult[]>();
   const [isLoading, setIsLoading] = useState(false);
+  const [token, setToken] = useState(localStorage.getItem('login-token'));
+  const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
+
+  console.log('기존 배열');
+  console.log(searchResult);
+
+  // const { email, setEmail, name, setName, id, setId } = useStore();
 
   const navigate = useNavigate();
 
@@ -182,22 +188,70 @@ function SearchPage() {
     navigate('/AlbumPostEditPage', { state: album });
   };
 
-  const fetchSearch = async (token: string, refreshToken: string) => {
-    let searchUrl = `/api/searchSpotify/album/${searchKeyword}`;
+  const server = 'http://203.255.81.70:8030';
+
+  const reissueTokenUrl = `${server}/api/auth/reissued`;
+
+  const fetchSearch = async () => {
+    let searchUrl = `${server}/api/searchSpotify/album/${searchKeyword}`;
 
     if (token && !isLoading) {
       setIsLoading(true);
-      fetchGET(token, refreshToken, searchUrl, MAX_REISSUE_COUNT).then(data => {
-        setSearchResult(data);
+      try {
+        console.log(`searching ${searchKeyword}...`);
+        const response = await fetch(searchUrl, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+          setSearchResult(data);
+        } else if (response.status === 401) {
+          ReissueToken();
+        } else {
+          console.error('Failed to fetch data:', response.status);
+        }
+      } catch (error) {
+        console.error('Error fetching the JSON file:', error);
+      } finally {
         setIsLoading(false);
-      });
+        console.log('finished');
+      }
     }
   };
-
+  const ReissueToken = async () => {
+    console.log('reissuing Token');
+    try {
+      const response = await fetch(reissueTokenUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Refresh-Token': `${refreshToken}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('login-token', data.token);
+        localStorage.setItem('login-refreshToken', data.refreshToken);
+        setToken(data.token);
+        setRefreshToken(data.refreshToken);
+        fetchSearch();
+      } else {
+        throw new Error(`failed to reissue token : ${response.status}`);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault(); // 폼 제출 동작 방지
     setSearchResult([]); // 검색 결과 초기화
-    fetchSearch(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || ''); // 검색 실행
+    fetchSearch(); // 검색 실행
   };
 
   return (

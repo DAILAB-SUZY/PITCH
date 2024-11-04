@@ -104,7 +104,7 @@ interface AlbumDetail {
   title: string;
   albumCover: string;
   artistName: string;
-  genre: string | null;
+  genre: string;
   spotifyId: string;
   likes: AlbumLike[];
 }

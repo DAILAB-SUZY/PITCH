@@ -2,7 +2,6 @@ import styled from 'styled-components';
 import { colors } from '../../styles/color';
 import { useState } from 'react';
 import Loader from './Loader';
-import { fetchGET, MAX_REISSUE_COUNT } from '../utils/fetchData';
 
 const Container = styled.div`
   /* position: absolute;
@@ -79,7 +78,7 @@ const ContentInput = styled.input`
   padding: 10px;
   box-sizing: border-box;
   background-color: ${colors.InputBox};
-  font-size: 16px;
+  font-size: 15px;
   border: 0;
   //border-radius: 15px;
   outline: none;
@@ -184,22 +183,71 @@ function SearchArtistModal({ searchingTopic, setIsSearchModalOpen, favoriteArtis
   const [searchResultArtist, setSearchResultArtist] = useState<ArtistSearchResult[]>();
   const [isLoading, setIsLoading] = useState(false);
 
-  let searchArtistUrl = `/api/searchSpotify/artist/${searchKeyword}`;
+  const server = 'http://203.255.81.70:8030';
+
+  const reissueTokenUrl = `${server}/api/auth/reissued`;
+  const [token, setToken] = useState(localStorage.getItem('login-token'));
+  const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
+
+  const ReissueToken = async () => {
+    console.log('reissuing Token');
+    try {
+      const response = await fetch(reissueTokenUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Refresh-Token': `${refreshToken}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('login-token', data.token);
+        localStorage.setItem('login-refreshToken', data.refreshToken);
+        setToken(data.token);
+        setRefreshToken(data.refreshToken);
+      } else {
+        console.error('failed to reissue token', response.status);
+      }
+    } catch (error) {
+      console.error('Refresh Token 재발급 실패', error);
+    }
+  };
+
+  let searchArtistUrl = `${server}/api/searchSpotify/artist/${searchKeyword}`;
   const fetchSearch = async () => {
-    if (!isLoading) {
+    if (token && !isLoading) {
       setIsLoading(true);
       if (searchingTopic === 'Artist') {
         Search(searchArtistUrl);
       }
     }
   };
+
   const Search = async (URL: string) => {
-    const token = localStorage.getItem('login-token') as string;
-    const refreshToken = localStorage.getItem('login-refreshToken') as string;
-    fetchGET(token, refreshToken, URL, MAX_REISSUE_COUNT).then(data => {
-      setSearchResultArtist(data);
+    try {
+      console.log(`searching Album : ${searchKeyword}...`);
+      const response = await fetch(URL, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setSearchResultArtist(data);
+      } else if (response.status === 401) {
+        ReissueToken();
+        fetchSearch();
+      } else {
+        console.error('Failed to fetch data:', response.status);
+      }
+    } catch (error) {
+      console.error('Error fetching the JSON file:', error);
+    } finally {
       setIsLoading(false);
-    });
+      console.log('finished');
+    }
   };
 
   const handleSearchSubmit = (e: React.FormEvent) => {
@@ -226,6 +274,10 @@ function SearchArtistModal({ searchingTopic, setIsSearchModalOpen, favoriteArtis
       };
       setFavoriteArtist(addingArtist);
       setFavoriteArtistSpotifyIds(addArtistId);
+      // setFavoriteArtistSpotifyIds((prevState) => ({
+      //   ...prevState, // 기존 상태를 유지
+      //   artistId: artist.artistId, // 특정 필드만 업데이트
+      // }));
     }
     setIsSearchModalOpen(false);
   };

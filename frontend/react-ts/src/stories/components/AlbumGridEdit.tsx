@@ -1,6 +1,5 @@
-import styled from 'styled-components';
-import { colors } from '../../styles/color';
-import { useEffect, useState } from 'react';
+import styled from "styled-components";
+import { colors } from "../../styles/color";
 
 const BestAlbumArea = styled.div`
   width: 100vw;
@@ -73,28 +72,19 @@ interface AlbumDataProps {
 }
 
 function AlbumGrid({ bestAlbum, setBestAlbum }: AlbumDataProps) {
-  const [firstRow, setFirstRow] = useState<BestAlbum[]>([]);
-  const [secondRow, setSecondRow] = useState<BestAlbum[]>([]);
-  useEffect(() => {
-    if (bestAlbum.length <= 2) {
-      setFirstRow(bestAlbum);
-    } else {
-      const midIndex = Math.ceil(bestAlbum.length / 2);
-      setFirstRow(bestAlbum.slice(0, midIndex));
-      setSecondRow(bestAlbum.slice(midIndex));
-    }
-  }, [bestAlbum]);
+  const midIndex = Math.ceil(bestAlbum.length / 2);
+  const firstRow = bestAlbum.slice(0, midIndex);
+  const secondRow = bestAlbum.slice(midIndex);
 
   // 앨범 삭제
   const DeleteAlbum = (albumId: number) => {
-    setBestAlbum(bestAlbum.filter(album => album.albumId !== albumId));
+    setBestAlbum(bestAlbum.filter((album) => album.albumId !== albumId));
   };
   return (
     <BestAlbumArea>
-      {bestAlbum.length === 0 && <div>추가된 앨범이 없습니다.</div>}
       <AlbumCol>
         <AlbumRow>
-          {firstRow.map(Album => (
+          {firstRow.map((Album) => (
             <AlbumCover key={Album.albumId}>
               <DeleteBtn
                 onClick={() => {
@@ -108,7 +98,7 @@ function AlbumGrid({ bestAlbum, setBestAlbum }: AlbumDataProps) {
           ))}
         </AlbumRow>
         <AlbumRow>
-          {secondRow.map(Album => (
+          {secondRow.map((Album) => (
             <AlbumCover key={Album.albumId}>
               <DeleteBtn
                 onClick={() => {

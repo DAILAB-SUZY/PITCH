@@ -2,13 +2,10 @@ import styled from 'styled-components';
 
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Nav from '../components/Nav';
 import AlbumPostCard from '../components/AlbumPostCard';
 import PlaylistPreviewCard from '../components/PlaylistPreviewCard';
 import useStore from '../store/store';
-import { fetchGET, MAX_REISSUE_COUNT } from '../utils/fetchData';
-import Loader from '../components/Loader';
-
-import Header from '../components/Header';
 
 const Container = styled.div`
   display: flex;
@@ -23,9 +20,16 @@ const Container = styled.div`
   color: black;
 `;
 
+const Header = styled.div`
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+
 const Body = styled.div`
-  /* margin-top: 110px; */
-  margin-top: 50px;
+  margin-top: 110px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -121,8 +125,8 @@ interface PostAuthor extends User {}
 interface PostDetail {
   postId: number;
   content: string;
-  createAt: string;
-  updateAt: string;
+  createAt: number;
+  updateAt: number;
   author: PostAuthor;
   album: Album;
 }
@@ -133,15 +137,15 @@ interface ChildComment {
   id: number;
   content: string;
   author: CommentAuthor;
-  createTime: string;
-  updateTime: string;
+  createTime: number;
+  updateTime: number;
 }
 
 interface Comment {
   id: number;
   content: string;
-  createAt: string;
-  updateAt: string;
+  createdAt: number;
+  updatedAt: number;
   likes: User[];
   childComments: ChildComment[];
   author: CommentAuthor;
@@ -171,40 +175,131 @@ function HomePage() {
   const [isEnd, setIsEnd] = useState(false);
   const [friendsPlayList, setfriendsPlayList] = useState<FriendsPlayList[]>([]);
 
+  console.log('render-----------------------------');
+  console.log('albumpost: ', albumPosts);
+  console.log('postPage: ', postPage);
+
+  const server = 'http://203.255.81.70:8030';
+
+  const reissueTokenUrl = `${server}/api/auth/reissued`;
+
   // Intersection Observer용 ref
   const observerRef = useRef<HTMLDivElement | null>(null);
+  const [token, setToken] = useState(localStorage.getItem('login-token'));
+  const [refreshToken, setRefreshToken] = useState(localStorage.getItem('login-refreshToken'));
 
-  const PlaylistUrl = `/api/playlist/following`;
-  const AlbumPostUrl = `/api/album/post?page=${postPage}&limit=5`;
-  const fetchPlaylist = async (token: string, refreshToken: string) => {
-    fetchGET(token, refreshToken, PlaylistUrl, MAX_REISSUE_COUNT).then(data => {
-      if (data) {
-        setfriendsPlayList(prevList => [...prevList, ...data]);
+  const PlaylistUrl = `${server}/api/playlist/following`;
+
+  const ReissueToken = async () => {
+    console.log('reissuing Token');
+    try {
+      const response = await fetch(reissueTokenUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Refresh-Token': `${refreshToken}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('login-token', data.token);
+        localStorage.setItem('login-refreshToken', data.refreshToken);
+        setToken(data.token);
+        setRefreshToken(data.refreshToken);
+      } else {
+        console.error('failed to reissue token', response.status);
       }
-    });
+    } catch (error) {
+      console.error('Refresh Token 재발급 실패', error);
+    }
+  };
+  // Playlist Fetching
+  const fetchPlaylist = async () => {
+    if (token) {
+      try {
+        console.log('fetching Playlist...');
+        const response = await fetch(PlaylistUrl, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setfriendsPlayList(prevList => [...prevList, ...data]);
+          console.log('fetched Playlist :');
+          console.log('fetched PlayList:');
+          console.log(data);
+        } else if (response.status === 401) {
+          ReissueToken();
+          fetchPlaylist();
+        } else {
+          console.error('Failed to fetch data:', response.status);
+        }
+      } catch (error) {
+        console.error('Error fetching the JSON file:', error);
+      } finally {
+        console.log('finished');
+      }
+    }
   };
 
-  const fetchAlbumPosts = async (token: string, refreshToken: string) => {
+  // useEffect(() => {
+  //   clearAlbumPosts();
+  // }, [clearAlbumPosts]);
+
+  // 무한 스크롤 데이터를 가져오는 함수
+  const fetchAlbumPosts = async () => {
+    const albumPostUrl = `${server}/api/album/post?page=${postPage}&limit=5`;
     if (token && !isLoading && !isEnd) {
       setIsLoading(loading => !loading);
-      fetchGET(token, refreshToken, AlbumPostUrl, MAX_REISSUE_COUNT).then(data => {
-        if (data) {
+      try {
+        console.log('fetching...');
+        const response = await fetch(albumPostUrl, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        console.log('fetching...complete');
+
+        if (response.ok) {
           console.log('set PostList');
+          const data: AlbumPost[] = await response.json();
+          console.log(data);
           if (data.length === 0) {
             console.log('list End');
             setIsEnd(true);
           }
+          // 만약 첫 로딩이면
+          if (postPage === 0) {
+            //clearAlbumPosts();
+          }
           setAlbumPosts(prev => [...prev, ...data]); // 기존 데이터에 새로운 데이터를 추가
           setPostPage(prevPage => prevPage + 1); // 페이지 증가
+
           console.log('albumpost ', albumPosts);
+        } else if (response.status === 401) {
+          ReissueToken();
+          fetchAlbumPosts();
+        } else {
+          console.error('Failed to fetch AlbumPost data:', response.status);
         }
-      });
+      } catch (error) {
+        console.error('Error fetching the JSON file:', error);
+      } finally {
+        setIsLoading(false); // 로딩 상태 해제
+        console.log('fetching Complete: ', albumPosts);
+        console.log(`postPage : ${postPage}`);
+      }
     }
-    setIsLoading(false); // 로딩 상태 해제
   };
 
   useEffect(() => {
-    fetchPlaylist(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '');
+    fetchPlaylist();
   }, []);
 
   // Intersection Observer 설정
@@ -212,7 +307,9 @@ function HomePage() {
     const observer = new IntersectionObserver(entries => {
       // observerRef가 화면에 보이면 fetch 호출
       if (!isLoading && entries[0].isIntersecting) {
-        fetchAlbumPosts(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '');
+        // setPostPage((prevPage) => prevPage + 1); // 페이지 증가
+        // console.log("page++ => ", postPage);
+        fetchAlbumPosts();
       }
     });
 
@@ -232,14 +329,15 @@ function HomePage() {
 
   return (
     <Container>
-      <Header page={1}></Header>
-
+      <Header>
+        <Nav page={1} />
+      </Header>
       <Body>
         <PlaylistArea>
           <Title fontSize="22px" margin="20px 0px 0px 20px">
             Friend's Playlist
           </Title>
-          {isLoading ? <Loader /> : <PlaylistPreviewCard playlists={friendsPlayList} />}
+          <PlaylistPreviewCard playlists={friendsPlayList} />
         </PlaylistArea>
         <AlbumPostArea>
           <AlbumPostTitleArea>
@@ -253,6 +351,7 @@ function HomePage() {
               fill="currentColor"
               className="bi bi-pencil-square"
               viewBox="0 0 16 16"
+              //  TODO: 댓글 작성 기능 구현
               onClick={() => {
                 GoToAlbumPostEditPage();
               }}
@@ -265,16 +364,28 @@ function HomePage() {
             </svg>
           </AlbumPostTitleArea>
           <RowAlignArea>
-            {albumPosts && albumPosts.length > 0 ? albumPosts?.map((albumPost, index) => <AlbumPostCard key={index} albumPost={albumPost} />) : <Text fontSize="15px" margin="150px 0px 0px 0px" />}
+            {albumPosts && albumPosts.length > 0 ? (
+              albumPosts?.map(albumPost => (
+                <AlbumPostCard
+                  // key={albumPost.postDetail.postId}
+                  albumPost={albumPost}
+                />
+              ))
+            ) : (
+              <Text fontSize="15px" margin="150px 0px 0px 0px" />
+            )}
           </RowAlignArea>
         </AlbumPostArea>
         {isEnd ? (
           <Text fontSize="16px" margin="20px 0px">
             더이상 게시물이 없습니다
           </Text>
-        ) : isLoading ? (
+        ) : (
+          <div />
+        )}
+        {isLoading ? (
           <Text fontSize="16px" margin="20px 0px">
-            <Loader></Loader>로딩 중...
+            로딩 중...
           </Text>
         ) : (
           <div ref={observerRef} style={{ height: '100px', backgroundColor: 'transparent' }} />
