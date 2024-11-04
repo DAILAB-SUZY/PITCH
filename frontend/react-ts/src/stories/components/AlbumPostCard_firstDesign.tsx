@@ -9,7 +9,7 @@ import { fetchPOST, MAX_REISSUE_COUNT } from '../utils/fetchData';
 const AlbumPostContainer = styled.div`
   width: 350px;
   margin: 10px 0px;
-  height: 310px;
+  height: auto;
   background-color: ${colors.BG_grey};
   border-radius: 10px;
   position: relative;
@@ -22,9 +22,9 @@ const AlbumPostContainer = styled.div`
 const AlbumTitleArea = styled.div`
   position: relative;
   width: 100%;
-  height: 310px;
+  height: 200px;
   /* padding: 0px 0px 20px 10px; */
-  z-index: 1;
+  /* z-index: 3; */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -39,10 +39,10 @@ const ImageArea = styled.div`
   left: 0px;
   overflow: hidden;
   width: 350px;
-  height: 310px;
+  height: 200px;
   /* object-fit: cover; */
   z-index: 1;
-  border-radius: 10px 10px 10px 10px;
+  border-radius: 10px 10px 0px 0px;
 `;
 
 const GradientBG = styled.div`
@@ -51,27 +51,24 @@ const GradientBG = styled.div`
   left: 0px;
   z-index: 2;
   width: 100%;
-  height: 310px;
+  height: 200px;
   object-fit: cover;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 10px 10px 10px 10px;
-  background: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 30%, rgba(0, 0, 0, 0) 100%);
+  border-radius: 10px 10px 0px 0px;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
   backdrop-filter: blur(0px);
 `;
 
 const TitleTextArea = styled.div`
   width: 100%;
-  height: 200px;
-  position: absolute;
-  top: 0px;
-  left: 0px;
+  height: auto;
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
   align-items: flex-end;
-  padding: 0px 0px 10px 15px;
+  padding: 0px 0px 20px 20px;
   box-sizing: border-box;
   z-index: 3;
 `;
@@ -96,11 +93,6 @@ const PostArea = styled.div`
   border-radius: 0 0 10px 10px;
   width: 350px;
 
-  position: absolute;
-  bottom: 0px;
-  left: 0px;
-  color: white;
-
   height: auto;
   /* overflow: hidden; */
   align-items: center;
@@ -108,12 +100,8 @@ const PostArea = styled.div`
   flex-direction: column;
   padding: 10px;
   box-sizing: border-box;
-  //background: linear-gradient(0deg, rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0) 100%);
+  background-color: ${colors.BG_grey};
   transition: max-height linear 1s;
-  z-index: 4;
-
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
 `;
 
 const ProfileArea = styled.div`
@@ -137,8 +125,7 @@ const PostUploadTime = styled.div`
   font-size: 10px;
   font-family: 'Rg';
   margin-left: 10px;
-  color: ${colors.Font_white};
-  opacity: 0.5;
+  color: ${colors.Font_grey};
 `;
 const ProfileTextArea = styled.div`
   display: flex;
@@ -150,7 +137,7 @@ const ProfileName = styled.div`
   font-size: 20px;
   font-family: 'Rg';
   margin-left: 10px;
-  color: ${colors.Font_white};
+  color: ${colors.Font_black};
 `;
 const ProfileImage = styled.div`
   display: flex;
@@ -184,7 +171,6 @@ const PostContentArea = styled.div`
   font-family: 'Rg';
   padding: 0px 10px;
   margin: 7px 0;
-  opacity: 0.9;
 
   transition: height ease 0.7s;
 `;
@@ -195,7 +181,6 @@ const ButtonArea = styled.div`
   align-items: center;
   justify-content: flex-end;
   margin: 0 10 0 10px;
-  opacity: 0.8;
 `;
 interface DNA {
   dnaKey: number;
@@ -322,17 +307,16 @@ const AlbumPost = ({ albumPost }: AlbumPostProps) => {
     fetchPOST(token, refresuToken, PostLikeUrl, {}, MAX_REISSUE_COUNT);
   };
 
-  // const GoToAlbumPage = (spotifyAlbumId: string) => {
-  //   navigate('/AlbumPage', { state: spotifyAlbumId });
-  // };
+  const GoToAlbumPage = (spotifyAlbumId: string) => {
+    navigate('/AlbumPage', { state: spotifyAlbumId });
+  };
 
   return (
     <AlbumPostContainer>
       <AlbumTitleArea
-        // onClick={() => {
-        //   GoToAlbumPage(albumPost.postDetail.album.spotifyId);
-        // }}
-        onClick={() => GoToAlbumPostPage()}
+        onClick={() => {
+          GoToAlbumPage(albumPost.postDetail.album.spotifyId);
+        }}
       >
         <ImageArea>
           <img
@@ -382,17 +366,14 @@ const AlbumPost = ({ albumPost }: AlbumPostProps) => {
           >
             <path fillRule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314" />
           </svg>
-          <Text fontFamily="Rg" fontSize="14px" color={colors.Font_white} margin="0px 20px 0px 5px">
+          <Text fontFamily="Rg" fontSize="14px" color="grey" margin="0px 20px 0px 5px">
             좋아요 {albumPost?.likes.length}개
           </Text>
-          {/* <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="grey" className="bi bi-chat-right-text-fill" viewBox="0 0 16 16" style={{ strokeWidth: 6 }}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="grey" className="bi bi-chat-right-text-fill" viewBox="0 0 16 16" style={{ strokeWidth: 6 }}>
             <path d="M2 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h9.586a2 2 0 0 1 1.414.586l2 2V2a1 1 0 0 0-1-1zm12-1a2 2 0 0 1 2 2v12.793a.5.5 0 0 1-.854.353l-2.853-2.853a1 1 0 0 0-.707-.293H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z" />
             <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6m0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5" />
-          </svg> */}
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" className="bi bi-chat-right-text-fill" viewBox="0 0 16 16" onClick={() => GoToAlbumPostPage()}>
-            <path d="M16 2a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h9.586a1 1 0 0 1 .707.293l2.853 2.853a.5.5 0 0 0 .854-.353zM3.5 3h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1 0-1m0 2.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1 0-1m0 2.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1" />
           </svg>
-          <Text onClick={() => GoToAlbumPostPage()} fontFamily="Rg" fontSize="14px" color={colors.Font_white} margin="0px 0px 0px 5px">
+          <Text fontFamily="Rg" fontSize="14px" color="grey" margin="0px 0px 0px 5px">
             답글 {albumPost?.comments.length}개
           </Text>
         </ButtonArea>
