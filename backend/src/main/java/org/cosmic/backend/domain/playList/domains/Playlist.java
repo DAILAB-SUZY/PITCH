@@ -46,6 +46,12 @@ public class Playlist {//트랙은 플레이리스트는 N:M관계임
   @Builder.Default
   private List<Playlist_Track> playlist_track = new ArrayList<>();
 
+  public static Playlist from(User user) {
+    return Playlist.builder()
+        .user(user)
+        .build();
+  }
+
   public List<String> getSpotifyTrackIds() {
     return getPlaylist_track().stream().map(Playlist_Track::getTrackId).toList();
   }

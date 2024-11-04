@@ -19,13 +19,6 @@ public class UserLoginDetail {
   private String username;
   private Long id;
 
-  public static UserLoginDetail createUserLoginDetail(String email, String password) {
-    return UserLoginDetail.builder()
-        .email(email)
-        .password(password)
-        .build();
-  }
-
   public static UserLoginDetail from(User user, String accessToken, String refreshToken) {
     return UserLoginDetail.builder()
         .email(user.getEmail().getEmail())

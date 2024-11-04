@@ -146,9 +146,10 @@ public class AlbumChatCommentService {
     return getAlbumChatComment(spotifyAlbumId, sorted);
   }
 
-  public AlbumChatCommentDetail albumChatCommentGet(String spotifyAlbumId, Long albumChatCommentId,String sorted) {
+  public AlbumChatCommentDetail albumChatCommentGet(String spotifyAlbumId, Long albumChatCommentId,
+      String sorted) {
     AlbumChatComment parentComment = commentRepository.findById(albumChatCommentId)
-          .orElseThrow(NotFoundAlbumChatCommentException::new);
+        .orElseThrow(NotFoundAlbumChatCommentException::new);
     return AlbumChatCommentDetail.from(parentComment);
   }
 
