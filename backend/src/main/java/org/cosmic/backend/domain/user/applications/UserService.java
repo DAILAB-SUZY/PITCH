@@ -16,6 +16,7 @@ import org.cosmic.backend.domain.user.exceptions.NotMatchPasswordException;
 import org.cosmic.backend.domain.user.repositorys.EmailRepository;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -41,6 +42,8 @@ public class UserService implements UserDetailsService {
   private EmailRepository emailRepository;
   @Autowired
   private PasswordEncoder passwordEncoder;
+  @Autowired
+  private RedisTemplate<String, String> redisTemplate;
 
   /**
    * <p>사용자를 등록합니다.</p>
@@ -111,5 +114,21 @@ public class UserService implements UserDetailsService {
   public MyUserDetails loadUserByUsername(Long userId) throws UsernameNotFoundException {
     return usersRepository.findById(userId)
         .orElseThrow(NotFoundUserException::new);
+  }
+
+  public void doesEmailExist(String email) {
+    if (!usersRepository.existsByEmail_Email(email)) {
+      throw new NotFoundUserException();
+    }
+  }
+
+  public void changePassword(String password, String authCode) {
+    if (Boolean.FALSE.equals(redisTemplate.hasKey(authCode))) {
+      throw new IllegalArgumentException("잘못된 접근입니다");
+    }
+    User user = usersRepository.findByEmail_Email(redisTemplate.opsForValue().get(authCode))
+        .orElseThrow(NotFoundUserException::new);
+    user.setPassword(passwordEncoder.encode(password));
+    usersRepository.save(user);
   }
 }

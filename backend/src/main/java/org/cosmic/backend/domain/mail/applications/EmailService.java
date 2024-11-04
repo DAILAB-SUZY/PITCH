@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.cosmic.backend.domain.mail.dtos.EmailAddress;
 import org.cosmic.backend.domain.mail.exceptions.ExistEmailException;
 import org.cosmic.backend.domain.mail.utils.AuthCodeMailSender;
+import org.cosmic.backend.domain.mail.utils.PasswordChangeMailSender;
 import org.cosmic.backend.domain.user.domains.Email;
 import org.cosmic.backend.domain.user.exceptions.NotExistEmailException;
 import org.cosmic.backend.domain.user.exceptions.NotMatchPasswordException;
@@ -23,6 +24,7 @@ public class EmailService {
 
   private final AuthCodeMailSender authCodeMailSender;
   private final EmailRepository emailRepository;
+  private final PasswordChangeMailSender passwordChangeMailSender;
 
   private void userExistCheck(Email email) {
     if (email.isUserExist()) {
@@ -66,5 +68,9 @@ public class EmailService {
     Email verifingEmail = emailRepository.findById(email).orElseThrow(NotExistEmailException::new);
     verifingEmail.validVerificationCode(code);
     return ResponseEntity.ok(EmailAddress.from(verifingEmail));
+  }
+
+  public void sendPasswordChangeMail(String email) {
+    passwordChangeMailSender.passwordChangeMail(email);
   }
 }
