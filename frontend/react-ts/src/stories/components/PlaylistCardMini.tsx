@@ -53,7 +53,7 @@ const UserNameArea = styled.h2`
   display: flex;
   justify-content: center;
   font-size: 20px;
-  font-weight: bold;
+  font-family: 'EB';
   margin-bottom: 20px;
   color: white;
 `;
@@ -88,7 +88,7 @@ const SongInfo = styled.div`
 
 const SongTitle = styled.div`
   font-size: 16px;
-  font-weight: bold;
+  font-family: 'EB';
 `;
 
 const Artist = styled.div`

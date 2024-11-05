@@ -157,6 +157,7 @@ const TabBtn = styled.div<{ bgcolor: string; color: string }>`
   justify-content: center;
   align-items: center;
   font-family: 'EB';
+  font-size: 18px;
   width: 170px;
   height: 40px;
   border-radius: 5px;
@@ -626,7 +627,7 @@ function MusicProfilePage() {
           <>
             <FollowArea onClick={() => GoToFollowPage(musicProfileData)}>
               <FollowBox>
-                <Text fontFamily="EB" fontSize="15px" margin="5px">
+                <Text fontFamily="SB" fontSize="17px" margin="5px">
                   Follower
                 </Text>
                 <Text fontFamily="RG" fontSize="15px" margin="5px">
@@ -634,7 +635,7 @@ function MusicProfilePage() {
                 </Text>
               </FollowBox>
               <FollowBox>
-                <Text fontFamily="EB" fontSize="15px" margin="5px">
+                <Text fontFamily="SB" fontSize="17px" margin="5px">
                   Following
                 </Text>
                 <Text fontFamily="RG" fontSize="15px" margin="5px">

@@ -6,10 +6,11 @@ import { useNavigate } from 'react-router-dom';
 //import { MAX_REISSUE_COUNT } from '../utils/fetchData';
 // import { fetchGET, MAX_REISSUE_COUNT } from '../utils/fetchData';
 
-const PlayListCardContainer = styled.div`
-  width: 380px;
+const PlayListCardContainer = styled.div<{ gradient?: string }>`
+  width: 360px;
   height: auto;
   border-radius: 12px;
+  background-image: ${({ gradient }: { gradient?: string }) => gradient || 'linear-gradient(to top right, #989898, #f3f3f3)'};
   display: flex;
   display: flex;
   align-items: center;
@@ -29,7 +30,6 @@ const PlayListInfoArea = styled.div`
   justify-content: space-between;
   box-sizing: border-box;
   padding: 10px 10px 0px 10px;
-  margin-bottom: 10px;
 `;
 
 const EditBtn = styled.div`
@@ -39,13 +39,6 @@ const EditBtn = styled.div`
   align-items: center;
   height: auto;
   width: auto;
-`;
-
-const SongCard = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
 `;
 
 const SongArea = styled.div`
@@ -63,7 +56,7 @@ const AlbumCover = styled.div`
   height: 50px;
   border-radius: 8px;
   background-color: black;
-  margin: 10px 10px 10px 0px;
+  margin: 10px;
   overflow: hidden;
 `;
 
@@ -103,16 +96,6 @@ const Title = styled.div<{ fontSize?: string; margin?: string; fontFamily?: stri
   white-space: nowrap;
   overflow: hidden; // 너비를 넘어가면 안보이게
   text-overflow: ellipsis; // 글자가 넘어가면 말줄임(...) 표시
-`;
-
-const Line = styled.div`
-  width: 340px;
-  box-sizing: border-box;
-  padding: 0px 20px 0px 20px;
-  /* width: 320px; */
-  height: 1px;
-  opacity: 0.5;
-  background-color: ${colors.Button_deactive};
 `;
 
 interface SongData {
@@ -188,9 +171,9 @@ const PlayListBox = ({ playlist, isEditable, playlistInfo, isUserPlaylist }: Pla
   };
 
   return (
-    <PlayListCardContainer>
+    <PlayListCardContainer gradient={playlistGradient}>
       <PlayListInfoArea>
-        <Text fontSize="14px" fontFamily="RG" margin="0px 120px 0px 0px" opacity="0.8">
+        <Text fontSize="14px" fontFamily="RG" margin="0px 100px 0px 0px" opacity="0.8">
           {playlist.length} songs
         </Text>
         {isUserPlaylist && (
@@ -226,32 +209,28 @@ const PlayListBox = ({ playlist, isEditable, playlistInfo, isUserPlaylist }: Pla
         )}
       </PlayListInfoArea>
       {playlist.map((song, index) => (
-        <SongCard>
-          <Line />
-          <SongArea key={index}>
-            <AlbumCover>
-              <img
-                ref={index === 0 ? albumCoverRef : null}
-                src={song.trackCover}
-                width="100%"
-                height="100%"
-                crossOrigin="anonymous"
-                onLoad={handleImageLoad} // 이미지가 로드될 때 색상 추출
-                alt={`Album Cover of ${song.title}`}
-              ></img>
-            </AlbumCover>
-            <SongTextArea>
-              <Title fontSize={'16px'} fontFamily="EB" margin="0px 0px 5px 0px">
-                {song.title}
-              </Title>
-              <Title fontSize={'14px'} fontFamily="RG">
-                {song.artistName}
-              </Title>
-            </SongTextArea>
-          </SongArea>
-        </SongCard>
+        <SongArea key={index}>
+          <AlbumCover>
+            <img
+              ref={index === 0 ? albumCoverRef : null}
+              src={song.trackCover}
+              width="100%"
+              height="100%"
+              crossOrigin="anonymous"
+              onLoad={handleImageLoad} // 이미지가 로드될 때 색상 추출
+              alt={`Album Cover of ${song.title}`}
+            ></img>
+          </AlbumCover>
+          <SongTextArea>
+            <Title fontSize={'16px'} fontFamily="EB" margin="0px 0px 5px 0px">
+              {song.title}
+            </Title>
+            <Title fontSize={'14px'} fontFamily="RG">
+              {song.artistName}
+            </Title>
+          </SongTextArea>
+        </SongArea>
       ))}
-      <Line />
     </PlayListCardContainer>
   );
 };

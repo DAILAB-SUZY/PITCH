@@ -53,7 +53,7 @@ const Body = styled.div`
 `;
 
 const Title = styled.div`
-  font-family: 'RG';
+  font-family: 'SB';
   font-size: 22px;
   color: ${colors.Font_black};
 `;

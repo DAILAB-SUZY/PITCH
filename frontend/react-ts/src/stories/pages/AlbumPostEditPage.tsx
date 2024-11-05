@@ -336,6 +336,8 @@ function AlbumPostEditPage() {
             <UnselectedGradientBG></UnselectedGradientBG>
             <TitleTextArea>
               <Text fontFamily="EB" fontSize="30px" margin="0px" color="white">
+                여기를 눌러
+                <br />
                 앨범을 선택해주세요
               </Text>
             </TitleTextArea>

@@ -4,7 +4,7 @@ import ColorThief from 'colorthief';
 import { useRef, useState } from 'react';
 
 const PlayListCardContainer = styled.div`
-  width: 380px;
+  width: 360px;
   height: auto;
   border-radius: 12px;
   display: flex;
@@ -26,7 +26,6 @@ const PlayListInfoArea = styled.div`
   justify-content: space-between;
   box-sizing: border-box;
   padding: 10px 10px 0px 10px;
-  margin-bottom: 10px;
 `;
 
 const EditBtn = styled.div`
@@ -38,22 +37,6 @@ const EditBtn = styled.div`
   width: 60px;
 `;
 
-const Line = styled.div`
-  width: 340px;
-  box-sizing: border-box;
-  padding: 0px 20px 0px 20px;
-  /* width: 320px; */
-  height: 1px;
-  opacity: 0.5;
-  background-color: ${colors.Button_deactive};
-`;
-
-const SongCard = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-`;
 const SongArea = styled.div`
   width: 100%;
   height: 50px;
@@ -181,6 +164,9 @@ interface PlaylistProps {
 }
 
 const PlayListEditCard = ({ playlist, isEditable, setIsSearchModalOpen, setPlayListData }: PlaylistProps) => {
+  const [playlistGradient, setPlaylistGradient] = useState<string>();
+  const albumCoverRef = useRef<HTMLImageElement | null>(null);
+
   const handleTrackRemove = (trackIdToRemove: number) => {
     setPlayListData(prevData => {
       if (!prevData) {
@@ -200,10 +186,36 @@ const PlayListEditCard = ({ playlist, isEditable, setIsSearchModalOpen, setPlayL
     });
   };
 
+  // ColorThief로 앨범 커버에서 색상 추출
+  const extractColors = () => {
+    const colorThief = new ColorThief();
+    const img = albumCoverRef.current;
+
+    let gradient = '#ddd'; // 기본 배경색 설정
+
+    if (img) {
+      const colors = colorThief.getPalette(img, 2); // 가장 대비되는 두 가지 색상 추출
+      const primaryColor = `rgb(${colors[0].join(',')})`;
+      const secondaryColor = `rgb(${colors[1].join(',')})`;
+      gradient = `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`;
+    }
+
+    setPlaylistGradient(gradient);
+  };
+
+  const handleImageLoad = () => {
+    extractColors(); // 이미지 로드 후 색상 추출
+  };
+
+  // const navigate = useNavigate();
+  // const GoToEditPage = () => {
+  //   navigate('/PlayListEditPage', { state: playlistInfo });
+  // };
+
   return (
     <PlayListCardContainer>
       <PlayListInfoArea>
-        <Text fontSize={'14px'} fontFamily="SB" margin="0px 120px 0px 0px " opacity="0.8">
+        <Text fontSize={'14px'} fontFamily="RG" margin="0px 100px 0px 0px " opacity="0.8">
           {playlist.length} songs
         </Text>
         {isEditable && (
@@ -215,40 +227,44 @@ const PlayListEditCard = ({ playlist, isEditable, setIsSearchModalOpen, setPlayL
             {/* <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill={colors.BG_grey} viewBox="0 0 16 16">
               <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2" />
             </svg> */}
-            <Text fontSize={'14px'} fontFamily="SB" margin="0px 0px 0px 5px " opacity="0.8">
+            <Text fontSize={'14px'} fontFamily="RG" margin="0px 0px 0px 5px " opacity="0.8">
               + 추가
             </Text>
           </EditBtn>
         )}
       </PlayListInfoArea>
       {playlist.map((song, index) => (
-        <SongCard>
-          <Line />
-          <SongArea key={index}>
-            <AlbumCover>
-              <img src={song.trackCover} width="100%" height="100%" crossOrigin="anonymous" alt={`Album Cover of ${song.title}`}></img>
-            </AlbumCover>
-            <SongTextArea>
-              <Title fontSize={'16px'} fontFamily="EB" margin="0px 0px 5px 0px">
-                {song.title}
-              </Title>
-              <Title fontSize={'14px'} fontFamily="RG">
-                {song.artistName}
-              </Title>
-            </SongTextArea>
-            <Btn
-              onClick={() => {
-                handleTrackRemove(song.trackId);
-              }}
-            >
-              <Text fontFamily="SB" fontSize="14px" margin="0px 0px 0px 4px">
-                - 삭제
-              </Text>
-            </Btn>
-          </SongArea>
-        </SongCard>
+        <SongArea key={index}>
+          <AlbumCover>
+            <img
+              ref={index === 0 ? albumCoverRef : null}
+              src={song.trackCover}
+              width="100%"
+              height="100%"
+              crossOrigin="anonymous"
+              onLoad={handleImageLoad} // 이미지가 로드될 때 색상 추출
+              alt={`Album Cover of ${song.title}`}
+            ></img>
+          </AlbumCover>
+          <SongTextArea>
+            <Title fontSize={'16px'} fontFamily="EB" margin="0px 0px 5px 0px">
+              {song.title}
+            </Title>
+            <Title fontSize={'14px'} fontFamily="RG">
+              {song.artistName}
+            </Title>
+          </SongTextArea>
+          <Btn
+            onClick={() => {
+              handleTrackRemove(song.trackId);
+            }}
+          >
+            <Text fontFamily="RG" fontSize="14px" margin="0px 0px 0px 4px">
+              - 삭제
+            </Text>
+          </Btn>
+        </SongArea>
       ))}
-      <Line />
     </PlayListCardContainer>
   );
 };

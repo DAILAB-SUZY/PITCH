@@ -149,6 +149,15 @@ const Title = styled.div<{ fontSize?: string; margin?: string }>`
   text-overflow: ellipsis; // 글자가 넘어가면 말줄임(...) 표시
 `;
 
+const CenterAlign = styled.div`
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 120%;
+`;
+
 interface AlbumSearchResult {
   albumArtist: {
     artistId: string;
@@ -318,21 +327,32 @@ function SearchModal({
       </SearchInputArea>
 
       <SearchResultArea>
-        {!isLoading && searchResultAlbum && searchingTopic === 'Album'
-          ? searchResultAlbum.map((album: any) => (
-              <SongArea key={album.albumId} onClick={() => addBestAlbum(album)}>
-                <AlbumCover>
-                  <img src={album.imageUrl} width="100%" height="100%"></img>
-                </AlbumCover>
-                <SongTextArea>
-                  <Title fontSize={'20px'}>{album.name}</Title>
-                  <Title fontSize={'15px'}>{album.albumArtist.name}</Title>
-                </SongTextArea>
-              </SongArea>
-            ))
-          : null}
-        {!isLoading && searchResultAlbum && searchingTopic === 'Artist-album'
-          ? searchResultAlbum.map((album: any) => (
+        {!isLoading &&
+          (searchingTopic === 'Album' ? (
+            searchResultAlbum && searchResultAlbum.length > 0 ? (
+              searchResultAlbum.map((album: any) => (
+                <SongArea key={album.albumId} onClick={() => addBestAlbum(album)}>
+                  <AlbumCover>
+                    <img src={album.imageUrl} width="100%" height="100%"></img>
+                  </AlbumCover>
+                  <SongTextArea>
+                    <Title fontSize={'20px'}>{album.name}</Title>
+                    <Title fontSize={'15px'}>{album.albumArtist.name}</Title>
+                  </SongTextArea>
+                </SongArea>
+              ))
+            ) : (
+              <CenterAlign>
+                <Text fontFamily="SB" fontSize="20px" margin="10px" color={colors.Font_black}>
+                  검색 결과가 없습니다.
+                </Text>
+                <Text fontFamily="RG" fontSize="15px" margin="10px" color={colors.Font_black}>
+                  앨범의 제목을 올바르게 입력했는지 확인해주세요.
+                </Text>
+              </CenterAlign>
+            )
+          ) : searchResultAlbum && searchResultAlbum.length > 0 && searchingTopic === 'Artist-album' ? (
+            searchResultAlbum.map((album: any) => (
               <SongArea key={album.albumId} onClick={() => addFavoriteArtistAlbum(album)}>
                 <AlbumCover>
                   <img src={album.imageUrl} width="100%" height="100%"></img>
@@ -343,7 +363,16 @@ function SearchModal({
                 </SongTextArea>
               </SongArea>
             ))
-          : null}
+          ) : (
+            <CenterAlign>
+              <Text fontFamily="SB" fontSize="20px" margin="10px" color={colors.Font_black}>
+                검색 결과가 없습니다.
+              </Text>
+              <Text fontFamily="RG" fontSize="15px" margin="10px" color={colors.Font_black}>
+                앨범의 제목을 올바르게 입력했는지 확인해주세요.
+              </Text>
+            </CenterAlign>
+          ))}
         {isLoading && <Loader></Loader>}
       </SearchResultArea>
     </Container>

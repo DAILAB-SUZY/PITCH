@@ -115,7 +115,7 @@ const DropdownMenu = styled.div`
   top: 25px;
   right: 0;
   width: 70px;
-  height: 70px;
+  height: 40px;
   display: flex;
   justify-content: center;
   align-items: center;

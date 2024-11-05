@@ -36,6 +36,7 @@ const Text = styled.div<{
   font-family: ${props => props.fontFamily};
   color: ${props => props.color};
   margin: ${props => props.margin};
+  line-height: 120%;
 `;
 
 const ButtonArea = styled.div`
@@ -62,7 +63,7 @@ const SearchArea = styled.div`
   align-items: center;
   justify-content: center;
   width: 100vw;
-  height: 30px;
+  height: 40px;
   margin: 10px;
   background-color: ${colors.BG_grey};
   overflow: scroll;
@@ -70,7 +71,7 @@ const SearchArea = styled.div`
 
 const ContentInput = styled.input`
   width: 90vw;
-  height: 30px;
+  height: 35px;
   padding: 10px;
   box-sizing: border-box;
   background-color: ${colors.InputBox};
@@ -207,8 +208,8 @@ function SearchPage() {
           <Text fontFamily="RG" fontSize="15px" margin="0px 0px 0px 10px" color={colors.Font_black} onClick={() => GoToAlbumPostEditPage()}>
             취소
           </Text>
-          <Text fontFamily="EB" fontSize="20px" margin="0px" color={colors.Font_black}>
-            search
+          <Text fontFamily="EB" fontSize="23px" margin="0px" color={colors.Font_black}>
+            Search
           </Text>
           <Text fontFamily="RG" fontSize="15px" margin="0px 10px 0px 0px" color={colors.BG_grey}>
             저장
@@ -222,8 +223,7 @@ function SearchPage() {
         </SearchArea>
 
         <SearchResultArea>
-          {!isLoading &&
-            searchResult &&
+          {!isLoading && searchResult?.length && searchResult.length > 0 ? (
             searchResult.map((album: any) => (
               <SongArea key={album.albumId} onClick={() => GoToAlbumPostEditPage({ ...album, postId: null })}>
                 <AlbumCover>
@@ -234,7 +234,17 @@ function SearchPage() {
                   <Title fontSize={'15px'}>{album.albumArtist.name}</Title>
                 </SongTextArea>
               </SongArea>
-            ))}
+            ))
+          ) : (
+            <>
+              <Text fontFamily="SB" fontSize="20px" margin="10px" color={colors.Font_black}>
+                검색 결과가 없습니다.
+              </Text>
+              <Text fontFamily="RG" fontSize="15px" margin="10px" color={colors.Font_black}>
+                앨범의 제목을 올바르게 입력했는지 확인해주세요.
+              </Text>
+            </>
+          )}
           {isLoading && <Loader></Loader>}
         </SearchResultArea>
       </AlbumPostArea>

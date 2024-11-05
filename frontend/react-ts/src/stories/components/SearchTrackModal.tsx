@@ -104,6 +104,14 @@ const SearchResultArea = styled.div`
   background-color: ${colors.BG_grey};
   z-index: 10;
 `;
+const CenterAlign = styled.div`
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 120%;
+`;
 
 const SongArea = styled.div`
   width: 100%;
@@ -350,29 +358,37 @@ function SearchTrackModal(props: SearchTrackModalProps) {
       </SearchInputArea>
 
       <SearchResultArea>
-        {!isLoading && searchResultTrack && searchingTopic === 'track'
-          ? searchResultTrack.map((track: any) => (
-              <SongArea
-                key={track.albumId}
-                onClick={() => {
-                  handleTrackUpdate(track);
-                  setIsSearchModalOpen(false);
-                }}
-              >
-                <AlbumCover>
-                  <img src={track.album.imageUrl} width="100%" height="100%"></img>
-                </AlbumCover>
-                <SongTextArea>
-                  <Title fontSize={'20px'}>{track.trackName}</Title>
-                  <Title fontSize={'15px'}>{track.trackArtist.name}</Title>
-                </SongTextArea>
-              </SongArea>
-            ))
-          : null}
-        {!isLoading && searchResultTrack && searchingTopic === 'Artist-track' ? (
-          searchResultTrack.length === 0 ? (
-            <Text fontSize="20px">검색결과가 없습니다.</Text>
-          ) : (
+        {!isLoading &&
+          (searchingTopic === 'track' ? (
+            searchResultTrack && searchResultTrack.length > 0 ? (
+              searchResultTrack.map((track: any) => (
+                <SongArea
+                  key={track.albumId}
+                  onClick={() => {
+                    handleTrackUpdate(track);
+                    setIsSearchModalOpen(false);
+                  }}
+                >
+                  <AlbumCover>
+                    <img src={track.album.imageUrl} width="100%" height="100%"></img>
+                  </AlbumCover>
+                  <SongTextArea>
+                    <Title fontSize={'20px'}>{track.trackName}</Title>
+                    <Title fontSize={'15px'}>{track.trackArtist.name}</Title>
+                  </SongTextArea>
+                </SongArea>
+              ))
+            ) : (
+              <CenterAlign>
+                <Text fontFamily="SB" fontSize="20px" margin="10px" color={colors.Font_black}>
+                  검색 결과가 없습니다.
+                </Text>
+                <Text fontFamily="RG" fontSize="15px" margin="10px" color={colors.Font_black}>
+                  앨범의 제목을 올바르게 입력했는지 확인해주세요.
+                </Text>
+              </CenterAlign>
+            )
+          ) : searchResultTrack && searchResultTrack.length > 0 ? (
             searchResultTrack.map((track: TrackSearchResult) => (
               <SongArea
                 key={track.trackName}
@@ -390,8 +406,16 @@ function SearchTrackModal(props: SearchTrackModalProps) {
                 </SongTextArea>
               </SongArea>
             ))
-          )
-        ) : null}
+          ) : (
+            <CenterAlign>
+              <Text fontFamily="SB" fontSize="20px" margin="10px" color={colors.Font_black}>
+                검색 결과가 없습니다.
+              </Text>
+              <Text fontFamily="RG" fontSize="15px" margin="10px" color={colors.Font_black}>
+                앨범의 제목을 올바르게 입력했는지 확인해주세요.
+              </Text>
+            </CenterAlign>
+          ))}
         {isLoading && <Loader></Loader>}
       </SearchResultArea>
     </Container>
