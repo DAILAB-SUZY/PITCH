@@ -1,11 +1,12 @@
 import styled from 'styled-components';
 import { colors } from '../../styles/color';
-import Nav from '../components/Nav';
+
 import PlayListCard from '../components/PlayListCard';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { fetchGET, MAX_REISSUE_COUNT } from '../utils/fetchData';
 import useStore from '../store/store';
+import Header from '../components/Header';
 
 const Container = styled.div`
   display: flex;
@@ -28,12 +29,6 @@ const BlankDiv = styled.div`
   height: 100px;
 `;
 
-const Header = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-`;
 const Body = styled.div`
   margin-top: 130px;
   display: flex;
@@ -152,9 +147,7 @@ function PlayListPage() {
 
   return (
     <Container>
-      <Header>
-        <Nav page={author.page}></Nav>
-      </Header>
+      <Header page={3}></Header>
       <Body>
         <TitleArea
           onClick={() => {

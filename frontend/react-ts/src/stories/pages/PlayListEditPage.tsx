@@ -1,11 +1,12 @@
 import styled from 'styled-components';
 import { colors } from '../../styles/color';
-import Nav from '../components/Nav';
+
 import PlayListEditCard from '../components/PlayListEditCard';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import SearchTrackModal from '../components/SearchTrackModal';
 import { fetchPOST, fetchGET, MAX_REISSUE_COUNT } from '../utils/fetchData';
+import Header from '../components/Header';
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -18,12 +19,6 @@ const Container = styled.div`
   color: black;
 `;
 
-const Header = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-`;
 const Body = styled.div`
   margin-top: 130px;
   display: flex;
@@ -192,9 +187,7 @@ function PlayListPage() {
           </ModalArea>
         </Blur>
       )}
-      <Header>
-        <Nav page={author.page}></Nav>
-      </Header>
+      <Header page={3}></Header>
       <Body>
         <TitleArea>
           {playListData ? (

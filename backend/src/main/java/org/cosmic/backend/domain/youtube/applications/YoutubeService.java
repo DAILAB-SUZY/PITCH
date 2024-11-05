@@ -41,7 +41,6 @@ public class YoutubeService {
   public String getAccessToken(String authorizationCode) {
     RestTemplate restTemplate = new RestTemplate();
 
-    // 요청 본문 데이터 준비 (MultiValueMap 사용)
     MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
     requestBody.add("code", authorizationCode);
     requestBody.add("client_id", clientId);
@@ -52,11 +51,9 @@ public class YoutubeService {
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-    // 요청 엔티티 생성
     HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(requestBody, headers);
 
     try {
-      // Google 서버로 POST 요청 전송
       ResponseEntity<String> response = restTemplate.exchange(
           TOKEN_URL,
           HttpMethod.POST,
@@ -64,7 +61,6 @@ public class YoutubeService {
           String.class
       );
 
-      // 응답 본문에서 액세스 토큰 파싱
       ObjectMapper objectMapper = new ObjectMapper();
       JsonNode jsonNode = objectMapper.readTree(response.getBody());
       return jsonNode.get("access_token").asText();

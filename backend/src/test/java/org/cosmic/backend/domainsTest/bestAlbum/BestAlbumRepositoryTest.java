@@ -2,10 +2,10 @@ package org.cosmic.backend.domainsTest.bestAlbum;
 
 import java.util.List;
 import lombok.extern.log4j.Log4j2;
+import org.cosmic.backend.Creator;
 import org.cosmic.backend.domain.bestAlbum.domains.UserBestAlbum;
 import org.cosmic.backend.domain.user.domains.User;
 import org.cosmic.backend.domain.user.repositorys.UsersRepository;
-import org.cosmic.backend.domainsTest.Creator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

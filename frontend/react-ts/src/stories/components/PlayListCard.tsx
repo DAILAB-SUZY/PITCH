@@ -166,7 +166,7 @@ const PlayListBox = ({ playlist, isEditable, playlistInfo }: PlaylistProps) => {
     console.log(playlistId);
     // const token = localStorage.getItem('login-token') as string;
     // const refreshToken = localStorage.getItem('login-refreshToken') as string;
-    window.location.href = 'https://pitches.social/oauth2/authorization/google';
+    window.location.href = `https://pitches.social/oauth2/authorization/google?state=${playlistInfo.id}`;
   };
 
   return (

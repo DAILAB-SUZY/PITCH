@@ -12,7 +12,7 @@ public record FollowDto(Long userId, String username, String profilePicture) {
   static public FollowDto from(User user) {
     return new FollowDto(user.getUserId(),
         user.getUsername(),
-        User.getOriginProfilePicture(user.getProfilePicture()));
+        user.getOriginProfilePicture());
   }
 
   static public FollowDto following(Follow follow) {
