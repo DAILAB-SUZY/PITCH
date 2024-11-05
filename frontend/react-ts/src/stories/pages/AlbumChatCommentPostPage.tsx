@@ -190,7 +190,8 @@ function AlbumChatCommentPostPage() {
   const [AlbumChatData, setAlbumChatData] = useState<AlbumChatComment>();
 
   const GoToAlbumChatPage = () => {
-    navigate('/AlbumChatPage', { state: { albumChatId, spotifyAlbumId } });
+    // navigate('/AlbumChatPage', { state: { albumChatId, spotifyAlbumId } });
+    navigate(-1);
   };
 
   useEffect(() => {
@@ -247,10 +248,10 @@ function AlbumChatCommentPostPage() {
         <CommentArea>
           <ButtonArea>
             <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 10px" color={colors.BG_grey}>
-              뒤로가기
+              뒤로
             </Text>
             <Text fontFamily="Bd" fontSize="20px" margin="0px" color={colors.Font_black}>
-              Comment
+              {AlbumChatData?.author.username}님의 Chat
             </Text>
             <Text
               fontFamily="Rg"

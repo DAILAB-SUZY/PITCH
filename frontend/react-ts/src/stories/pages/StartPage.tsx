@@ -17,10 +17,28 @@ function StartPage() {
   const GoToLoginPage = () => {
     navigate('/Login');
   };
+  const GoToHomePage = () => {
+    navigate('/Home');
+  };
+
+  const Start = () => {
+    if (localStorage.getItem('login-token')) {
+      GoToHomePage();
+    } else {
+      GoToLoginPage();
+    }
+  };
 
   return (
     <Container>
-      <img src={logo} width="100px" height="100px" onClick={GoToLoginPage}></img>
+      <img
+        src={logo}
+        width="100px"
+        height="100px"
+        onClick={() => {
+          Start();
+        }}
+      ></img>
     </Container>
   );
 }

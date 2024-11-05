@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { fetchPOST, fetchDELETE, MAX_REISSUE_COUNT } from '../utils/fetchData';
 import { updateTimeAgo } from '../utils/getTimeAgo';
 import useStore from '../store/store';
+import { useNavigate } from 'react-router-dom';
 const ChatCardContainer = styled.div`
   width: 350px;
   height: auto;
@@ -227,10 +228,15 @@ const AlbumPostCommentCard = ({ comment, postId, fetchAlbumPost }: commentProps)
     setIsDropdownOpen(false);
   };
 
+  const navigate = useNavigate();
+  const GoToMusicProfilePage = () => {
+    navigate('/MusicProfilePage', { state: comment.author.id });
+  };
+
   return (
     <ChatCardContainer>
       <ProfileArea>
-        <ProfileInfoArea>
+        <ProfileInfoArea onClick={() => GoToMusicProfilePage()}>
           <ProfileImage>
             <ProfileImageCircle src={comment.author.profilePicture} alt="Profile" />
           </ProfileImage>

@@ -302,7 +302,7 @@ function AlbumChatPage() {
               뒤로가기
             </Text>
             <Text fontFamily="Bd" fontSize="20px" margin="0px" color={colors.Font_black}>
-              Comment
+              {AlbumChatData?.author.username}님의 Chat
             </Text>
             <Text
               fontFamily="Rg"

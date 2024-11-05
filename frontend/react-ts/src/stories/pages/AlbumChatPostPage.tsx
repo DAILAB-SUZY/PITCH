@@ -13,7 +13,7 @@ const Container = styled.div`
   overflow-x: hidden;
   height: 100vh; //auto;
   width: 100vw;
-  background-color: white;
+  background-color: ${colors.BG_grey};
   color: ${colors.Font_black};
 `;
 
@@ -24,7 +24,7 @@ const CommentArea = styled.div`
   align-items: center;
   justify-content: flex-start;
   flex-direction: column;
-  background-color: white;
+  background-color: ${colors.BG_grey};
 `;
 
 const Text = styled.div<{
@@ -118,7 +118,7 @@ function CommentPostPage() {
 
   const navigate = useNavigate();
   const GoToAlbumPage = () => {
-    navigate('/AlbumPage', { state: spotifyAlbumId });
+    navigate(-1);
   };
 
   // 게시물 작성

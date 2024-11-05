@@ -21,21 +21,19 @@ const Container = styled.div`
 `;
 
 const BlankDiv = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100vw;
+  width: 100%;
   height: 100px;
+  padding: 50px;
 `;
 
 const Body = styled.div`
-  margin-top: 130px;
+  margin-top: 50px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
   overflow-x: hidden;
+  height: auto;
 `;
 
 const TitleArea = styled.div`
@@ -165,7 +163,9 @@ function PlayListPage() {
             {author.username}'s PlayList
           </Text>
         </TitleArea>
-        <PlayListArea>{playListData && <PlayListCard playlist={playListData?.tracks} isEditable={author.id === id ? true : false} playlistInfo={author}></PlayListCard>}</PlayListArea>
+        <PlayListArea>
+          {playListData && <PlayListCard playlist={playListData?.tracks} isEditable={author.id === id ? true : false} playlistInfo={author} isUserPlaylist={true}></PlayListCard>}
+        </PlayListArea>
         <RecommendationArea>
           <TitleArea>
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" className="bi bi-lightbulb" viewBox="0 0 16 16">
@@ -175,7 +175,7 @@ function PlayListPage() {
               Recommendation
             </Text>
           </TitleArea>
-          <PlayListArea>{playListData && <PlayListCard playlist={playListData?.recommends} isEditable={false} playlistInfo={author}></PlayListCard>}</PlayListArea>
+          <PlayListArea>{playListData && <PlayListCard playlist={playListData?.recommends} isEditable={false} playlistInfo={author} isUserPlaylist={false}></PlayListCard>}</PlayListArea>
         </RecommendationArea>
         <BlankDiv></BlankDiv>
       </Body>

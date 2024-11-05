@@ -84,15 +84,30 @@ const ProfileArea = styled.div`
 `;
 
 // 프로필 이미지 스타일
-const ProfileImage = styled.img`
+// const ProfileImage = styled.img`
+//   width: 35px;
+//   height: 35px;
+//   border-radius: 50%;
+//   margin-right: 10px;
+// `;
+
+const ProfileImage = styled.div`
+  display: flex;
+  overflow: hidden;
   width: 35px;
   height: 35px;
   border-radius: 50%;
-  margin-right: 10px;
+  margin-right: 5px;
+`;
+const ProfileImageCircle = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 비율 유지하며 꽉 채움 */
+  object-position: center; /* 이미지 가운데 정렬 */
 `;
 
 const UserNameArea = styled.div`
-  width: 100%;
+  width: 110px;
   height: 35px;
   display: flex;
   flex-direction: column;
@@ -172,7 +187,10 @@ const PlaylistPreviewCard = ({ playlists }: PlaylistProps) => {
                   ))}
               </AlbumCoverStack>
               <ProfileArea onClick={() => GoToMusicProfilePage(playlist.author.id)}>
-                <ProfileImage src={playlist.author.profilePicture} alt="Profile" />
+                {/* <ProfileImage src={playlist.author.profilePicture} alt="Profile" /> */}
+                <ProfileImage>
+                  <ProfileImageCircle src={playlist.author.profilePicture} alt="Profile" />
+                </ProfileImage>
                 <UserNameArea>
                   <UserName fontFamily="Bd">{playlist.author.username}'s</UserName>
                   <UserName fontFamily="Rg">Playlist</UserName>

@@ -271,23 +271,6 @@ function AlbumPostEditPage() {
   const [stars, setStars] = useState<string[]>();
   const [score, setScore] = useState<number>(0);
 
-  // const scoreToStar = (score: number) => {
-  //   let stars: string[] = [];
-
-  //   // 별 5개를 기준으로 0부터 10까지의 score를 5단위로 변환
-  //   for (let i = 0; i < 5; i++) {
-  //     if (score >= (i + 1) * 2) {
-  //       stars.push('full'); // 완전히 채워진 별
-  //     } else if (score >= i * 2 + 1) {
-  //       stars.push('half'); // 반 채워진 별
-  //     } else {
-  //       stars.push('empty'); // 빈 별
-  //     }
-  //   }
-
-  //   return stars;
-  // };
-
   useEffect(() => {
     console.log(location.state);
     // post 작성을 위해 처음 들어오는 경우
@@ -320,7 +303,11 @@ function AlbumPostEditPage() {
   const GoToHomePage = () => {
     navigate('/Home');
   };
-  const GoToAlbumPostPage = (postId: number) => {
+  const GoToAlbumPostPageAfterEdit = () => {
+    // navigate('/AlbumPostPage', { state: postId });
+    navigate(-1);
+  };
+  const GoToAlbumPostPage = (postId: string) => {
     navigate('/AlbumPostPage', { state: postId });
   };
 
@@ -341,7 +328,7 @@ function AlbumPostEditPage() {
       content: postContent,
       score: score,
     };
-    fetchPOST(token, refreshToken, `/api/album/post/${albumPost?.postId}`, data, MAX_REISSUE_COUNT).then(() => GoToAlbumPostPage(albumPost ? albumPost?.postId : 0));
+    fetchPOST(token, refreshToken, `/api/album/post/${albumPost?.postId}`, data, MAX_REISSUE_COUNT).then(() => GoToAlbumPostPageAfterEdit());
   };
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -352,31 +339,6 @@ function AlbumPostEditPage() {
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`; // Adjust the height based on the content
     }
   };
-
-  // const handleClick = (event: any, key: any) => {
-  //   console.log(event.clientX);
-  //   const { left, width } = event.currentTarget.getBoundingClientRect();
-  //   const clickX = event.clientX;
-  //   const middleX = left + width / 2;
-
-  //   if (clickX < middleX) {
-  //     handleLeftClick(key);
-  //   } else {
-  //     handleRightClick(key);
-  //   }
-  // };
-
-  // const handleLeftClick = (key: any) => {
-  //   const score = key * 2 + 1;
-  //   setStars(scoreToStar(score));
-  //   setScore(score);
-  // };
-
-  // const handleRightClick = (key: any) => {
-  //   const score = key * 2 + 2;
-  //   setStars(scoreToStar(score));
-  //   setScore(score);
-  // };
 
   return (
     <Container>
@@ -453,7 +415,7 @@ function AlbumPostEditPage() {
             margin="0px 0px 0px 10px"
             color={colors.Font_black}
             onClick={() => {
-              isEditMode && albumPost ? GoToAlbumPostPage(albumPost?.postId) : GoToHomePage();
+              isEditMode && albumPost ? GoToAlbumPostPageAfterEdit() : GoToHomePage();
             }}
           >
             취소

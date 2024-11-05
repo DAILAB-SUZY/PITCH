@@ -174,7 +174,7 @@ const ProfileImage = styled.div`
 const ProfileImgTextArea = styled.div`
   display: flex;
   flex-direction: row;
-  width: 100%;
+  width: auto;
   justify-content: flex-start;
   align-items: center;
 `;
@@ -482,6 +482,11 @@ function AlbumPostPage() {
     return <div>Loading...</div>;
   }
 
+  const GoToMusicProfilePage = () => {
+    console.log('GoToMusicProfilePage');
+    navigate('/MusicProfilePage', { state: albumPost?.postDetail.author.id });
+  };
+
   return (
     <Container>
       {albumPost && (
@@ -535,7 +540,7 @@ function AlbumPostPage() {
             </AlbumTitleArea>
             <PostArea>
               <ProfileArea>
-                <ProfileImgTextArea>
+                <ProfileImgTextArea onClick={() => GoToMusicProfilePage()}>
                   <ProfileImage>
                     <ProfileImageCircle src={albumPost.postDetail.author.profilePicture}></ProfileImageCircle>
                   </ProfileImage>

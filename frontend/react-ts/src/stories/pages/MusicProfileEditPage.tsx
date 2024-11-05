@@ -360,6 +360,10 @@ function MusicProfileEditPage() {
   // DNA 추가 제거
   const addToMyDNA = (dnaKey: number) => {
     console.log('adding DNA...');
+    if (myMusicDna.length >= 4) {
+      alert('DNA는 최대 4개까지 선택 가능합니다.');
+      return;
+    }
     if (allMusicDna && myMusicDna) {
       console.log('start adding DNA...');
       let addDna = allMusicDna?.find(dna => dna.dnaKey === dnaKey);
@@ -394,6 +398,10 @@ function MusicProfileEditPage() {
   const postAllEdit = async () => {
     const token = localStorage.getItem('login-token');
     const refreshToken = localStorage.getItem('login-refreshToken');
+    if (favoriteArtistSpotifyIds?.spotifyArtistId === '' || favoriteArtistSpotifyIds?.spotifyAlbumId === '' || favoriteArtistSpotifyIds?.spotifyTrackId === '') {
+      alert('Favorite Artist 설정을 마무리해주세요');
+      return;
+    }
     try {
       await postMusicDNA(token || '', refreshToken || '');
       await postBestAlbum(token || '', refreshToken || '');
