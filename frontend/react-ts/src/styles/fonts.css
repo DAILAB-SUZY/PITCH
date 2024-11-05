@@ -1,4 +1,4 @@
-@font-face {
+/* @font-face {
   font-family: "Bd";
   src: url("../font/The\ Jamsil\ OTF\ 5\ Bold.woff") format("font-woff");
   font-weight: normal;
@@ -8,14 +8,26 @@
   font-family: "Rg";
   src: url("../font/The\ Jamsil\ OTF\ 3\ Regular.woff") format("font-woff");
   font-weight: bold;
+} */
+
+@font-face {
+  font-family: 'Bd';
+  src: url('../font/Pretendard-ExtraBold.woff') format('woff');
+  font-weight: normal;
 }
 
 @font-face {
-  font-family: "Mon";
-  src: url("../font/Montserrat-ExtraBold.otf") format("opentype");
+  font-family: 'Rg';
+  src: url('../font/Pretendard-Regular.woff') format('woff');
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: 'Mon';
+  src: url('../font/Montserrat-ExtraBold.otf') format('opentype');
   font-weight: bold;
 }
 
 body {
-  font-family: "Bd";
+  font-family: 'Bd';
 }

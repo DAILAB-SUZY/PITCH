@@ -1,4 +1,4 @@
-@font-face {
+/* @font-face {
   font-family: 'Bd';
   src: url('../src/font/TheJamsilOTF5Bold.otf') format('opentype');
   font-weight: bold;
@@ -10,23 +10,13 @@
   font-weight: normal;
 }
 
-/* @font-face {
-  font-family: 'Bd';
-  src: url('../src/font/Pretendard-ExtraBold.woff');
-  font-weight: bold;
-}
-
-@font-face {
-  font-family: 'Rg';
-  src: url('../src/font/Pretendard-Regular.woff');
-  font-weight: normal;
-} */
-
 @font-face {
   font-family: 'Mon';
   src: url('../src/font/Montserrat-ExtraBold.otf') format('opentype');
   font-weight: bold;
-}
+} */
+
+@import url('./styles/fonts.css');
 
 :root {
   font-family: 'Bd';

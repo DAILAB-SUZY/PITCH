@@ -45,9 +45,9 @@ const CommentArea = styled.div`
 `;
 
 const ChatCardBody = styled.div`
-  margin: 5px 0px 10px 0px;
+  margin: 5px 0px 8px 0px;
   width: 90%;
-  height: 43px;
+  height: 45px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -65,6 +65,12 @@ const Text = styled.div<{ fontSize?: string; margin?: string; color?: string }>`
   margin: ${props => props.margin};
   font-family: 'Rg';
   color: ${props => props.color};
+
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* 텍스트를 2줄로 제한 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis; /* 넘칠 때 말줄임표(...) 표시 */
 `;
 
 const ProfileArea = styled.div`

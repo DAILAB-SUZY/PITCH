@@ -137,6 +137,7 @@ const Text = styled.div<{ fontSize?: string; margin?: string; fontFamily?: strin
   opacity: ${props => props.opacity};
   color: ${props => props.color};
   width: ${props => props.width};
+  height: auto;
 
   white-space: nowrap;
   overflow: hidden; // 너비를 넘어가면 안보이게
