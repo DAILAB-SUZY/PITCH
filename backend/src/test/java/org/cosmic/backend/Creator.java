@@ -163,4 +163,11 @@ public class Creator {
   public List<Email> createAndSaveEmails(int start, int end) {
     return createAndSaveEmails(start, end, "username");
   }
+
+  public List<AlbumChatComment> createAndSaveAlbumChatComment(AlbumChatComment albumChat, User user,
+      String test, int start, int until) {
+    return IntStream.range(start, until)
+        .mapToObj(idx -> createAndSaveAlbumChatComment(albumChat, user, test))
+        .toList();
+  }
 }
