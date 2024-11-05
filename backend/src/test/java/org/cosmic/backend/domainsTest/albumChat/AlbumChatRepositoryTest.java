@@ -3,6 +3,7 @@ package org.cosmic.backend.domainsTest.albumChat;
 import java.util.List;
 import java.util.stream.IntStream;
 import lombok.extern.log4j.Log4j2;
+import org.cosmic.backend.AbstractContainerBaseTest;
 import org.cosmic.backend.domain.albumChat.domains.AlbumChatComment;
 import org.cosmic.backend.domain.albumChat.dtos.comment.AlbumChatCommentDetail;
 import org.cosmic.backend.domain.albumChat.exceptions.NotFoundAlbumChatCommentException;
@@ -12,20 +13,15 @@ import org.cosmic.backend.domain.albumScore.repositorys.AlbumScoreRepository;
 import org.cosmic.backend.domain.playList.domains.Album;
 import org.cosmic.backend.domain.playList.repositorys.AlbumRepository;
 import org.cosmic.backend.domain.user.domains.User;
-import org.cosmic.backend.domainsTest.Creator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
-@DataJpaTest(showSql = false)
 @Log4j2
-@Import(Creator.class)
-public class AlbumChatRepositoryTest {
+public class AlbumChatRepositoryTest extends AbstractContainerBaseTest {
 
   @Autowired
   private AlbumChatCommentRepository albumChatCommentRepository;
@@ -33,8 +29,6 @@ public class AlbumChatRepositoryTest {
   @Autowired
   private AlbumRepository albumRepository;
 
-  @Autowired
-  private Creator creator;
   @Autowired
   private AlbumScoreRepository albumScoreRepository;
 
@@ -204,20 +198,34 @@ public class AlbumChatRepositoryTest {
     List<Album> albums = creator.createAndSaveAlbums(0, 5);
     User user = creator.createAndSaveUser("testman");
     albums.forEach(album -> {
-      int commentCount = (int) (Math.random() * 100) % 100;
+      int commentCount = (int) (Math.random() * 100) % 10;
+      List<AlbumChatComment> albumChats = creator.createAndSaveAlbumChats(album, user, "test", 0,
+          commentCount);
+      albumChats.forEach(albumChat -> {
+        int childCommentCount = (int) (Math.random() * 100) % 10;
+        albumChat.getChildComments().addAll(
+            creator.createAndSaveAlbumChatComment(albumChat, user, "test", 0, childCommentCount));
+      });
       album.getAlbumChatComments()
-          .addAll(creator.createAndSaveAlbumChats(album, user, "test", 0, commentCount));
+          .addAll(albumChats);
     });
 
     List<AlbumScore> likeOrderedAlbums = albumScoreRepository.findAlbumScoreOrderByCommentCount(
         PageRequest.of(0, 5), 1L).getContent();
 
     IntStream.range(1, likeOrderedAlbums.size()).forEach(i -> {
-      log.info(likeOrderedAlbums.get(i).getAlbum().getAlbumChatComments().size());
+      log.info(
+          "total comment: " + albumChatCommentRepository.findByAlbum_AlbumId(
+              likeOrderedAlbums.get(i).getAlbum().getAlbumId()).get().size());
+      log.info(
+          "parent comment: " + likeOrderedAlbums.get(i).getAlbum().getAlbumChatComments().stream()
+              .filter(albumchat -> albumchat.getParentAlbumChatComment() == null).count());
       Assertions.assertTrue(
-          likeOrderedAlbums.get(i - 1).getAlbum().getAlbumChatComments().size()
+          likeOrderedAlbums.get(i - 1).getAlbum().getAlbumChatComments().stream()
+              .filter(albumchat -> albumchat.getParentAlbumChatComment() == null).count()
               >= likeOrderedAlbums.get(i)
-              .getAlbum().getAlbumChatComments().size());
+              .getAlbum().getAlbumChatComments().stream()
+              .filter(albumchat -> albumchat.getParentAlbumChatComment() == null).count());
     });
   }
 }

@@ -54,25 +54,25 @@ public class SearchService {
     headers = setting(accessToken, headers);
     String searchUrl = "https://api.spotify.com/v1/search?type=track,artist,album&q=" + q;
     HttpEntity<String> requestEntity = new HttpEntity<String>("", headers);
-    return rest.exchange(searchUrl, HttpMethod.GET, requestEntity,String.class).getBody();
+    return rest.exchange(searchUrl, HttpMethod.GET, requestEntity, String.class).getBody();
   }
 
   public String searchSpotifyTrack(String accessToken, String trackName) {
     RestTemplate rest = new RestTemplate();
     HttpHeaders headers = new HttpHeaders();
     headers = setting(accessToken, headers);
-    String searchUrl = "https://api.spotify.com/v1/search?q=" + trackName+"&type=track";
+    String searchUrl = "https://api.spotify.com/v1/search?q=" + trackName + "&type=track";
     HttpEntity<String> requestEntity = new HttpEntity<String>("", headers);
-    return rest.exchange(searchUrl, HttpMethod.GET, requestEntity,String.class).getBody();
+    return rest.exchange(searchUrl, HttpMethod.GET, requestEntity, String.class).getBody();
   }
 
   public String searchSpotifyAlbumName(String accessToken, String albumName) {
     RestTemplate rest = new RestTemplate();
     HttpHeaders headers = new HttpHeaders();
     headers = setting(accessToken, headers);
-    String searchUrl = "https://api.spotify.com/v1/search?q=" + albumName+"&type=album";
+    String searchUrl = "https://api.spotify.com/v1/search?q=" + albumName + "&type=album";
     HttpEntity<String> requestEntity = new HttpEntity<String>("", headers);
-    return rest.exchange(searchUrl, HttpMethod.GET, requestEntity,String.class).getBody();
+    return rest.exchange(searchUrl, HttpMethod.GET, requestEntity, String.class).getBody();
   }
 
   public String searchSpotifyArtist(String accessToken, String artistId) {
@@ -81,7 +81,7 @@ public class SearchService {
     headers = setting(accessToken, headers);
     String searchUrl = "https://api.spotify.com/v1/artists/" + artistId;
     HttpEntity<String> requestEntity = new HttpEntity<String>("", headers);
-    return rest.exchange(searchUrl, HttpMethod.GET, requestEntity,String.class).getBody();
+    return rest.exchange(searchUrl, HttpMethod.GET, requestEntity, String.class).getBody();
   }
 
   public String searchSpotifyAlbum(String accessToken, String albumId) {
@@ -90,7 +90,7 @@ public class SearchService {
     headers = setting(accessToken, headers);
     String searchUrl = "https://api.spotify.com/v1/albums/" + albumId;
     HttpEntity<String> requestEntity = new HttpEntity<String>("", headers);
-    return rest.exchange(searchUrl, HttpMethod.GET, requestEntity,String.class).getBody();
+    return rest.exchange(searchUrl, HttpMethod.GET, requestEntity, String.class).getBody();
   }
 
   private HttpEntity<String> getEntity() {

@@ -53,10 +53,10 @@ public class TokenProvider {
         .compact();
   }
 
-  private void saveTokenInRedis(String token, String email) {
+  private void saveTokenInRedis(String id, String token) {
     redisTemplate.opsForValue().set(
+        id,
         token,
-        email,
         Instant.now().plus(REFRESH_EXPIRATION, ChronoUnit.DAYS).getEpochSecond(),
         TimeUnit.MILLISECONDS
     );
@@ -80,7 +80,7 @@ public class TokenProvider {
    */
   public String createRefreshToken(MyUserDetails user) {
     String token = createToken(user, REFRESH_EXPIRATION, ChronoUnit.DAYS);
-    saveTokenInRedis(token, user.getId());
+    saveTokenInRedis(user.getId(), token);
     return token;
   }
 
@@ -107,9 +107,17 @@ public class TokenProvider {
   }
 
   public String validateRefreshTokenAndGetId(String token) {
-    if (!redisTemplate.hasKey(token)) {
+    String id = validateAndGetId(token);
+    if (!redisTemplate.hasKey(id)) {
       throw new CredentialNotMatchException();
     }
-    return validateAndGetId(token);
+    if (!token.equals(redisTemplate.opsForValue().get(id))) {
+      throw new CredentialNotMatchException();
+    }
+    return id;
+  }
+
+  public Long validateRefreshTokenAndGetLongId(String token) {
+    return Long.valueOf(validateRefreshTokenAndGetId(token));
   }
 }

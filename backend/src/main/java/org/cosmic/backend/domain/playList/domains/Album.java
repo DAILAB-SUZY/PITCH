@@ -61,7 +61,6 @@ public class Album {//앨범과 트랙은 1:N관계이며 앨범과 아티스트
   private Set<Post> posts = new HashSet<>();
 
 
-
   //아티스트와 1:N 관계
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "artist_id")

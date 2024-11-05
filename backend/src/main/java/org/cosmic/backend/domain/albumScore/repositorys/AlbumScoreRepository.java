@@ -33,7 +33,7 @@ public interface AlbumScoreRepository extends JpaRepository<AlbumScore, AlbumSco
           + "COALESCE(a.score, 0)) "
           + "FROM Album al "
           + "LEFT JOIN AlbumScore a ON a.album = al and a.user.userId = :userId "
-          + "LEFT JOIN al.albumChatComments acc "
+          + "LEFT JOIN AlbumChatComment acc ON acc.album = al AND acc.parentAlbumChatComment IS NULL "
           + "GROUP BY al.albumId, a.user, a.album.albumId, a.score "
           + "ORDER BY COUNT(acc) DESC, al.albumId")
   Page<AlbumScore> findAlbumScoreOrderByCommentCount(Pageable pageable,
