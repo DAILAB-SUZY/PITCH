@@ -20,7 +20,7 @@ const Container = styled.div`
 `;
 
 const Body = styled.div`
-  margin-top: 130px;
+  margin-top: 50px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;

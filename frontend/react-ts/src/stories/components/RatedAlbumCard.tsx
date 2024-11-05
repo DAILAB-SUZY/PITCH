@@ -93,6 +93,7 @@ const StarsArea = styled.div`
   justify-content: center;
   align-items: center;
   z-index: 3;
+  gap: 2px;
 `;
 
 interface DNA {

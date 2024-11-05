@@ -14,6 +14,7 @@ const StarCard = styled.div`
   border-radius: 10px;
   box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
   margin: 10px;
+  position: relative;
 `;
 
 const Container = styled.div`
@@ -36,6 +37,14 @@ const StarsArea = styled.div`
   justify-content: center;
   align-items: center;
   gap: 5px;
+  margin-bottom: 5px;
+`;
+
+const ResetBtn = styled.div`
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  opacity: 0.5;
 `;
 
 const Text = styled.div<{
@@ -138,6 +147,12 @@ function ScoreEditAlbumPage({ stars, score, setScore, setStars, albumId }: StarE
     });
   };
 
+  const resetScore = () => {
+    setScore(0);
+    setStars(scoreToStar(0));
+    fetchScore(0);
+  };
+
   return (
     <Container>
       {' '}
@@ -185,6 +200,12 @@ function ScoreEditAlbumPage({ stars, score, setScore, setStars, albumId }: StarE
             )}
           </StarsArea>
         </ScoreBox>
+        <ResetBtn onClick={() => resetScore()}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-counterclockwise" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2z" />
+            <path d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466" />
+          </svg>
+        </ResetBtn>
       </StarCard>
     </Container>
   );

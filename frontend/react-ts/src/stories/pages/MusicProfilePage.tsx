@@ -50,7 +50,6 @@ const ProfileHeaderArea = styled.div`
 `;
 
 const ProfileLeftArea = styled.div`
-  margin-top: 5vh;
   width: 100px;
   height: 150px;
   display: flex;
@@ -123,7 +122,7 @@ const Tag = styled.div<{ color: string }>`
   width: auto;
   height: auto;
   font-size: 15px;
-  font-family: 'RG';
+  font-family: 'SB';
   color: ${props => props.color};
   background-color: ${colors.BG_grey};
   /* border-color: ${colors.Tag};
@@ -207,7 +206,7 @@ const Title = styled.div`
   box-sizing: border-box;
   padding-left: 20px;
   font-family: 'EB';
-  font-size: 22px;
+  font-size: 27px;
 `;
 
 const FavoriteArtistArea = styled.div`
@@ -564,7 +563,7 @@ function MusicProfilePage() {
                     d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
                   />
                 </svg>
-                <Text fontFamily="RG" fontSize="15px" margin="0px 0px 0px 4px">
+                <Text fontFamily="SB" fontSize="15px" margin="0px 0px 0px 4px">
                   수정
                 </Text>
               </EditBtn>

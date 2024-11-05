@@ -57,7 +57,7 @@ const ProfileTextArea = styled.div`
 const ProfileName = styled.div`
   display: flex;
   font-size: 20px;
-  font-family: 'RG';
+  font-family: 'SB';
   margin-left: 10px;
   color: ${colors.Font_black};
 `;
