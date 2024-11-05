@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 // const server = 'http://203.255.81.70:8030';
 const server = 'https://pitches.social';
 const reissueTokenUrl = `${server}/api/auth/reissued`;
@@ -174,6 +174,32 @@ export const fetchDELETE = async (token: string, refreshToken: string, URL: stri
       }
     } else {
       console.error('Failed to fetch data:', response.status);
+    }
+  } catch (error) {
+    console.error('Error fetching the JSON file:', error);
+  } finally {
+    console.log('Finished fetching');
+  }
+};
+
+// 데이터 fetch 함수 - EMAILPOST
+export const fetchEMAILPOST = async (Data: any, URL: string): Promise<any | undefined> => {
+  try {
+    console.log('Fetching POST...');
+    console.log(Data);
+    const response = await fetch(`${server}${URL}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(Data),
+    });
+
+    if (response.ok) {
+      return response;
+    } else {
+      console.error('Failed to fetch data:', response.status);
+      return response;
     }
   } catch (error) {
     console.error('Error fetching the JSON file:', error);

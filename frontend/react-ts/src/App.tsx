@@ -21,6 +21,8 @@ import SearchPage from './stories/pages/SearchPage';
 import ErrorPage from './stories/pages/ErrorPage';
 import PlaylistRedirectPage from './stories/pages/PlaylistRedirectPage';
 import './styles/reset.css';
+import PasswordFindPage from './stories/pages/PasswordFindPage';
+import PasswordResetPage from './stories/pages/PasswordResetPage';
 
 function App() {
   return (
@@ -46,6 +48,8 @@ function App() {
         <Route path="/FollowPage" element={<FollowPage />} />
         <Route path="/FriendSearchPage" element={<FriendSearchPage />} />
         <Route path="/ErrorPage" element={<ErrorPage />} />
+        <Route path="/PasswordFindPage" element={<PasswordFindPage />} />
+        <Route path="/user/passwordchange/:authCode" element={<PasswordResetPage />} />
         <Route path="/oauth2/callback/google" element={<PlaylistRedirectPage />} />
       </Routes>
     </BrowserRouter>
