@@ -58,7 +58,7 @@ public class UserApi {
   @ApiResponse(responseCode = "400", description = "Not met password condition or Not Match Password")
   @ApiResponse(responseCode = "404", description = "Not found email")
   @ApiResponse(responseCode = "406", description = "Read NULL data")
-  @ApiResponse(responseCode = "415", description = "Request body is empty")
+  @ApiResponse(responseCode = "415", description = "check Request body")
   @Operation(summary = "회원가입 API")
   public ResponseEntity<String> userRegister(@Valid @RequestBody JoinRequest request) {
     userService.userRegister(request);

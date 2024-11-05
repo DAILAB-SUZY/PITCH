@@ -3,7 +3,7 @@ package org.cosmic.backend.globals.handlers;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.stream.Collectors;
-import org.cosmic.backend.globals.dto.ErrorResponse;
+import lombok.Data;
 import org.cosmic.backend.globals.exceptions.BadRequestException;
 import org.cosmic.backend.globals.exceptions.ConflictException;
 import org.cosmic.backend.globals.exceptions.InternalServerErrorException;
@@ -18,6 +18,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -96,4 +97,18 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(errorResponse);
   }
 
+  @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+  public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
+      MethodArgumentTypeMismatchException e) {
+    ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
+        e.getMessage());
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+  }
+
+  @Data
+  private static class ErrorResponse {
+
+    private final Integer code;
+    private final String message;
+  }
 }

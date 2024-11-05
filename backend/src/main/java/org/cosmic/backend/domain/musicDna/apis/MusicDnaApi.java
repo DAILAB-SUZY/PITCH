@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
  * <p>음악 DNA 관련 API를 제공하는 REST 컨트롤러입니다.</p>
  *
  * <p>이 컨트롤러는 사용자와 관련된 음악 DNA 데이터를 저장하고 조회하는 기능을 포함합니다.</p>
+ *
  */
 @RestController
 @RequestMapping("/api/")
