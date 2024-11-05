@@ -1,5 +1,6 @@
 package org.cosmic.backend.globals.filters;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -7,10 +8,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.cosmic.backend.domain.auth.applications.TokenProvider;
-import org.springframework.http.HttpStatus;
+import org.cosmic.backend.globals.dto.ErrorCode;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -42,7 +45,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     try {
       doFilter(request, response, filterChain);
     } catch (JwtException e) {
-      response.sendError(HttpStatus.UNAUTHORIZED.value(), e.getMessage());
+      setErrorResponse(response, ErrorCode.INVALID_TOKEN);
     }
   }
 
@@ -68,5 +71,27 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     return obtainAccessToken(request).map(
             token -> JwtAuthenticationToken.authenticated(tokenProvider.validateAndGetLongId(token)))
         .orElse(JwtAuthenticationToken.NONE);
+  }
+
+  private void setErrorResponse(
+      HttpServletResponse response,
+      ErrorCode errorCode
+  ) {
+    ObjectMapper objectMapper = new ObjectMapper();
+    response.setStatus(errorCode.getHttpStatus().value());
+    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+    ErrorResponse errorResponse = new ErrorResponse(errorCode.getCode(), errorCode.getMessage());
+    try {
+      response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  @Data
+  public static class ErrorResponse {
+
+    private final Integer code;
+    private final String message;
   }
 }
