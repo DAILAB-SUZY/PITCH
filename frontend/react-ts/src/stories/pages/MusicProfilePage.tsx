@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { colors } from '../../styles/color';
-import Nav from '../components/Nav';
+
 import PlaylistCardMini from '../components/PlaylistCardMini';
 import AlbumGrid from '../components/AlbumGrid';
 import FavoriteArtistCard from '../components/FavoriteArtistCard';
@@ -11,6 +11,7 @@ import AlbumChatCardWithAlbum from '../components/AlbumChatCardWithAlbum';
 import useStore from '../store/store';
 import { fetchGET, fetchPOST, MAX_REISSUE_COUNT } from '../utils/fetchData';
 import RatedAlbumCard from '../components/RatedAlbumCard';
+import Header from '../components/Header';
 
 const Container = styled.div`
   display: flex;
@@ -24,15 +25,8 @@ const Container = styled.div`
   color: black;
 `;
 
-const Header = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-`;
-
 const Body = styled.div`
-  margin-top: 110px;
+  margin-top: 50px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -540,9 +534,7 @@ function MusicProfilePage() {
 
   return (
     <Container>
-      <Header>
-        <Nav page={2}></Nav>
-      </Header>
+      <Header page={2}></Header>
       <Body>
         <ProfileHeaderArea>
           <ProfileLeftArea>

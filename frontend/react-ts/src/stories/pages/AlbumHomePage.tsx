@@ -1,12 +1,14 @@
 import styled from 'styled-components';
 import { colors } from '../../styles/color';
-import Nav from '../components/Nav';
+
 import MostCommentedCard from '../components/MostCommentedCard';
 import MostLikedCard from '../components/MostLikedCard';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import Loader from '../components/Loader';
 import { fetchGET, MAX_REISSUE_COUNT } from '../utils/fetchData';
+
+import Header from '../components/Header';
 
 const Container = styled.div`
   display: flex;
@@ -21,16 +23,8 @@ const Container = styled.div`
   color: black;
 `;
 
-const Header = styled.div`
-  overflow-x: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-`;
-
 const Body = styled.div`
-  margin-top: 120px;
+  margin-top: 50px;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -271,11 +265,10 @@ function AlbumHomePage() {
       }
     };
   }, [pageNumber]);
+
   return (
     <Container>
-      <Header>
-        <Nav page={3}></Nav>
-      </Header>
+      <Header page={3}></Header>
       <Body>
         <SearchArea>
           <form onSubmit={handleSearchSubmit}>
