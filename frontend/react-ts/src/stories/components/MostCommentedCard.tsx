@@ -103,7 +103,7 @@ const ProfileTextArea = styled.div`
 const ProfileName = styled.div`
   display: flex;
   font-size: 20px;
-  font-family: 'Rg';
+  font-family: 'RG';
   margin-left: 10px;
   color: ${colors.BG_lightgrey};
 `;
@@ -199,10 +199,10 @@ function MostCommentedCard({ album }: AlbumProps) {
         <GradientBG> </GradientBG>
         <ContentArea>
           <AlbumTitleArea>
-            <Text fontSize="30px" margin="5px 0px 10px 0px" fontFamily="Bd" color={colors.BG_white} width="100%">
+            <Text fontSize="30px" margin="5px 0px 10px 0px" fontFamily="EB" color={colors.BG_white} width="100%">
               {album.albumDetail.title}
             </Text>
-            <Text fontSize="20px" margin="0px" fontFamily="Bd" opacity={0.7} color={colors.BG_white}>
+            <Text fontSize="20px" margin="0px" fontFamily="EB" opacity={0.7} color={colors.BG_white}>
               {album.albumDetail.artistName}
             </Text>
           </AlbumTitleArea>
@@ -211,10 +211,10 @@ function MostCommentedCard({ album }: AlbumProps) {
               <path d="M2 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h9.586a2 2 0 0 1 1.414.586l2 2V2a1 1 0 0 0-1-1zm12-1a2 2 0 0 1 2 2v12.793a.5.5 0 0 1-.854.353l-2.853-2.853a1 1 0 0 0-.707-.293H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z" />
               <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6m0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5" />
             </svg>
-            <Text fontSize="25px" margin="0px 0px 0px 10px" fontFamily="Bd" color={colors.BG_white}>
+            <Text fontSize="25px" margin="0px 0px 0px 10px" fontFamily="EB" color={colors.BG_white}>
               {album.comments.length}
             </Text>
-            <Text fontSize="20px" margin="0px 0px 0px 5px" fontFamily="Rg" color={colors.BG_white}>
+            <Text fontSize="20px" margin="0px 0px 0px 5px" fontFamily="RG" color={colors.BG_white}>
               comment
             </Text>
           </CommentNumberArea>

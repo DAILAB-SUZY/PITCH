@@ -221,7 +221,7 @@ const PostContentArea = styled.div`
   flex-direction: column;
   justify-content: space-between;
   font-size: 15px;
-  font-family: 'Rg';
+  font-family: 'RG';
   padding: 0px 10px;
   margin: 10px 0px 20px 0px;
 
@@ -361,15 +361,15 @@ function AlbumPostEditPage() {
             <GradientBG> </GradientBG>
             <AlbumInfoArea>
               <TitleTextArea>
-                <Text fontFamily="Bd" fontSize="30px" margin="0px" color={colors.BG_white}>
+                <Text fontFamily="EB" fontSize="30px" margin="0px" color={colors.BG_white}>
                   {albumPost.name}
                 </Text>
-                <Text fontFamily="Rg" fontSize="20px" margin="0px 0px 2px 10px" color={colors.BG_white}>
+                <Text fontFamily="RG" fontSize="20px" margin="0px 0px 2px 10px" color={colors.BG_white}>
                   {albumPost.albumArtist.name}
                 </Text>
               </TitleTextArea>
               <TitleTextArea>
-                <Text fontFamily="Rg" fontSize="20px" margin="0px 0px 0px 0px" color={colors.BG_white}>
+                <Text fontFamily="RG" fontSize="20px" margin="0px 0px 0px 0px" color={colors.BG_white}>
                   {name}님의 별점 :
                 </Text>
                 <StarsArea>
@@ -402,7 +402,7 @@ function AlbumPostEditPage() {
           >
             <UnselectedGradientBG></UnselectedGradientBG>
             <TitleTextArea>
-              <Text fontFamily="Bd" fontSize="30px" margin="0px" color="white">
+              <Text fontFamily="EB" fontSize="30px" margin="0px" color="white">
                 앨범을 선택해주세요
               </Text>
             </TitleTextArea>
@@ -410,7 +410,7 @@ function AlbumPostEditPage() {
         )}
         <ButtonArea>
           <Text
-            fontFamily="Rg"
+            fontFamily="RG"
             fontSize="15px"
             margin="0px 0px 0px 10px"
             color={colors.Font_black}
@@ -420,11 +420,11 @@ function AlbumPostEditPage() {
           >
             취소
           </Text>
-          <Text fontFamily="Bd" fontSize="20px" margin="0px" color={colors.Font_black}>
+          <Text fontFamily="EB" fontSize="20px" margin="0px" color={colors.Font_black}>
             Album Post
           </Text>
           <Text
-            fontFamily="Rg"
+            fontFamily="RG"
             fontSize="15px"
             margin="0px 10px 0px 0px"
             color={colors.Font_black}

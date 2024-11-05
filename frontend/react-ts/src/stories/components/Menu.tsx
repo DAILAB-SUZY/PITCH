@@ -28,7 +28,7 @@ const slideOut = keyframes`
   }
 `;
 
-const MenuArea = styled.div<{ isExiting: boolean }>`
+const MenuArea = styled.div<{ isexiting: boolean }>`
   position: fixed; // 또는 absolute
   z-index: 11;
   width: 100vw;
@@ -45,7 +45,7 @@ const MenuArea = styled.div<{ isExiting: boolean }>`
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 
-  animation: ${props => (props.isExiting ? slideOut : slideIn)} 0.2s forwards;
+  animation: ${props => (props.isexiting ? slideOut : slideIn)} 0.2s forwards;
 `;
 
 const MenuCloseButton = styled.div`
@@ -74,7 +74,7 @@ const Title = styled.div<{ fontSize: string; margin: string; color: string; opac
   font-size: ${props => props.fontSize};
   margin: ${props => props.margin};
   color: ${props => props.color};
-  font-family: 'Bd';
+  font-family: 'EB';
   white-space: nowrap;
   opacity: ${props => props.opacity};
 `;
@@ -121,7 +121,7 @@ function Menu({ page, isMenuOpen, setIsMenuOpen }: MenuProps) {
   };
   const [activeNav, setActiveNav] = useState(page);
   return (
-    <MenuArea isExiting={!isMenuOpen}>
+    <MenuArea isexiting={!isMenuOpen}>
       <MenuCloseButton
         onClick={() => {
           setIsMenuOpen(!isMenuOpen);
@@ -182,7 +182,7 @@ function Menu({ page, isMenuOpen, setIsMenuOpen }: MenuProps) {
             GoToAlbumHomePage();
           }}
         >
-          <svg
+          {/* <svg
             color={colors.Main_Pink}
             opacity={activeNav === 3 ? 1 : 0.5}
             width={activeNav === 3 ? '40px' : '25px'}
@@ -193,7 +193,25 @@ function Menu({ page, isMenuOpen, setIsMenuOpen }: MenuProps) {
             viewBox="0 0 16 16"
           >
             <path d="M0 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2h2a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2H2a2 2 0 0 1-2-2z" />
+          </svg> */}
+          <svg
+            color={colors.Main_Pink}
+            opacity={activeNav === 3 ? 1 : 0.5}
+            width={activeNav === 3 ? '40px' : '25px'}
+            height={activeNav === 3 ? '40px' : '25px'}
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            className="bi bi-vinyl"
+            // viewBox="0 0 16 16"
+            viewBox="0 0 32 32"
+          >
+            <g data-name="Layer 9">
+              <path d="M26,3H10A3,3,0,0,0,7,6V7H6a3,3,0,0,0-3,3V26a3,3,0,0,0,3,3H22a3,3,0,0,0,3-3V25h1a3,3,0,0,0,3-3V6A3,3,0,0,0,26,3ZM23,26a1,1,0,0,1-1,1H6a1,1,0,0,1-1-1V10A1,1,0,0,1,6,9H22a1,1,0,0,1,1,1V26Zm4-4a1,1,0,0,1-1,1H25V10a3,3,0,0,0-3-3H9V6a1,1,0,0,1,1-1H26a1,1,0,0,1,1,1Z" />
+              <path d="M14,15a3,3,0,1,0,3,3A3,3,0,0,0,14,15Zm0,4a1,1,0,1,1,1-1A1,1,0,0,1,14,19Z" />
+              <path d="M14,10a7.91,7.91,0,0,0-5,1.77,7.73,7.73,0,0,0-2,2.37,7.95,7.95,0,0,0,0,7.72A8,8,0,0,0,10.14,25a7.95,7.95,0,0,0,7.72,0,7.73,7.73,0,0,0,2.37-2A7.91,7.91,0,0,0,22,18,8,8,0,0,0,14,10Zm3.31,13A6,6,0,0,1,9,14.69,6,6,0,1,1,17.31,23Z" />{' '}
+            </g>
           </svg>
+
           <Title color={colors.Main_Pink} opacity={activeNav === 3 ? 1 : 0.5} fontSize={activeNav === 3 ? '35px' : '20px'} margin="0px 5px">
             Albums
           </Title>
@@ -206,10 +224,10 @@ function Menu({ page, isMenuOpen, setIsMenuOpen }: MenuProps) {
       >
         <svg color={colors.Font_grey} xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-box-arrow-right" viewBox="0 0 16 16">
           <path
-            fill-rule="evenodd"
+            fillRule="evenodd"
             d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0z"
           />
-          <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z" />
+          <path fillRule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z" />
         </svg>
         <Title color={colors.Font_grey} opacity={1} fontSize="15px" margin="0px">
           Log Out

@@ -114,7 +114,7 @@ const AlbumListArea = styled.div`
 const Title = styled.div<{ fontSize: string; margin?: string }>`
   font-size: ${props => props.fontSize};
   margin: ${props => props.margin};
-  font-family: 'Bd';
+  font-family: 'EB';
 `;
 
 interface DNA {

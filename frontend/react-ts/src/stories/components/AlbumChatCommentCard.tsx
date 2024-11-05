@@ -17,7 +17,7 @@ const ProfileArea = styled.div`
 const PostUploadTime = styled.div`
   display: flex;
   font-size: 10px;
-  font-family: 'Rg';
+  font-family: 'RG';
   margin: 0px 0px 2px 10px;
   color: ${colors.Font_grey};
 `;
@@ -29,7 +29,7 @@ const ProfileTextArea = styled.div`
 const ProfileName = styled.div`
   display: flex;
   font-size: 20px;
-  font-family: 'Rg';
+  font-family: 'SB';
   margin-left: 10px;
   color: ${colors.Font_black};
 `;

@@ -197,7 +197,7 @@ function PlayListPage() {
           ) : (
             <Circle bgcolor={colors.BG_grey}></Circle>
           )}
-          <Text fontFamily="Bd" fontSize="25px">
+          <Text fontFamily="EB" fontSize="25px">
             {author.username}'s PlayList
           </Text>
         </TitleArea>
@@ -213,7 +213,7 @@ function PlayListPage() {
               postPlayList(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '');
             }}
           >
-            <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 4px">
+            <Text fontFamily="RG" fontSize="15px" margin="0px 0px 0px 4px">
               저장
             </Text>
           </Btn>
@@ -223,7 +223,7 @@ function PlayListPage() {
               GoToPlayListPage(author);
             }}
           >
-            <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 4px">
+            <Text fontFamily="RG" fontSize="15px" margin="0px 0px 0px 4px">
               취소
             </Text>
           </Btn>

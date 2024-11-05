@@ -173,12 +173,12 @@ const PlayListBox = ({ playlist, isEditable, playlistInfo, isUserPlaylist }: Pla
   return (
     <PlayListCardContainer gradient={playlistGradient}>
       <PlayListInfoArea>
-        <Text fontSize="14px" fontFamily="Rg" margin="0px 100px 0px 0px" opacity="0.8">
+        <Text fontSize="14px" fontFamily="RG" margin="0px 100px 0px 0px" opacity="0.8">
           {playlist.length} songs
         </Text>
         {isUserPlaylist && (
           <EditBtn>
-            <Text fontSize="13px" fontFamily="Rg" margin="0px 5px 0px 0px" opacity="0.8">
+            <Text fontSize="13px" fontFamily="RG" margin="0px 5px 0px 0px" opacity="0.8">
               Listen in
             </Text>
             <svg
@@ -202,7 +202,7 @@ const PlayListBox = ({ playlist, isEditable, playlistInfo, isUserPlaylist }: Pla
                 d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m-3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2m0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2m0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2"
               />
             </svg>
-            <Text fontSize="14px" fontFamily="Rg" margin="0px 0px 0px 5px" opacity="0.8">
+            <Text fontSize="14px" fontFamily="RG" margin="0px 0px 0px 5px" opacity="0.8">
               수정
             </Text>
           </EditBtn>
@@ -222,10 +222,10 @@ const PlayListBox = ({ playlist, isEditable, playlistInfo, isUserPlaylist }: Pla
             ></img>
           </AlbumCover>
           <SongTextArea>
-            <Title fontSize={'16px'} fontFamily="Bd" margin="0px 0px 5px 0px">
+            <Title fontSize={'16px'} fontFamily="EB" margin="0px 0px 5px 0px">
               {song.title}
             </Title>
-            <Title fontSize={'14px'} fontFamily="Rg">
+            <Title fontSize={'14px'} fontFamily="RG">
               {song.artistName}
             </Title>
           </SongTextArea>

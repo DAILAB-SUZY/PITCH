@@ -41,7 +41,7 @@ const PlaylistCardSmall = styled.div<{ gradient?: string }>`
   height: 190px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   color: white;
-  font-family: Arial, sans-serif;
+  font-family: 'EB';
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -94,6 +94,8 @@ const SongTitle = styled.div`
 const Artist = styled.div`
   font-size: 14px;
   color: white;
+  font-family: 'SB';
+  opacity: 0.7;
 `;
 
 const Text = styled.div<{

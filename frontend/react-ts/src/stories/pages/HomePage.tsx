@@ -60,6 +60,7 @@ const AlbumPostTitleArea = styled.div`
   gap: 8px;
   width: 100vw;
   height: auto;
+  margin-bottom: 10px;
 `;
 
 const RowAlignArea = styled.div`
@@ -76,13 +77,13 @@ const RowAlignArea = styled.div`
 const Title = styled.div<{ fontSize: string; margin: string }>`
   font-size: ${props => props.fontSize};
   margin: ${props => props.margin};
-  font-family: 'Bd';
+  font-family: 'EB';
 `;
 
 const Text = styled.div<{ fontSize: string; margin: string }>`
   font-size: ${props => props.fontSize};
   margin: ${props => props.margin};
-  font-family: 'Rg';
+  font-family: 'RG';
 `;
 
 interface FriendsPlayList {
@@ -236,14 +237,14 @@ function HomePage() {
 
       <Body>
         <PlaylistArea>
-          <Title fontSize="22px" margin="20px 0px 0px 20px">
+          <Title fontSize="25px" margin="20px 0px 0px 20px">
             Friend's Playlist
           </Title>
           {isLoading ? <Loader /> : <PlaylistPreviewCard playlists={friendsPlayList} />}
         </PlaylistArea>
         <AlbumPostArea>
           <AlbumPostTitleArea>
-            <Title fontSize="22px" margin="20px 0px 0px 20px">
+            <Title fontSize="25px" margin="20px 0px 0px 20px">
               Album Post
             </Title>
             <svg

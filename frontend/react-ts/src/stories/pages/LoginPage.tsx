@@ -12,12 +12,12 @@ import { useState } from 'react';
 const Title = styled.div<{ fontSize: string; margin: string }>`
   font-size: ${props => props.fontSize};
   margin: ${props => props.margin};
-  font-family: 'Bd';
+  font-family: 'EB';
 `;
 const Text = styled.div<{ fontSize: string; margin: string }>`
   font-size: ${props => props.fontSize};
   margin: ${props => props.margin};
-  font-family: 'Rg';
+  font-family: 'RG';
 `;
 
 const Container = styled.div`

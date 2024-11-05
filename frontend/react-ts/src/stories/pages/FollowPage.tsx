@@ -53,7 +53,7 @@ const Body = styled.div`
 `;
 
 const Title = styled.div`
-  font-family: 'Rg';
+  font-family: 'RG';
   font-size: 22px;
   color: ${colors.Font_black};
 `;
@@ -74,7 +74,7 @@ const TabBtn = styled.div<{ color: string; border: string }>`
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  font-family: 'Bd';
+  font-family: 'EB';
   width: 50%;
   height: 50px;
   color: ${props => props.color};

@@ -182,11 +182,11 @@ function FriendSearchPage() {
     <Container>
       <AlbumPostArea>
         <ButtonArea>
-          <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 10px" color={colors.Font_black}></Text>
-          <Text fontFamily="Bd" fontSize="20px" margin="0px" color={colors.Font_black}>
+          <Text fontFamily="RG" fontSize="15px" margin="0px 0px 0px 10px" color={colors.Font_black}></Text>
+          <Text fontFamily="EB" fontSize="20px" margin="0px" color={colors.Font_black}>
             search friends
           </Text>
-          <Text fontFamily="Rg" fontSize="15px" margin="0px 10px 0px 0px" color={colors.BG_grey}></Text>
+          <Text fontFamily="RG" fontSize="15px" margin="0px 10px 0px 0px" color={colors.BG_grey}></Text>
         </ButtonArea>
         <Line></Line>
         <SearchArea>
@@ -210,11 +210,11 @@ function FriendSearchPage() {
                 );
               })
             ) : searchStarted ? (
-              <Text fontFamily="Rg" fontSize="17px" margin="10px 0px 0px 0px" color={colors.Font_black}>
+              <Text fontFamily="RG" fontSize="17px" margin="10px 0px 0px 0px" color={colors.Font_black}>
                 없는 사용자 입니다.
               </Text>
             ) : (
-              <Text fontFamily="Rg" fontSize="17px" margin="10px 0px 0px 0px" color={colors.Font_black}>
+              <Text fontFamily="RG" fontSize="17px" margin="10px 0px 0px 0px" color={colors.Font_black}>
                 사용자를 검색해주세요.
               </Text>
             ))}

@@ -135,7 +135,7 @@ const SongTextArea = styled.div`
 const Title = styled.div<{ fontSize?: string; margin?: string }>`
   font-size: ${props => props.fontSize};
   margin: ${props => props.margin};
-  font-family: 'Bd';
+  font-family: 'EB';
   color: ${colors.Font_black};
   width: 100%;
   height: 100%;
@@ -204,13 +204,13 @@ function SearchPage() {
     <Container>
       <AlbumPostArea>
         <ButtonArea>
-          <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 10px" color={colors.Font_black} onClick={() => GoToAlbumPostEditPage()}>
+          <Text fontFamily="RG" fontSize="15px" margin="0px 0px 0px 10px" color={colors.Font_black} onClick={() => GoToAlbumPostEditPage()}>
             취소
           </Text>
-          <Text fontFamily="Bd" fontSize="20px" margin="0px" color={colors.Font_black}>
+          <Text fontFamily="EB" fontSize="20px" margin="0px" color={colors.Font_black}>
             search
           </Text>
-          <Text fontFamily="Rg" fontSize="15px" margin="0px 10px 0px 0px" color={colors.BG_grey}>
+          <Text fontFamily="RG" fontSize="15px" margin="0px 10px 0px 0px" color={colors.BG_grey}>
             저장
           </Text>
         </ButtonArea>

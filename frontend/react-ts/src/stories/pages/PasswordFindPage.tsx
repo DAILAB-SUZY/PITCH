@@ -9,7 +9,7 @@ import { fetchEMAILPOST, fetchPOST } from '../utils/fetchData';
 const Title = styled.div<{ fontSize?: string; margin?: string }>`
   font-size: ${props => props.fontSize};
   margin: ${props => props.margin};
-  font-family: 'Bd';
+  font-family: 'EB';
 `;
 const Container = styled.div`
   display: flex;
@@ -59,7 +59,7 @@ const Btn = styled.div`
   background-color: ${colors.Main_Pink};
   color: ${colors.Font_white};
   border-radius: 10px;
-  font-family: 'Bd';
+  font-family: 'EB';
 `;
 
 function PasswordFindPage() {

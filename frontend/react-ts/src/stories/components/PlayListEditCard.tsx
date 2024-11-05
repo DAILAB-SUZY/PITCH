@@ -216,7 +216,7 @@ const PlayListEditCard = ({ playlist, isEditable, setIsSearchModalOpen, setPlayL
   return (
     <PlayListCardContainer gradient={playlistGradient}>
       <PlayListInfoArea>
-        <Text fontSize={'14px'} fontFamily="Rg" margin="0px 100px 0px 0px " opacity="0.8">
+        <Text fontSize={'14px'} fontFamily="RG" margin="0px 100px 0px 0px " opacity="0.8">
           {playlist.length} songs
         </Text>
         {isEditable && (
@@ -228,7 +228,7 @@ const PlayListEditCard = ({ playlist, isEditable, setIsSearchModalOpen, setPlayL
             {/* <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill={colors.BG_grey} viewBox="0 0 16 16">
               <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2" />
             </svg> */}
-            <Text fontSize={'14px'} fontFamily="Rg" margin="0px 0px 0px 5px " opacity="0.8">
+            <Text fontSize={'14px'} fontFamily="RG" margin="0px 0px 0px 5px " opacity="0.8">
               + 추가
             </Text>
           </EditBtn>
@@ -248,10 +248,10 @@ const PlayListEditCard = ({ playlist, isEditable, setIsSearchModalOpen, setPlayL
             ></img>
           </AlbumCover>
           <SongTextArea>
-            <Title fontSize={'16px'} fontFamily="Bd" margin="0px 0px 5px 0px">
+            <Title fontSize={'16px'} fontFamily="EB" margin="0px 0px 5px 0px">
               {song.title}
             </Title>
-            <Title fontSize={'14px'} fontFamily="Rg">
+            <Title fontSize={'14px'} fontFamily="RG">
               {song.artistName}
             </Title>
           </SongTextArea>
@@ -260,7 +260,7 @@ const PlayListEditCard = ({ playlist, isEditable, setIsSearchModalOpen, setPlayL
               handleTrackRemove(song.trackId);
             }}
           >
-            <Text fontFamily="Rg" fontSize="14px" margin="0px 0px 0px 4px">
+            <Text fontFamily="RG" fontSize="14px" margin="0px 0px 0px 4px">
               - 삭제
             </Text>
           </Btn>

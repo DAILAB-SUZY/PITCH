@@ -160,7 +160,7 @@ function FavoriteArtistCard({ FavoriteArtistData }: FavoriteArtistProps) {
   return (
     <FavoriteArtistArea>
       {FavoriteArtistData.artistName === null ? (
-        <Text fontFamily="Rg" fontSize="15px">
+        <Text fontFamily="RG" fontSize="15px">
           아직 설정하지 않았습니다.
         </Text>
       ) : (
@@ -171,7 +171,7 @@ function FavoriteArtistCard({ FavoriteArtistData }: FavoriteArtistProps) {
           <GradientBG> </GradientBG>
           <ContentArea>
             <ArtistTitleTextArea>
-              <Text fontFamily="Bd" fontSize={data.artistName.length > 10 ? '40px' : '50px'} color="white">
+              <Text fontFamily="EB" fontSize={data.artistName.length > 10 ? '40px' : '50px'} color="white">
                 {data.artistName}
               </Text>
             </ArtistTitleTextArea>
@@ -182,10 +182,10 @@ function FavoriteArtistCard({ FavoriteArtistData }: FavoriteArtistProps) {
                   <img src={data.albumCover} width="100%" height="100%" object-fit="cover"></img>
                 </FavoriteAlbumCover>
                 <FavoriteAlbumTextArea>
-                  <Text fontFamily="Rg" fontSize="15px" color="white" opacity="0.7">
+                  <Text fontFamily="RG" fontSize="15px" color="white" opacity="0.7">
                     Favorite Album
                   </Text>
-                  <Text fontFamily="Bd" fontSize="22px" color="white">
+                  <Text fontFamily="EB" fontSize="22px" color="white">
                     {data.albumName}
                   </Text>
                 </FavoriteAlbumTextArea>
@@ -195,10 +195,10 @@ function FavoriteArtistCard({ FavoriteArtistData }: FavoriteArtistProps) {
                   <img src={data.trackCover} width="100%" height="100%" object-fit="cover"></img>
                 </FavoriteAlbumCover>
                 <FavoriteAlbumTextArea>
-                  <Text fontFamily="Rg" fontSize="15px" color="white" opacity="0.7">
+                  <Text fontFamily="RG" fontSize="15px" color="white" opacity="0.7">
                     Favorite Song
                   </Text>
-                  <Text fontFamily="Bd" fontSize="22px" color="white">
+                  <Text fontFamily="EB" fontSize="22px" color="white">
                     {data.trackName}
                   </Text>
                 </FavoriteAlbumTextArea>

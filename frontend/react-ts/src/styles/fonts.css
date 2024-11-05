@@ -11,13 +11,19 @@
 } */
 
 @font-face {
-  font-family: 'Bd';
+  font-family: 'EB';
   src: url('../font/Pretendard-ExtraBold.woff') format('woff');
   font-weight: normal;
 }
 
 @font-face {
-  font-family: 'Rg';
+  font-family: 'SB';
+  src: url('../font/Pretendard-SemiBold.woff') format('woff');
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: 'RG';
   src: url('../font/Pretendard-Regular.woff') format('woff');
   font-weight: bold;
 }

@@ -56,7 +56,7 @@ const ModalArea = styled.div`
 
 const PageTitle = styled.div`
   font-size: 30px;
-  font-family: 'Bd';
+  font-family: 'EB';
   padding: 20px 0px 10px 0px;
   display: flex;
   flex-direction: row;
@@ -142,7 +142,7 @@ const Tag = styled.div<{ opacity: string }>`
   width: auto;
   height: auto;
   font-size: 15px;
-  font-family: 'Rg';
+  font-family: 'RG';
   color: black;
   background-color: ${colors.BG_grey};
   border-radius: 20px;
@@ -180,7 +180,7 @@ const Title = styled.div`
   flex-direction: row;
   width: auto;
 
-  font-family: 'Bd';
+  font-family: 'EB';
   font-size: 22px;
 
   margin-right: 10px;
@@ -609,12 +609,12 @@ function MusicProfileEditPage() {
         </FavoriteArtistArea>
         <BtnArea>
           <Btn bgcolor={colors.Button_green} onClick={() => postAllEdit()}>
-            <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 4px">
+            <Text fontFamily="RG" fontSize="15px" margin="0px 0px 0px 4px">
               저장
             </Text>
           </Btn>
           <Btn bgcolor={colors.BG_grey} onClick={() => GoToMusicProfilePage()}>
-            <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 4px">
+            <Text fontFamily="RG" fontSize="15px" margin="0px 0px 0px 4px">
               취소
             </Text>
           </Btn>

@@ -212,11 +212,11 @@ function FavoriteArtistEditCard({ FavoriteArtistData, openSearch }: FavoriteArti
             }}
           >
             {FavoriteArtistData.artistName === (null || '') ? (
-              <Text fontFamily="Rg" fontSize="15px" color="white">
+              <Text fontFamily="RG" fontSize="15px" color="white">
                 여기를 눌러 아티스트를 설정해주세요.
               </Text>
             ) : (
-              <Text fontFamily="Bd" fontSize={FavoriteArtistData.artistName.length > 10 ? '35px' : '40px'} color="white">
+              <Text fontFamily="EB" fontSize={FavoriteArtistData.artistName.length > 10 ? '35px' : '40px'} color="white">
                 {FavoriteArtistData.artistName}
               </Text>
             )}
@@ -235,15 +235,15 @@ function FavoriteArtistEditCard({ FavoriteArtistData, openSearch }: FavoriteArti
                 )}
               </FavoriteAlbumCover>
               <FavoriteAlbumTextArea>
-                <Text fontFamily="Rg" fontSize="15px" color="white" opacity="0.7">
+                <Text fontFamily="RG" fontSize="15px" color="white" opacity="0.7">
                   Favorite Album
                 </Text>
                 {FavoriteArtistData.albumName !== (null || '') ? (
-                  <Text fontFamily="Bd" fontSize="18px" color="white">
+                  <Text fontFamily="EB" fontSize="18px" color="white">
                     {FavoriteArtistData.albumName}
                   </Text>
                 ) : (
-                  <Text fontFamily="Rg" fontSize="18px" color="white">
+                  <Text fontFamily="RG" fontSize="18px" color="white">
                     설정하지 않았습니다.
                   </Text>
                 )}
@@ -262,15 +262,15 @@ function FavoriteArtistEditCard({ FavoriteArtistData, openSearch }: FavoriteArti
                 )}
               </FavoriteAlbumCover>
               <FavoriteAlbumTextArea>
-                <Text fontFamily="Rg" fontSize="15px" color="white" opacity="0.7">
+                <Text fontFamily="RG" fontSize="15px" color="white" opacity="0.7">
                   Favorite Song
                 </Text>
                 {FavoriteArtistData.trackName !== (null || '') ? (
-                  <Text fontFamily="Bd" fontSize="18px" color="white">
+                  <Text fontFamily="EB" fontSize="18px" color="white">
                     {FavoriteArtistData.trackName}
                   </Text>
                 ) : (
-                  <Text fontFamily="Rg" fontSize="18px" color="white">
+                  <Text fontFamily="RG" fontSize="18px" color="white">
                     설정하지 않았습니다.
                   </Text>
                 )}
