@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.RestController;
  * <p>음악 DNA 관련 API를 제공하는 REST 컨트롤러입니다.</p>
  *
  * <p>이 컨트롤러는 사용자와 관련된 음악 DNA 데이터를 저장하고 조회하는 기능을 포함합니다.</p>
- *
  */
 @RestController
 @RequestMapping("/api/")
@@ -94,6 +93,7 @@ public class MusicDnaApi {
   @GetMapping("/dna/user/{userId}")
   @Transactional
   @ApiResponse(responseCode = "404", description = "Not Found User")
+  @ApiResponse(responseCode = "400", description = "Not invalid variable")
   @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
       array = @ArraySchema(schema = @Schema(implementation = DnaDetail.class))))
   @Operation(summary = "유저 dna조회", description = "특정 유저의 dna정보들 조회")
