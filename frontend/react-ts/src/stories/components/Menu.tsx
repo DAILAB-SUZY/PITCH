@@ -79,13 +79,21 @@ const Title = styled.div<{ fontSize: string; margin: string; color: string; opac
   opacity: ${props => props.opacity};
 `;
 
-const LogOutArea = styled.div`
+const Line = styled.div`
+  width: 60px;
+  height: 1px;
+  opacity: 1;
+  background-color: ${colors.Font_grey};
+  margin: 40px 20px 10px 0px;
+`;
+
+const SmallBtnArea = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   gap: 5px;
-  margin: 80px 20px 0px 0px;
+  margin: 20px 20px 0px 0px;
 `;
 
 interface MenuProps {
@@ -111,6 +119,10 @@ function Menu({ page, isMenuOpen, setIsMenuOpen }: MenuProps) {
   };
   const GoToStartPage = () => {
     navigate('/');
+  };
+
+  const GoToFriendSearchPage = () => {
+    navigate('/FriendSearchPage');
   };
 
   const LogOut = () => {
@@ -217,12 +229,13 @@ function Menu({ page, isMenuOpen, setIsMenuOpen }: MenuProps) {
           </Title>
         </Button>
       </ButtonArea>
-      <LogOutArea
+      <Line></Line>
+      <SmallBtnArea
         onClick={() => {
           LogOut();
         }}
       >
-        <svg color={colors.Font_grey} xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-box-arrow-right" viewBox="0 0 16 16">
+        <svg color={colors.Font_grey} xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill={colors.Font_grey} className="bi bi-box-arrow-right" viewBox="0 0 16 16">
           <path
             fillRule="evenodd"
             d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0z"
@@ -232,7 +245,20 @@ function Menu({ page, isMenuOpen, setIsMenuOpen }: MenuProps) {
         <Title color={colors.Font_grey} opacity={1} fontSize="15px" margin="0px">
           Log Out
         </Title>
-      </LogOutArea>
+      </SmallBtnArea>
+      <SmallBtnArea
+        onClick={() => {
+          GoToFriendSearchPage();
+        }}
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill={colors.Font_grey} className="bi bi-person-plus-fill" viewBox="0 0 16 16">
+          <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
+          <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5" />
+        </svg>
+        <Title color={colors.Font_grey} opacity={1} fontSize="15px" margin="0px">
+          Search friend
+        </Title>
+      </SmallBtnArea>
     </MenuArea>
   );
 }

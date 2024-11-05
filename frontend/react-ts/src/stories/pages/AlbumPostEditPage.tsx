@@ -3,7 +3,6 @@ import { colors } from '../../styles/color';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useRef, useEffect, useState } from 'react';
 import { fetchPOST, MAX_REISSUE_COUNT } from '../utils/fetchData';
-import useStore from '../store/store';
 import ScoreEdit from '../components/ScoreEdit';
 
 const Container = styled.div`
@@ -93,21 +92,6 @@ const UnselectedGradientBG = styled.div`
   backdrop-filter: blur(0px);
 `;
 
-// const TitleTextArea = styled.div`
-//   position: absolute;
-//   bottom: 40px;
-//   left: 10px;
-//   /* position: sticky;
-//   top: 10px; */
-//   width: 100%;
-//   height: auto;
-//   display: flex;
-//   justify-content: flex-start;
-//   align-items: flex-end;
-//   padding: 0px 0px 20px 20px;
-//   box-sizing: border-box;
-//   z-index: 3;
-// `;
 const TitleTextArea = styled.div`
   width: 100%;
   height: auto;
@@ -134,33 +118,6 @@ const AlbumInfoArea = styled.div`
   box-sizing: border-box;
   z-index: 3;
 `;
-const StarsArea = styled.div`
-  bottom: 20px;
-  left: 10px;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
-  width: 90px;
-  height: 20px;
-  gap: 1px;
-  z-index: 3;
-`;
-
-// const StarsArea = styled.div`
-//   position: absolute;
-//   bottom: 20px;
-//   left: 10px;
-//   display: flex;
-//   flex-direction: row;
-//   justify-content: flex-start;
-//   align-items: center;
-//   width: 100%;
-//   height: auto;
-//   margin: 0px 0px 2px 10px;
-//   gap: 1px;
-//   z-index: 999;
-// `;
 
 const Text = styled.div<{
   fontFamily: string;
@@ -265,7 +222,6 @@ function AlbumPostEditPage() {
   const location = useLocation();
   const [postContent, setPostContent] = useState('');
   const [isEditMode, setIsEditMode] = useState(false);
-  const { name } = useStore();
 
   // 별점
   const [stars, setStars] = useState<string[]>();

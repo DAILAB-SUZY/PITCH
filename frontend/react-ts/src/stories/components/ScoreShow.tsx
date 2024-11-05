@@ -1,8 +1,6 @@
 import { styled } from 'styled-components';
 import { useEffect, useState } from 'react';
 import { colors } from '../../styles/color';
-import { fetchPOST, MAX_REISSUE_COUNT } from '../utils/fetchData';
-
 const Container = styled.div`
   display: flex;
   flex-direction: column;

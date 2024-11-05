@@ -4,8 +4,8 @@ import { colors } from '../../styles/color';
 import { useNavigate, useParams } from 'react-router-dom';
 import logo from '../../img/logo_withText.png';
 import InputBox from '../inputs/InputBox';
-import { useEffect, useState } from 'react';
-import { fetchEMAILPOST, fetchPOST } from '../utils/fetchData';
+import { useState } from 'react';
+import { fetchEMAILPOST } from '../utils/fetchData';
 const Title = styled.div<{ fontSize?: string; margin?: string }>`
   font-size: ${props => props.fontSize};
   margin: ${props => props.margin};
@@ -64,7 +64,6 @@ const Btn = styled.div`
 
 function PasswordResetPage({}) {
   const [confirm, setConfirm] = useState('');
-  const [messageColor, setMessageColor] = useState('red');
   const [passwordError, setPasswordError] = useState('비밀번호를 입력해주세요.');
   const [confirmError, setConfirmError] = useState('');
 
@@ -125,6 +124,7 @@ function PasswordResetPage({}) {
     } else {
       setPasswordError('');
       setConfirmError('');
+
       return true;
     }
   };
@@ -141,9 +141,9 @@ function PasswordResetPage({}) {
         </RightAlignArea>
 
         <InputBox name="password" placeholder="Password" onChange={onChangePasswordHandler}></InputBox>
-        <RightAlignArea>{passwordError && <small style={{ color: messageColor }}>{passwordError}</small>}</RightAlignArea>
+        <RightAlignArea>{passwordError && <small style={{ color: 'red' }}>{passwordError}</small>}</RightAlignArea>
         <InputBox name="confirm" placeholder="Password 확인" onChange={onChangePasswordHandler}></InputBox>
-        <RightAlignArea>{confirmError && <small style={{ color: messageColor }}>{confirmError}</small>}</RightAlignArea>
+        <RightAlignArea>{confirmError && <small style={{ color: 'red' }}>{confirmError}</small>}</RightAlignArea>
 
         <LeftAlignArea>
           <Btn onClick={handleReset}> 재설정 </Btn>

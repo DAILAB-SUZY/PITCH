@@ -1,11 +1,10 @@
 import styled from 'styled-components';
 
 import { colors } from '../../styles/color';
-import { useNavigate } from 'react-router-dom';
 import logo from '../../img/logo_withText.png';
 import InputBox from '../inputs/InputBox';
 import { useEffect, useState } from 'react';
-import { fetchEMAILPOST, fetchPOST } from '../utils/fetchData';
+import { fetchEMAILPOST } from '../utils/fetchData';
 const Title = styled.div<{ fontSize?: string; margin?: string }>`
   font-size: ${props => props.fontSize};
   margin: ${props => props.margin};
