@@ -1,0 +1,71 @@
+services:
+  front:
+    build:
+      context: ./frontend/react-ts
+      dockerfile: Dockerfile
+    volumes:
+      - frontend_build_dist:/app/dist
+    container_name: frontend
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    volumes:
+      - images_data:${BASE_FILE_PATH}
+      - frontend_build_dist:/app/src/main/resources-prod/static
+    environment:
+      - MAIL_ADDRESS=${MAIL_ADDRESS}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - CLIENT_ID=${CLIENT_ID}
+      - CLIENT_SECRET=${CLIENT_SECRET}
+      - YOUTUBE_KEY=${YOUTUBE_KEY}
+      - YOUTUBE_CLIENT_ID=${YOUTUBE_CLIENT_ID}
+      - YOUTUBE_CLIENT_SECRET=${YOUTUBE_CLIENT_SECRET}
+      - REDIRECTION_ORIGIN=${REDIRECTION_ORIGIN}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_ACCESS_EXPIRATION=${JWT_ACCESS_EXPIRATION}
+      - JWT_REFRESH_EXPIRATION=${JWT_REFRESH_EXPIRATION}
+      - BASE_FILE_PATH=${BASE_FILE_PATH}
+      - SERVER_ORIGIN=${SERVER_ORIGIN}
+    container_name: pitch-prod
+    depends_on:
+      - postgres
+      - redis
+      - front
+    ports:
+      - '8082:8080'
+      
+  postgres:
+    image: 'postgres:latest'
+    container_name: 'postgresql-prod'
+    restart: 'always'
+    environment:
+      - 'POSTGRES_DB=pitch'
+      - 'POSTGRES_PASSWORD=secret'
+      - 'POSTGRES_USER=myuser'
+      - 'TZ=Asia/Seoul'
+    ports:
+      - '9000:5432'
+    volumes:
+      - 'postgres_data:/var/lib/postgresql/data'
+
+  redis:
+    image: 'redis:latest'
+    container_name: 'redis-prod'
+    restart: 'always'
+    hostname: 'redis'
+    ports:
+      - '9001:6379'
+
+networks:
+  default:
+    driver: bridge
+
+volumes:
+  frontend_build_dist:
+
+  postgres_data:
+    driver: local
+  images_data:
+    driver: local
