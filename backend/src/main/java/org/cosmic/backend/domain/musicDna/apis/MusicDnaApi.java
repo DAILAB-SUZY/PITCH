@@ -93,6 +93,7 @@ public class MusicDnaApi {
   @GetMapping("/dna/user/{userId}")
   @Transactional
   @ApiResponse(responseCode = "404", description = "Not Found User")
+  @ApiResponse(responseCode = "400", description = "Not invalid variable")
   @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
       array = @ArraySchema(schema = @Schema(implementation = DnaDetail.class))))
   @Operation(summary = "유저 dna조회", description = "특정 유저의 dna정보들 조회")
