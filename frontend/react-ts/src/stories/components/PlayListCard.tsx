@@ -1,10 +1,6 @@
 import styled from 'styled-components';
 import { colors } from '../../styles/color';
-import ColorThief from 'colorthief';
-import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-//import { MAX_REISSUE_COUNT } from '../utils/fetchData';
-// import { fetchGET, MAX_REISSUE_COUNT } from '../utils/fetchData';
 
 const PlayListCardContainer = styled.div`
   width: 380px;
@@ -146,38 +142,10 @@ interface PlaylistProps {
 }
 
 const PlayListBox = ({ playlist, isEditable, playlistInfo, isUserPlaylist }: PlaylistProps) => {
-  const [playlistGradient, setPlaylistGradient] = useState<string>();
-  const albumCoverRef = useRef<HTMLImageElement | null>(null);
-
-  // ColorThief로 앨범 커버에서 색상 추출
-  const extractColors = () => {
-    const colorThief = new ColorThief();
-    const img = albumCoverRef.current;
-
-    let gradient = '#ddd'; // 기본 배경색 설정
-
-    if (img) {
-      const colors = colorThief.getPalette(img, 2); // 가장 대비되는 두 가지 색상 추출
-      const primaryColor = `rgb(${colors[0].join(',')})`;
-      const secondaryColor = `rgb(${colors[1].join(',')})`;
-      gradient = `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`;
-    }
-
-    setPlaylistGradient(gradient);
-  };
-
-  const handleImageLoad = () => {
-    extractColors(); // 이미지 로드 후 색상 추출
-  };
-
   const navigate = useNavigate();
   const GoToEditPage = () => {
     navigate('/PlayListEditPage', { state: playlistInfo });
   };
-
-  // const GoToAlbumPage = (spotifyAlbumId: string) => {
-  //   navigate('/AlbumPage', { state: spotifyAlbumId });
-  // };
 
   //const youtubeOathUrl = `/oauth2/callback/google`;
   const CreateYoutubePlaylist = async (playlistId: number) => {
@@ -230,15 +198,7 @@ const PlayListBox = ({ playlist, isEditable, playlistInfo, isUserPlaylist }: Pla
           <Line />
           <SongArea key={index}>
             <AlbumCover>
-              <img
-                ref={index === 0 ? albumCoverRef : null}
-                src={song.trackCover}
-                width="100%"
-                height="100%"
-                crossOrigin="anonymous"
-                onLoad={handleImageLoad} // 이미지가 로드될 때 색상 추출
-                alt={`Album Cover of ${song.title}`}
-              ></img>
+              <img src={song.trackCover} width="100%" height="100%" crossOrigin="anonymous" alt={`Album Cover of ${song.title}`}></img>
             </AlbumCover>
             <SongTextArea>
               <Title fontSize={'16px'} fontFamily="EB" margin="0px 0px 5px 0px">
