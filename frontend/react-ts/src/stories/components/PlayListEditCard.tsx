@@ -1,7 +1,5 @@
 import styled from 'styled-components';
 import { colors } from '../../styles/color';
-import ColorThief from 'colorthief';
-import { useRef, useState } from 'react';
 
 const PlayListCardContainer = styled.div`
   width: 380px;

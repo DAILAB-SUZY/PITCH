@@ -3,10 +3,11 @@ import { colors } from '../../styles/color';
 import ColorThief from 'colorthief';
 import { useRef, useState } from 'react';
 
-const PlayListCardContainer = styled.div`
+const PlayListCardContainer = styled.div<{ gradient?: string }>`
   width: 360px;
   height: auto;
   border-radius: 12px;
+  background-image: ${({ gradient }: { gradient?: string }) => gradient || 'linear-gradient(to top right, #989898, #f3f3f3)'};
   display: flex;
   display: flex;
   align-items: center;
@@ -213,7 +214,7 @@ const PlayListEditCard = ({ playlist, isEditable, setIsSearchModalOpen, setPlayL
   // };
 
   return (
-    <PlayListCardContainer>
+    <PlayListCardContainer gradient={playlistGradient}>
       <PlayListInfoArea>
         <Text fontSize={'14px'} fontFamily="RG" margin="0px 100px 0px 0px " opacity="0.8">
           {playlist.length} songs
