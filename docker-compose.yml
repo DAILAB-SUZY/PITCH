@@ -6,6 +6,7 @@ services:
     volumes:
       - frontend_build_dist:/app/dist
     container_name: frontend
+    command: ["sh", "-c", "npm run build && cp -r /app/dist/* /app/dist-shared/"]
 
   backend:
     build:
@@ -78,7 +79,7 @@ networks:
 
 volumes:
   frontend_build_dist:
-
+    driver: local
   postgres_data:
     driver: local
   images_data:
