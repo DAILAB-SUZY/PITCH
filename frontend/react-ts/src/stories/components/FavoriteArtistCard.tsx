@@ -134,6 +134,16 @@ const FavoriteAlbumTextArea = styled.div`
   text-overflow: ellipsis; // 글자가 넘어가면 말줄임(...) 표시 */
 `;
 
+const InitBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 50px;
+  margin-top: 20px;
+`;
+
 const Text = styled.div<{
   fontFamily: string;
   fontSize: string;
@@ -159,10 +169,12 @@ function FavoriteArtistCard({ FavoriteArtistData }: FavoriteArtistProps) {
   const data = FavoriteArtistData;
   return (
     <FavoriteArtistArea>
-      {FavoriteArtistData.artistName === null ? (
-        <Text fontFamily="RG" fontSize="15px">
-          아직 설정하지 않았습니다.
-        </Text>
+      {FavoriteArtistData.artistName === '없음' ? (
+        <InitBox>
+          <Text fontFamily="RG" fontSize="15px">
+            아직 설정하지 않았습니다.
+          </Text>
+        </InitBox>
       ) : (
         <BG>
           <ImageArea>
@@ -185,7 +197,7 @@ function FavoriteArtistCard({ FavoriteArtistData }: FavoriteArtistProps) {
                   <Text fontFamily="RG" fontSize="15px" color="white" opacity="0.7">
                     Favorite Album
                   </Text>
-                  <Text fontFamily="EB" fontSize="22px" color="white">
+                  <Text fontFamily="SB" fontSize="22px" color="white">
                     {data.albumName}
                   </Text>
                 </FavoriteAlbumTextArea>
@@ -198,7 +210,7 @@ function FavoriteArtistCard({ FavoriteArtistData }: FavoriteArtistProps) {
                   <Text fontFamily="RG" fontSize="15px" color="white" opacity="0.7">
                     Favorite Song
                   </Text>
-                  <Text fontFamily="EB" fontSize="22px" color="white">
+                  <Text fontFamily="SB" fontSize="22px" color="white">
                     {data.trackName}
                   </Text>
                 </FavoriteAlbumTextArea>

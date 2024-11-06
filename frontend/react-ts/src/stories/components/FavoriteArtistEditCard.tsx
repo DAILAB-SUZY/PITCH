@@ -196,7 +196,7 @@ function FavoriteArtistEditCard({ FavoriteArtistData, openSearch }: FavoriteArti
   return (
     <FavoriteArtistArea>
       <BG>
-        {FavoriteArtistData.artistCover === null ? (
+        {FavoriteArtistData.artistCover === '없음' ? (
           <NoImageArea></NoImageArea>
         ) : (
           <ImageArea>
@@ -211,8 +211,8 @@ function FavoriteArtistEditCard({ FavoriteArtistData, openSearch }: FavoriteArti
               openSearch('Artist');
             }}
           >
-            {FavoriteArtistData.artistName === (null || '') ? (
-              <Text fontFamily="RG" fontSize="15px" color="white">
+            {FavoriteArtistData.artistName === ('없음' || '') ? (
+              <Text fontFamily="SB" fontSize="18px" color="white">
                 여기를 눌러 아티스트를 설정해주세요.
               </Text>
             ) : (
@@ -228,7 +228,7 @@ function FavoriteArtistEditCard({ FavoriteArtistData, openSearch }: FavoriteArti
               }}
             >
               <FavoriteAlbumCover>
-                {FavoriteArtistData.albumCover !== (null || '') ? (
+                {FavoriteArtistData.albumCover !== ('없음' || '') ? (
                   <img src={FavoriteArtistData.albumCover} width="100%" height="100%" object-fit="cover"></img>
                 ) : (
                   <NoFavoriteAlbumCover></NoFavoriteAlbumCover>
@@ -238,7 +238,7 @@ function FavoriteArtistEditCard({ FavoriteArtistData, openSearch }: FavoriteArti
                 <Text fontFamily="RG" fontSize="15px" color="white" opacity="0.7">
                   Favorite Album
                 </Text>
-                {FavoriteArtistData.albumName !== (null || '') ? (
+                {FavoriteArtistData.albumName !== ('없음' || '') ? (
                   <Text fontFamily="EB" fontSize="18px" color="white">
                     {FavoriteArtistData.albumName}
                   </Text>
@@ -254,18 +254,19 @@ function FavoriteArtistEditCard({ FavoriteArtistData, openSearch }: FavoriteArti
                 openSearch('Artist-track');
               }}
             >
-              <FavoriteAlbumCover>
-                {FavoriteArtistData.trackCover !== (null || '') ? (
+              {FavoriteArtistData.trackCover !== ('없음' || '') ? (
+                <FavoriteAlbumCover>
                   <img src={FavoriteArtistData.trackCover} width="100%" height="100%" object-fit="cover"></img>
-                ) : (
-                  <NoFavoriteAlbumCover></NoFavoriteAlbumCover>
-                )}
-              </FavoriteAlbumCover>
+                </FavoriteAlbumCover>
+              ) : (
+                <NoFavoriteAlbumCover></NoFavoriteAlbumCover>
+              )}
+
               <FavoriteAlbumTextArea>
                 <Text fontFamily="RG" fontSize="15px" color="white" opacity="0.7">
                   Favorite Song
                 </Text>
-                {FavoriteArtistData.trackName !== (null || '') ? (
+                {FavoriteArtistData.trackName !== ('없음' || '') ? (
                   <Text fontFamily="EB" fontSize="18px" color="white">
                     {FavoriteArtistData.trackName}
                   </Text>

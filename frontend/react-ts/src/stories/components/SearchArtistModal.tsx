@@ -163,6 +163,8 @@ interface FavoriteArtist {
   trackCover: string;
   trackName: string;
   spotifyArtistId: string;
+  spotifyAlbumId: string;
+  spotifyTrackId: string;
 }
 interface FavoriteArtistSpotifyIds {
   spotifyArtistId: string;
@@ -218,6 +220,8 @@ function SearchArtistModal({ searchingTopic, setIsSearchModalOpen, favoriteArtis
         trackCover: '',
         trackName: '',
         spotifyArtistId: artist.artistId,
+        spotifyAlbumId: '',
+        spotifyTrackId: '',
       };
       const addArtistId: FavoriteArtistSpotifyIds = {
         spotifyArtistId: artist.artistId,

@@ -37,7 +37,7 @@ const LeftAlignArea = styled.div`
   justify-content: flex-end;
   align-items: center;
   width: 270px;
-  margin: 10px;
+  margin: 10px 10px 10px 10px;
   height: 10px;
 `;
 
@@ -57,9 +57,7 @@ const BtnArea = styled.div`
   flex-direction: row;
   justify-content: center;
   align-items: center;
-`;
-const StackConatiner = styled.div`
-  position: relative;
+  margin-top: 30px;
 `;
 
 function LoginPage() {
@@ -166,11 +164,13 @@ function LoginPage() {
           )}
         </LeftAlignArea>
 
-        <StackConatiner>
+        {/* <StackConatiner>
           <LeftAlignArea></LeftAlignArea>
+        </StackConatiner> */}
+        <LeftAlignArea>
+          {' '}
           <Btn width="100px" height="40px" fontSize="20px" text="로그인" onClick={Login}></Btn>
-        </StackConatiner>
-        <LeftAlignArea></LeftAlignArea>
+        </LeftAlignArea>
       </LoginArea>
       <BtnArea>
         <Title fontSize="15px" margin="10px" onClick={GoToSignupPage}>

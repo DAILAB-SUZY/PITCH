@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import ColorThief from 'colorthief';
+import { colors } from '../../styles/color';
 
 interface FriendsPlayList {
   playlistId: number;
@@ -38,6 +39,32 @@ const PlaylistBox = styled.div<{ gradient: string }>`
   align-items: center;
   justify-content: flex-start;
   box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+`;
+
+// 빈 플레이리스트 박스
+const PlaylistEmptyBox = styled.div<{ gradient: string }>`
+  background: ${({ gradient }) => gradient || '#ddd'};
+  border-radius: 12px;
+  width: 170px;
+  height: 220px;
+  margin-right: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+  color: ${colors.Font_white};
+`;
+
+// 빈 이미지 묶음
+const AlbumCoverEmptyStack = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 90px;
+  height: 90px;
+  margin-top: 30px;
+  box-sizing: border-box;
 `;
 
 // 앨범 커버 이미지 묶음
@@ -81,6 +108,23 @@ const ProfileArea = styled.div`
   flex-direction: row;
   align-items: flex-end;
   justify-content: flex-start;
+`;
+
+const Text = styled.div<{
+  fontFamily?: string;
+  fontSize?: string;
+  margin?: string;
+  opacity?: string;
+}>`
+  font-size: ${props => props.fontSize};
+  font-family: ${props => props.fontFamily};
+  margin: ${props => props.margin};
+  opacity: ${props => props.opacity};
+
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 // 프로필 이미지 스타일
@@ -204,6 +248,20 @@ const PlaylistPreviewCard = ({ playlists }: PlaylistProps) => {
               </PlaylistBox>
             ),
         )}
+      <PlaylistEmptyBox gradient={'linear-gradient(to top right, #989898, #f3f3f3)'}>
+        <AlbumCoverEmptyStack>
+          <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" className="bi bi-people-fill" viewBox="0 0 16 16">
+            <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5" />
+          </svg>
+        </AlbumCoverEmptyStack>
+
+        <Text fontFamily="EB" fontSize="20px">
+          {' '}
+          친구
+          <br />
+          찾기
+        </Text>
+      </PlaylistEmptyBox>
     </PlaylistContainer>
   );
 };

@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { useEffect, useState, ChangeEvent } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { colors } from '../../styles/color';
 
 import AlbumGridEdit from '../components/AlbumGridEdit';
@@ -11,6 +11,7 @@ import SearchTrackModal from '../components/SearchTrackModal';
 import { fetchGET, fetchPOST, fetchPOSTFile, MAX_REISSUE_COUNT } from '../utils/fetchData';
 
 import Header from '../components/Header';
+import useStore from '../store/store';
 // import heic2any from 'heic2any';
 
 const Container = styled.div`
@@ -319,6 +320,8 @@ interface FavoriteArtist {
   trackCover: string;
   trackName: string;
   spotifyArtistId: string;
+  spotifyAlbumId: string;
+  spotifyTrackId: string;
 }
 
 interface FavoriteArtistSpotifyIds {
@@ -328,14 +331,16 @@ interface FavoriteArtistSpotifyIds {
 }
 
 function MusicProfileEditPage() {
-  const location = useLocation();
-  const userId = location.state;
+  const { name, id } = useStore();
+  console.log(name, id);
+  // const location = useLocation();
+  // const userId = location.state;
 
-  let musiProfileUrl = `/api/user/${userId}/musicProfile`;
+  let musiProfileUrl = `/api/user/${id}/musicProfile`;
 
   const navigate = useNavigate();
   const GoToMusicProfilePage = () => {
-    navigate('/MusicProfilePage', { state: musicProfileData?.userDetail.id });
+    navigate('/MusicProfilePage', { state: id });
   };
 
   const [musicProfileData, setMusicProfileData] = useState<MusicProfileData>();
@@ -368,11 +373,12 @@ function MusicProfileEditPage() {
       setProfile(data.userDetail.profilePicture);
       const spotifyId = {
         spotifyArtistId: data.favoriteArtist.spotifyArtistId,
-        spotifyAlbumId: '',
-        spotifyTrackId: '',
+        spotifyAlbumId: data.favoriteArtist.spotifyAlbumId || '',
+        spotifyTrackId: data.favoriteArtist.spotifyTrackId || '',
       };
       setFavoriteArtistSpotifyIds(spotifyId);
       fetchMusicDNA(token, refreshToken);
+      console.log(musicProfileData);
     });
   };
 
@@ -381,6 +387,7 @@ function MusicProfileEditPage() {
   const fetchMusicDNA = async (token: string, refreshToken: string) => {
     fetchGET(token, refreshToken, MusicDNAUrl, MAX_REISSUE_COUNT).then(data => {
       setAllMusicDna(data);
+      console.log(data);
     });
   };
 
