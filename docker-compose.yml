@@ -3,10 +3,14 @@ services:
     build:
       context: ./frontend/react-ts
       dockerfile: Dockerfile
-    volumes:
-      - frontend_build_dist:/app/dist
+    ports:
+      - "80:80"
+      - "443:443"
     container_name: frontend
-    command: ["sh", "-c", "npm run build && cp -r /app/dist/* /app/dist-shared/"]
+    networks:
+      - app-network
+    depends_on:
+      - backend
 
   backend:
     build:
@@ -14,7 +18,6 @@ services:
       dockerfile: Dockerfile
     volumes:
       - images_data:${BASE_FILE_PATH}
-      - frontend_build_dist:/app/src/main/resources-prod/static
     environment:
       - MAIL_ADDRESS=${MAIL_ADDRESS}
       - MAIL_PASSWORD=${MAIL_PASSWORD}
@@ -41,7 +44,6 @@ services:
     depends_on:
       - postgres
       - redis
-      - front
     ports:
       - 8082:${SERVER_PORT}
     networks:
@@ -78,8 +80,6 @@ networks:
     driver: bridge
 
 volumes:
-  frontend_build_dist:
-    driver: local
   postgres_data:
     driver: local
   images_data:
