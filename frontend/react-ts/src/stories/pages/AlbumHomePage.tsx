@@ -111,10 +111,27 @@ const AlbumListArea = styled.div`
   padding: 10px;
 `;
 
+const Text = styled.div<{ fontFamily?: string; fontSize?: string; color?: string; margin?: string }>`
+  font-size: ${props => props.fontSize};
+  font-family: ${props => props.fontFamily};
+  color: ${props => props.color};
+  margin: ${props => props.margin};
+  line-height: 120%;
+`;
+
 const Title = styled.div<{ fontSize: string; margin?: string }>`
   font-size: ${props => props.fontSize};
   margin: ${props => props.margin};
-  font-family: 'Bd';
+  font-family: 'EB';
+`;
+
+const CenterAlign = styled.div`
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 120%;
 `;
 
 interface DNA {
@@ -307,9 +324,22 @@ function AlbumHomePage() {
           </>
         )}
         {!isLoading && !isSearchMode && <div ref={observerRef} style={{ height: '100px', backgroundColor: 'transparent' }} />}
-        {isSearchMode && (
+        {!isLoading && isSearchMode && (
           <MostLikedArea>
-            <AlbumListArea>{searchResultTrack?.map(album => <MostLikedCard album={album}></MostLikedCard>) ?? <p>No albums found</p>}</AlbumListArea>
+            <AlbumListArea>
+              {searchResultTrack && searchResultTrack.length > 0 ? (
+                searchResultTrack?.map(album => <MostLikedCard album={album}></MostLikedCard>) ?? <p>No albums found</p>
+              ) : (
+                <CenterAlign>
+                  <Text fontFamily="SB" fontSize="20px" margin="10px" color={colors.Font_black}>
+                    검색 결과가 없습니다.
+                  </Text>
+                  <Text fontFamily="RG" fontSize="15px" margin="10px" color={colors.Font_black}>
+                    앨범의 제목을 올바르게 입력했는지 확인해주세요.
+                  </Text>
+                </CenterAlign>
+              )}
+            </AlbumListArea>
           </MostLikedArea>
         )}
         {isLoading && <Loader></Loader>}

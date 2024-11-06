@@ -164,6 +164,7 @@ const ContentInfoArea = styled.div`
   padding: 0px 0px 20px 30px;
   align-items: center;
   flex-direction: row;
+  font-family: 'SB';
   width: 100vw;
   height: 50px;
   gap: 5px;
@@ -206,6 +207,7 @@ const TabArea = styled.div`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+
   width: 350px;
   margin-bottom: 10px;
 `;
@@ -214,7 +216,7 @@ const TabBtn = styled.div<{ opacity?: string }>`
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  font-family: 'Bd';
+  font-family: 'EB';
   width: 170px;
   height: 30px;
   border-radius: 5px;
@@ -354,16 +356,15 @@ function AlbumPage() {
           </CommentCard>
           <AlbumInfoArea>
             <AlbumTitleArea>
-              <Text width="300px" fontSize="30px" margin="0px 0px 5px 0px" fontFamily="Bd" color={colors.Font_black}>
+              <Text width="300px" fontSize="30px" margin="0px 0px 5px 0px" fontFamily="EB" color={colors.Font_black}>
                 {albumDetail?.title}
               </Text>
-              <Text fontSize="20px" margin="0px 0px 5px 0px" fontFamily="Bd" opacity={0.6} color={colors.Font_black}>
+              <Text fontSize="20px" margin="0px 0px 5px 0px" fontFamily="SB" opacity={0.6} color={colors.Font_black}>
                 {albumDetail?.artistName}
               </Text>
-              {/* <Text fontSize="12px" margin="0px" fontFamily="Bd" opacity={0.5} color={colors.Font_black}>
+              {/* <Text fontSize="12px" margin="0px" fontFamily="EB" opacity={0.5} color={colors.Font_black}>
                 {albumDetail?.genre}
               </Text> */}
-              <ScoreEditAlbumPage stars={stars || []} score={score} setScore={setScore} setStars={setStars} albumId={albumDetail?.albumId || 0}></ScoreEditAlbumPage>
             </AlbumTitleArea>
             <LikeNumberArea>
               <svg
@@ -377,14 +378,17 @@ function AlbumPage() {
               >
                 <path fillRule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314" />
               </svg>
-              <Text fontSize="15px" margin="0px 0px 0px 10px" fontFamily="Bd" color={colors.Font_black}>
+              <Text fontSize="15px" margin="0px 0px 0px 10px" fontFamily="EB" color={colors.Font_black}>
                 {albumDetail?.likes.length}
               </Text>
-              <Text fontSize="15px" margin="0px 0px 0px 5px" fontFamily="Rg" color={colors.Font_black}>
+              <Text fontSize="15px" margin="0px 0px 0px 5px" fontFamily="RG" color={colors.Font_black}>
                 likes
               </Text>
             </LikeNumberArea>
           </AlbumInfoArea>
+
+          <ScoreEditAlbumPage stars={stars || []} score={score} setScore={setScore} setStars={setStars} albumId={albumDetail?.albumId || 0}></ScoreEditAlbumPage>
+
           <Line></Line>
           <ContentArea>
             <TabArea>

@@ -45,9 +45,9 @@ const CommentArea = styled.div`
 `;
 
 const ChatCardBody = styled.div`
-  margin: 5px 0px 10px 0px;
+  margin: 5px 0px 8px 0px;
   width: 90%;
-  height: 43px;
+  height: 45px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -63,8 +63,14 @@ const ChatCardBody = styled.div`
 const Text = styled.div<{ fontSize?: string; margin?: string; color?: string }>`
   font-size: ${props => props.fontSize};
   margin: ${props => props.margin};
-  font-family: 'Rg';
+  font-family: 'RG';
   color: ${props => props.color};
+
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* 텍스트를 2줄로 제한 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis; /* 넘칠 때 말줄임표(...) 표시 */
 `;
 
 const ProfileArea = styled.div`
@@ -87,7 +93,7 @@ const ProfileTextArea = styled.div`
 const ProfileName = styled.div`
   display: flex;
   font-size: 20px;
-  font-family: 'Rg';
+  font-family: 'SB';
   margin-left: 10px;
   color: ${colors.Font_black};
 `;
@@ -106,7 +112,7 @@ const PostUploadTime = styled.div`
   justify-content: flex-start;
   height: 10px;
   font-size: 10px;
-  font-family: 'Rg';
+  font-family: 'RG';
   margin-left: 10px;
   color: ${colors.Font_grey};
 `;

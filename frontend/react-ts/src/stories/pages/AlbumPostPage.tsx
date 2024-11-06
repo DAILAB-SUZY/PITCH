@@ -6,6 +6,7 @@ import AlbumPostCommentCard from '../components/AlbumPostCommentCard';
 import useStore from '../store/store';
 import { updateTimeAgo } from '../utils/getTimeAgo';
 import { fetchGET, fetchPOST, fetchDELETE, MAX_REISSUE_COUNT } from '../utils/fetchData';
+import ScoreShow from '../components/ScoreShow';
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -14,7 +15,7 @@ const Container = styled.div`
   overflow-y: scroll;
   height: 100vh; //auto;
   width: 100vw;
-  background-color: white;
+  background-color: ${colors.BG_grey};
   color: ${colors.Font_black};
 `;
 
@@ -25,7 +26,7 @@ const AlbumPostArea = styled.div`
   align-items: center;
   justify-content: flex-start;
   flex-direction: column;
-  background-color: white;
+  background-color: ${colors.BG_grey};
 `;
 
 const AlbumTitleArea = styled.div`
@@ -85,17 +86,6 @@ const TitleTextArea = styled.div`
   z-index: 3;
 `;
 
-const StarsArea = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
-  width: auto;
-  height: 100%;
-  margin: 0px 0px 2px 10px;
-  gap: 1px;
-`;
-
 const Text = styled.div<{
   fontFamily: string;
   fontSize: string;
@@ -143,11 +133,12 @@ const ProfileArea = styled.div`
   justify-content: space-between;
   align-items: center;
   flex-direction: row;
+  margin-bottom: 10px;
 `;
 const PostUploadTime = styled.div`
   display: flex;
   font-size: 10px;
-  font-family: 'Rg';
+  font-family: 'RG';
   margin: 0px 0px 2px 10px;
   color: ${colors.Font_grey};
 `;
@@ -159,7 +150,7 @@ const ProfileTextArea = styled.div`
 const ProfileName = styled.div`
   display: flex;
   font-size: 20px;
-  font-family: 'Rg';
+  font-family: 'SB';
   margin-left: 10px;
   color: ${colors.Font_black};
 `;
@@ -174,7 +165,7 @@ const ProfileImage = styled.div`
 const ProfileImgTextArea = styled.div`
   display: flex;
   flex-direction: row;
-  width: 100%;
+  width: auto;
   justify-content: flex-start;
   align-items: center;
 `;
@@ -241,7 +232,7 @@ const PostContentArea = styled.div`
   flex-direction: column;
   justify-content: space-between;
   font-size: 15px;
-  font-family: 'Rg';
+  font-family: 'RG';
   padding: 0px 10px;
   margin: 10px 0px 20px 0px;
 
@@ -341,29 +332,11 @@ interface ChildComment {
 function AlbumPostPage() {
   const location = useLocation();
   const [albumPost, setAlbumPost] = useState<albumPost>();
+  const [score, setScore] = useState<number>(0);
 
   const navigate = useNavigate();
   const GoToHomePage = () => {
     navigate('/Home');
-  };
-
-  // 별점
-  const [stars, setStars] = useState<string[]>();
-  const scoreToStar = (score: number) => {
-    let stars: string[] = [];
-
-    // 별 5개를 기준으로 0부터 10까지의 score를 5단위로 변환
-    for (let i = 0; i < 5; i++) {
-      if (score >= (i + 1) * 2) {
-        stars.push('full'); // 완전히 채워진 별
-      } else if (score >= i * 2 + 1) {
-        stars.push('half'); // 반 채워진 별
-      } else {
-        stars.push('empty'); // 빈 별
-      }
-    }
-
-    return stars;
   };
 
   const GoToAlbumPostEditPage = () => {
@@ -401,7 +374,7 @@ function AlbumPostPage() {
       setAlbumPost(data);
       console.log('fetched');
       console.log(data);
-      setStars(scoreToStar(data.postDetail.album.score));
+      setScore(data.postDetail.album.score);
     });
   };
 
@@ -482,6 +455,11 @@ function AlbumPostPage() {
     return <div>Loading...</div>;
   }
 
+  const GoToMusicProfilePage = () => {
+    console.log('GoToMusicProfilePage');
+    navigate('/MusicProfilePage', { state: albumPost?.postDetail.author.id });
+  };
+
   return (
     <Container>
       {albumPost && (
@@ -503,39 +481,18 @@ function AlbumPostPage() {
               </ImageArea>
               <GradientBG> </GradientBG>
               <TitleTextArea>
-                <Text fontFamily="Bd" fontSize="30px" margin="0px" color={colors.BG_white}>
+                <Text fontFamily="EB" fontSize="30px" margin="0px" color={colors.BG_white}>
                   {albumPost.postDetail.album.title}
                 </Text>
-                <Text fontFamily="Rg" fontSize="20px" margin="0px 0px 2px 10px" color={colors.BG_white}>
+                <Text fontFamily="RG" fontSize="20px" margin="0px 0px 2px 10px" color={colors.BG_white}>
                   {albumPost.postDetail.album.artistName}
                 </Text>
               </TitleTextArea>
-              <TitleTextArea>
-                <Text fontFamily="Rg" fontSize="20px" margin="0px 0px 2px 0px" color={colors.BG_white}>
-                  {albumPost.postDetail.author.username}님의 별점 :
-                </Text>
-                <StarsArea>
-                  {stars?.map(star =>
-                    star === 'full' ? (
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-star-fill" viewBox="0 0 16 16">
-                        <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
-                      </svg>
-                    ) : star === 'half' ? (
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-star-half" viewBox="0 0 16 16">
-                        <path d="M5.354 5.119 7.538.792A.52.52 0 0 1 8 .5c.183 0 .366.097.465.292l2.184 4.327 4.898.696A.54.54 0 0 1 16 6.32a.55.55 0 0 1-.17.445l-3.523 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256a.5.5 0 0 1-.146.05c-.342.06-.668-.254-.6-.642l.83-4.73L.173 6.765a.55.55 0 0 1-.172-.403.6.6 0 0 1 .085-.302.51.51 0 0 1 .37-.245zM8 12.027a.5.5 0 0 1 .232.056l3.686 1.894-.694-3.957a.56.56 0 0 1 .162-.505l2.907-2.77-4.052-.576a.53.53 0 0 1-.393-.288L8.001 2.223 8 2.226z" />
-                      </svg>
-                    ) : star === 'empty' ? (
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-star" viewBox="0 0 16 16">
-                        <path d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.56.56 0 0 0-.163-.505L1.71 6.745l4.052-.576a.53.53 0 0 0 .393-.288L8 2.223l1.847 3.658a.53.53 0 0 0 .393.288l4.052.575-2.906 2.77a.56.56 0 0 0-.163.506l.694 3.957-3.686-1.894a.5.5 0 0 0-.461 0z" />
-                      </svg>
-                    ) : null,
-                  )}
-                </StarsArea>
-              </TitleTextArea>
             </AlbumTitleArea>
+
             <PostArea>
               <ProfileArea>
-                <ProfileImgTextArea>
+                <ProfileImgTextArea onClick={() => GoToMusicProfilePage()}>
                   <ProfileImage>
                     <ProfileImageCircle src={albumPost.postDetail.author.profilePicture}></ProfileImageCircle>
                   </ProfileImage>
@@ -566,6 +523,9 @@ function AlbumPostPage() {
                   </EditBtn>
                 )}
               </ProfileArea>
+              <Line></Line>
+              <ScoreShow score={score} />
+              <Line></Line>
               <PostContentArea>{albumPost.postDetail.content}</PostContentArea>
               <ButtonArea>
                 <svg
@@ -579,14 +539,14 @@ function AlbumPostPage() {
                 >
                   <path fillRule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314" />
                 </svg>
-                <Text fontFamily="Rg" fontSize="14px" color="grey" margin="0px 20px 0px 3px">
+                <Text fontFamily="RG" fontSize="14px" color="grey" margin="0px 20px 0px 3px">
                   좋아요 {albumPost.likes.length}개
                 </Text>
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="grey" className="bi bi-chat-right-text-fill" viewBox="0 0 16 16" style={{ strokeWidth: 6 }}>
                   <path d="M2 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h9.586a2 2 0 0 1 1.414.586l2 2V2a1 1 0 0 0-1-1zm12-1a2 2 0 0 1 2 2v12.793a.5.5 0 0 1-.854.353l-2.853-2.853a1 1 0 0 0-.707-.293H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z" />
                   <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6m0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5" />
                 </svg>
-                <Text fontFamily="Rg" fontSize="14px" color="grey" margin="0px 0px 0px 3px">
+                <Text fontFamily="RG" fontSize="14px" color="grey" margin="0px 0px 0px 3px">
                   답글 {albumPost.comments.length}개
                 </Text>
               </ButtonArea>
@@ -594,7 +554,7 @@ function AlbumPostPage() {
           </AlbumPostArea>
           <ChatArea>
             <RowAlignArea>
-              <Text fontFamily="Bd" fontSize="30px" margin="0px" color="black">
+              <Text fontFamily="EB" fontSize="30px" margin="0px" color="black">
                 Comment
               </Text>
               <svg

@@ -38,7 +38,7 @@ const ChatCardBody = styled.div`
 const Text = styled.div<{ fontSize?: string; margin?: string; color?: string }>`
   font-size: ${props => props.fontSize};
   margin: ${props => props.margin};
-  font-family: 'Rg';
+  font-family: 'RG';
   color: ${props => props.color};
 
   text-overflow: ellipsis;
@@ -58,7 +58,7 @@ const ProfileArea = styled.div`
 const PostUploadTime = styled.div`
   display: flex;
   font-size: 10px;
-  font-family: 'Rg';
+  font-family: 'RG';
   margin: 0px 0px 2px 10px;
   color: ${colors.Font_grey};
 `;
@@ -71,7 +71,7 @@ const ProfileTextArea = styled.div`
 const ProfileName = styled.div`
   display: flex;
   font-size: 20px;
-  font-family: 'Rg';
+  font-family: 'SB';
   margin-left: 10px;
   color: ${colors.Font_black};
 `;
@@ -115,7 +115,7 @@ const DropdownMenu = styled.div`
   top: 25px;
   right: 0;
   width: 70px;
-  height: 70px;
+  height: 40px;
   display: flex;
   justify-content: center;
   align-items: center;

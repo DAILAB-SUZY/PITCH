@@ -181,3 +181,29 @@ export const fetchDELETE = async (token: string, refreshToken: string, URL: stri
     console.log('Finished fetching');
   }
 };
+
+// 데이터 fetch 함수 - EMAILPOST
+export const fetchEMAILPOST = async (Data: any, URL: string): Promise<any | undefined> => {
+  try {
+    console.log('Fetching POST...');
+    console.log(Data);
+    const response = await fetch(`${server}${URL}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(Data),
+    });
+
+    if (response.ok) {
+      return response;
+    } else {
+      console.error('Failed to fetch data:', response.status);
+      return response;
+    }
+  } catch (error) {
+    console.error('Error fetching the JSON file:', error);
+  } finally {
+    console.log('Finished fetching');
+  }
+};

@@ -84,15 +84,30 @@ const ProfileArea = styled.div`
 `;
 
 // 프로필 이미지 스타일
-const ProfileImage = styled.img`
+// const ProfileImage = styled.img`
+//   width: 35px;
+//   height: 35px;
+//   border-radius: 50%;
+//   margin-right: 10px;
+// `;
+
+const ProfileImage = styled.div`
+  display: flex;
+  overflow: hidden;
   width: 35px;
   height: 35px;
   border-radius: 50%;
-  margin-right: 10px;
+  margin-right: 5px;
+`;
+const ProfileImageCircle = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 비율 유지하며 꽉 채움 */
+  object-position: center; /* 이미지 가운데 정렬 */
 `;
 
 const UserNameArea = styled.div`
-  width: 100%;
+  width: 110px;
   height: 35px;
   display: flex;
   flex-direction: column;
@@ -117,9 +132,11 @@ const PlaylistPreviewCard = ({ playlists }: PlaylistProps) => {
   const albumCoverRefs = useRef<(HTMLImageElement | null)[]>([]);
   const [imagesLoaded, setImagesLoaded] = useState<boolean[]>(new Array(playlists.length).fill(false));
 
+  console.log(`imagesLoaded: ${imagesLoaded}`);
   // 이미지 로드 상태 추적
   useEffect(() => {
     if (imagesLoaded.every(Boolean)) {
+      console.log('All images loaded');
       extractColors();
     }
   }, [imagesLoaded]);
@@ -134,14 +151,15 @@ const PlaylistPreviewCard = ({ playlists }: PlaylistProps) => {
         const secondaryColor = `rgb(${colors[1].join(',')})`;
         return `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`;
       }
-      return '#000000'; // 이미지가 없거나 완전히 로드되지 않은 경우
+      return `linear-gradient(135deg, #ffdfee, #68213f)`; // 이미지가 없거나 완전히 로드되지 않은 경우
     });
     setPlaylistGradients(gradients);
   };
 
   const handleImageLoad = (index: number) => {
+    console.log(`Image ${index} loaded`);
     setImagesLoaded(prev => {
-      const newLoaded = [...prev];
+      let newLoaded = [...prev];
       newLoaded[index] = true;
       return newLoaded;
     });
@@ -151,36 +169,41 @@ const PlaylistPreviewCard = ({ playlists }: PlaylistProps) => {
   };
   return (
     <PlaylistContainer>
-      {playlists.map(
-        (playlist, index) =>
-          playlist.albumCover.length !== 0 && (
-            <PlaylistBox key={playlist.playlistId} gradient={playlistGradients[index] || `linear-gradient(135deg, #c5c5c5, #3f2932)`}>
-              <AlbumCoverStack onClick={() => GoToPlayListPage({ ...playlist.author, page: 1 })}>
-                {playlist.albumCover
-                  .slice(0, 3)
-                  .reverse()
-                  .map((cover: any, coverIndex: any) => (
-                    <AlbumCover
-                      key={coverIndex}
-                      src={cover}
-                      alt={`Album Cover ${index + 1}`}
-                      // ref={el => (albumCoverRefs.current[index] = el)}
-                      ref={el => (coverIndex === playlist.albumCover.slice(0, 3).length - 1 ? (albumCoverRefs.current[index] = el) : null)}
-                      crossOrigin="anonymous"
-                      onLoad={() => handleImageLoad(index)} // 이미지 로드 상태 추적
-                    />
-                  ))}
-              </AlbumCoverStack>
-              <ProfileArea onClick={() => GoToMusicProfilePage(playlist.author.id)}>
-                <ProfileImage src={playlist.author.profilePicture} alt="Profile" />
-                <UserNameArea>
-                  <UserName fontFamily="Bd">{playlist.author.username}'s</UserName>
-                  <UserName fontFamily="Rg">Playlist</UserName>
-                </UserNameArea>
-              </ProfileArea>
-            </PlaylistBox>
-          ),
-      )}
+      {playlists
+        .filter(playlist => playlist.albumCover.length !== 0)
+        .map(
+          (playlist, index) =>
+            playlist.albumCover.length !== 0 && (
+              <PlaylistBox key={playlist.playlistId} gradient={playlistGradients[index]}>
+                <AlbumCoverStack onClick={() => GoToPlayListPage({ ...playlist.author, page: 1 })}>
+                  {playlist.albumCover
+                    .slice(0, 3)
+                    .reverse()
+                    .map((cover: any, coverIndex: any) => (
+                      <AlbumCover
+                        key={coverIndex}
+                        src={cover}
+                        alt={`Album Cover ${index + 1}`}
+                        // ref={el => (albumCoverRefs.current[index] = el)}
+                        ref={el => (coverIndex === playlist.albumCover.slice(0, 3).length - 1 ? (albumCoverRefs.current[index] = el) : null)}
+                        crossOrigin="anonymous"
+                        onLoad={() => handleImageLoad(index)} // 이미지 로드 상태 추적
+                      />
+                    ))}
+                </AlbumCoverStack>
+                <ProfileArea onClick={() => GoToMusicProfilePage(playlist.author.id)}>
+                  {/* <ProfileImage src={playlist.author.profilePicture} alt="Profile" /> */}
+                  <ProfileImage>
+                    <ProfileImageCircle src={playlist.author.profilePicture} alt="Profile" />
+                  </ProfileImage>
+                  <UserNameArea>
+                    <UserName fontFamily="EB">{playlist.author.username}'s</UserName>
+                    <UserName fontFamily="RG">Playlist</UserName>
+                  </UserNameArea>
+                </ProfileArea>
+              </PlaylistBox>
+            ),
+        )}
     </PlaylistContainer>
   );
 };

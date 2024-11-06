@@ -135,7 +135,7 @@ const PostHeaderArea = styled.div`
 const PostUploadTime = styled.div`
   display: flex;
   font-size: 10px;
-  font-family: 'Rg';
+  font-family: 'RG';
   margin-left: 10px;
   color: ${colors.Font_white};
   opacity: 0.5;
@@ -148,7 +148,7 @@ const ProfileTextArea = styled.div`
 const ProfileName = styled.div`
   display: flex;
   font-size: 20px;
-  font-family: 'Rg';
+  font-family: 'SB';
   margin-left: 10px;
   color: ${colors.Font_white};
 `;
@@ -181,7 +181,7 @@ const PostContentArea = styled.div`
   flex-direction: column;
   justify-content: space-between;
   font-size: 15px;
-  font-family: 'Rg';
+  font-family: 'RG';
   padding: 0px 10px;
   margin: 7px 0;
   opacity: 0.9;
@@ -345,10 +345,10 @@ const AlbumPost = ({ albumPost }: AlbumPostProps) => {
         </ImageArea>
         <GradientBG> </GradientBG>
         <TitleTextArea>
-          <Text fontFamily="Bd" fontSize="30px">
+          <Text fontFamily="EB" fontSize="30px">
             {albumPost?.postDetail.album.title}
           </Text>
-          <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 2px 10px">
+          <Text fontFamily="RG" fontSize="15px" margin="0px 0px 2px 10px">
             {albumPost?.postDetail.album.artistName}
           </Text>
         </TitleTextArea>
@@ -382,7 +382,7 @@ const AlbumPost = ({ albumPost }: AlbumPostProps) => {
           >
             <path fillRule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314" />
           </svg>
-          <Text fontFamily="Rg" fontSize="14px" color={colors.Font_white} margin="0px 20px 0px 5px">
+          <Text fontFamily="RG" fontSize="14px" color={colors.Font_white} margin="0px 20px 0px 5px">
             좋아요 {albumPost?.likes.length}개
           </Text>
           {/* <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="grey" className="bi bi-chat-right-text-fill" viewBox="0 0 16 16" style={{ strokeWidth: 6 }}>
@@ -392,7 +392,7 @@ const AlbumPost = ({ albumPost }: AlbumPostProps) => {
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" className="bi bi-chat-right-text-fill" viewBox="0 0 16 16" onClick={() => GoToAlbumPostPage()}>
             <path d="M16 2a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h9.586a1 1 0 0 1 .707.293l2.853 2.853a.5.5 0 0 0 .854-.353zM3.5 3h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1 0-1m0 2.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1 0-1m0 2.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1" />
           </svg>
-          <Text onClick={() => GoToAlbumPostPage()} fontFamily="Rg" fontSize="14px" color={colors.Font_white} margin="0px 0px 0px 5px">
+          <Text onClick={() => GoToAlbumPostPage()} fontFamily="RG" fontSize="14px" color={colors.Font_white} margin="0px 0px 0px 5px">
             답글 {albumPost?.comments.length}개
           </Text>
         </ButtonArea>

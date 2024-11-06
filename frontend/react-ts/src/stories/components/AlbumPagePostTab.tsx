@@ -7,12 +7,13 @@ const Container = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  margin-bottom: 100px;
 `;
 
 const Text = styled.div<{ fontSize?: string; margin?: string; color?: string }>`
   font-size: ${props => props.fontSize};
   margin: ${props => props.margin};
-  font-family: 'Rg';
+  font-family: 'RG';
   color: ${props => props.color};
 `;
 

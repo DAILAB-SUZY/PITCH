@@ -41,7 +41,7 @@ const PlaylistCardSmall = styled.div<{ gradient?: string }>`
   height: 190px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   color: white;
-  font-family: Arial, sans-serif;
+  font-family: 'EB';
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -53,7 +53,7 @@ const UserNameArea = styled.h2`
   display: flex;
   justify-content: center;
   font-size: 20px;
-  font-weight: bold;
+  font-family: 'EB';
   margin-bottom: 20px;
   color: white;
 `;
@@ -88,12 +88,14 @@ const SongInfo = styled.div`
 
 const SongTitle = styled.div`
   font-size: 16px;
-  font-weight: bold;
+  font-family: 'EB';
 `;
 
 const Artist = styled.div`
   font-size: 14px;
   color: white;
+  font-family: 'SB';
+  opacity: 0.7;
 `;
 
 const Text = styled.div<{

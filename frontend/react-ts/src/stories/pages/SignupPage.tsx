@@ -10,7 +10,7 @@ import useStore from '../store/store';
 const Title = styled.div<{ fontSize?: string; margin?: string }>`
   font-size: ${props => props.fontSize};
   margin: ${props => props.margin};
-  font-family: 'Bd';
+  font-family: 'EB';
 `;
 const Container = styled.div`
   display: flex;

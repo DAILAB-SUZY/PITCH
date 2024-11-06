@@ -165,16 +165,16 @@ function MostLikedCard({ album }: UnionType) {
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill={colors.Button_active} className="bi bi-heart-fill" viewBox="0 0 16 16">
                 <path fillRule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314" />
               </svg>
-              <Text fontSize="18px" margin="10px 0px 0px 5px" fontFamily="Bd" opacity={0.8} color={colors.BG_white}>
+              <Text fontSize="18px" margin="10px 0px 0px 5px" fontFamily="EB" opacity={0.8} color={colors.BG_white}>
                 {album.albumDetail.likes.length}
               </Text>
             </AlbumContentArea>
           </AlbumImageCard>
           <AlbumInfo>
-            <Text fontSize="18px" margin="7px 0px 0px 5px" fontFamily="Bd" opacity={1} color={colors.Font_black}>
+            <Text fontSize="18px" margin="7px 0px 0px 5px" fontFamily="EB" opacity={1} color={colors.Font_black}>
               {album.albumDetail.title}
             </Text>
-            <Text fontSize="15px" margin="0px 0px 0px 5px" fontFamily="Bd" opacity={0.8} color={colors.Font_grey}>
+            <Text fontSize="15px" margin="0px 0px 0px 5px" fontFamily="EB" opacity={0.8} color={colors.Font_grey}>
               {album.albumDetail.artistName}
             </Text>
           </AlbumInfo>
@@ -190,16 +190,16 @@ function MostLikedCard({ album }: UnionType) {
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill={colors.Button_active} className="bi bi-heart-fill" viewBox="0 0 16 16">
               <path fillRule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314" />
             </svg>
-            <Text fontSize="18px" margin="10px 0px 0px 5px" fontFamily="Bd" opacity={0.8} color={colors.BG_white}>
+            <Text fontSize="18px" margin="10px 0px 0px 5px" fontFamily="EB" opacity={0.8} color={colors.BG_white}>
               {album.albumDetail.likes.length}
             </Text>
           </AlbumContentArea> */}
           </AlbumImageCard>
           <AlbumInfo>
-            <Text fontSize="18px" margin="7px 0px 0px 5px" fontFamily="Bd" opacity={1} color={colors.Font_black}>
+            <Text fontSize="18px" margin="7px 0px 0px 5px" fontFamily="EB" opacity={1} color={colors.Font_black}>
               {album.name}
             </Text>
-            <Text fontSize="15px" margin="0px 0px 0px 5px" fontFamily="Bd" opacity={0.8} color={colors.Font_grey}>
+            <Text fontSize="15px" margin="0px 0px 0px 5px" fontFamily="EB" opacity={0.8} color={colors.Font_grey}>
               {album.albumArtist.name}
             </Text>
           </AlbumInfo>

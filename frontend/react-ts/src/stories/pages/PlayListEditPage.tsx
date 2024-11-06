@@ -3,11 +3,12 @@ import { colors } from '../../styles/color';
 
 import PlayListEditCard from '../components/PlayListEditCard';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import SearchTrackModal from '../components/SearchTrackModal';
 import { fetchPOST, fetchGET, MAX_REISSUE_COUNT } from '../utils/fetchData';
 import Header from '../components/Header';
-const Container = styled.div`
+import ColorThief from 'colorthief';
+const Container = styled.div<{ gradient?: string }>`
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -15,12 +16,18 @@ const Container = styled.div`
   overflow-y: scroll;
   height: 100vh;
   width: 100vw;
-  background-color: white;
+
   color: black;
+
+  background-image: ${({ gradient }: { gradient?: string }) => gradient || 'linear-gradient(to top right, #989898, #f3f3f3)'};
+`;
+
+const HiddenImage = styled.img`
+  display: none;
 `;
 
 const Body = styled.div`
-  margin-top: 130px;
+  margin-top: 70px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -28,14 +35,14 @@ const Body = styled.div`
 `;
 
 const TitleArea = styled.div`
-  width: 100%;
+  width: 360px;
   height: 40px;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
   padding-left: 10px;
-  margin: 5px 0px 10px 0px;
+  margin: 0px 0px 10px 0px;
 `;
 const Circle = styled.div<{ bgcolor?: string }>`
   width: 35px;
@@ -94,8 +101,9 @@ const Btn = styled.div<{ bgcolor: string }>`
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-evenly;
-  background-color: ${props => props.bgcolor};
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid ${colors.BG_lightgrey};
   width: 100px;
   height: 35px;
   border-radius: 10px;
@@ -103,16 +111,19 @@ const Btn = styled.div<{ bgcolor: string }>`
   box-sizing: border-box;
   margin: 0px 20px;
   box-shadow: 0 0px 5px rgba(0, 0, 0, 0.1);
+  color: ${colors.Font_black};
 `;
 
 const Text = styled.div<{
   fontFamily?: string;
   fontSize?: string;
   margin?: string;
+  color?: string;
 }>`
   font-size: ${props => props.fontSize};
   font-family: ${props => props.fontFamily};
   margin: ${props => props.margin};
+  color: ${props => props.color};
 `;
 
 interface track {
@@ -178,8 +189,35 @@ function PlayListPage() {
   const GoToPlayListPage = (author: playlistInfo) => {
     navigate('/PlayListPage', { state: author });
   };
+
+  //
+  const [playlistGradient, setPlaylistGradient] = useState<string>();
+  const albumCoverRef = useRef<HTMLImageElement | null>(null);
+
+  // ColorThief로 앨범 커버에서 색상 추출
+  const extractColors = () => {
+    const colorThief = new ColorThief();
+    const img = albumCoverRef.current;
+
+    let gradient = '#ddd'; // 기본 배경색 설정
+
+    if (img) {
+      const colors = colorThief.getPalette(img, 2); // 가장 대비되는 두 가지 색상 추출
+      const primaryColor = `rgb(${colors[0].join(',')})`;
+      const secondaryColor = `rgb(${colors[1].join(',')})`;
+      gradient = `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`;
+    }
+
+    setPlaylistGradient(gradient);
+  };
+
+  const handleImageLoad = () => {
+    extractColors(); // 이미지 로드 후 색상 추출
+  };
   return (
-    <Container>
+    <Container gradient={playlistGradient}>
+      <HiddenImage ref={albumCoverRef} src={playListData?.tracks[0].trackCover} alt="Album Cover" onLoad={handleImageLoad} crossOrigin="anonymous" />
+
       {isSearchModalOpen && (
         <Blur>
           <ModalArea>
@@ -197,8 +235,8 @@ function PlayListPage() {
           ) : (
             <Circle bgcolor={colors.BG_grey}></Circle>
           )}
-          <Text fontFamily="Bd" fontSize="25px">
-            {author.username}'s PlayList
+          <Text fontFamily="EB" fontSize="25px" color={colors.Font_white}>
+            내 PlayList 수정
           </Text>
         </TitleArea>
         <PlayListArea>
@@ -208,23 +246,29 @@ function PlayListPage() {
         </PlayListArea>
         <ButtonContainer>
           <Btn
-            bgcolor={colors.Button_green}
-            onClick={() => {
-              postPlayList(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '');
-            }}
-          >
-            <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 4px">
-              저장
-            </Text>
-          </Btn>
-          <Btn
-            bgcolor={colors.BG_grey}
+            bgcolor={colors.BG_lightpink}
             onClick={() => {
               GoToPlayListPage(author);
             }}
           >
-            <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 4px">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill={colors.Font_white} className="bi bi-x" viewBox="0 0 16 16">
+              <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+            </svg>
+            <Text color={colors.Font_white} fontFamily="SB" fontSize="15px" margin="0px 0px 0px 0px">
               취소
+            </Text>
+          </Btn>
+          <Btn
+            bgcolor={colors.BG_lightgrey}
+            onClick={() => {
+              postPlayList(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '');
+            }}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill={colors.Font_white} className="bi bi-check" viewBox="0 0 16 16">
+              <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425z" />
+            </svg>
+            <Text color={colors.Font_white} fontFamily="SB" fontSize="15px" margin="0px 0px 0px 0px">
+              저장
             </Text>
           </Btn>
         </ButtonContainer>

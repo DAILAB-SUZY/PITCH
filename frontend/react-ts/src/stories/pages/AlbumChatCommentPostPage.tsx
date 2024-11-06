@@ -48,7 +48,7 @@ const ProfileArea = styled.div`
 const PostUploadTime = styled.div`
   display: flex;
   font-size: 10px;
-  font-family: 'Rg';
+  font-family: 'RG';
   margin: 0px 0px 2px 10px;
   color: ${colors.Font_grey};
 `;
@@ -60,7 +60,7 @@ const ProfileTextArea = styled.div`
 const ProfileName = styled.div`
   display: flex;
   font-size: 20px;
-  font-family: 'Rg';
+  font-family: 'SB';
   margin-left: 10px;
   color: ${colors.Font_black};
 `;
@@ -129,7 +129,7 @@ const CommentContentArea = styled.div`
   flex-direction: column;
   justify-content: space-between;
   font-size: 15px;
-  font-family: 'Rg';
+  font-family: 'RG';
   padding: 0px 10px;
   margin: 10px 0px 20px 0px;
 
@@ -190,7 +190,8 @@ function AlbumChatCommentPostPage() {
   const [AlbumChatData, setAlbumChatData] = useState<AlbumChatComment>();
 
   const GoToAlbumChatPage = () => {
-    navigate('/AlbumChatPage', { state: { albumChatId, spotifyAlbumId } });
+    // navigate('/AlbumChatPage', { state: { albumChatId, spotifyAlbumId } });
+    navigate(-1);
   };
 
   useEffect(() => {
@@ -246,14 +247,14 @@ function AlbumChatCommentPostPage() {
       <Body>
         <CommentArea>
           <ButtonArea>
-            <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 10px" color={colors.BG_grey}>
-              뒤로가기
+            <Text fontFamily="RG" fontSize="15px" margin="0px 0px 0px 10px" color={colors.BG_grey}>
+              뒤로
             </Text>
-            <Text fontFamily="Bd" fontSize="20px" margin="0px" color={colors.Font_black}>
-              Comment
+            <Text fontFamily="EB" fontSize="20px" margin="0px" color={colors.Font_black}>
+              {AlbumChatData?.author.username}님의 Chat
             </Text>
             <Text
-              fontFamily="Rg"
+              fontFamily="RG"
               fontSize="15px"
               margin="0px 10px 0px 0px"
               color={colors.Font_black}

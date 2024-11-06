@@ -50,7 +50,7 @@ const ProfileArea = styled.div`
 const PostUploadTime = styled.div`
   display: flex;
   font-size: 10px;
-  font-family: 'Rg';
+  font-family: 'RG';
   margin: 0px 0px 2px 10px;
   color: ${colors.Font_grey};
 `;
@@ -62,7 +62,7 @@ const ProfileTextArea = styled.div`
 const ProfileName = styled.div`
   display: flex;
   font-size: 20px;
-  font-family: 'Rg';
+  font-family: 'SB';
   margin-left: 10px;
   color: ${colors.Font_black};
 `;
@@ -98,7 +98,7 @@ const DropdownMenu = styled.div`
   top: 25px;
   right: 0;
   width: 70px;
-  height: 70px;
+  height: 40px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -298,14 +298,14 @@ function AlbumChatPage() {
       <Body>
         <CommentArea>
           <ButtonArea>
-            <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 10px" color={colors.BG_grey}>
+            <Text fontFamily="RG" fontSize="15px" margin="0px 0px 0px 10px" color={colors.BG_grey}>
               뒤로가기
             </Text>
-            <Text fontFamily="Bd" fontSize="20px" margin="0px" color={colors.Font_black}>
-              Comment
+            <Text fontFamily="EB" fontSize="20px" margin="0px" color={colors.Font_black}>
+              {AlbumChatData?.author.username}님의 Chat
             </Text>
             <Text
-              fontFamily="Rg"
+              fontFamily="RG"
               fontSize="15px"
               margin="0px 10px 0px 0px"
               color={colors.Font_black}

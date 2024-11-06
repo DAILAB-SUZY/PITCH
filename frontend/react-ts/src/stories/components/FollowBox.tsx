@@ -46,11 +46,13 @@ const ProfileImageCircle = styled.img`
   object-position: center; /* 이미지 가운데 정렬 */
 `;
 
-const Btn = styled.div<{ bgcolor: string }>`
+const Btn = styled.div<{ bgcolor: string; borderColor: string; shadow: string }>`
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-evenly;
+  font-family: 'RG';
+  font-size: 15px;
   background-color: ${props => props.bgcolor};
   color: ${colors.Font_black};
   width: 100px;
@@ -59,7 +61,9 @@ const Btn = styled.div<{ bgcolor: string }>`
   padding: 10px;
   box-sizing: border-box;
   margin: 0px 20px;
-  box-shadow: 0 0px 5px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 0px 5px rgba(0, 0, 0, 0.3); */
+  box-shadow: ${props => props.shadow};
+  border: 1px solid ${props => props.borderColor};
 `;
 
 interface FollowProps {
@@ -93,9 +97,11 @@ const FollowBox = ({ name, profile, userId, ChangeFollow, isFollowing }: FollowP
           onClick={() => {
             ChangeFollow(userId);
           }}
-          bgcolor={isFollowing ? 'white' : `${colors.Button_active}`}
+          bgcolor={!isFollowing ? 'white' : `white`}
+          borderColor={isFollowing ? colors.BG_lightpink : colors.BG_lightgrey}
+          shadow={isFollowing ? '0 0px 5px rgba(255, 88, 172, 0.4)' : '0 0px 2px rgba(0, 0, 0, 0.1)'}
         >
-          {isFollowing ? '팔로잉' : '언팔로우'}
+          {isFollowing ? 'Following' : 'Follow'}
         </Btn>
       ) : (
         <></>

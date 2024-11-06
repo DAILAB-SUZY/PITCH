@@ -12,12 +12,12 @@ import { useState } from 'react';
 const Title = styled.div<{ fontSize: string; margin: string }>`
   font-size: ${props => props.fontSize};
   margin: ${props => props.margin};
-  font-family: 'Bd';
+  font-family: 'EB';
 `;
 const Text = styled.div<{ fontSize: string; margin: string }>`
   font-size: ${props => props.fontSize};
   margin: ${props => props.margin};
-  font-family: 'Rg';
+  font-family: 'RG';
 `;
 
 const Container = styled.div`
@@ -52,6 +52,12 @@ const LoginArea = styled.div<{
   width: 70vw;
 `;
 
+const BtnArea = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+`;
 const StackConatiner = styled.div`
   position: relative;
 `;
@@ -60,6 +66,9 @@ function LoginPage() {
   const navigate = useNavigate();
   const GoToSignupPage = () => {
     navigate('/Signup');
+  };
+  const GoToPasswordFindPage = () => {
+    navigate('/PasswordFindPage');
   };
   const GoToHomePage = () => {
     navigate('/Home');
@@ -163,9 +172,14 @@ function LoginPage() {
         </StackConatiner>
         <LeftAlignArea></LeftAlignArea>
       </LoginArea>
-      <Title fontSize="15px" margin="10px" onClick={GoToSignupPage}>
-        회원가입
-      </Title>
+      <BtnArea>
+        <Title fontSize="15px" margin="10px" onClick={GoToSignupPage}>
+          회원가입
+        </Title>
+        <Title fontSize="15px" margin="10px" onClick={GoToPasswordFindPage}>
+          비밀번호 찾기
+        </Title>
+      </BtnArea>
     </Container>
   );
 }

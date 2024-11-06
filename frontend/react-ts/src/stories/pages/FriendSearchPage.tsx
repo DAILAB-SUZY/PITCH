@@ -43,7 +43,7 @@ const ButtonArea = styled.div`
   height: 50px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   padding: 10px;
   margin: 0 10 0 10px;
   z-index: 10;
@@ -182,11 +182,14 @@ function FriendSearchPage() {
     <Container>
       <AlbumPostArea>
         <ButtonArea>
-          <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 10px" color={colors.Font_black}></Text>
-          <Text fontFamily="Bd" fontSize="20px" margin="0px" color={colors.Font_black}>
-            search friends
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill={colors.Font_grey} className="bi bi-person-plus-fill" viewBox="0 0 16 16">
+            <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
+            <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5" />
+          </svg>
+
+          <Text fontFamily="EB" fontSize="22px" margin="0px 0px 0px 10px" color={colors.Font_black}>
+            Search friends
           </Text>
-          <Text fontFamily="Rg" fontSize="15px" margin="0px 10px 0px 0px" color={colors.BG_grey}></Text>
         </ButtonArea>
         <Line></Line>
         <SearchArea>
@@ -210,11 +213,11 @@ function FriendSearchPage() {
                 );
               })
             ) : searchStarted ? (
-              <Text fontFamily="Rg" fontSize="17px" margin="10px 0px 0px 0px" color={colors.Font_black}>
+              <Text fontFamily="RG" fontSize="17px" margin="10px 0px 0px 0px" color={colors.Font_black}>
                 없는 사용자 입니다.
               </Text>
             ) : (
-              <Text fontFamily="Rg" fontSize="17px" margin="10px 0px 0px 0px" color={colors.Font_black}>
+              <Text fontFamily="RG" fontSize="17px" margin="10px 0px 0px 0px" color={colors.Font_black}>
                 사용자를 검색해주세요.
               </Text>
             ))}

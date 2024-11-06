@@ -50,7 +50,6 @@ const ProfileHeaderArea = styled.div`
 `;
 
 const ProfileLeftArea = styled.div`
-  margin-top: 5vh;
   width: 100px;
   height: 150px;
   display: flex;
@@ -80,7 +79,7 @@ const FollowBtn = styled.div<{ bgcolor: string; color: string }>`
   width: 90px;
   height: 25px;
   font-size: 13px;
-  font-family: 'Rg';
+  font-family: 'RG';
   color: ${props => props.color};
   background-color: ${props => props.bgcolor};
   border-color: ${colors.Main_Pink};
@@ -123,7 +122,7 @@ const Tag = styled.div<{ color: string }>`
   width: auto;
   height: auto;
   font-size: 15px;
-  font-family: 'Rg';
+  font-family: 'SB';
   color: ${props => props.color};
   background-color: ${colors.BG_grey};
   /* border-color: ${colors.Tag};
@@ -157,7 +156,8 @@ const TabBtn = styled.div<{ bgcolor: string; color: string }>`
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  font-family: 'Bd';
+  font-family: 'EB';
+  font-size: 18px;
   width: 170px;
   height: 40px;
   border-radius: 5px;
@@ -206,8 +206,8 @@ const Title = styled.div`
   width: 390px;
   box-sizing: border-box;
   padding-left: 20px;
-  font-family: 'Bd';
-  font-size: 22px;
+  font-family: 'EB';
+  font-size: 27px;
 `;
 
 const FavoriteArtistArea = styled.div`
@@ -253,7 +253,7 @@ const PlaylistCardSmall = styled.div`
   height: 190px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   color: white;
-  font-family: Arial, sans-serif;
+  font-family: 'RG';
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -564,7 +564,7 @@ function MusicProfilePage() {
                     d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
                   />
                 </svg>
-                <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 4px">
+                <Text fontFamily="SB" fontSize="15px" margin="0px 0px 0px 4px">
                   수정
                 </Text>
               </EditBtn>
@@ -572,7 +572,7 @@ function MusicProfilePage() {
           </ProfileLeftArea>
           <ProfileRightArea>
             <ProfileNameArea>
-              <Text fontFamily="Bd" fontSize="30px" margin="0px 15px 0px 0px ">
+              <Text fontFamily="EB" fontSize="30px" margin="0px 15px 0px 0px ">
                 {musicProfileData?.userDetail.username}
               </Text>
             </ProfileNameArea>
@@ -585,11 +585,11 @@ function MusicProfilePage() {
                 ))
               ) : (
                 <>
-                  <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 7px 4px">
+                  <Text fontFamily="RG" fontSize="15px" margin="0px 0px 7px 4px">
                     아직
                   </Text>
                   <Tag color={colors.Font_black}>#MusicDNA</Tag>
-                  <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 4px">
+                  <Text fontFamily="RG" fontSize="15px" margin="0px 0px 0px 4px">
                     를 설정하지 않았습니다.
                   </Text>
                 </>
@@ -627,18 +627,18 @@ function MusicProfilePage() {
           <>
             <FollowArea onClick={() => GoToFollowPage(musicProfileData)}>
               <FollowBox>
-                <Text fontFamily="Bd" fontSize="15px" margin="5px">
+                <Text fontFamily="SB" fontSize="17px" margin="5px">
                   Follower
                 </Text>
-                <Text fontFamily="Rg" fontSize="15px" margin="5px">
+                <Text fontFamily="RG" fontSize="15px" margin="5px">
                   {musicProfileData?.followers !== null ? musicProfileData?.followers.length : 0}
                 </Text>
               </FollowBox>
               <FollowBox>
-                <Text fontFamily="Bd" fontSize="15px" margin="5px">
+                <Text fontFamily="SB" fontSize="17px" margin="5px">
                   Following
                 </Text>
-                <Text fontFamily="Rg" fontSize="15px" margin="5px">
+                <Text fontFamily="RG" fontSize="15px" margin="5px">
                   {musicProfileData?.followings !== null ? musicProfileData?.followings.length : 0}
                 </Text>
               </FollowBox>
@@ -648,7 +648,7 @@ function MusicProfilePage() {
               {musicProfileData?.bestAlbum.length !== 0 ? (
                 <AlbumGrid AlbumData={musicProfileData?.bestAlbum}></AlbumGrid>
               ) : (
-                <Text fontFamily="Rg" fontSize="15px" margin="5px">
+                <Text fontFamily="RG" fontSize="15px" margin="5px">
                   아직 설정하지 않았습니다.
                 </Text>
               )}
@@ -666,7 +666,7 @@ function MusicProfilePage() {
                   ))}
                 </TwoColumnArea>
               ) : (
-                <Text fontFamily="Rg" fontSize="15px" margin="5px">
+                <Text fontFamily="RG" fontSize="15px" margin="5px">
                   별점을 매긴 앨범이 없습니다.
                 </Text>
               )}
@@ -688,7 +688,7 @@ function MusicProfilePage() {
                 }
               })
             ) : (
-              <Text fontSize="15px" fontFamily="Rg" margin="150px 0px 0px 0px">
+              <Text fontSize="15px" fontFamily="RG" margin="150px 0px 0px 0px">
                 {' '}
                 작성한 글이 없습니다.
               </Text>

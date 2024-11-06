@@ -56,7 +56,7 @@ const ModalArea = styled.div`
 
 const PageTitle = styled.div`
   font-size: 30px;
-  font-family: 'Bd';
+  font-family: 'EB';
   padding: 20px 0px 10px 0px;
   display: flex;
   flex-direction: row;
@@ -83,17 +83,27 @@ const Text = styled.div<{
   fontFamily: string;
   fontSize: string;
   margin: string;
+  color?: string;
 }>`
   font-size: ${props => props.fontSize};
   font-family: ${props => props.fontFamily};
   margin: ${props => props.margin};
+  color: ${props => props.color};
 `;
 
 const MusicDnaArea = styled.div`
   display: flex;
   width: 100vw;
   flex-direction: column;
-  padding: 20px;
+`;
+
+const MusicDnaEditArea = styled.div`
+  display: flex;
+  width: 100vw;
+  height: auto;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 `;
 
 const ProfilePhotoArea = styled.div`
@@ -129,6 +139,23 @@ const ProfileImageCircle = styled.img`
   object-position: center; /* 이미지 가운데 정렬 */
 `;
 
+const LeftAlignArea = styled.div`
+  display: flex;
+  width: 360px;
+  height: auto;
+  flex-direction: row;
+  justify-content: flex-start;
+`;
+const ProfileTagAreaSelected = styled.div`
+  padding: 20px;
+  margin: 5px 0px 10px 0px;
+  box-sizing: border-box;
+  width: 360px;
+  height: auto;
+
+  border: solid 1px ${colors.Main_Pink};
+  border-radius: 10px;
+`;
 const ProfileTagArea = styled.div`
   padding: 20px;
   box-sizing: border-box;
@@ -137,12 +164,12 @@ const ProfileTagArea = styled.div`
 `;
 
 const Tag = styled.div<{ opacity: string }>`
-  margin: 0px 10px 12px 0px;
+  margin: 6px 5px 6px 5px;
   padding: 5px 12px;
   width: auto;
   height: auto;
   font-size: 15px;
-  font-family: 'Rg';
+  font-family: 'SB';
   color: black;
   background-color: ${colors.BG_grey};
   border-radius: 20px;
@@ -168,8 +195,8 @@ const TitleArea = styled.div<{ margin?: string }>`
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
-  align-items: center;
-  padding-left: 20px;
+  align-items: flex-end;
+  padding-left: 25px;
   margin: ${props => props.margin};
 `;
 
@@ -180,8 +207,8 @@ const Title = styled.div`
   flex-direction: row;
   width: auto;
 
-  font-family: 'Bd';
-  font-size: 22px;
+  font-family: 'EB';
+  font-size: 27px;
 
   margin-right: 10px;
 `;
@@ -360,6 +387,10 @@ function MusicProfileEditPage() {
   // DNA 추가 제거
   const addToMyDNA = (dnaKey: number) => {
     console.log('adding DNA...');
+    if (myMusicDna.length >= 4) {
+      alert('DNA는 최대 4개까지 선택 가능합니다.');
+      return;
+    }
     if (allMusicDna && myMusicDna) {
       console.log('start adding DNA...');
       let addDna = allMusicDna?.find(dna => dna.dnaKey === dnaKey);
@@ -394,6 +425,10 @@ function MusicProfileEditPage() {
   const postAllEdit = async () => {
     const token = localStorage.getItem('login-token');
     const refreshToken = localStorage.getItem('login-refreshToken');
+    if (favoriteArtistSpotifyIds?.spotifyArtistId === '' || favoriteArtistSpotifyIds?.spotifyAlbumId === '' || favoriteArtistSpotifyIds?.spotifyTrackId === '') {
+      alert('Favorite Artist 설정을 마무리해주세요');
+      return;
+    }
     try {
       await postMusicDNA(token || '', refreshToken || '');
       await postBestAlbum(token || '', refreshToken || '');
@@ -520,16 +555,14 @@ function MusicProfileEditPage() {
         </Blur>
       )}
       <Body>
-        <PageTitle>
-          <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" className="bi bi-pencil-square" viewBox="0 0 16 16" onClick={() => console.log('dna 수정')}>
-            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-            <path
-              fillRule="evenodd"
-              d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
-            />
-          </svg>
-          MusicProfile 수정
-        </PageTitle>
+        {/* <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" className="bi bi-pencil-square" viewBox="0 0 16 16" onClick={() => console.log('dna 수정')}>
+          <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+          <path
+            fillRule="evenodd"
+            d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
+          />
+        </svg> */}
+        <PageTitle>MusicProfile 수정</PageTitle>
         <ProfilePhotoArea>
           <TitleArea>
             <Title>Profile Photo</Title>
@@ -548,35 +581,43 @@ function MusicProfileEditPage() {
           <TitleArea>
             <Title>Music DNA</Title>
           </TitleArea>
-          <ProfileTagArea>
-            {myMusicDna.map(dna => (
-              <Tag
-                key={dna.dnaKey}
-                opacity="1"
-                onClick={() => {
-                  deleteFromMyDNA(dna.dnaKey);
-                }}
-              >
-                {' '}
-                #{dna.dnaName}
-              </Tag>
-            ))}
-          </ProfileTagArea>
-          <ProfileTagArea>
-            {allMusicDna
-              .filter((dna: any) => !myMusicDna.some((userDna: any) => userDna.dnaKey === dna.dnaKey))
-              .map(dna => (
+          <MusicDnaEditArea>
+            <LeftAlignArea>
+              <Text color={colors.Main_Pink} fontFamily="EB" fontSize="15px" margin="20px 0px 0px 5px">
+                Selected
+              </Text>
+            </LeftAlignArea>
+
+            <ProfileTagAreaSelected>
+              {myMusicDna.map(dna => (
                 <Tag
                   key={dna.dnaKey}
-                  opacity="0.3"
+                  opacity="1"
                   onClick={() => {
-                    addToMyDNA(dna.dnaKey);
+                    deleteFromMyDNA(dna.dnaKey);
                   }}
                 >
+                  {' '}
                   #{dna.dnaName}
                 </Tag>
               ))}
-          </ProfileTagArea>
+            </ProfileTagAreaSelected>
+            <ProfileTagArea>
+              {allMusicDna
+                .filter((dna: any) => !myMusicDna.some((userDna: any) => userDna.dnaKey === dna.dnaKey))
+                .map(dna => (
+                  <Tag
+                    key={dna.dnaKey}
+                    opacity="0.3"
+                    onClick={() => {
+                      addToMyDNA(dna.dnaKey);
+                    }}
+                  >
+                    #{dna.dnaName}
+                  </Tag>
+                ))}
+            </ProfileTagArea>
+          </MusicDnaEditArea>
         </MusicDnaArea>
 
         <BestAlbumArea>
@@ -586,10 +627,10 @@ function MusicProfileEditPage() {
               <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
               <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
             </svg> */}
-            <Title onClick={() => openSearch('Album')} color={colors.Button_green}>
+            <Text fontFamily="SB" fontSize="15px" margin="0px 0px 0px 4px" onClick={() => openSearch('Album')}>
               {' '}
-              +{' '}
-            </Title>
+              추가하기+{' '}
+            </Text>
           </TitleArea>
           {bestAlbum && <AlbumGridEdit bestAlbum={bestAlbum} setBestAlbum={setBestAlbum}></AlbumGridEdit>}
         </BestAlbumArea>
@@ -601,12 +642,12 @@ function MusicProfileEditPage() {
         </FavoriteArtistArea>
         <BtnArea>
           <Btn bgcolor={colors.Button_green} onClick={() => postAllEdit()}>
-            <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 4px">
+            <Text fontFamily="RG" fontSize="15px" margin="0px 0px 0px 4px">
               저장
             </Text>
           </Btn>
           <Btn bgcolor={colors.BG_grey} onClick={() => GoToMusicProfilePage()}>
-            <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 4px">
+            <Text fontFamily="RG" fontSize="15px" margin="0px 0px 0px 4px">
               취소
             </Text>
           </Btn>

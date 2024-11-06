@@ -78,6 +78,7 @@ function AlbumGrid({ bestAlbum, setBestAlbum }: AlbumDataProps) {
   useEffect(() => {
     if (bestAlbum.length <= 2) {
       setFirstRow(bestAlbum);
+      setSecondRow([]);
     } else {
       const midIndex = Math.ceil(bestAlbum.length / 2);
       setFirstRow(bestAlbum.slice(0, midIndex));

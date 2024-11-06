@@ -13,7 +13,7 @@ const Container = styled.div`
 const Text = styled.div<{ fontSize?: string; margin?: string; color?: string }>`
   font-size: ${props => props.fontSize};
   margin: ${props => props.margin};
-  font-family: 'Rg';
+  font-family: 'RG';
   color: ${props => props.color};
 `;
 

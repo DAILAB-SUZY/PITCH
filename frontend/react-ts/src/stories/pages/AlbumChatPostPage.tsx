@@ -13,7 +13,7 @@ const Container = styled.div`
   overflow-x: hidden;
   height: 100vh; //auto;
   width: 100vw;
-  background-color: white;
+  background-color: ${colors.BG_grey};
   color: ${colors.Font_black};
 `;
 
@@ -24,7 +24,7 @@ const CommentArea = styled.div`
   align-items: center;
   justify-content: flex-start;
   flex-direction: column;
-  background-color: white;
+  background-color: ${colors.BG_grey};
 `;
 
 const Text = styled.div<{
@@ -86,7 +86,7 @@ const CommentContentArea = styled.div`
   flex-direction: column;
   justify-content: space-between;
   font-size: 15px;
-  font-family: 'Rg';
+  font-family: 'RG';
   padding: 0px 10px;
   margin: 10px 0px 20px 0px;
 
@@ -118,7 +118,7 @@ function CommentPostPage() {
 
   const navigate = useNavigate();
   const GoToAlbumPage = () => {
-    navigate('/AlbumPage', { state: spotifyAlbumId });
+    navigate(-1);
   };
 
   // 게시물 작성
@@ -146,14 +146,14 @@ function CommentPostPage() {
     <Container>
       <CommentArea>
         <ButtonArea>
-          <Text fontFamily="Rg" fontSize="15px" margin="0px 0px 0px 10px" color={colors.Font_black} onClick={() => GoToAlbumPage()}>
+          <Text fontFamily="RG" fontSize="15px" margin="0px 0px 0px 10px" color={colors.Font_black} onClick={() => GoToAlbumPage()}>
             취소
           </Text>
-          <Text fontFamily="Bd" fontSize="20px" margin="0px" color={colors.Font_black}>
+          <Text fontFamily="EB" fontSize="20px" margin="0px" color={colors.Font_black}>
             Chat 작성
           </Text>
           <Text
-            fontFamily="Rg"
+            fontFamily="RG"
             fontSize="15px"
             margin="0px 10px 0px 0px"
             color={colors.Font_black}

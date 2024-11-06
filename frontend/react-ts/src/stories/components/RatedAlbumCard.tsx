@@ -93,6 +93,7 @@ const StarsArea = styled.div`
   justify-content: center;
   align-items: center;
   z-index: 3;
+  gap: 2px;
 `;
 
 interface DNA {
@@ -176,10 +177,10 @@ function RatedAlbumCard({ album }: Album) {
         </AlbumContentArea>
       </AlbumImageCard>
       <AlbumInfo>
-        <Text fontSize="18px" margin="7px 0px 0px 5px" fontFamily="Bd" opacity={1} color={colors.Font_black}>
+        <Text fontSize="18px" margin="7px 0px 0px 5px" fontFamily="EB" opacity={1} color={colors.Font_black}>
           {album.title}
         </Text>
-        <Text fontSize="15px" margin="0px 0px 0px 5px" fontFamily="Bd" opacity={0.8} color={colors.Font_grey}>
+        <Text fontSize="15px" margin="0px 0px 0px 5px" fontFamily="EB" opacity={0.8} color={colors.Font_grey}>
           {album.artistName}
         </Text>
       </AlbumInfo>
