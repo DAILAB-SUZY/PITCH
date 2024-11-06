@@ -23,8 +23,18 @@ public class FavoriteArtistDetail {
   private String spotifyTrackId;
 
   public static FavoriteArtistDetail from(FavoriteArtist favoriteArtist) {
-    if (favoriteArtist == null) {
-      return FavoriteArtistDetail.builder().build();
+    if (favoriteArtist.isNotSet()) {
+      return FavoriteArtistDetail.builder()
+          .artistName("없음")
+          .albumCover("없음")
+          .trackCover("없음")
+          .artistCover("없음")
+          .albumName("없음")
+          .trackName("없음")
+          .spotifyArtistId("Not Found")
+          .spotifyTrackId("Not Found")
+          .spotifyAlbumId("Not Found")
+          .build();
     }
     return FavoriteArtistDetail.builder()
         .artistName(favoriteArtist.getArtist().getArtistName())
