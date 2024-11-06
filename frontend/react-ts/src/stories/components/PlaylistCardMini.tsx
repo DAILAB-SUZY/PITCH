@@ -88,13 +88,13 @@ const SongInfo = styled.div`
 
 const SongTitle = styled.div`
   font-size: 16px;
-  font-family: 'EB';
+  font-family: 'SB';
 `;
 
 const Artist = styled.div`
   font-size: 14px;
   color: white;
-  font-family: 'SB';
+  font-family: 'RB';
   opacity: 0.7;
 `;
 
@@ -124,6 +124,7 @@ const MoreButton = styled.div`
   text-align: right;
   color: white;
   cursor: pointer;
+  font-family: 'SB';
 `;
 
 // Playlist 컴포넌트
@@ -182,11 +183,13 @@ const PlaylistCard = ({ playlist, userDetail }: PlaylistProps) => {
         {playlist.length > 2 ? (
           <MoreButton>더보기</MoreButton>
         ) : playlist.length === 1 ? (
-          <Text fontSize="14px" margin="20px 0px 0px 0px" opacity="0.5">
+          <Text fontFamily="SB" fontSize="14px" margin="20px 0px 0px 0px" opacity="0.5">
             곡을 더 추가해보세요!
           </Text>
         ) : (
-          <></>
+          <Text fontFamily="SB" fontSize="14px" margin="30px 0px 0px 0px" opacity="0.7">
+            곡을 추가해보세요!
+          </Text>
         )}
       </PlaylistCardSmall>
     </Container>

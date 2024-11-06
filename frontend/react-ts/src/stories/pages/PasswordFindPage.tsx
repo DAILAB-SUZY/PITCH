@@ -8,7 +8,7 @@ import { fetchEMAILPOST } from '../utils/fetchData';
 const Title = styled.div<{ fontSize?: string; margin?: string }>`
   font-size: ${props => props.fontSize};
   margin: ${props => props.margin};
-  font-family: 'EB';
+  font-family: 'SB';
 `;
 const Container = styled.div`
   display: flex;

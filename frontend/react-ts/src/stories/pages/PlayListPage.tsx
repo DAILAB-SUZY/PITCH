@@ -33,7 +33,8 @@ const HiddenImage = styled.img`
 `;
 
 const Body = styled.div`
-  margin-top: 70px;
+  margin-top: 55px;
+  padding-top: 20px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;

@@ -166,6 +166,16 @@ const TabBtn = styled.div<{ bgcolor: string; color: string }>`
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 `;
 
+const InitBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100px;
+  margin-top: 10px;
+`;
+
 const FollowArea = styled.div`
   width: 320px;
   height: 50px;
@@ -430,10 +440,12 @@ function MusicProfilePage() {
   const navigate = useNavigate();
   const location = useLocation();
   const profileId = location.state;
+  const { name, id } = useStore();
+  console.log(`id: ${id} / name: ${name}`);
 
   // 페이지 이동 함수
-  const GoToEditPage = (musicProfileData: MusicProfileData) => {
-    navigate('/MusicProfileEditPage', { state: musicProfileData.userDetail.id });
+  const GoToEditPage = () => {
+    navigate('/MusicProfileEditPage');
   };
   const GoToFollowPage = (musicProfileData: MusicProfileData) => {
     navigate('/FollowPage', {
@@ -448,9 +460,6 @@ function MusicProfilePage() {
   // };
 
   const [isFollowed, setIsFollowed] = useState<boolean>();
-
-  const { name, id } = useStore();
-  console.log(`id: ${id} / name: ${name}`);
 
   let musiProfileUrl = `/api/user/${profileId}/musicProfile`;
   let activityUrl = `/api/user/${profileId}/musicProfile/activity`;
@@ -545,7 +554,8 @@ function MusicProfilePage() {
             ) : (
               <Circle bgcolor={colors.BG_grey}></Circle>
             )}
-            {id !== musicProfileData?.userDetail.id ? (
+            {/* {id !== musicProfileData?.userDetail.id ? ( */}
+            {id !== profileId ? (
               isFollowed ? (
                 <FollowBtn color={colors.BG_white} bgcolor={colors.Main_Pink} onClick={() => fetchFollow(localStorage.getItem('login-token') || '', localStorage.getItem('login-refreshToken') || '')}>
                   Following
@@ -556,7 +566,7 @@ function MusicProfilePage() {
                 </FollowBtn>
               )
             ) : (
-              <EditBtn onClick={() => GoToEditPage(musicProfileData)}>
+              <EditBtn onClick={() => GoToEditPage()}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="currentColor" className="bi bi-pencil-square" viewBox="0 0 16 16">
                   <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
                   <path
@@ -648,9 +658,11 @@ function MusicProfilePage() {
               {musicProfileData?.bestAlbum.length !== 0 ? (
                 <AlbumGrid AlbumData={musicProfileData?.bestAlbum}></AlbumGrid>
               ) : (
-                <Text fontFamily="RG" fontSize="15px" margin="5px">
-                  아직 설정하지 않았습니다.
-                </Text>
+                <InitBox>
+                  <Text fontFamily="RG" fontSize="15px" margin="0px">
+                    아직 설정하지 않았습니다.
+                  </Text>
+                </InitBox>
               )}
             </BestAlbumArea>
             <FavoriteArtistArea>
@@ -666,9 +678,11 @@ function MusicProfilePage() {
                   ))}
                 </TwoColumnArea>
               ) : (
-                <Text fontFamily="RG" fontSize="15px" margin="5px">
-                  별점을 매긴 앨범이 없습니다.
-                </Text>
+                <InitBox>
+                  <Text fontFamily="RG" fontSize="15px" margin="0px">
+                    아직 평가한 앨범이 없습니다.
+                  </Text>
+                </InitBox>
               )}
             </RatedAlbumArea>
           </>

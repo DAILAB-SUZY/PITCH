@@ -180,13 +180,15 @@ interface BestAlbum {
 }
 
 interface FavoriteArtist {
-  albumCover: string;
-  albumName: string;
   artistCover: string;
   artistName: string;
+  albumCover: string;
+  albumName: string;
   trackCover: string;
   trackName: string;
   spotifyArtistId: string;
+  spotifyAlbumId: string;
+  spotifyTrackId: string;
 }
 
 interface FavoriteArtistSpotifyIds {
@@ -292,6 +294,8 @@ function SearchModal({
         trackCover: favoriteArtist.trackCover,
         trackName: favoriteArtist.trackName,
         spotifyArtistId: favoriteArtist.spotifyArtistId,
+        spotifyAlbumId: album.albumId,
+        spotifyTrackId: favoriteArtist.spotifyTrackId,
       };
       const addArtistId: FavoriteArtistSpotifyIds = {
         spotifyArtistId: favoriteArtistSpotifyIds?.spotifyArtistId,

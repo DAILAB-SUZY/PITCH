@@ -24,9 +24,9 @@ const Btnstyle = styled.div<{
   font-size: ${props => props.fontSize};
   transition-duration: 0.3s;
   cursor: pointer;
-  position: absolute;
+  /* position: absolute;
   right: 15px;
-  top: 14px;
+  top: 14px; */
   &:hover {
     transition-duration: 0.1s;
     background: purple;

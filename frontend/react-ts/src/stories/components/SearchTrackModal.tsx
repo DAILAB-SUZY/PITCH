@@ -187,6 +187,8 @@ interface FavoriteArtist {
   trackCover: string;
   trackName: string;
   spotifyArtistId: string;
+  spotifyAlbumId: string;
+  spotifyTrackId: string;
 }
 
 interface FavoriteArtistSpotifyIds {
@@ -323,6 +325,8 @@ function SearchTrackModal(props: SearchTrackModalProps) {
         trackCover: track.album.imageUrl,
         trackName: track.trackName,
         spotifyArtistId: favoriteArtist.spotifyArtistId,
+        spotifyAlbumId: favoriteArtist.spotifyAlbumId,
+        spotifyTrackId: track.trackId,
       };
       const addArtistId: FavoriteArtistSpotifyIds = {
         spotifyArtistId: favoriteArtistSpotifyIds?.spotifyArtistId,

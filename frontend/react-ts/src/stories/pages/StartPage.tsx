@@ -18,8 +18,8 @@ const LottieArea = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 200px;
-  height: 200px;
+  width: 170px;
+  height: 170px;
 `;
 
 function StartPage() {
@@ -42,7 +42,7 @@ function StartPage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       Start();
-    }, 5000); // 5초 후에 Start 함수 실행
+    }, 4000); // 5초 후에 Start 함수 실행
 
     return () => clearTimeout(timer); // 컴포넌트가 언마운트될 때 타이머 정리
   }, []);

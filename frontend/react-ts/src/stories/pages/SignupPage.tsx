@@ -10,7 +10,7 @@ import useStore from '../store/store';
 const Title = styled.div<{ fontSize?: string; margin?: string }>`
   font-size: ${props => props.fontSize};
   margin: ${props => props.margin};
-  font-family: 'EB';
+  font-family: 'SB';
 `;
 const Container = styled.div`
   display: flex;
@@ -25,10 +25,11 @@ const Container = styled.div`
 const LeftAlignArea = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   width: 270px;
-  margin: 10px;
+  margin: 0px 10px 10px 10px;
+  height: auto;
   padding: 0;
 `;
 const RightAlignArea = styled.div`
@@ -37,6 +38,7 @@ const RightAlignArea = styled.div`
   justify-content: flex-start;
   align-items: center;
   width: 100%;
+  position: relative;
 `;
 const SignupArea = styled.div<{
   flex_direction: string;
@@ -213,7 +215,7 @@ function SignupPage() {
   return (
     <Container>
       <SignupArea flex_direction="column" justify_content="center">
-        <img src={logo} width="150px" height="150px" onClick={GoToStartPage}></img>
+        <img src={logo} width="120px" height="120px" onClick={GoToStartPage}></img>
         <Title fontSize="30px" margin="10px">
           회원가입
         </Title>
@@ -226,17 +228,20 @@ function SignupPage() {
         </RightAlignArea>
         <CenterAlignArea>
           <InputBox name="E-Mail" placeholder="E-mail" onChange={onChangeIdHandler}></InputBox>
-          <Btn width="70px" height="33px" fontSize="15px" text="인증요청" onClick={emailcheck}></Btn>
         </CenterAlignArea>
-        <RightAlignArea>
-          {idError && <small style={{ color: 'red' }}>{idError}</small>}
-          {noticeMail && <small>{noticeMail}</small>}
-        </RightAlignArea>
+        <LeftAlignArea>
+          {idError ? <small style={{ color: 'red' }}>{idError}</small> : <div></div>}
+          {noticeMail ? <small>{noticeMail}</small> : <></>}
+          <Btn width="70px" height="33px" fontSize="15px" text="인증요청" onClick={emailcheck}></Btn>
+        </LeftAlignArea>
         <CenterAlignArea>
           <InputBox name="auth" placeholder="인증번호 입력" onChange={e => setCheckcode(e.target.value)}></InputBox>
-          <Btn width="70px" height="33px" fontSize="15px" text="인증확인" onClick={codeCheck}></Btn>
         </CenterAlignArea>
-        <RightAlignArea>{codecheckError && <small>{codecheckError}</small>}</RightAlignArea>
+        <LeftAlignArea>
+          {codecheckError ? <small>{codecheckError}</small> : <div></div>}
+          <Btn width="70px" height="33px" fontSize="15px" text="인증확인" onClick={codeCheck}></Btn>
+        </LeftAlignArea>
+        {/* <RightAlignArea>{codecheckError && <small>{codecheckError}</small>}</RightAlignArea> */}
         <RightAlignArea>
           <Title fontSize="20px">Password</Title>
         </RightAlignArea>
@@ -247,8 +252,14 @@ function SignupPage() {
         <RightAlignArea>{confirmError && <small style={{ color: 'red' }}>{confirmError}</small>}</RightAlignArea>
         <CenterAlignArea>
           <LeftAlignArea></LeftAlignArea>
-          <Btn width="100px" height="33px" fontSize="15px" text="가입" onClick={signupHandler}></Btn>
         </CenterAlignArea>
+        <LeftAlignArea>
+          <div></div>
+        </LeftAlignArea>
+        <LeftAlignArea>
+          <div></div>
+          <Btn width="100px" height="33px" fontSize="15px" text="가입" onClick={signupHandler}></Btn>
+        </LeftAlignArea>
       </SignupArea>
     </Container>
   );
