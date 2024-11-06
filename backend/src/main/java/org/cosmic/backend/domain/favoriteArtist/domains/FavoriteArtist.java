@@ -74,4 +74,8 @@ public class FavoriteArtist {
   public String getSpotifyTrackId() {
     return getTrack().getSpotifyTrackId();
   }
+
+  public boolean isNotSet() {
+    return getArtist() == null && getTrack() == null && getAlbum() == null;
+  }
 }
