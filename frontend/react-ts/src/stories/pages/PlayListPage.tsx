@@ -19,7 +19,7 @@ const Container = styled.div<{ gradient?: string }>`
   /* background-color: white; */
   color: black;
 
-  background-image: ${({ gradient }: { gradient?: string }) => gradient || 'linear-gradient(to top right, #989898, #f3f3f3)'};
+  background-image: ${({ gradient }: { gradient?: string }) => gradient || 'linear-gradient(to top right, #444444, #bc82c9)'};
 `;
 
 const BlankDiv = styled.div`
@@ -192,7 +192,9 @@ function PlayListPage() {
 
   return (
     <Container gradient={playlistGradient}>
-      <HiddenImage ref={albumCoverRef} src={playListData?.tracks[0].trackCover} alt="Album Cover" onLoad={handleImageLoad} crossOrigin="anonymous" />
+      {playListData && playListData?.tracks.length > 0 ? (
+        <HiddenImage ref={albumCoverRef} src={playListData?.tracks[0].trackCover} alt="Album Cover" onLoad={handleImageLoad} crossOrigin="anonymous" />
+      ) : null}
       <Header page={3}></Header>
       <Body>
         <TitleArea
@@ -219,9 +221,15 @@ function PlayListPage() {
             <Text fontFamily="SB" fontSize="20px" margin="0px 0px 0px 5px">
               이런 음악은 어떠세요?
             </Text>
-            <Text fontFamily="RG" fontSize="15px" margin="10px 0px 0px 5px" opacity={0.7}>
-              {author.username}님의 플레이리스트와 비슷한 음악을 추천해드려요.
-            </Text>
+            {playListData?.tracks.length !== 0 ? (
+              <Text fontFamily="RG" fontSize="15px" margin="10px 0px 0px 5px" opacity={0.7}>
+                {author.username}님의 플레이리스트와 비슷한 음악을 추천해드려요.
+              </Text>
+            ) : (
+              <Text fontFamily="RG" fontSize="15px" margin="10px 0px 0px 5px" opacity={0.7}>
+                {author.username}님이 좋아할 음악을 추천해드려요.
+              </Text>
+            )}
           </RecTitleArea>
           <PlayListArea>{playListData && <PlayListCard playlist={playListData?.recommends} isEditable={false} playlistInfo={author} isUserPlaylist={false}></PlayListCard>}</PlayListArea>
         </RecommendationArea>

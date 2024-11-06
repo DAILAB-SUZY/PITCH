@@ -193,25 +193,32 @@ const PlayListBox = ({ playlist, isEditable, playlistInfo, isUserPlaylist }: Pla
           </EditBtn>
         )}
       </PlayListInfoArea>
-      {playlist.map((song, index) => (
-        <SongCard>
-          <Line />
-          <SongArea key={index}>
-            <AlbumCover>
-              <img src={song.trackCover} width="100%" height="100%" crossOrigin="anonymous" alt={`Album Cover of ${song.title}`}></img>
-            </AlbumCover>
-            <SongTextArea>
-              <Title fontSize={'16px'} fontFamily="EB" margin="0px 0px 5px 0px">
-                {song.title}
-              </Title>
-              <Title fontSize={'14px'} fontFamily="RG">
-                {song.artistName}
-              </Title>
-            </SongTextArea>
-          </SongArea>
-        </SongCard>
-      ))}
-      <Line />
+      {playlist.length > 0 ? (
+        playlist.map((song, index) => (
+          <SongCard>
+            <Line />
+            <SongArea key={index}>
+              <AlbumCover>
+                <img src={song.trackCover} width="100%" height="100%" crossOrigin="anonymous" alt={`Album Cover of ${song.title}`}></img>
+              </AlbumCover>
+              <SongTextArea>
+                <Title fontSize={'16px'} fontFamily="EB" margin="0px 0px 5px 0px">
+                  {song.title}
+                </Title>
+                <Title fontSize={'14px'} fontFamily="RG">
+                  {song.artistName}
+                </Title>
+              </SongTextArea>
+            </SongArea>
+          </SongCard>
+        ))
+      ) : (
+        <Text fontSize="14px" fontFamily="RG" margin="0px 0px 0px 0px" opacity="0.8">
+          {' '}
+          플레이리스트를 설정해주세요.{' '}
+        </Text>
+      )}
+      {playlist.length > 0 && <Line />}
     </PlayListCardContainer>
   );
 };
