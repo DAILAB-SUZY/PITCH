@@ -208,7 +208,7 @@ public class User implements MyUserDetails {
   }
 
   public String getFavoriteArtistId() {
-    if (getFavoriteArtist() == null) {
+    if (getFavoriteArtist().isNotSet()) {
       return NONE_ARTIST;
     }
     return getFavoriteArtist().getSpotifyArtistId();
