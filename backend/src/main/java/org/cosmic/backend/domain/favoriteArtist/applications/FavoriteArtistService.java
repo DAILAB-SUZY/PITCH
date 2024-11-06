@@ -42,10 +42,8 @@ public class FavoriteArtistService {
    * @throws NotFoundUserException 사용자를 찾을 수 없는 경우 발생합니다.
    */
   public FavoriteArtistDetail favoriteArtistGiveData(Long userId) {
-    if (usersRepository.findById(userId).isEmpty()) {
-      throw new NotFoundUserException();
-    }
-    if (favoriteArtistRepository.findByUser_UserId(userId).isEmpty()) {
+    if (favoriteArtistRepository.findByUser_UserId(userId).orElseThrow(NotFoundUserException::new)
+        .isNotSet()) {
       return FavoriteArtistDetail.builder()
           .artistName("없음")
           .albumCover("없음")

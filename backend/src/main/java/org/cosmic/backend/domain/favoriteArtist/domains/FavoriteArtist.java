@@ -1,10 +1,11 @@
 package org.cosmic.backend.domain.favoriteArtist.domains;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -27,6 +28,7 @@ import org.cosmic.backend.domain.user.domains.User;
 public class FavoriteArtist {
 
   @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @ManyToOne
@@ -34,13 +36,12 @@ public class FavoriteArtist {
   private Artist artist;
 
   @OneToOne
-  @MapsId
   @JoinColumn(name = "user_id")
   private User user;
 
   @ManyToOne
   private Track track;
-  
+
   @ManyToOne
   private Album album;
 
@@ -72,5 +73,9 @@ public class FavoriteArtist {
 
   public String getSpotifyTrackId() {
     return getTrack().getSpotifyTrackId();
+  }
+
+  public boolean isNotSet() {
+    return getArtist() == null && getTrack() == null && getAlbum() == null;
   }
 }
