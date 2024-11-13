@@ -5,6 +5,7 @@ import jakarta.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -61,7 +62,7 @@ public class PasswordChangeMailSender {
   }
 
   private String getAuthCode(String email) {
-    String authCode = passwordEncoder.encode(email);
+    String authCode = UUID.randomUUID().toString();
     saveAuthCode(authCode, email);
     return authCode;
   }
